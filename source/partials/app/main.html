@@ -1,0 +1,9 @@
+<h1>Template Test</h1>
+
+<select ng-model="selectedSource" ng-change="getSourceData(selectedSource.name)" ng-options="source.name group by source.type for source in sourceList"></select>
+
+<ul ng-repeat="source in sourceList">
+	<li>{{ source.name }}</li>
+</ul>
+
+<p>{{ sourceData }}</p>
