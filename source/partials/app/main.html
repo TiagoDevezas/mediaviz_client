@@ -2,6 +2,8 @@
 
 <select ng-model="selectedSource" ng-change="getSourceData(selectedSource.name)" ng-options="source.name group by source.type for source in sourceList"></select>
 
+<p ng-show="loading">A carregar</p>
+
 <ul ng-repeat="source in sourceList">
 	<li>{{ source.name }}</li>
 </ul>
