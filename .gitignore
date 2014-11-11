@@ -15,7 +15,7 @@
 /.cache
 
 # Ignore Sublime Text project files
-*.sublime-ptoject
+*.sublime-project
 *.sublime-workspace
 
 # Ignore .DS_store file
