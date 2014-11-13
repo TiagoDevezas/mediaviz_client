@@ -13,10 +13,11 @@
     <%= javascript_include_tag  "all" %>
   </head>
   
-  <body ng-controller="MainCtrl">
+  <body>
     <div class="outer-container">
       <%= partial 'partials/header' %>
-      <div ng-view></div>     
+      <div ng-view></div>
+      <%= partial 'partials/footer' %>
     </div>
   </body>
 </html>

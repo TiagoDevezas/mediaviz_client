@@ -1,11 +1,18 @@
 <h1>Template Test</h1>
 
-<select ng-model="selectedSource" ng-change="getSourceData(selectedSource.name)" ng-options="source.name group by source.type for source in sourceList"></select>
+<select ng-controller="SourceSelectCtrl" ng-model="selectedSource" ng-change="loadSource(selectedSource)" ng-options="source.name group by source.type for source in sourceList"></select>
 
 <p ng-show="loading">A carregar</p>
 
-<ul ng-repeat="source in sourceList">
-	<li>{{ source.name }}</li>
+<button ng-click="loadData('twitter')">Load twitter shares</button>
+<button ng-click="loadData('facebook')">Load facebook shares</button>
+
+<div class="chart"></div>
+
+<p>{{ currentSource }}</p>
+
+<ul>
+	<li ng-repeat="source in sourceList">{{ source }}</li>
 </ul>
 
 <p>{{ sourceData }}</p>
