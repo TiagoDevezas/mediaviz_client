@@ -8,6 +8,7 @@ mediavizControllers.controller('SourceSelectCtrl', function($rootScope, $scope, 
 
 	$rootScope.loadSource = function(sourceObj) {
 		$rootScope.selectedSource = sourceObj;
+		$location.search('');
 		if(sourceObj.name === 'Todas') {
 			if ($location.path !== rootPath) {
 				$location.path(rootPath);
@@ -63,20 +64,20 @@ mediavizControllers.controller('SourceCtrl', function($rootScope, $scope, $route
 
 mediavizControllers.controller('DashboardCtrl', function($scope, $location, $routeParams, Chart, Totals, Sources) {
 
+	$scope.query = $routeParams.q;
+	$scope.since = $routeParams.since;
+	$scope.until = $routeParams.until;
+
+	// Set a default start date if none is passed
+	$scope.startDate = $scope.since ? $scope.since : '2014-10-16';
+
+	var chart1, chart2;
+
 	$scope.loading = {
 		chart1: true,
 		chart2: true
 	}
 
-	$scope.query = $routeParams.q;
-	$scope.since = $routeParams.since;
-	$scope.until = $routeParams.until;
-
-	var chart1, chart2, chart3;
-
-	$scope.startDate = $scope.since ? $scope.since : '2014-10-16';
-	
-	// Check the route and store the name
 	var sourceName;
 
 	if($location.path() === '/') {
@@ -85,23 +86,7 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 		sourceName = $routeParams.source;
 	}
 
-	// Get the totals data for the selected source
-	
-	if(sourceName === 'All') {
-		Totals.get({since: $scope.startDate, until: $scope.until, q: $scope.query}).$promise.then(function(obj) {
-			$scope.sourceData = obj;
-			chart1_opts.options.data.json = obj;
-			chart1 = Chart.draw(chart1_opts);
-			$scope.loading.chart1 = false;
-		});
-	} else {
-		Totals.get({source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime }).$promise.then(function(obj) {
-			$scope.sourceData = obj;
-			chart1_opts.options.data.json = obj;
-			chart1 = Chart.draw(chart1_opts);
-			$scope.loading.chart1 = false;
-		});
-	}
+	getTotalsAndDraw();
 
 	function getTotalsAndDraw() {
 		if(sourceName === 'All') {
@@ -119,6 +104,22 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 				$scope.loading.chart1 = false;
 			});
 		}	
+	}
+
+	$scope.setDateInterval = function() {
+		if($scope.since) {
+			$location.search({since: $scope.since});
+		}
+		if($scope.until) {
+			$location.search({until: $scope.until});
+		}
+		if($scope.since && $scope.until) {
+			$location.search({since: $scope.since, until: $scope.until});
+		}
+		if(!$scope.since) {
+			$location.search('');
+		}
+		
 	}
 
 	// Get the source data for the selected source
@@ -145,7 +146,6 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 					}
 				}
 			}
-			getTotalsAndDraw();
 		} else {
 		chart1_opts.options.axis = {
 			x: {
@@ -154,8 +154,8 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 					}
 				}
 			}
-		getTotalsAndDraw();
 		}
+		getTotalsAndDraw();
 	}
 
 	$scope.twitterLoaded = false;

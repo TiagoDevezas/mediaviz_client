@@ -44,4 +44,10 @@
 	.button-group {
 		margin-bottom: 1em;
 	}
+	form {
+		@include span-columns(12);
+		input {
+			@include span-columns(4);
+		}
+	}
 }
