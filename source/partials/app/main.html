@@ -1,18 +1,23 @@
-<h1>Template Test</h1>
+<div id="dashboard" ng-controller="DashboardCtrl">
+	<h1>{{ selectedSource.name }}</h1>
 
-<select ng-controller="SourceSelectCtrl" ng-model="selectedSource" ng-change="loadSource(selectedSource)" ng-options="source.name group by source.type for source in sourceList"></select>
+	<select ng-controller="SourceSelectCtrl" ng-model="selectedSource" ng-change="loadSource(selectedSource)" ng-options="source.name group by source.type for source in sourceList"></select>
 
-<p ng-show="loading">A carregar</p>
+	Twitter shares: <input type="checkbox" ng-model="twitterLoaded" ng-click="loadData('twitter')">
+	Facebook shares: <input type="checkbox" ng-model="facebookLoaded" ng-click="loadData('facebook')">
 
-<button ng-click="loadData('twitter')">Load twitter shares</button>
-<button ng-click="loadData('facebook')">Load facebook shares</button>
+	<!-- <button ng-click="loadData('twitter')">Load twitter shares</button>
+	<button ng-click="loadData('facebook')">Load facebook shares</button> -->
 
-<div class="chart"></div>
+	<div class="chart"></div>
+	<div class="chart2"></div>
 
-<p>{{ currentSource }}</p>
+	<p>{{ currentSource }}</p>
 
-<ul>
-	<li ng-repeat="source in sourceList">{{ source }}</li>
-</ul>
+	<ul>
+		<li ng-repeat="source in sourceList">{{ source }}</li>
+	</ul>
 
-<p>{{ sourceData }}</p>
+	<p>{{ sourceData }}</p>
+
+</div>

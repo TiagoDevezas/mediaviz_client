@@ -49,8 +49,11 @@ end
 
 # Allow bower compenents to be included by sprockets
 sprockets.append_path 'components'
-# Do not create the bower components dir when building
+
+# Do not compile the bower components dir
 ignore 'components/*'
+# Do not compile the javascripts/app dir
+ignore 'javascripts/app/*'
 
 set :css_dir, 'stylesheets'
 
