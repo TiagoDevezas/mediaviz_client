@@ -3,9 +3,10 @@
 
 	<select ng-controller="SourceSelectCtrl" ng-model="selectedSource" ng-change="loadSource(selectedSource)" ng-options="source.name group by source.type for source in sourceList"></select>
 
-	<form ng-submit="setDateInterval()">
-		<input type="text" ng-model="since" placeholder="Data de início">
-		<input type="text" ng-model="until" placeholder="Data de fim">
+	<form ng-submit="setParams()">
+		<input type="text" ng-model="query" placeholder="Pesquisar" class="row">
+		<input type="text" ng-model="since" placeholder="Data de início (AAAA-MM-DD)">
+		<input type="text" ng-model="until" placeholder="Data de fim (AAAA-MM-DD)">
 		<input type="submit" value="Submeter">
 	</form>
 

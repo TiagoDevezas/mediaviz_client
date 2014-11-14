@@ -49,5 +49,9 @@
 		input {
 			@include span-columns(4);
 		}
+		input.row {
+			//@include row();
+			@include span-columns(12);
+		}
 	}
 }

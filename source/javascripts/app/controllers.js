@@ -106,20 +106,18 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 		}	
 	}
 
-	$scope.setDateInterval = function() {
+	$scope.setParams = function() {
+		var params = {};
 		if($scope.since) {
-			$location.search({since: $scope.since});
+			params['since'] = $scope.since;
 		}
 		if($scope.until) {
-			$location.search({until: $scope.until});
+			params['until'] = $scope.until;
 		}
-		if($scope.since && $scope.until) {
-			$location.search({since: $scope.since, until: $scope.until});
+		if($scope.query) {
+			params['q'] = $scope.query;
 		}
-		if(!$scope.since) {
-			$location.search('');
-		}
-		
+		$location.search(params);	
 	}
 
 	// Get the source data for the selected source
