@@ -1,3 +1,47 @@
 #dashboard {
+	position: relative;
+	.loading-overlay {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		left: 0;
+		background-color: rgba($light-gray, 0.8);
+		z-index: 100;
+		text-align: center;
+		p {
+			display: inline-block;
+			background-color: $dark-gray;
+			color: $light-gray;
+			padding: 0.5em;
+			border: 1px solid $dark-gray;
+			border-bottom-right-radius: 3px;
+			border-bottom-left-radius: 3px;
+		}
+	}
 	@include span-columns(12);
+	.chart-wrapper {
+		position: relative;
+		background-color: lighten($light-gray, 10);
+		border: 1px solid $light-gray;
+		padding: 1em;
+	}
+	.md-col-10 {
+		@include media($medium-screen-up) {
+			@include span-columns(10);
+		}
+	}
+
+	.md-col-2 {
+		@include media($medium-screen-up) {
+			@include span-columns(2);
+		}
+	}
+	.omega {
+		@include omega();
+	}
+
+	.button-group {
+		margin-bottom: 1em;
+	}
 }

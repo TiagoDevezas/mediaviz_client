@@ -1,6 +1,8 @@
 <div id="dashboard" ng-controller="DashboardCtrl">
 	<h1>{{ selectedSource.name }}</h1>
 
+	<p>{{ loading.chart1 }}</p>
+
 	<select ng-controller="SourceSelectCtrl" ng-model="selectedSource" ng-change="loadSource(selectedSource)" ng-options="source.name group by source.type for source in sourceList"></select>
 
 	Twitter shares: <input type="checkbox" ng-model="twitterLoaded" ng-click="loadData('twitter')">
@@ -9,15 +11,29 @@
 	<!-- <button ng-click="loadData('twitter')">Load twitter shares</button>
 	<button ng-click="loadData('facebook')">Load facebook shares</button> -->
 
-	<div class="chart"></div>
-	<div class="chart2"></div>
+	<div class="chart-wrapper md-col-10">
+		<div class="loading-overlay" ng-show="loading.chart1"><p>A carregar...</p></div>
+		<div class="button-group">
+		  <label>
+		    <input type="radio" ng-model="selectedTime" name="button-group" value="month" ng-click="changeTime()">
+		    <span class="button-group-item">Mês</span>
+	  	</label>
+		  <label>
+		    <input type="radio" ng-model="selectedTime" name="button-group" value="day" ng-click="changeTime()">
+		    <span class="button-group-item">Dia</span>
+		  </label>
+		  <label>
+		    <input type="radio" ng-model="selectedTime" name="button-group" value="hour" ng-click="changeTime()">
+		    <span class="button-group-item">Hora</span>
+		  </label>				
+		</div>
+		<div class="chart"></div>		
+	</div>
 
-	<p>{{ currentSource }}</p>
-
-	<ul>
-		<li ng-repeat="source in sourceList">{{ source }}</li>
-	</ul>
-
-	<p>{{ sourceData }}</p>
+	
+	<div class="chart-wrapper md-col-2 omega">
+	<div class="loading-overlay" ng-show="loading.chart2"><p>A carregar...</p></div>
+		<div class="chart2"></div>	
+	</div>
 
 </div>
