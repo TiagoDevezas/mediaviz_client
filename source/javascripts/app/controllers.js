@@ -62,7 +62,7 @@ mediavizControllers.controller('SourceCtrl', function($rootScope, $scope, $route
 
 });
 
-mediavizControllers.controller('DashboardCtrl', function($scope, $location, $routeParams, Chart, Totals, Sources) {
+mediavizControllers.controller('DashboardCtrl', function($scope, $location, $routeParams, Chart, Totals, Sources, Items) {
 
 	$scope.query = $routeParams.q;
 	$scope.since = $routeParams.since;
@@ -87,6 +87,7 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 	}
 
 	getTotalsAndDraw();
+	getItems();
 
 	function getTotalsAndDraw() {
 		if(sourceName === 'All') {
@@ -104,6 +105,26 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 				$scope.loading.chart1 = false;
 			});
 		}	
+	}
+
+	function getItems() {
+		if(sourceName === 'All') {
+			Items.get({since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime }).$promise.then(function(obj) {
+					$scope.itemsData = obj;
+					console.log('Items', obj);
+					//chart1_opts.options.data.json = obj;
+					//chart1 = Chart.draw(chart1_opts);
+					//$scope.loading.chart1 = false;
+				});
+		} else {
+			Items.get({source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime }).$promise.then(function(obj) {
+					$scope.itemsData = obj;
+					console.log('Items', obj);
+					//chart1_opts.options.data.json = obj;
+					//chart1 = Chart.draw(chart1_opts);
+					//$scope.loading.chart1 = false;
+				});			
+		}
 	}
 
 	$scope.setParams = function() {

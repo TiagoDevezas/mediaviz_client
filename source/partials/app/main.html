@@ -5,8 +5,8 @@
 
 	<form ng-submit="setParams()">
 		<input type="text" ng-model="query" placeholder="Pesquisar" class="row">
-		<input type="text" ng-model="since" placeholder="Data de início (AAAA-MM-DD)">
-		<input type="text" ng-model="until" placeholder="Data de fim (AAAA-MM-DD)">
+		<input type="date" ng-model="since" placeholder="Data de início (AAAA-MM-DD)">
+		<input type="date" ng-model="until" placeholder="Data de fim (AAAA-MM-DD)">
 		<input type="submit" value="Submeter">
 	</form>
 
@@ -34,8 +34,20 @@
 
 	
 	<div class="chart-wrapper md-col-2 omega">
-	<div class="loading-overlay" ng-show="loading.chart2"><p>A carregar...</p></div>
+		<div class="loading-overlay" ng-show="loading.chart2"><p>A carregar...</p></div>
 		<div class="chart2"></div>	
+	</div>
+
+	<div class="chart-wrapper md-col-10">
+		<table>
+			<tbody>
+				<tr ng-repeat="item in itemsData">
+					<td><a href="{{ item.url }}">{{ item.title }}</a></td>
+					<td>{{ item.source }}</td>
+					<td>{{ item.pub_date | date:'yyyy-MM-dd HH:mm' }}</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 
 </div>

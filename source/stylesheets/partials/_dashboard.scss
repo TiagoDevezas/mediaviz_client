@@ -25,6 +25,7 @@
 		background-color: lighten($light-gray, 10);
 		border: 1px solid $light-gray;
 		padding: 1em;
+		margin-top: 1em;
 	}
 	.md-col-10 {
 		@include media($medium-screen-up) {
