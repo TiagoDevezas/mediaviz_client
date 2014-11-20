@@ -21,7 +21,7 @@ mediavizControllers.controller('SourceSelectCtrl', function($rootScope, $scope, 
 	}
 });
 
-mediavizControllers.controller('MainCtrl', function($scope, $rootScope, SourceList) { 
+mediavizControllers.controller('MainCtrl', function($scope, $rootScope, SourceList) {
 
 	// Get the source list from the API
 
@@ -62,11 +62,12 @@ mediavizControllers.controller('SourceCtrl', function($rootScope, $scope, $route
 
 });
 
-mediavizControllers.controller('DashboardCtrl', function($scope, $location, $routeParams, Chart, Totals, Sources, Items) {
+mediavizControllers.controller('DashboardCtrl', function($scope, $location, $q, $routeParams, Resources, Chart) {
 
 	$scope.query = $routeParams.q;
 	$scope.since = $routeParams.since;
 	$scope.until = $routeParams.until;
+	$scope.category = $routeParams.category;
 
 	// Set a default start date if none is passed
 	$scope.startDate = $scope.since ? $scope.since : '2014-10-16';
@@ -86,45 +87,96 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 		sourceName = $routeParams.source;
 	}
 
-	getTotalsAndDraw();
-	getItems();
+
+	getItems().then(function() {
+		getTotalsAndDraw().then(function() {
+			getSourceData().then(function() {
+			});
+		});
+	});
+
+	// Get the source data for the selected source
+
+	function getSourceData() {
+		var deferred = $q.defer();
+		deferred.resolve(
+			Resources.get({resource: 'sources', name: sourceName}).$promise.then(function(obj) {
+				$scope.allData = obj;
+				$scope.categories = $scope.allData[0].categories;
+				// chart2_opts.options.data.json = obj;
+				// chart2 = Chart.draw(chart2_opts);
+				// $scope.loading.chart2 = false;
+			})
+		);
+		return deferred.promise;
+	}
 
 	function getTotalsAndDraw() {
+		var deferred = $q.defer();
 		if(sourceName === 'All') {
-			Totals.get({since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime }).$promise.then(function(obj) {
-				$scope.sourceData = obj;
-				chart1_opts.options.data.json = obj;
-				chart1 = Chart.draw(chart1_opts);
-				$scope.loading.chart1 = false;
-			});	
+			deferred.resolve(
+				Resources.get({resource: 'totals', since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
+					$scope.sourceData = obj;
+					var twitterShareSum = 0;
+					var facebookShareSum = 0;
+					angular.forEach(obj, function(el) {
+						twitterShareSum += el.twitter_shares;
+						facebookShareSum += el.facebook_shares;
+					});
+					var shareCountObj = [{twitter_shares: twitterShareSum, facebook_shares: facebookShareSum}];
+					chart1_opts.options.data.json = obj;
+					chart1 = Chart.draw(chart1_opts);
+					$scope.loading.chart1 = false;
+					chart2_opts.options.data.json = shareCountObj;
+					chart2 = Chart.draw(chart2_opts);
+					$scope.loading.chart2 = false;					
+				})
+			);	
 		} else {
-			Totals.get({source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime }).$promise.then(function(obj) {
+			deferred.resolve(
+			Resources.get({resource: 'totals', source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
 				$scope.sourceData = obj;
+				var twitterShareSum = 0;
+				var facebookShareSum = 0;
+				angular.forEach(obj, function(el) {
+					twitterShareSum += el.twitter_shares;
+					facebookShareSum += el.facebook_shares;
+				});
+				var shareCountObj = [{twitter_shares: twitterShareSum, facebook_shares: facebookShareSum}];
 				chart1_opts.options.data.json = obj;
 				chart1 = Chart.draw(chart1_opts);
 				$scope.loading.chart1 = false;
-			});
-		}	
+				chart2_opts.options.data.json = shareCountObj;
+				chart2 = Chart.draw(chart2_opts);
+				$scope.loading.chart2 = false;
+			})
+			);
+		}
+		return deferred.promise;
 	}
 
 	function getItems() {
+		var deferred = $q.defer();
 		if(sourceName === 'All') {
-			Items.get({since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime }).$promise.then(function(obj) {
+			deferred.resolve(
+			Resources.get({resource: 'items', since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
 					$scope.itemsData = obj;
-					console.log('Items', obj);
 					//chart1_opts.options.data.json = obj;
 					//chart1 = Chart.draw(chart1_opts);
 					//$scope.loading.chart1 = false;
-				});
+				})
+			);
 		} else {
-			Items.get({source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime }).$promise.then(function(obj) {
+			deferred.resolve(
+			Resources.get({resource: 'items', source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
 					$scope.itemsData = obj;
-					console.log('Items', obj);
 					//chart1_opts.options.data.json = obj;
 					//chart1 = Chart.draw(chart1_opts);
 					//$scope.loading.chart1 = false;
-				});			
+				})
+			);			
 		}
+		return deferred.promise;
 	}
 
 	$scope.setParams = function() {
@@ -138,17 +190,16 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 		if($scope.query) {
 			params['q'] = $scope.query;
 		}
+		if($scope.category) {
+			params['category'] = $scope.category;
+		}
 		$location.search(params);	
 	}
 
-	// Get the source data for the selected source
-
-	Sources.get({name: sourceName}).$promise.then(function(obj) {
-		$scope.allData = obj;
-		chart2_opts.options.data.json = obj;
-		chart2 = Chart.draw(chart2_opts);
-		$scope.loading.chart2 = false;
-	});
+	$scope.addCategoryToParams = function(categoryName) {
+		$scope.category = categoryName;
+		$scope.setParams();
+	}
 
 	// Set the default time period
 
@@ -175,6 +226,19 @@ mediavizControllers.controller('DashboardCtrl', function($scope, $location, $rou
 			}
 		}
 		getTotalsAndDraw();
+	}
+
+	// Tag cloud stuff
+
+	$scope.tagLimit = 50;
+
+	$scope.tagClasses = ['small', 'medium', 'large'];
+
+	$scope.setSizeClass = function(count) {
+		var maxCount = $scope.categories[0].count;
+		var index = count / maxCount * ($scope.tagClasses.length - 1);
+		index = Math.round(index);
+		return $scope.tagClasses[index]; 
 	}
 
 	$scope.twitterLoaded = false;

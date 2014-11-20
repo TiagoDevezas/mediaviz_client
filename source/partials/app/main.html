@@ -38,8 +38,12 @@
 		<div class="chart2"></div>	
 	</div>
 
+	<div class="chart-wrapper md-col-10 tag-cloud">
+		<span ng-repeat="category in categories | limitTo: tagLimit" ng-class="setSizeClass(category.count)"><a href="" ng-click="addCategoryToParams(category.name)">{{category.name }} ({{ category.count }})</a></span>
+	</div>
+
 	<div class="chart-wrapper md-col-10">
-		<table>
+		<table class="full-width">
 			<tbody>
 				<tr ng-repeat="item in itemsData">
 					<td><a href="{{ item.url }}">{{ item.title }}</a></td>

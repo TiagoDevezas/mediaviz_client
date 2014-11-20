@@ -2,13 +2,25 @@
 
 var mediavizServices = angular.module('mediavizServices', ['ngResource']);
 
+var baseUrl = 'http://mediaviz.fe.up.pt:3000/api/';
+
+var jsonp = { 
+				options: {
+						method: 'JSONP',
+						isArray: true, 
+						params: {
+							callback: 'JSON_CALLBACK',
+							resource: '@resource'
+						}
+					}
+				};
+
 mediavizServices.factory('SourceList', ['$http',
 	function($http) {
-		var baseUrl = 'http://mediaviz.fe.up.pt:3000/';
 		var callback = '?callback=JSON_CALLBACK';
 		return {
 			get: function(myCallback) {
-				return $http.jsonp(baseUrl + 'api/sources' + callback)
+				return $http.jsonp(baseUrl + 'sources' + callback)
 				.success(function(response) {
 					var sources = response.map(function(el) {
 						return { 'name': el.name, 'type': el.type };
@@ -21,64 +33,11 @@ mediavizServices.factory('SourceList', ['$http',
 		};
 	}]);
 
-
-mediavizServices.factory('Sources', ['$resource',
+mediavizServices.factory('Resources', ['$resource',
 	function($resource) {
-		var baseUrl = 'http://mediaviz.fe.up.pt:3000/'
-		return $resource(baseUrl + 'api/sources', {},
+		return $resource(baseUrl + ':resource', {},
 		{
-			get: { 
-				method: 'JSONP',
-				isArray: true, 
-				params: {
-					callback: 'JSON_CALLBACK'
-				} 
-			}
-		});
-	}]);
-
-mediavizServices.factory('Feeds', ['$resource',
-	function($resource) {
-		var baseUrl = 'http://mediaviz.fe.up.pt:3000/'
-		return $resource(baseUrl + 'api/feeds', {},
-		{
-			get: { 
-				method: 'JSONP',
-				isArray: true, 
-				params: {
-					callback: 'JSON_CALLBACK'
-				} 
-			}
-		});
-	}]);
-
-mediavizServices.factory('Items', ['$resource',
-	function($resource) {
-		var baseUrl = 'http://mediaviz.fe.up.pt:3000/'
-		return $resource(baseUrl + 'api/items', {},
-		{
-			get: { 
-				method: 'JSONP',
-				isArray: true, 
-				params: {
-					callback: 'JSON_CALLBACK'
-				} 
-			}
-		});
-	}]);
-
-mediavizServices.factory('Totals', ['$resource',
-	function($resource) {
-		var baseUrl = 'http://mediaviz.fe.up.pt:3000/'
-		return $resource(baseUrl + 'api/totals', {},
-		{
-			get: { 
-				method: 'JSONP',
-				isArray: true, 
-				params: {
-					callback: 'JSON_CALLBACK'
-				} 
-			}
+			get: jsonp.options	
 		});
 	}]);
 
@@ -89,3 +48,37 @@ mediavizServices.factory('Chart', function() {
 		}
 	}
 });
+
+
+// mediavizServices.factory('Sources', ['$resource',
+// 	function($resource) {
+// 		return $resource(baseUrl + 'sources', {},
+// 		{
+// 			get: jsonp.options 
+		
+// 		});
+// 	}]);
+
+// mediavizServices.factory('Feeds', ['$resource',
+// 	function($resource) {
+// 		return $resource(baseUrl + 'feeds', {},
+// 		{
+// 			get: jsonp.options
+// 		});
+// 	}]);
+
+// mediavizServices.factory('Items', ['$resource',
+// 	function($resource) {
+// 		return $resource(baseUrl + 'items', {},
+// 		{
+// 			get: jsonp.options
+// 		});
+// 	}]);
+
+// mediavizServices.factory('Totals', ['$resource',
+// 	function($resource) {
+// 		return $resource(baseUrl + 'totals', {},
+// 		{
+// 			get: jsonp.options
+// 		});
+// 	}]);

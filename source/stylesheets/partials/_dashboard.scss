@@ -1,5 +1,8 @@
 #dashboard {
 	position: relative;
+	.full-width {
+		width: 100% !important;
+	}
 	.loading-overlay {
 		position: absolute;
 		top: 0;
@@ -54,5 +57,15 @@
 			//@include row();
 			@include span-columns(12);
 		}
+	}
+	.tag-cloud {
+		span {
+			padding: 0 0.25em;
+			display: inline-block;
+			line-height: 1.5em;
+		}
+	  .small { font-size: 1em; }
+	  .medium { font-size: 1.5em; }
+	  .large { font-size: 1.9em; }
 	}
 }
