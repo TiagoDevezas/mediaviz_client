@@ -10,15 +10,16 @@
     <title><%= current_page.data.title || "The Middleman" %></title>
     
     <%= stylesheet_link_tag "all" %>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <%= javascript_include_tag  "all" %>
   </head>
   
   <body>
     
+    <%= partial 'partials/header' %>
     <div class="outer-container">
-      <%= partial 'partials/header' %>
       <div ng-view></div>
-      <%= partial 'partials/footer' %>
     </div>
+    <%# partial 'partials/footer' %>
   </body>
 </html>

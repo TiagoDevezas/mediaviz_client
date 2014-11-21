@@ -14,6 +14,10 @@ mediavizApp.config(['$routeProvider',
 			templateUrl: 'partials/app/main.html',
 			controller: 'MainCtrl'
 		}).
+		when('/chronicle', {
+			templateUrl: 'partials/app/chronicle.html',
+			controller: 'ChronicleCtrl'
+		}).
 		when('/:source', {
 			templateUrl: 'partials/app/main.html',
 			controller: 'SourceCtrl'

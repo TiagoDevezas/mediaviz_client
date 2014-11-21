@@ -62,6 +62,96 @@ mediavizControllers.controller('SourceCtrl', function($rootScope, $scope, $route
 
 });
 
+mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $routeParams, Resources, Chart) {
+
+	var chart, keyword;
+
+	var count = 0;
+
+	$scope.keyword = '';
+
+	$scope.setKeyword = function() {
+		getTotalsAndDraw();
+	}
+
+	$scope.clearChart = function() {
+		$('#keyword-chart').html('');
+		count = 0;
+	}
+
+	function getTotalsAndDraw() {
+			keyword = $scope.keyword;
+			Resources.get({resource: 'totals', q: $scope.keyword}).$promise.then(function(dataObj) {
+				keywordChart.options.data.keys.value = ['time', keyword];
+				var valuesForKeyword = [];
+				angular.forEach(dataObj, function(el) {
+					var obj = {};
+					obj['time'] = el.time;
+					obj[keyword] = el.articles;
+					valuesForKeyword.push(obj);
+				});
+				if(count === 0) {
+					keywordChart.options.data.json = valuesForKeyword;
+					chart = Chart.draw(keywordChart);
+					count += 1;
+				} else if (count >= 1) {
+					chart.load({
+						json: valuesForKeyword,
+						keys: {
+							value: ['time', keyword]
+						}
+					});
+				}
+			});
+	};
+
+	var patterns = {
+    light: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896'],
+    dark: ['#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7'],
+    material: ['#e51c23', '#673ab7', '#5677fc', '#03a9f4', '#00bcd4', '#259b24', '#ffeb3b', '#ff9800']
+  };
+
+	var keywordChart = {
+		options: {
+			bindto: '#keyword-chart',
+			data: {
+				json: '',
+				keys: {
+					x: 'time',
+					//value: ['time', 'ébola']
+				},
+				type: 'spline',
+				onclick: function (d, i) { console.log("onclick", d); }
+			},
+			subchart: {
+				show: true
+			},
+			axis: {
+				x: {
+					label: {
+						text: 'Dias',
+						position: 'outer-center'
+					},
+					type: 'timeseries',
+					tick: {
+						format: '%d %b'
+					}
+				},
+				y: {
+					label: {
+						text: 'Artigos',
+						position: 'outer-middle'
+					}
+				}
+			},
+			color: {
+				pattern: patterns.material
+			}
+		}
+	}
+
+});
+
 mediavizControllers.controller('DashboardCtrl', function($scope, $location, $q, $routeParams, Resources, Chart) {
 
 	$scope.query = $routeParams.q;

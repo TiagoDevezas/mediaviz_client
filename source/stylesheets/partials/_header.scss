@@ -1,2 +1,12 @@
 header {
+	background-color: lighten($light-gray, 10);
+	margin-bottom: 1.5em;
+	border-bottom: 2px solid $light-gray;
+	.header-inner {
+		h1 a {
+			color: $dark-gray;
+		}
+		@include outer-container;
+		padding: 1em 0;		
+	}
 }

@@ -1,0 +1,20 @@
+#chronicle {
+	.keyword-form {
+		padding: 2em;
+		@include media($medium-screen-up) {
+			@include span-columns(8);
+			@include shift(2);
+			input[type='text'] {
+				@include span-columns(8);
+			}
+		}
+	}
+	#keyword-chart {
+		@include span-columns(12);
+	}
+	.clear-button {
+		padding: 1em 0;
+		@include span-columns(12);
+		text-align: center;
+	}
+}
