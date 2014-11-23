@@ -75,8 +75,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
 	}
 
 	$scope.clearChart = function() {
-		$('#keyword-chart').html('');
-		count = 0;
+		chart.unload();
+		// $('#keyword-chart').html('');
+		// count = 0;
 	}
 
 	function getTotalsAndDraw() {
