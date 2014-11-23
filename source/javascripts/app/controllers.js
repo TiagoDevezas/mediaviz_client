@@ -81,7 +81,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
 	}
 
 	function getTotalsAndDraw() {
-			keyword = $scope.keyword;
+			var keyword = $scope.keyword;
 			var timeId = 'timeFor' + keyword;
 			var countId = keyword;
 			var xsObj = {};
