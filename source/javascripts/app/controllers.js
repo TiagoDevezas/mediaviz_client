@@ -127,6 +127,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
 			size: {
         height: 500
     	},
+    	legend: {
+    		position: 'right'
+    	},
 			data: {
 				type: 'line',
 				onclick: function (d, i) { console.log("onclick", d); }
