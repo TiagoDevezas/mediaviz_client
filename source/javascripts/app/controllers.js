@@ -81,29 +81,39 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
 
 	function getTotalsAndDraw() {
 			keyword = $scope.keyword;
+			var timeId = 'timeFor' + keyword;
+			var countId = keyword;
+			var xsObj = {};
+			xsObj[countId] = timeId;
 			Resources.get({resource: 'totals', q: $scope.keyword}).$promise.then(function(dataObj) {
-				keywordChart.options.data.keys.value = ['time', keyword];
-				var valuesForKeyword = [];
-				angular.forEach(dataObj, function(el) {
-					var obj = {};
-					obj['time'] = el.time;
-					obj[keyword] = el.articles;
-					valuesForKeyword.push(obj);
-				});
+				var formattedData = formatData(dataObj, keyword);
 				if(count === 0) {
-					keywordChart.options.data.json = valuesForKeyword;
+					keywordChart.options.data.xs = xsObj;
+					keywordChart.options.data.columns = formattedData;
 					chart = Chart.draw(keywordChart);
 					count += 1;
 				} else if (count >= 1) {
 					chart.load({
-						json: valuesForKeyword,
-						keys: {
-							value: ['time', keyword]
-						}
+						xs: xsObj,
+						columns: formattedData
 					});
 				}
 			});
 	};
+
+	function formatData(data, keyword) {
+		var columns = [];
+		var timeCol = [];
+		var valueCol = [];
+		angular.forEach(data, function(datum) {
+			timeCol.push(datum.time);
+			valueCol.push(datum.articles);
+		});
+		timeCol.unshift('timeFor' + keyword);
+		valueCol.unshift(keyword);
+		columns.push(timeCol, valueCol);
+		return columns;
+	}
 
 	var patterns = {
     light: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896'],
@@ -114,13 +124,11 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
 	var keywordChart = {
 		options: {
 			bindto: '#keyword-chart',
+			size: {
+        height: 500
+    	},
 			data: {
-				json: '',
-				keys: {
-					x: 'time',
-					//value: ['time', 'ébola']
-				},
-				type: 'spline',
+				type: 'line',
 				onclick: function (d, i) { console.log("onclick", d); }
 			},
 			subchart: {
@@ -134,10 +142,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
 					},
 					type: 'timeseries',
 					tick: {
+						culling: {
+              max: 10 // the number of tick texts will be adjusted to less than this value
+            },
 						format: '%d %b'
 					}
 				},
 				y: {
+					padding: {top: 10, bottom: 5},
 					label: {
 						text: 'Artigos',
 						position: 'outer-middle'
