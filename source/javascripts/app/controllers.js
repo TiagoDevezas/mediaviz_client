@@ -62,44 +62,115 @@ mediavizControllers.controller('SourceCtrl', function($rootScope, $scope, $route
 
 });
 
-mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $routeParams, Resources, Chart) {
+mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Resources, Chart) {
 
-	var chart, keyword;
+	var chart;
 
 	var count = 0;
 
-	$scope.keyword = '';
+	console.log(count);
 
-	$scope.setKeyword = function() {
+	$rootScope.keywordParams = [];
+
+	if($location.search()['keyword']) {
+		if($location.search()['keyword'].split(',').length > 0) {
+			$rootScope.keywordParams = $location.search()['keyword'].split(',');
+		} else {
+			$rootScope.keywordParams.push($location.search()['keyword']);
+		}
+	} else {
+		$rootScope.keywordParams = [];
+	}
+	
+	if($rootScope.keywordParams) {
 		getTotalsAndDraw();
 	}
 
-	$scope.clearChart = function() {
-		chart.unload();
-		// $('#keyword-chart').html('');
-		// count = 0;
+	$scope.$watch('keywordParams', function(newVal, oldVal) {
+		console.log(newVal, oldVal);
+	});
+
+
+	$scope.$on('$locationChangeSuccess', function(){
+
+			console.log('location changed successfully');
+
+			if($location.search()['keyword']) {
+				if($location.search()['keyword'].toString() !== $rootScope.keywordParams.toString()) {
+					if(chart) { chart.unload() }
+				}
+				if($location.search()['keyword'].split(',').length !== -1) {
+					$rootScope.keywordParams = $location.search()['keyword'].split(',');
+				} else {
+					$rootScope.keywordParams.push($location.search()['keyword']);
+				}
+			} 
+			else {
+				$rootScope.keywordParams = [];
+				if(chart) { chart.destroy(); }
+			}
+
+			getTotalsAndDraw();
+
+	});
+
+
+	$scope.setKeyword = function(keyword) {
+		//$rootScope.keywordParams.unshift(keyword);
+		// check if value is in keywordParams array
+		if($rootScope.keywordParams.indexOf(keyword) === -1) {
+			// add to array
+			$rootScope.keywordParams.push(keyword);
+			$location.search({keyword: $rootScope.keywordParams.toString()});
+			//getTotalsAndDraw();
+		} else {
+			alert('Palavra já pesquisada');
+		}
+
+		// $rootScope.keywords.unshift(keyword);
+		// var newKeywords = $rootScope.keywords.map(function(el) {
+		// 	return el;
+		// });
+		// keywordString = newKeywords.reverse().join('.');
+		// $location.search({keyword: keywordString});
+		// $scope.keywordParams = $location.search()['keyword'].split('.');
 	}
 
+	$scope.clearChart = function() {
+		//$rootScope.keywordParams = [];
+		count = 0;
+		$location.search('');
+		//$scope.$apply();
+		if(chart) { chart.destroy(); }
+	}
+
+	//$scope.keywordParams = {};
+	//$scope.keywordParams['keywords'] = $scope.keywords;
+
 	function getTotalsAndDraw() {
-			var keyword = $scope.keyword;
+		// Get data for each keyword
+		angular.forEach($rootScope.keywordParams, function(el, index) {
+			var keyword = el;
 			var timeId = 'timeFor' + keyword;
 			var countId = keyword;
 			var xsObj = {};
 			xsObj[countId] = timeId;
-			Resources.get({resource: 'totals', q: $scope.keyword}).$promise.then(function(dataObj) {
+			Resources.get({resource: 'totals', q: keyword}).$promise.then(function(dataObj) {
 				var formattedData = formatData(dataObj, keyword);
-				if(count === 0) {
+				if(index === 0) {
 					keywordChart.options.data.xs = xsObj;
 					keywordChart.options.data.columns = formattedData;
 					chart = Chart.draw(keywordChart);
 					count += 1;
-				} else if (count >= 1) {
+				} else {
 					chart.load({
 						xs: xsObj,
 						columns: formattedData
 					});
 				}
 			});
+
+		});
 	};
 
 	function formatData(data, keyword) {
@@ -114,6 +185,20 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
 		valueCol.unshift(keyword);
 		columns.push(timeCol, valueCol);
 		return columns;
+	}
+
+	function getItemData(datum) {
+		var dateFormat = d3.time.format("%Y-%m-%d");
+		var unformattedDate = datum.x;
+		var formattedDate = dateFormat(unformattedDate);
+		var query = datum.name;
+		displayItems(formattedDate, query);
+	}
+
+	function displayItems(date1, query) {
+		console.log('clicked');
+		$location.path('/chronicle/items').search({q: query, since: date1, until: date1});
+		$scope.$apply();
 	}
 
 	var patterns = {
@@ -131,9 +216,12 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
     	legend: {
     		position: 'right'
     	},
+			tooltip: {
+        grouped: false 
+	    },
 			data: {
 				type: 'line',
-				onclick: function (d, i) { console.log("onclick", d); }
+				onclick: function (d, i) { getItemData(d) }
 			},
 			subchart: {
 				show: true
@@ -160,11 +248,69 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $location, $rou
 					}
 				}
 			},
-			color: {
-				pattern: patterns.material
+			color: function(d) {
+				return d3.scale.category20c(d);
 			}
 		}
 	}
+
+});
+
+mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location, $routeParams, Resources) {
+	$scope.q = $routeParams.q;
+	$scope.since = $routeParams.since;
+	$scope.until = $routeParams.until;
+	$scope.limit = $routeParams.limit || 50;
+
+	$scope.sourceFilter = '';
+
+	Resources.get({resource: 'items', q: $scope.q, since: $scope.since, until: $scope.until, limit: $scope.limit}).$promise.then(function(dataObj) {
+		// using rootScope is bad practice, extract to service
+		$scope.chronicleItems = dataObj;
+		console.log(dataObj);
+		//$location.path('/chronicle/items');
+	});
+
+});
+
+mediavizControllers.controller('FlowCtrl', function($scope, $location, $routeParams, Resources, SourceList, Chart) {
+	$scope.sourceList = [];
+	$scope.selectedSource = {};
+	$scope.by = $routeParams.by || 'hour';
+	$scope.sourceData = [];
+	$scope.paramsObj = {};
+	
+	if($scope.sourceList.length === 0) {
+		SourceList.get(function(data) {
+			$scope.sourceList = data;
+			//$scope.selectedSource = $scope.sourceList[0];
+			$scope.selectedSource.selected = $scope.sourceList[0]
+			getTotalsData();
+		});
+	} else {
+		$scope.selectedSource.selected = $scope.sourceList[0];	
+	}
+
+	$scope.getSourceData = function(sourceName) {
+		if(sourceName !== 'Todas') {
+			var nameObj = {};
+			nameObj['name'] = sourceName;
+			$scope.paramsObj = angular.extend($scope.paramsObj, nameObj);
+		}
+		console.log($scope.paramsObj);
+	}
+
+	// By default show data for all sources
+
+	function getTotalsData() {
+		$scope.paramsObj = {resource: 'totals', by: $scope.by};
+		Resources.get($scope.paramsObj).$promise.then(function(data) {
+			$scope.sourceData = data;
+			console.log(data);
+		});		
+	}
+
+
 
 });
 

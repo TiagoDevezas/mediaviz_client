@@ -1,5 +1,5 @@
 <div id="chronicle">
-	<form class="keyword-form" ng-submit="setKeyword()">
+	<form class="keyword-form" ng-submit="setKeyword(keyword)">
 		<input type="text" placeholder="Introduzir palavra ou frase" ng-model="keyword">
 		<input type="submit" value="Adicionar">
 	</form>
@@ -8,4 +8,5 @@
 	<div class="clear-button">
 		<button ng-click="clearChart()">Limpar gráfico</button>
 	</div>
+	{{ keywordParams }}
 </div>

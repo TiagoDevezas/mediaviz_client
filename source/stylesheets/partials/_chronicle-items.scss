@@ -1,0 +1,52 @@
+.chronicle-items {
+	h1.item-title {
+		font-size: 0.95em;
+		a {
+			color: $dark-gray;
+			&:hover, &:active {
+				border-bottom: 1px solid $medium-gray;
+			}
+		}
+	}
+	p.item-source, p.item-pub-date {
+		margin-bottom: 0.7em;
+		font-size: 0.8em;
+		color: $medium-gray;
+	}
+	p.item-source {
+		color: $dark-gray;
+	}
+	@include media($medium-screen-up) {
+		@include span-columns(8);
+	}
+	.chronicle-item {
+		padding: 2em;
+		
+		&.newspaper {
+			border-left: 4px solid $dark-gray;
+		}
+		&.blog {
+			border-left: 4px solid $light-gray;
+		}
+	}
+	ul.source-type-links {
+		padding: 2em 0;
+		li {
+			&.selected {
+				border-bottom: 1px dotted $dark-gray;
+			}
+			margin-right: 1em;
+			display: inline;
+			&.all a {
+				color: #000;
+			}
+			&.newspapers a {
+				color: $dark-gray;
+			}
+			&.blogs a {
+				color: $light-gray;
+			}
+		}
+	}
+
+}

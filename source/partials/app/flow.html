@@ -1,0 +1,11 @@
+<div class="flow">
+	<ui-select ng-model="selectedSource.selected" ng-disabled="disabled" style="min-width: 300px;">
+		<ui-select-match placeholder="Enter an address...">
+			{{$select.selected.name}}
+		</ui-select-match>
+		<ui-select-choices repeat="source in sourceList">
+			{{source.name}}
+			<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
+		</ui-select-choices>
+	</ui-select>
+</div>
