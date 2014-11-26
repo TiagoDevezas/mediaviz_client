@@ -304,8 +304,9 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 	$scope.selectedSources = {};
 	$scope.selectedSources.selected = [];
 	$scope.by = $routeParams.by || 'hour';
+	$scope.since = $routeParams.since || '2014-11-01';
 	$scope.sourceData = [];
-	$scope.paramsObj = {resource: 'totals', by: $scope.by};
+	$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since};
 
 	$scope.loadedSources = [];
 
@@ -328,6 +329,21 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 		}
 		if(item.type === 'blog') {
 			return 'Blogues';
+		}
+	}
+
+	$scope.displayBy = function(timePeriod) {
+		if(timePeriod === 'hour') {
+			$scope.by = 'hour';
+			if(chart) { chart.unload(); }
+			$scope.loadedSources = [];
+			getTotalsAndDraw();
+		}
+		if(timePeriod === 'day') {
+			$scope.by = 'day';
+			if(chart) { chart.unload(); }
+			$scope.loadedSources = [];
+			getTotalsAndDraw();
 		}
 	}
 
@@ -384,12 +400,18 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 					var formattedData = formatData(data, keyword);
 					$scope.loadedSources.push(keyword);
 					if(index === 0) {
-						if($scope.by === 'day') {
-							timeChart.options.axis.x.type = 'timeseries';
-						}
 						timeChart.options.data.xs = xsObj;
+						timeChart.options.data.type = 'area';
+						timeChart.options.axis.x.type = '';
 						timeChart.options.data.columns = formattedData;
 						timeChart.options.data.groups = [$scope.loadedSources];
+						if($scope.by === 'day') {
+							timeChart.options.axis.x.type = 'timeseries';
+							timeChart.options.axis.x.label.text = 'Dias';
+							timeChart.options.axis.x.tick.format = '%d %b';
+							timeChart.options.data.type = 'area-spline';
+							timeChart.options.data.groups = [];
+						}
 						chart = Chart.draw(timeChart);
 					} else {
 						chart.load({
@@ -425,6 +447,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 			},
 			axis: {
 				x: {
+					padding: {left: 0, right: 0},
 					label: {
 						text: 'Horas',
 						position: 'outer-center'
@@ -434,16 +457,13 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
               max: 12 // the number of tick texts will be adjusted to less than this value
             },
 						format: function(d, i) {
-							if($scope.by === 'hour') {
-								return d;
-							} else if($scope.by === 'day') {
-								return '%d %b';
-							}
+								var d = d < 10 ? '0' + d : d
+								return d + ':00';
 						}
 					}
 				},
 				y: {
-					padding: {top: 10, bottom: 5},
+					padding: {top: 1, bottom: 1},
 					min: 0,
 					label: {
 						text: 'Artigos',

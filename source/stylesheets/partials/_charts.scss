@@ -1,0 +1,18 @@
+.c3-line {
+	stroke-width: 2px !important;
+}
+.c3-axis .domain {
+	stroke: $light-gray;
+}
+.c3-axis-y-label, .c3-axis-x-label  {
+	font-size: 14px;
+	font-weight: bold;
+}
+.tick {
+ line {
+		stroke: $light-gray;
+	}
+	text {
+		font-size: 12px;
+	}
+}
