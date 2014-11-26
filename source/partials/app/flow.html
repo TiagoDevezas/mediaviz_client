@@ -1,11 +1,15 @@
 <div class="flow">
-	<ui-select ng-model="selectedSource.selected" ng-disabled="disabled" style="min-width: 300px;">
-		<ui-select-match placeholder="Enter an address...">
-			{{$select.selected.name}}
+	<ui-select multiple ng-model="selectedSources.selected" ng-change="loadSourceData(selectedSources.selected)" ng-disabled="disabled" style="min-width: 300px;" theme="select2">
+		<ui-select-match placeholder="Escolher fontes...">
+			{{$item.name}}
 		</ui-select-match>
-		<ui-select-choices repeat="source in sourceList">
+		<ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
 			{{source.name}}
 			<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
 		</ui-select-choices>
 	</ui-select>
+
+	<div id="time-chart">
+		
+	</div>
 </div>

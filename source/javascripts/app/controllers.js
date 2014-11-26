@@ -68,13 +68,37 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	var count = 0;
 
-	console.log(count);
+	$scope.chartCleared = false;
+
+	var selectedQueries = [
+		['fc porto', 'benfica', 'sporting'],
+		['ébola', 'legionella'],
+		['sócrates'],
+		['passos coelho', 'antónio costa'],
+		['défice', 'dívida']
+	];
 
 	$rootScope.keywordParams = [];
 
+	showPredefinedQuery();
+
+	// Select a query from the list and draw the chart
+
+	function showPredefinedQuery() {
+		if(!$location.search()['keyword'] && !$scope.chartCleared) {
+			var selectedQueryIndex = Math.floor(Math.random() * (selectedQueries.length));
+			$rootScope.keywordParams = selectedQueries[selectedQueryIndex];
+			$location.search({keyword: $rootScope.keywordParams.toString()});
+			//getTotalsAndDraw();
+		}
+	}
+
 	if($location.search()['keyword']) {
-		if($location.search()['keyword'].split(',').length > 0) {
-			$rootScope.keywordParams = $location.search()['keyword'].split(',');
+		if($location.search()['keyword'].split(',').length > -1) {
+			$rootScope.keywordParams = $location.search()['keyword'].split(',').map(function(kw) {
+				var cleanKeyword = kw.trim();
+				return cleanKeyword;
+			});
 		} else {
 			$rootScope.keywordParams.push($location.search()['keyword']);
 		}
@@ -86,10 +110,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		getTotalsAndDraw();
 	}
 
-	$scope.$watch('keywordParams', function(newVal, oldVal) {
-		console.log(newVal, oldVal);
-	});
-
 
 	$scope.$on('$locationChangeSuccess', function(){
 
@@ -99,15 +119,20 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 				if($location.search()['keyword'].toString() !== $rootScope.keywordParams.toString()) {
 					if(chart) { chart.unload() }
 				}
-				if($location.search()['keyword'].split(',').length !== -1) {
-					$rootScope.keywordParams = $location.search()['keyword'].split(',');
+				if($location.search()['keyword'].split(',').length > -1) {
+					$rootScope.keywordParams = $location.search()['keyword'].split(',').map(function(kw) {
+						var cleanKeyword = kw.trim();
+						return cleanKeyword;
+					});
+					console.log($rootScope.keywordParams);
 				} else {
 					$rootScope.keywordParams.push($location.search()['keyword']);
 				}
 			} 
 			else {
-				$rootScope.keywordParams = [];
-				if(chart) { chart.destroy(); }
+				showPredefinedQuery();
+				//$rootScope.keywordParams = [];
+				//if(chart) { chart.destroy(); }
 			}
 
 			getTotalsAndDraw();
@@ -140,6 +165,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		//$rootScope.keywordParams = [];
 		count = 0;
 		$location.search('');
+		$rootScope.keywordParams = [];
+		$scope.chartCleared = true;
 		//$scope.$apply();
 		if(chart) { chart.destroy(); }
 	}
@@ -196,7 +223,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	}
 
 	function displayItems(date1, query) {
-		console.log('clicked');
 		$location.path('/chronicle/items').search({q: query, since: date1, until: date1});
 		$scope.$apply();
 	}
@@ -275,39 +301,160 @@ mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location,
 
 mediavizControllers.controller('FlowCtrl', function($scope, $location, $routeParams, Resources, SourceList, Chart) {
 	$scope.sourceList = [];
-	$scope.selectedSource = {};
+	$scope.selectedSources = {};
+	$scope.selectedSources.selected = [];
 	$scope.by = $routeParams.by || 'hour';
 	$scope.sourceData = [];
-	$scope.paramsObj = {};
+	$scope.paramsObj = {resource: 'totals', by: $scope.by};
+
+	$scope.loadedSources = [];
+
+	var chart;
 	
 	if($scope.sourceList.length === 0) {
 		SourceList.get(function(data) {
 			$scope.sourceList = data;
 			//$scope.selectedSource = $scope.sourceList[0];
-			$scope.selectedSource.selected = $scope.sourceList[0]
-			getTotalsData();
+			$scope.selectedSources.selected.push($scope.sourceList[0]);
+			//getTotalsAndDraw();
 		});
 	} else {
-		$scope.selectedSource.selected = $scope.sourceList[0];	
+		$scope.selectedSources.selected.push($scope.sourceList[0]);	
 	}
 
-	$scope.getSourceData = function(sourceName) {
-		if(sourceName !== 'Todas') {
-			var nameObj = {};
-			nameObj['name'] = sourceName;
-			$scope.paramsObj = angular.extend($scope.paramsObj, nameObj);
+	$scope.groupSourcesByType = function(item) {
+		if(item.type === 'newspaper') {
+			return 'Jornais';
 		}
-		console.log($scope.paramsObj);
+		if(item.type === 'blog') {
+			return 'Blogues';
+		}
 	}
 
-	// By default show data for all sources
+	$scope.loadSourceData = function(selectedSources) {
+		getTotalsAndDraw();
+	}
 
-	function getTotalsData() {
-		$scope.paramsObj = {resource: 'totals', by: $scope.by};
-		Resources.get($scope.paramsObj).$promise.then(function(data) {
-			$scope.sourceData = data;
-			console.log(data);
+	$scope.$watch('selectedSources.selected', function(newVal, oldVal) {
+		var sourceToRemove, sourceToRemoveIndex;
+		if(newVal.length < oldVal.length) {
+			angular.forEach(oldVal, function(obj) {
+				if(newVal.indexOf(obj) === -1) {
+					sourceToRemove = obj.name;
+				}
+			});
+			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
+			chart.unload({ids: sourceToRemove});
+			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
+		}
+	});
+
+	// Extract to service
+	function formatData(data, keyword) {
+		var columns = [];
+		var timeCol = [];
+		var valueCol = [];
+		angular.forEach(data, function(datum) {
+			timeCol.push(datum.time);
+			valueCol.push(datum.articles);
+		});
+		timeCol.unshift('timeFor' + keyword);
+		valueCol.unshift(keyword);
+		columns.push(timeCol, valueCol);
+		return columns;
+	}
+
+	function getTotalsAndDraw() {
+		angular.forEach($scope.selectedSources.selected, function(el, index) {
+
+			var keyword = el.name;
+			var timeId = 'timeFor' + keyword;
+			var countId = keyword;
+			var xsObj = {};
+			xsObj[countId] = timeId;
+
+			if(keyword !== 'Todas') {
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, source: keyword};
+			} else {
+				$scope.paramsObj = {resource: 'totals', by: $scope.by};
+			}
+
+			if($scope.loadedSources.indexOf(keyword) === -1) {
+				Resources.get($scope.paramsObj).$promise.then(function(data) {
+					var formattedData = formatData(data, keyword);
+					$scope.loadedSources.push(keyword);
+					if(index === 0) {
+						if($scope.by === 'day') {
+							timeChart.options.axis.x.type = 'timeseries';
+						}
+						timeChart.options.data.xs = xsObj;
+						timeChart.options.data.columns = formattedData;
+						timeChart.options.data.groups = [$scope.loadedSources];
+						chart = Chart.draw(timeChart);
+					} else {
+						chart.load({
+							xs: xsObj,
+							columns: formattedData
+						});
+					}
+				});				
+			}
+
+
 		});		
+	}
+
+	var timeChart = {
+		options: {
+			bindto: '#time-chart',
+			size: {
+        height: 500
+    	},
+    	legend: {
+    		position: 'right'
+    	},
+			tooltip: {
+        grouped: false 
+	    },
+			data: {
+				type: 'area',
+				//onclick: function (d, i) { getItemData(d) }
+			},
+			subchart: {
+				show: true
+			},
+			axis: {
+				x: {
+					label: {
+						text: 'Horas',
+						position: 'outer-center'
+					},
+					tick: {
+						culling: {
+              max: 12 // the number of tick texts will be adjusted to less than this value
+            },
+						format: function(d, i) {
+							if($scope.by === 'hour') {
+								return d;
+							} else if($scope.by === 'day') {
+								return '%d %b';
+							}
+						}
+					}
+				},
+				y: {
+					padding: {top: 10, bottom: 5},
+					min: 0,
+					label: {
+						text: 'Artigos',
+						position: 'outer-middle'
+					}
+				}
+			},
+			color: function(d) {
+				return d3.scale.category20c(d);
+			}
+		}
 	}
 
 
