@@ -80,7 +80,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$rootScope.keywordParams = [];
 
-	showPredefinedQuery();
+	//showPredefinedQuery();
 
 	// Select a query from the list and draw the chart
 
@@ -130,9 +130,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 				}
 			} 
 			else {
-				showPredefinedQuery();
-				//$rootScope.keywordParams = [];
-				//if(chart) { chart.destroy(); }
+				//showPredefinedQuery();
+				$rootScope.keywordParams = [];
+				if(chart) { chart.destroy(); }
 			}
 
 			getTotalsAndDraw();
