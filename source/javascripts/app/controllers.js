@@ -347,7 +347,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 		}
 	}
 
-	$scope.loadSourceData = function(selectedSources) {
+	$scope.loadSourceData = function() {
 		getTotalsAndDraw();
 	}
 

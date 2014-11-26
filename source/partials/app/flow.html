@@ -1,5 +1,5 @@
 <div class="flow">
-	<ui-select multiple ng-model="selectedSources.selected" ng-change="loadSourceData(selectedSources.selected)" ng-disabled="disabled" style="min-width: 300px;" theme="select2">
+	<ui-select multiple ng-model="selectedSources.selected" ng-change="loadSourceData()" ng-disabled="disabled" style="min-width: 300px;" reset-search-input="true">
 		<ui-select-match placeholder="Escolher fontes...">
 			{{$item.name}}
 		</ui-select-match>

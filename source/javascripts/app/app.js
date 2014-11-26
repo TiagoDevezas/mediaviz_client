@@ -9,12 +9,13 @@ var mediavizApp = angular.module('mediavizApp', [
 	'mediavizServices'
 ]);
 
-mediavizApp.config(function(uiSelectConfig) {
-  uiSelectConfig.theme = 'select2';
-});
+// mediavizApp.config(function(uiSelectConfig) {
+//   uiSelectConfig.theme = 'select2';
+//   uiSelectConfig.resetSearchInput = true;
+// });
 
-mediavizApp.config(['$routeProvider',
-	function($routeProvider) {
+mediavizApp.config(['$routeProvider', 'uiSelectConfig',
+	function($routeProvider, uiSelectConfig) {
 		$routeProvider.when('/', {
 			templateUrl: 'partials/app/main.html',
 			controller: 'MainCtrl'
@@ -39,4 +40,6 @@ mediavizApp.config(['$routeProvider',
 		otherwise({
 			redirectTo: '/'
 		});
+
+	  uiSelectConfig.theme = 'select2';
 	}]);
