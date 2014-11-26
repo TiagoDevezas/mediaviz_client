@@ -401,15 +401,22 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 					$scope.loadedSources.push(keyword);
 					if(index === 0) {
 						timeChart.options.data.xs = xsObj;
-						timeChart.options.data.type = 'area';
-						timeChart.options.axis.x.type = '';
 						timeChart.options.data.columns = formattedData;
-						timeChart.options.data.groups = [$scope.loadedSources];
+						if($scope.by === 'hour') {
+							//timeChart.options.data.type = 'area';
+							timeChart.options.axis.x.type = '';
+							timeChart.options.axis.x.label.text = 'Hora';
+							timeChart.options.data.groups = [$scope.loadedSources];
+							timeChart.options.axis.x.tick.format = function(d, i) {
+									var d = d < 10 ? '0' + d : d;
+									return d + ':00';
+							}
+						}
 						if($scope.by === 'day') {
 							timeChart.options.axis.x.type = 'timeseries';
-							timeChart.options.axis.x.label.text = 'Dias';
+							timeChart.options.axis.x.label.text = 'Dia';
 							timeChart.options.axis.x.tick.format = '%d %b';
-							timeChart.options.data.type = 'area-spline';
+							//timeChart.options.data.type = 'area-spline';
 							timeChart.options.data.groups = [];
 						}
 						chart = Chart.draw(timeChart);
@@ -442,6 +449,9 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 				type: 'area',
 				//onclick: function (d, i) { getItemData(d) }
 			},
+			point: {
+				r: 1.5
+			},
 			subchart: {
 				show: true
 			},
@@ -456,10 +466,10 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 						culling: {
               max: 12 // the number of tick texts will be adjusted to less than this value
             },
-						format: function(d, i) {
-								var d = d < 10 ? '0' + d : d
-								return d + ':00';
-						}
+						// format: function(d, i) {
+						// 		var d = d < 10 ? '0' + d : d;
+						// 		return d + ':00';
+						// }
 					}
 				},
 				y: {
