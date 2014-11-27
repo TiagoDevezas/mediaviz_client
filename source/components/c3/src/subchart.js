@@ -19,7 +19,7 @@ c3_chart_internal_fn.initSubchart = function () {
 
     // Define g for chart area
     context.append('g')
-        .attr("clip-path", $$.clipPath)
+        .attr("clip-path", $$.clipPathForSubchart)
         .attr('class', CLASS.chart);
 
     // Define g for bar chart area
@@ -164,9 +164,10 @@ c3_chart_internal_fn.redrawForBrush = function () {
     var $$ = this, x = $$.x;
     $$.redraw({
         withTransition: false,
-        withY: false,
+        withY: $$.config.zoom_rescale,
         withSubchart: false,
-        withUpdateXDomain: true
+        withUpdateXDomain: true,
+        withDimension: false
     });
     $$.config.subchart_onbrush.call($$.api, x.orgDomain());
 };
@@ -180,4 +181,12 @@ c3_chart_internal_fn.transformContext = function (withTransition, transitions) {
     }
     $$.context.attr("transform", $$.getTranslate('context'));
     subXAxis.attr("transform", $$.getTranslate('subx'));
+};
+c3_chart_internal_fn.getDefaultExtent = function () {
+    var $$ = this, config = $$.config,
+        extent = isFunction(config.axis_x_extent) ? config.axis_x_extent($$.getXDomain($$.data.targets)) : config.axis_x_extent;
+    if ($$.isTimeSeries()) {
+        extent = [$$.parseDate(extent[0]), $$.parseDate(extent[1])];
+    }
+    return extent;
 };

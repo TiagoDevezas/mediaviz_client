@@ -8,6 +8,8 @@
 		<p>This tool searches several portuguese media sources for articles containing the given keywords. It then displays the number of articles published by day mentioning each keyword. Multiple keywords can be introduced simultaneously by separating them with a comma. Clicking on a point in the graph displays the corresponding articles for the selected keyword/day.</p>
 	</div>
 
+	<p ng-show="loading">A carregar...</p>
+
 	<form class="keyword-form" ng-submit="setKeyword(keyword)">
 		<input type="text" placeholder="Introduzir palavra ou frase" ng-model="keyword">
 		<input type="submit" value="Adicionar">

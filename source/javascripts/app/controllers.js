@@ -94,6 +94,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$scope.loadedSources = [];
 
+	$scope.loading = false;
+
 	$scope.chartCleared = false;
 
 	var selectedQueries = [
@@ -106,14 +108,16 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$rootScope.keywordParams = [];
 
-	//showPredefinedQuery();
+	showPredefinedQuery();
 
 	// Select a query from the list and draw the chart
 
 	function showPredefinedQuery() {
 		if(!$location.search()['keyword'] && !$scope.chartCleared) {
 			var selectedQueryIndex = Math.floor(Math.random() * (selectedQueries.length));
-			$rootScope.keywordParams = selectedQueries[selectedQueryIndex];
+			$rootScope.keywordParams = selectedQueries[selectedQueryIndex].map(function(el) {
+				return el;
+			});
 			$location.search({keyword: $rootScope.keywordParams.toString()});
 			//getTotalsAndDraw();
 		}
@@ -130,10 +134,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		}
 	} else {
 		$rootScope.keywordParams = [];
-	}
-	
-	if($rootScope.keywordParams) {
-		getTotalsAndDraw();
 	}
 
 	$scope.wellIsVisible = 'invisible';
@@ -206,7 +206,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		$location.search('');
 		//$rootScope.keywordParams = [];
 		$scope.loadedSources = [];
-		//$scope.chartCleared = true;
+		$scope.chartCleared = true;
 		//$scope.$apply();
 		if(chart) { chart.unload(); }
 	}
@@ -215,6 +215,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	//$scope.keywordParams['keywords'] = $scope.keywords;
 
 	function getTotalsAndDraw() {
+		//$scope.loading = true;
 		// Get data for each keyword
 		angular.forEach($rootScope.keywordParams, function(el, index) {
 			var keyword = el;
@@ -223,8 +224,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			var xsObj = {};
 			xsObj[countId] = timeId;
 			if($scope.loadedSources.indexOf(keyword) === -1) {
-
+				$scope.loading = true;
 				Resources.get({resource: 'totals', q: keyword}).$promise.then(function(dataObj) {
+					$scope.loading = false;
 					$scope.loadedSources.push(keyword);
 					var formattedData = DataFormatter.inColumns(dataObj, keyword);
 					if(!chart) {
@@ -240,9 +242,12 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 				});
 
 			}
-
 		});
 	};
+
+	if($rootScope.keywordParams) {
+		getTotalsAndDraw();
+	}
 
 	function getItemData(datum) {
 		var dateFormat = d3.time.format("%Y-%m-%d");
