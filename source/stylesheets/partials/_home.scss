@@ -1,0 +1,10 @@
+.home {
+	@include span-columns(12);
+	.tool {
+		@include span-columns(6);
+		@include media($medium-screen-up) {
+			@include span-columns(4);
+			@include omega(3n);
+		}
+	}
+}

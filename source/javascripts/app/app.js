@@ -14,11 +14,15 @@ var mediavizApp = angular.module('mediavizApp', [
 //   uiSelectConfig.resetSearchInput = true;
 // });
 
-mediavizApp.config(['$routeProvider', 'uiSelectConfig',
-	function($routeProvider, uiSelectConfig) {
+mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
+	function($routeProvider, uiSelectConfig, $locationProvider) {
+
 		$routeProvider.when('/', {
-			templateUrl: 'partials/app/main.html',
-			controller: 'MainCtrl'
+			templateUrl: 'partials/app/home.html',
+			controller: 'HomeCtrl'
+		}).
+		when('/about', {
+			templateUrl: 'partials/app/about.html'
 		}).
 		when('/flow', {
 			templateUrl: 'partials/app/flow.html',
@@ -33,6 +37,10 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig',
 			templateUrl: 'partials/app/chronicle-items.html',
 			controller: 'ChronicleItemsCtrl'
 		}).
+		when('/dashboard', {
+			templateUrl: 'partials/app/main.html',
+			controller: 'MainCtrl'
+		}).
 		when('/:source', {
 			templateUrl: 'partials/app/main.html',
 			controller: 'SourceCtrl'
@@ -41,5 +49,8 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig',
 			redirectTo: '/'
 		});
 
+		//$locationProvider.html5Mode(true);
+
 	  uiSelectConfig.theme = 'select2';
+
 	}]);

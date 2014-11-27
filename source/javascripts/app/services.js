@@ -49,6 +49,25 @@ mediavizServices.factory('Chart', function() {
 	}
 });
 
+mediavizServices.factory('DataFormatter', function() {
+
+	return {
+		inColumns: function formatData(data, IdKey) {
+			var columns = [];
+			var timeCol = [];
+			var valueCol = [];
+			angular.forEach(data, function(datum) {
+				timeCol.push(datum.time);
+				valueCol.push(datum.articles);
+			});
+			timeCol.unshift('timeFor' + IdKey);
+			valueCol.unshift(IdKey);
+			columns.push(timeCol, valueCol);
+			return columns;
+		}
+	}
+});
+
 
 // mediavizServices.factory('Sources', ['$resource',
 // 	function($resource) {

@@ -2,6 +2,9 @@
 <html ng-app="mediavizApp">
   <head>
     <meta charset="utf-8">
+  
+    <!-- Set the location base - needed for the HTML5mode -->
+    <!-- <base href="/"> -->
     
     <!-- Always force latest IE rendering engine or request Chrome Frame -->
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
@@ -17,7 +20,7 @@
     
     <%= partial 'partials/header' %>
     <div class="outer-container">
-      <div ng-view></div>
+      <div ng-view ng-controller="RootCtrl"></div>
     </div>
     <%# partial 'partials/footer' %>
   </body>
