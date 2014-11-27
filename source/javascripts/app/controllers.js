@@ -163,7 +163,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 						var cleanKeyword = kw.trim();
 						return cleanKeyword;
 					});
-					$scope.loadedSources = [];
+					//$scope.loadedSources = [];
 					console.log($rootScope.keywordParams);
 				} else {
 					$rootScope.keywordParams.push($location.search()['keyword']);
@@ -215,7 +215,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	//$scope.keywordParams['keywords'] = $scope.keywords;
 
 	function getTotalsAndDraw() {
-		//$scope.loading = true;
 		// Get data for each keyword
 		angular.forEach($rootScope.keywordParams, function(el, index) {
 			var keyword = el;
@@ -224,6 +223,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			var xsObj = {};
 			xsObj[countId] = timeId;
 			if($scope.loadedSources.indexOf(keyword) === -1) {
+				console.log($scope.loadedSources, $rootScope.keywordParams, keyword);
 				$scope.loading = true;
 				Resources.get({resource: 'totals', q: keyword}).$promise.then(function(dataObj) {
 					$scope.loading = false;
@@ -240,7 +240,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 						});
 					}
 				});
-
 			}
 		});
 	};
