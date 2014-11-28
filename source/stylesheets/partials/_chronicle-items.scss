@@ -16,18 +16,22 @@
 	p.item-source {
 		color: $dark-gray;
 	}
-	@include media($medium-screen-up) {
-		@include span-columns(8);
-	}
 	.chronicle-item {
+		@include span-columns(12);
 		margin: 0.5em 0;
 		padding: 2em;
-		
 		&.newspaper {
 			border-left: 4px solid $dark-gray;
 		}
 		&.blog {
 			border-left: 4px solid $light-gray;
+		}
+		.content {
+			@include media($medium-screen-up) {
+				@include span-columns(8);
+			}
+		}
+		.share-count-chart {
 		}
 	}
 	ul.source-type-links {

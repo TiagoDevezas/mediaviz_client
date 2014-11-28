@@ -7,8 +7,10 @@
 		<li class="blogs" ng-class="{'selected':sourceFilter === 'blog'}"><a href="" ng-click="sourceFilter = 'blog'">Blogs</a></li>
 	</ul>
 	<article class="chronicle-item {{ item.source_type }}" ng-repeat="item in chronicleItems | filter: sourceFilter">
+	<div class="content">
 		<p class="item-pub-date">{{ item.pub_date | date:'yyyy-MM-dd HH:mm' }}</p>
-				<p class="item-source">{{ item.source }} </p>
+		<p class="item-source">{{ item.source }} </p>
 		<h1 class="item-title"><a href="{{ item.url }}">{{ item.title }}</a></h1>
+	</div>
 	</article>
 </div>

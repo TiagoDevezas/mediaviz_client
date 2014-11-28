@@ -324,7 +324,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 });
 
-mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location, $routeParams, Resources) {
+mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location, $routeParams, Resources, Chart) {
 	$scope.q = $routeParams.q;
 	$scope.since = $routeParams.since;
 	$scope.until = $routeParams.until;
