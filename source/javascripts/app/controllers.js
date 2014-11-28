@@ -98,6 +98,10 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$scope.chartCleared = false;
 
+	$scope.since = '2014-10-15' || $routeParams.since;
+	$scope.until;
+
+
 	var selectedQueries = [
 		['fc porto', 'benfica', 'sporting'],
 		['ébola', 'legionella'],
@@ -119,6 +123,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 				return el;
 			});
 			$location.search({keyword: $rootScope.keywordParams.toString()});
+			$scope.keyword = $rootScope.keywordParams.toString();
 			//getTotalsAndDraw();
 		}
 	}
@@ -207,6 +212,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		//$rootScope.keywordParams = [];
 		$scope.loadedSources = [];
 		$scope.chartCleared = true;
+		$scope.keyword = '';
 		//$scope.$apply();
 		if(chart) { chart.unload(); }
 	}
@@ -223,9 +229,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			var xsObj = {};
 			xsObj[countId] = timeId;
 			if($scope.loadedSources.indexOf(keyword) === -1) {
-				console.log($scope.loadedSources, $rootScope.keywordParams, keyword);
 				$scope.loading = true;
-				Resources.get({resource: 'totals', q: keyword}).$promise.then(function(dataObj) {
+				Resources.get({resource: 'totals', q: keyword, since: $scope.since}).$promise.then(function(dataObj) {
 					$scope.loading = false;
 					$scope.loadedSources.push(keyword);
 					var formattedData = DataFormatter.inColumns(dataObj, keyword);
@@ -280,8 +285,11 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
         grouped: false 
 	    },
 			data: {
-				type: 'line',
+				type: 'area',
 				onclick: function (d, i) { getItemData(d) }
+			},
+			point: {
+				r: 1.5
 			},
 			subchart: {
 				show: true
@@ -322,11 +330,14 @@ mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location,
 	$scope.until = $routeParams.until;
 	$scope.limit = $routeParams.limit || 50;
 
+	$scope.loading = true;
+
 	$scope.sourceFilter = '';
 
 	Resources.get({resource: 'items', q: $scope.q, since: $scope.since, until: $scope.until, limit: $scope.limit}).$promise.then(function(dataObj) {
+		$scope.loading = false;
 		$scope.chronicleItems = dataObj;
-		console.log(dataObj);
+		//console.log(dataObj);
 		//$location.path('/chronicle/items');
 	});
 
@@ -337,13 +348,99 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 	// $scope.selectedSources = {};
 	// $scope.selectedSources.selected = [];
 	$scope.by = $routeParams.by || 'hour';
-	$scope.since = $routeParams.since || '2014-11-01';
+	$scope.since = $routeParams.since;
+	$scope.until = $routeParams.until;
 	$scope.sourceData = [];
 	$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since};
 
 	$scope.loadedSources = [];
 
+	$scope.showSearchTools = true;
+	$scope.showSearchToolsNav = false;
+	$scope.loading = false;
+
 	var chart;
+
+	$scope.optionsForDateSelect = [
+		{name: 'Qualquer altura'},
+		{name: 'Último dia'},
+		{name: 'Últimos 7 dias'},
+		{name: 'Últimos 30 dias'},
+		{name: 'Intervalo Personalizado'}
+	];
+
+	$scope.dateOptions = [];
+	$scope.dateOptions.selected = $scope.optionsForDateSelect[0];
+
+	$scope.today = moment().format('YYYY-MM-DD');
+	$scope.yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
+	$scope.oneWeekAgo = moment().subtract(7, 'day').format('YYYY-MM-DD');
+	$scope.oneMonthAgo = moment().subtract(30, 'day').format('YYYY-MM-DD');
+
+	$scope.pickadayOpen = false;
+	$scope.dateSince = '';
+	$scope.dateUntil = '';
+
+	$scope.setDateInterval = function() {
+		$scope.since = $scope.dateSince;
+		$scope.until = $scope.dateUntil;
+		$scope.pickadayOpen = false;
+		$scope.loadedSources = [];
+		getTotalsAndDraw();		
+	}
+
+	$scope.setSelectedOption = function(option) {
+		$scope.dateOptions.selected = option;
+		if(option.name === $scope.optionsForDateSelect[4].name) {
+			$scope.pickadayOpen = !$scope.pickadayOpen;
+		} else {
+			$scope.until = $scope.today;
+			if(option.name  === $scope.optionsForDateSelect[0].name) {
+				$scope.since = undefined;
+			}
+			if(option.name  === $scope.optionsForDateSelect[1].name) {
+				$scope.since = $scope.yesterday;
+			}
+			if(option.name  === $scope.optionsForDateSelect[2].name) {
+				$scope.since = $scope.oneWeekAgo;
+			}
+			if(option.name  === $scope.optionsForDateSelect[3].name) {
+				$scope.since = $scope.oneMonthAgo;
+			}
+
+			$scope.pickadayOpen = false;
+
+			$scope.loadedSources = [];
+			getTotalsAndDraw();			
+		}
+	}
+
+	$scope.openSearchTools = function() {
+		$scope.showSearchToolsNav = !$scope.showSearchToolsNav;
+	}
+
+	// $scope.$watch('dateOptions.selected', function(newOption, oldOption) {
+	// 	if(newOption.name  !== $scope.optionsForDateSelect[4].name) {
+
+	// 		if(newOption.name  === $scope.optionsForDateSelect[0].name) {
+	// 			$scope.since = undefined;
+	// 		}
+	// 		if(newOption.name  === $scope.optionsForDateSelect[1].name) {
+	// 			$scope.since = $scope.yesterday;
+	// 		}
+	// 		if(newOption.name  === $scope.optionsForDateSelect[2].name) {
+	// 			$scope.since = $scope.oneWeekAgo;
+	// 		}
+	// 		if(newOption.name  === $scope.optionsForDateSelect[3].name) {
+	// 			$scope.since = $scope.oneMonthAgo;
+	// 		}
+
+	// 		$scope.pickadayOpen = false;
+
+	// 		$scope.loadedSources = [];
+	// 		getTotalsAndDraw();
+	// 	}
+	// });
 	
 	// if($scope.sourceList.length === 0) {
 	// 	SourceList.get(function(data) {
@@ -366,18 +463,18 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 	}
 
 	$scope.displayBy = function(timePeriod) {
-		if(timePeriod === 'hour') {
-			$scope.by = 'hour';
-			if(chart) { chart.unload(); }
-			$scope.loadedSources = [];
-			getTotalsAndDraw();
+		$scope.by = timePeriod;
+		$scope.showSearchTools = true;
+		if($scope.by === 'month') {
+			$scope.since = undefined;
+			$scope.until = undefined;
+			$scope.dateOptions.selected = $scope.optionsForDateSelect[0];
+			$scope.showSearchTools = false;
+			$scope.showSearchToolsNav = false;
 		}
-		if(timePeriod === 'day') {
-			$scope.by = 'day';
-			if(chart) { chart.unload(); }
-			$scope.loadedSources = [];
-			getTotalsAndDraw();
-		}
+		if(chart) { chart.unload(); }
+		$scope.loadedSources = [];
+		getTotalsAndDraw();
 	}
 
 	$scope.loadSourceData = function() {
@@ -398,6 +495,11 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 		}
 	});
 
+	$scope.setDates = function(){
+		$scope.loadedSources = [];
+		getTotalsAndDraw();
+	}
+
 	function getTotalsAndDraw() {
 		angular.forEach($scope.selectedSources.selected, function(el, index) {
 
@@ -408,13 +510,15 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 			xsObj[countId] = timeId;
 
 			if(keyword !== 'Todas') {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, source: keyword};
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: keyword};
 			} else {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by};
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until};
 			}
 
 			if($scope.loadedSources.indexOf(keyword) === -1) {
+				$scope.loading = true;
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
+					$scope.loading = false;
 					var formattedData = DataFormatter.inColumns(data, keyword);
 					$scope.loadedSources.push(keyword);
 					if(!chart || chart.internal.data.targets.length === 0) {
@@ -436,6 +540,14 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 							timeChart.options.axis.x.tick.format = '%d %b';
 							//timeChart.options.data.type = 'area-spline';
 							timeChart.options.data.groups = [];
+						}
+						if($scope.by === 'month') {
+							timeChart.options.axis.x.type = '';
+							timeChart.options.axis.x.label.text = 'Mês';
+							timeChart.options.data.groups = [$scope.loadedSources];
+							timeChart.options.axis.x.tick.format = function(d, i) {
+								return d;
+							};
 						}
 						chart = Chart.draw(timeChart);
 					} else {

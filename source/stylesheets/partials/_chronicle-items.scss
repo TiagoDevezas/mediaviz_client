@@ -20,6 +20,7 @@
 		@include span-columns(8);
 	}
 	.chronicle-item {
+		margin: 0.5em 0;
 		padding: 2em;
 		
 		&.newspaper {

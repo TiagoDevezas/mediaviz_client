@@ -1,7 +1,10 @@
 //= require angular/angular.min
 //= require angular-route/angular-route.min
 //= require angular-resource/angular-resource.min
+//= require angular-animate/angular-animate.min
 //= require d3/d3.min
 //= require c3/c3.min
 //= require angular-ui-select/dist/select.min
+//= require moment/min/moment.min
+//= require angular-pickadate/angular-pickadate
 //= require_tree ./app/

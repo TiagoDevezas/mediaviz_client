@@ -1,4 +1,5 @@
 #chronicle {
+	@include span-columns(12);
 	.keyword-form {
 		padding: 2em;
 		@include media($medium-screen-up) {

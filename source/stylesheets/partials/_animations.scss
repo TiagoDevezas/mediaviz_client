@@ -1,0 +1,8 @@
+.search-tools.ng-hide-add, .search-tools.ng-hide-remove {
+	-webkit-transition: opacity linear 0.5s;
+  transition: opacity linear 0.5s;
+}
+
+.search-tools.ng-hide {
+	opacity: 0;
+}

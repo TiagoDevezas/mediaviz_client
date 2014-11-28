@@ -3,16 +3,14 @@
 var mediavizApp = angular.module('mediavizApp', [
 	'ngRoute',
 	'ngResource',
+	'ngAnimate',
 	'ui.select',
+	'pickadate',
 
 	'mediavizControllers',
-	'mediavizServices'
+	'mediavizServices',
+	'mediavizDirectives'
 ]);
-
-// mediavizApp.config(function(uiSelectConfig) {
-//   uiSelectConfig.theme = 'select2';
-//   uiSelectConfig.resetSearchInput = true;
-// });
 
 mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 	function($routeProvider, uiSelectConfig, $locationProvider) {

@@ -1,19 +1,24 @@
 <div id="chronicle">
 
-	<h3 style="display: inline-block; float: left;">Chronicle</h3>
-	<span class="about-icon"><a href="" ng-click="toggleContentWell()">?</a></span>
+	<h3>Chronicle</h3>
+
+
+<!-- 	<span class="about-icon"><a href="" ng-click="toggleContentWell()">?</a></span>
 
 	<div class="content-well" ng-class="wellIsVisible">
 		<div class="close-button" ng-click="toggleContentWell()"></div>
 		<p>This tool searches several portuguese media sources for articles containing the given keywords. It then displays the number of articles published by day mentioning each keyword. Multiple keywords can be introduced simultaneously by separating them with a comma. Clicking on a point in the graph displays the corresponding articles for the selected keyword/day.</p>
-	</div>
+	</div> -->
 
-	<p ng-show="loading">A carregar...</p>
+	
 
 	<form class="keyword-form" ng-submit="setKeyword(keyword)">
 		<input type="text" placeholder="Introduzir palavra ou frase" ng-model="keyword">
 		<input type="submit" value="Adicionar">
 	</form>
+
+	<loading-flash>A carregar...</loading-flash>
+
 	<div id="keyword-chart">
 	</div>
 	<div class="clear-button">

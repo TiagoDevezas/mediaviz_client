@@ -1,23 +1,60 @@
-<h3>Flow</h3>
 
-<div class="content-well">
+
+<!-- <div class="content-well">
 	Some text
-</div>
+</div> -->
 
-<div class="flow">
-	<ui-select multiple ng-model="selectedSources.selected" ng-change="loadSourceData()" ng-disabled="disabled" style="min-width: 300px;" reset-search-input="true">
-		<ui-select-match placeholder="Escolher fontes...">
-			{{$item.name}}
-		</ui-select-match>
-		<ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
-			{{source.name}}
-			<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
-		</ui-select-choices>
-	</ui-select>
+<div id="flow">
 
+	<h3>Flow</h3>
+<!-- 
 	<p>
-		Mostar por: <a href="" ng-click="displayBy('hour')" ng-class="{'selected':by === 'hour'}">Hora</a> <a href="" ng-click="displayBy('day')" ng-class="{'selected':by === 'day'}">Dia</a>
+		Por: <a href="" ng-click="displayBy('hour')" ng-class="{'selected':by === 'hour'}">Hora</a> <a href="" ng-click="displayBy('day')" ng-class="{'selected':by === 'day'}">Dia</a>
 	</p>
+ -->
+	<div class="search-bar">
+		<ui-select multiple ng-model="selectedSources.selected" ng-change="loadSourceData()" ng-disabled="disabled" style="min-width: 300px;" reset-search-input="true">
+			<ui-select-match placeholder="Escolher fontes...">
+				{{$item.name}}
+			</ui-select-match>
+			<ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
+				{{source.name}}
+				<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
+			</ui-select-choices>
+		</ui-select>
+	</div>
+
+	<div class="search-tools">
+		<ul>
+			<li><a href="" ng-click="displayBy('hour')" ng-class="{'selected':by === 'hour'}">Hora</a></li>
+			<li><a href="" ng-click="displayBy('day')" ng-class="{'selected':by === 'day'}">Dia</a></li>
+			<li><a href="" ng-click="displayBy('month')" ng-class="{'selected':by === 'month'}">Mês</a></li>
+			<li><a href="" class="bordered" ng-show="showSearchTools" ng-click="openSearchTools();">Ferramentas de pesquisa &dtrif;</a></li>
+		</ul>
+	</div>
+	<div class="search-tools" ng-show="showSearchToolsNav">
+		<ul>
+			<li ng-repeat="option in optionsForDateSelect"><a href="" ng-click="setSelectedOption(option)" ng-class="{'selected':dateOptions.selected === option, 'bordered':option.name === optionsForDateSelect[4].name}">{{ option.name }}</a></li>
+		</ul>
+	</div>
+
+<!-- 	<select ng-change="selectAction()" ng-model="dateOptions.selected" ng-options="option.name for option in optionsForDateSelect">
+		
+	</select> -->
+
+	<div class="pickadate-selector" ng-show="pickadayOpen">
+		<div class="pickadate-input" pickadate ng-model="dateSince" max-date="today"></div>
+		<div class="pickadate-input" pickadate ng-model="dateUntil" max-date="today"></div>
+		<button ng-click="setDateInterval()">Submeter</button>
+	</div>
+
+<!-- 	<form class="date-pickers" ng-submit="setDates()">
+		<input type="date" ng-model="since">
+		<input type="date" ng-model="until">
+		<input type="submit">
+	</form> -->
+
+	<loading-flash>A carregar...</loading-flash>
 
 	<div id="time-chart">
 	</div>
