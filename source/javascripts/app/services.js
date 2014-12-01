@@ -52,13 +52,13 @@ mediavizServices.factory('Chart', function() {
 mediavizServices.factory('DataFormatter', function() {
 
 	return {
-		inColumns: function formatData(data, IdKey) {
+		inColumns: function formatData(data, IdKey, key1, key2) {
 			var columns = [];
 			var timeCol = [];
 			var valueCol = [];
 			angular.forEach(data, function(datum) {
-				timeCol.push(datum.time);
-				valueCol.push(datum.articles);
+				timeCol.push(datum['' + key1 + '']);
+				valueCol.push(datum['' + key2 + '']);
 			});
 			timeCol.unshift('timeFor' + IdKey);
 			valueCol.unshift(IdKey);

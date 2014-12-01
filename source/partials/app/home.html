@@ -1,9 +1,31 @@
-<div class="home">
-	<div class="tool content-well">
-		Chronicle
+<div id="home">
+<h3>Ferramentas</h3>
+<p>Escolha uma fonte</p>
+<div class="home-search-bar">
+  <ui-select ng-model="selectedSources.selected" on-select="goToSourcePage($item, $model)" style="min-width: 300px;">
+    <ui-select-match placeholder="Escolher/pesquisar fontes...">{{$select.selected.name}}</ui-select-match>
+    <ui-select-choices repeat="source in sourceList | filter: $select.search">
+    		{{ source.name }}
+      <div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
+    </ui-select-choices>
+  </ui-select>
+</div>
+<hr>
+<div class="tools">
+	<div class="tool">
+		<a href="#/chronicle">
+			<img src="images/chronicle.png" alt="">
+			<h4>Chronicle</h4>
+			<p>Visualizar e comparar a utilização de palavras-chave em artigos de múltiplas fontes noticiosas online ao longo do tempo.</p>
+		</a>
 	</div>
-	<div class="tool content-well">
-		Flow
+	<div class="tool">
+		<a href="#/flow">
+			<img src="images/flow.png" alt="">
+			<h4>Flow</h4>
+			<p>Visualizar e comparar os horários e fluxos de publicação de múltiplas fontes noticiosas online.</p>
+		</a>
 	</div>
+</div>
 
 </div>

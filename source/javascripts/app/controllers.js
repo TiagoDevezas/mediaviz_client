@@ -22,7 +22,14 @@ mediavizControllers.controller('RootCtrl', function($scope, SourceList) {
 
 });
 
-mediavizControllers.controller('HomeCtrl', function($scope) {
+mediavizControllers.controller('HomeCtrl', function($scope, $location) {
+
+	$scope.selectedSources = {};
+	$scope.selectedSources.selected = [];
+
+	$scope.goToSourcePage = function(source, model) {
+		$location.path('/source/' + source.name);
+	}
 
 });
 
@@ -62,27 +69,29 @@ mediavizControllers.controller('MainCtrl', function($scope, $rootScope, SourceLi
 
 mediavizControllers.controller('SourceCtrl', function($rootScope, $scope, $routeParams, SourceList) {
 
-	var currentSource = $routeParams.source;
+	$scope.sourceName = $routeParams.name;
 
-	function getCurrentSourceFromList(sourceName) {
-		var obj = {};
-		angular.forEach($rootScope.sourceList, function(el) {
-			if(el.name === sourceName) {
-				obj = el;
-			}
-		});
-		return obj;
-	}
+	// var currentSource = $routeParams.source;
 
-	// Only get the source list from the API if it's empty
+	// function getCurrentSourceFromList(sourceName) {
+	// 	var obj = {};
+	// 	angular.forEach($rootScope.sourceList, function(el) {
+	// 		if(el.name === sourceName) {
+	// 			obj = el;
+	// 		}
+	// 	});
+	// 	return obj;
+	// }
 
-	if(!$rootScope.sourceList) {
-		SourceList.get(function success(data) {
-			$rootScope.sourceList = data;
-			var sourceObj = getCurrentSourceFromList(currentSource);
-			$rootScope.selectedSource = getCurrentSourceFromList(currentSource);		
-		});
-	}
+	// // Only get the source list from the API if it's empty
+
+	// if(!$rootScope.sourceList) {
+	// 	SourceList.get(function success(data) {
+	// 		$rootScope.sourceList = data;
+	// 		var sourceObj = getCurrentSourceFromList(currentSource);
+	// 		$rootScope.selectedSource = getCurrentSourceFromList(currentSource);		
+	// 	});
+	// }
 
 });
 
@@ -101,13 +110,24 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	$scope.since = '2014-10-15' || $routeParams.since;
 	$scope.until;
 
+	$scope.dataFormat = 'absolute';
+
+	$scope.$watch('dataFormat', function(newVal, oldVal) {
+		var newLocation = angular.extend($location.search(), {format: $scope.dataFormat});
+		$location.search(newLocation);
+	});
+
+	$scope.$watch(function() { return $location.search()['format'] }, function() {
+		$scope.setDataFormat($location.search()['format']);	
+	}, true);
 
 	var selectedQueries = [
 		['fc porto', 'benfica', 'sporting'],
 		['ébola', 'legionella'],
-		['sócrates'],
 		['passos coelho', 'antónio costa'],
-		['défice', 'dívida']
+		['défice', 'dívida'],
+		['ricardo salgado', 'bes'],
+		['sócrates', 'miguel macedo', 'duarte lima']
 	];
 
 	$rootScope.keywordParams = [];
@@ -129,6 +149,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	}
 
 	if($location.search()['keyword']) {
+		angular.extend($location.search(), {format: $scope.dataFormat});
 		if($location.search()['keyword'].split(',').length > -1) {
 			$rootScope.keywordParams = $location.search()['keyword'].split(',').map(function(kw) {
 				var cleanKeyword = kw.trim();
@@ -156,8 +177,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 
 	$scope.$on('$locationChangeSuccess', function(){
-
-			console.log('location changed successfully');
 
 			if($location.search()['keyword']) {
 				if($location.search()['keyword'].toString() !== $rootScope.keywordParams.toString()) {
@@ -191,7 +210,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		if($rootScope.keywordParams.indexOf(keyword) === -1) {
 			// add to array
 			$rootScope.keywordParams.push(keyword);
-			$location.search({keyword: $rootScope.keywordParams.toString()});
+			var format = $scope.dataFormat ? $scope.dataFormat : 'absolute'
+			$location.search({keyword: $rootScope.keywordParams.toString(), format: format});
 			//getTotalsAndDraw();
 		} else {
 			alert('Palavra já pesquisada');
@@ -209,12 +229,21 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	$scope.clearChart = function() {
 		//$rootScope.keywordParams = [];
 		$location.search('');
-		//$rootScope.keywordParams = [];
+		$rootScope.keywordParams = [];
 		$scope.loadedSources = [];
 		$scope.chartCleared = true;
 		$scope.keyword = '';
 		//$scope.$apply();
 		if(chart) { chart.unload(); }
+	}
+
+	$scope.setDataFormat = function(dataFormat){
+		if ($scope.dataFormat !== dataFormat) {
+			$scope.dataFormat = dataFormat;
+			$scope.loadedSources = [];
+			chart.flush();
+			getTotalsAndDraw();
+		}
 	}
 
 	//$scope.keywordParams = {};
@@ -233,7 +262,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 				Resources.get({resource: 'totals', q: keyword, since: $scope.since}).$promise.then(function(dataObj) {
 					$scope.loading = false;
 					$scope.loadedSources.push(keyword);
-					var formattedData = DataFormatter.inColumns(dataObj, keyword);
+					if($scope.dataFormat === 'absolute') {
+						var formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
+						keywordChart.options.axis.y.label.text = 'Número de artigos';
+					}
+					if($scope.dataFormat === 'relative') {
+						var formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent');
+						keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+					} 
 					if(!chart) {
 						keywordChart.options.data.xs = xsObj;
 						keywordChart.options.data.columns = formattedData;
@@ -309,10 +345,15 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 					}
 				},
 				y: {
-					padding: {top: 10, bottom: 5},
+					//padding: {top: 10, bottom: 5},
 					label: {
-						text: 'Artigos',
+						text: '',
 						position: 'outer-middle'
+					},
+					tick: {
+						format: function(d) {
+							return d;
+						}
 					}
 				}
 			},
@@ -519,7 +560,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 				$scope.loading = true;
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
 					$scope.loading = false;
-					var formattedData = DataFormatter.inColumns(data, keyword);
+					var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
 					$scope.loadedSources.push(keyword);
 					if(!chart || chart.internal.data.targets.length === 0) {
 						timeChart.options.data.xs = xsObj;

@@ -19,6 +19,10 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			templateUrl: 'partials/app/home.html',
 			controller: 'HomeCtrl'
 		}).
+		when('/source/:name', {
+			templateUrl: 'partials/app/source.html',
+			controller: 'SourceCtrl'
+		}).
 		when('/about', {
 			templateUrl: 'partials/app/about.html'
 		}).
