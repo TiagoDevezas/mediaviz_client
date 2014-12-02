@@ -67,9 +67,77 @@ mediavizControllers.controller('MainCtrl', function($scope, $rootScope, SourceLi
 	
 });
 
-mediavizControllers.controller('SourceCtrl', function($rootScope, $scope, $routeParams, SourceList) {
+mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Resources, Chart, DataFormatter) {
 
 	$scope.sourceName = $routeParams.name;
+	$scope.loading = false;
+
+	$scope.since = '2014-10-15' || $routeParams.since;
+	$scope.until;
+
+	var chart;
+
+	getTotalsAndDraw();
+
+	function getTotalsAndDraw() {
+		Resources.get({resource: 'totals', since: $scope.since, source: $scope.sourceName}).$promise.then(function(data) {
+			var formattedData = DataFormatter.inColumns(data, $scope.sourceName, 'time', 'articles');
+			timeChart.options.data.columns = formattedData;
+			timeChart.options.data.x = 'timeFor' + $scope.sourceName;
+			chart = Chart.draw(timeChart);
+		});
+	};
+
+	var timeChart = {
+		options: {
+			bindto: '#time-chart',
+			size: {
+        height: 500
+    	},
+    	legend: {
+    		position: 'right'
+    	},
+			tooltip: {
+        grouped: false 
+	    },
+			data: {
+				type: 'area',
+				//onclick: function (d, i) { getItemData(d) }
+			},
+			point: {
+				r: 1.5
+			},
+			subchart: {
+				show: true
+			},
+			axis: {
+				x: {
+					label: {
+						text: 'Dias',
+						position: 'outer-center'
+					},
+					type: 'timeseries',
+					tick: {
+						culling: {
+              max: 10 // the number of tick texts will be adjusted to less than this value
+            },
+						format: '%d %b'
+					}
+				},
+				y: {
+					padding: {top: 1, bottom: 1},
+					min: 0,
+					label: {
+						text: 'Artigos',
+						position: 'outer-middle'
+					}
+				}
+			},
+			color: function(d) {
+				return d3.scale.category20c(d);
+			}
+		}
+	}
 
 	// var currentSource = $routeParams.source;
 
@@ -357,6 +425,18 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 					}
 				}
 			},
+			tooltip: {
+				format: {
+					value: function(value, ratio, id) {
+						if($scope.dataFormat === 'relative') {
+							return value + '% de todos os artigos publicados nesta data';
+						}
+						if($scope.dataFormat === 'absolute') {
+							return value;
+						}
+					}
+				}
+			},
 			color: function(d) {
 				return d3.scale.category20c(d);
 			}
@@ -403,7 +483,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 	var chart;
 
 	$scope.optionsForDateSelect = [
-		{name: 'Qualquer altura'},
+		{name: 'Tudo'},
 		{name: 'Último dia'},
 		{name: 'Últimos 7 dias'},
 		{name: 'Últimos 30 dias'},
@@ -588,6 +668,14 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 							timeChart.options.data.groups = [$scope.loadedSources];
 							timeChart.options.axis.x.tick.format = function(d, i) {
 								return d;
+							};
+						}
+						if($scope.by === 'week') {
+							timeChart.options.axis.x.type = '';
+							timeChart.options.axis.x.label.text = 'Dia da semana';
+							timeChart.options.data.groups = [$scope.loadedSources];
+							timeChart.options.axis.x.tick.format = function(d) {
+								return moment().weekday(d).format('ddd');
 							};
 						}
 						chart = Chart.draw(timeChart);
