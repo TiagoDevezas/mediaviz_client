@@ -3,7 +3,7 @@
 
     /*global define, module, exports, require */
 
-    var c3 = { version: "0.4.4" };
+    var c3 = { version: "0.4.7" };
 
     var c3_chart_fn, c3_chart_internal_fn;
 
@@ -124,7 +124,6 @@
         $$.legendStep = 0;
         $$.legendItemWidth = 0;
         $$.legendItemHeight = 0;
-        $$.legendOpacityForHidden = 0.15;
 
         $$.currentMaxTickWidths = {
             x: 0,
@@ -428,7 +427,9 @@
     c3_chart_internal_fn.redraw = function (options, transitions) {
         var $$ = this, main = $$.main, d3 = $$.d3, config = $$.config;
         var areaIndices = $$.getShapeIndices($$.isAreaType), barIndices = $$.getShapeIndices($$.isBarType), lineIndices = $$.getShapeIndices($$.isLineType);
-        var withY, withSubchart, withTransition, withTransitionForExit, withTransitionForAxis, withTransform, withUpdateXDomain, withUpdateOrgXDomain, withTrimXDomain, withLegend, withEventRect, withDimension;
+        var withY, withSubchart, withTransition, withTransitionForExit, withTransitionForAxis,
+            withTransform, withUpdateXDomain, withUpdateOrgXDomain, withTrimXDomain, withLegend,
+            withEventRect, withDimension, withUpdateXAxis;
         var hideAxis = $$.hasArcType();
         var drawArea, drawBar, drawLine, xForText, yForText;
         var duration, durationForExit, durationForAxis;
@@ -444,6 +445,7 @@
         withUpdateXDomain = getOption(options, "withUpdateXDomain", false);
         withUpdateOrgXDomain = getOption(options, "withUpdateOrgXDomain", false);
         withTrimXDomain = getOption(options, "withTrimXDomain", true);
+        withUpdateXAxis = getOption(options, "withUpdateXAxis", withUpdateXDomain);
         withLegend = getOption(options, "withLegend", false);
         withEventRect = getOption(options, "withEventRect", true);
         withDimension = getOption(options, "withDimension", true);
@@ -507,7 +509,7 @@
         $$.updateAxisLabels(withTransition);
 
         // show/hide if manual culling needed
-        if (withUpdateXDomain && targetsToShow.length) {
+        if ((withUpdateXDomain || withUpdateXAxis) && targetsToShow.length) {
             if (config.axis_x_tick_culling && tickValues) {
                 for (i = 1; i < tickValues.length; i++) {
                     if (tickValues.length / i < config.axis_x_tick_culling_max) {
@@ -1787,8 +1789,8 @@
 
         // find mouseovering bar
         values.filter(function (v) { return v && $$.isBarType(v.id); }).forEach(function (v) {
-            var shape = $$.d3.select('.' + CLASS.bars + $$.getTargetSelectorSuffix(v.id) + ' .' + CLASS.bar + '-' + v.index).node();
-            if ($$.isWithinBar(shape)) {
+            var shape = $$.main.select('.' + CLASS.bars + $$.getTargetSelectorSuffix(v.id) + ' .' + CLASS.bar + '-' + v.index).node();
+            if (!closest && $$.isWithinBar(shape)) {
                 closest = v;
             }
         });
@@ -2271,7 +2273,7 @@
 
                 // Call event handler
                 $$.main.selectAll('.' + CLASS.shape + '-' + index).each(function (d) {
-                    config.data_onmouseover.call($$, d);
+                    config.data_onmouseover.call($$.api, d);
                 });
             })
             .on('mouseout', function (d) {
@@ -2284,7 +2286,7 @@
                 $$.unexpandBars();
                 // Call event handler
                 $$.main.selectAll('.' + CLASS.shape + '-' + index).each(function (d) {
-                    config.data_onmouseout.call($$, d);
+                    config.data_onmouseout.call($$.api, d);
                 });
             })
             .on('mousemove', function (d) {
@@ -2399,7 +2401,7 @@
                 closest = $$.findClosestFromTargets(targetsToShow, mouse);
 
                 if ($$.mouseover && (!closest || closest.id !== $$.mouseover.id)) {
-                    config.data_onmouseout.call($$, $$.mouseover);
+                    config.data_onmouseout.call($$.api, $$.mouseover);
                     $$.mouseover = undefined;
                 }
 
@@ -2433,7 +2435,7 @@
                 if ($$.isBarType(closest.id) || $$.dist(closest, mouse) < 100) {
                     $$.svg.select('.' + CLASS.eventRect).style('cursor', 'pointer');
                     if (!$$.mouseover) {
-                        config.data_onmouseover.call($$, closest);
+                        config.data_onmouseover.call($$.api, closest);
                         $$.mouseover = closest;
                     }
                 }
@@ -3263,10 +3265,12 @@
                     has = true;
                 }
             });
-        } else {
+        } else if (Object.keys(types).length) {
             Object.keys(types).forEach(function (id) {
                 if (types[id] === type) { has = true; }
             });
+        } else {
+            has = $$.config.data_type === type;
         }
         return has;
     };
@@ -3662,13 +3666,19 @@
 
     c3_chart_internal_fn.initLegend = function () {
         var $$ = this;
+        $$.legendHasRendered = false;
         $$.legend = $$.svg.append("g").attr("transform", $$.getTranslate('legend'));
         if (!$$.config.legend_show) {
             $$.legend.style('visibility', 'hidden');
             $$.hiddenLegendIds = $$.mapToIds($$.data.targets);
+            return;
         }
         // MEMO: call here to update legend box and tranlate for all
         // MEMO: translate will be upated by this, so transform not needed in updateLegend()
+        $$.updateLegendWithDefaults();
+    };
+    c3_chart_internal_fn.updateLegendWithDefaults = function () {
+        var $$ = this;
         $$.updateLegend($$.mapToIds($$.data.targets), {withTransform: false, withTransitionForTransform: false, withTransition: false});
     };
     c3_chart_internal_fn.updateSizeForLegend = function (legendHeight, legendWidth) {
@@ -3713,23 +3723,20 @@
         return h;
     };
     c3_chart_internal_fn.opacityForLegend = function (legendItem) {
-        var $$ = this;
-        return legendItem.classed(CLASS.legendItemHidden) ? $$.legendOpacityForHidden : 1;
+        return legendItem.classed(CLASS.legendItemHidden) ? null : 1;
     };
     c3_chart_internal_fn.opacityForUnfocusedLegend = function (legendItem) {
-        var $$ = this;
-        return legendItem.classed(CLASS.legendItemHidden) ? $$.legendOpacityForHidden : 0.3;
+        return legendItem.classed(CLASS.legendItemHidden) ? null : 0.3;
     };
     c3_chart_internal_fn.toggleFocusLegend = function (targetIds, focus) {
         var $$ = this;
         targetIds = $$.mapToTargetIds(targetIds);
         $$.legend.selectAll('.' + CLASS.legendItem)
-            .classed(CLASS.legendItemFocused, function (id) {
-                return targetIds.indexOf(id) >= 0 && focus;
-            })
-            .transition().duration(100)
-            .style('opacity', function (id) {
-                var opacity = targetIds.indexOf(id) >= 0 && focus ? $$.opacityForLegend : $$.opacityForUnfocusedLegend;
+            .filter(function (id) { return targetIds.indexOf(id) >= 0; })
+            .classed(CLASS.legendItemFocused, focus)
+          .transition().duration(100)
+            .style('opacity', function () {
+                var opacity = focus ? $$.opacityForLegend : $$.opacityForUnfocusedLegend;
                 return opacity.call($$, $$.d3.select(this));
             });
     };
@@ -3745,6 +3752,9 @@
         if (!config.legend_show) {
             config.legend_show = true;
             $$.legend.style('visibility', 'visible');
+            if (!$$.legendHasRendered) {
+                $$.updateLegendWithDefaults();
+            }
         }
         $$.removeHiddenLegendIds(targetIds);
         $$.legend.selectAll($$.selectorLegends(targetIds))
@@ -3764,6 +3774,9 @@
             .style('visibility', 'hidden');
     };
     var legendItemTextBox = {};
+    c3_chart_internal_fn.clearLegendItemTextBoxCache = function () {
+        legendItemTextBox = {};
+    };
     c3_chart_internal_fn.updateLegend = function (targetIds, options, transitions) {
         var $$ = this, config = $$.config;
         var xForLegend, xForLegendText, xForLegendRect, yForLegend, yForLegendText, yForLegendRect;
@@ -3967,7 +3980,7 @@
                 if ($$.isTargetToShow(id)) {
                     return !hasFocused || This.classed(CLASS.legendItemFocused) ? $$.opacityForLegend(This) : $$.opacityForUnfocusedLegend(This);
                 } else {
-                    return $$.legendOpacityForHidden;
+                    return null; // c3-legend-item-hidden will be applied
                 }
             });
 
@@ -3981,6 +3994,7 @@
         $$.updateSvgSize();
         // Update g positions
         $$.transformAll(withTransitionForTransform, transitions);
+        $$.legendHasRendered = true;
     };
 
     c3_chart_internal_fn.initAxis = function () {
@@ -4353,6 +4367,7 @@
         // rotate tick text if needed
         if (!config.axis_rotated && config.axis_x_tick_rotate) {
             $$.rotateTickText($$.axes.x, transitions.axisX, config.axis_x_tick_rotate);
+            $$.rotateTickText($$.axes.subx, transitions.axisSubX, config.axis_x_tick_rotate);
         }
     };
 
@@ -4395,7 +4410,8 @@
         return forHorizontal ? $$.width + 2 + left + right : $$.margin.left + 20;
     };
     c3_chart_internal_fn.getAxisClipHeight = function (forHorizontal) {
-        return (forHorizontal ? this.margin.bottom : (this.margin.top + this.height)) + 8;
+        // less than 20 is not enough to show the axis label 'outer' without legend
+        return (forHorizontal ? this.margin.bottom : (this.margin.top + this.height)) + 20;
     };
     c3_chart_internal_fn.getXAxisClipWidth = function () {
         var $$ = this;
@@ -4949,7 +4965,7 @@
             .attr('class', CLASS.dragarea)
             .style('opacity', 0.1);
         $$.dragging = true;
-        $$.config.data_ondragstart();
+        $$.config.data_ondragstart.call($$.api);
     };
 
     c3_chart_internal_fn.dragend = function () {
@@ -4963,7 +4979,7 @@
         $$.main.selectAll('.' + CLASS.shape)
             .classed(CLASS.INCLUDED, false);
         $$.dragging = false;
-        $$.config.data_ondragend();
+        $$.config.data_ondragend.call($$.api);
     };
 
 
@@ -5144,11 +5160,6 @@
             // update subchart elements if needed
             if (withSubchart) {
 
-                // rotate tick text if needed
-                if (!config.axis_rotated && config.axis_x_tick_rotate) {
-                    $$.rotateTickText($$.axes.subx, transitions.axisSubX, config.axis_x_tick_rotate);
-                }
-
                 // extent rect
                 if (!$$.brush.empty()) {
                     $$.brush.extent($$.x.orgDomain()).update();
@@ -5251,7 +5262,7 @@
             .on('zoomend', function () {
                 var event = d3.event.sourceEvent;
                 // if click, do nothing. otherwise, click interaction will be canceled.
-                if (event && startEvent.x === event.x && startEvent.y === event.y) {
+                if (event && startEvent.clientX === event.clientX && startEvent.clientY === event.clientY) {
                     return;
                 }
                 $$.redrawEventRect();
@@ -5581,7 +5592,7 @@
     };
     c3_chart_internal_fn.selectorLegends = function (ids) {
         var $$ = this;
-        return ids.length ? ids.map(function (id) { return $$.selectorLegend(id); }) : null;
+        return ids && ids.length ? ids.map(function (id) { return $$.selectorLegend(id); }) : null;
     };
 
     var isValue = c3_chart_internal_fn.isValue = function (v) {
@@ -5680,7 +5691,9 @@
         if ($$.hasArcType()) {
             $$.unexpandArc(targetIds);
         }
-        $$.revertLegend();
+        if ($$.config.legend_show) {
+            $$.showLegend(targetIds);
+        }
 
         $$.focusedTargetIds = [];
         $$.defocusedTargetIds = [];
@@ -5730,9 +5743,11 @@
         $$.redraw({withUpdateOrgXDomain: true, withUpdateXDomain: true, withLegend: true});
     };
 
-    c3_chart_fn.toggle = function (targetId) {
-        var $$ = this.internal;
-        $$.isTargetToShow(targetId) ? this.hide(targetId) : this.show(targetId);
+    c3_chart_fn.toggle = function (targetIds) {
+        var that = this, $$ = this.internal;
+        $$.mapToTargetIds(targetIds).forEach(function (targetId) {
+            $$.isTargetToShow(targetId) ? that.hide(targetId) : that.show(targetId);
+        });
     };
 
     c3_chart_fn.zoom = function (domain) {
@@ -5948,7 +5963,8 @@
             },
             withLegend: true,
             withTransition: orgDataCount > 1,
-            withTrimXDomain: false
+            withTrimXDomain: false,
+            withUpdateXAxis: true,
         });
     };
 
@@ -6274,6 +6290,7 @@
         return values;
     };
     c3_chart_fn.data.names = function (names) {
+        this.internal.clearLegendItemTextBoxCache();
         return this.internal.updateDataAttributes('names', names);
     };
     c3_chart_fn.data.colors = function (colors) {
@@ -6621,9 +6638,10 @@
                         return splitted.map(function (s) {
                             return { index: i, splitted: s };
                         });
-                    })
-                  .enter().append('tspan')
-                    .text(function (d) { return d.splitted; });
+                    });
+                tspan.enter().append('tspan');
+                tspan.exit().remove();
+                tspan.text(function (d) { return d.splitted; });
 
                 switch (orient) {
                 case "bottom":

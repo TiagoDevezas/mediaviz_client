@@ -4,6 +4,7 @@ var mediavizApp = angular.module('mediavizApp', [
 	'ngRoute',
 	'ngResource',
 	'ngAnimate',
+	'ngSanitize',
 	'ui.select',
 	'pickadate',
 

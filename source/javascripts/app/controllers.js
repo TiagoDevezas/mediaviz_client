@@ -314,9 +314,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		}
 	}
 
-	//$scope.keywordParams = {};
-	//$scope.keywordParams['keywords'] = $scope.keywords;
-
 	function getTotalsAndDraw() {
 		// Get data for each keyword
 		angular.forEach($rootScope.keywordParams, function(el, index) {

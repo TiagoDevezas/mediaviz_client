@@ -1,0 +1,13 @@
+{
+  "name": "angular-pickadate",
+  "homepage": "https://github.com/restorando/angular-pickadate",
+  "_release": "0d3fb56440",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "0d3fb56440c526ae5db96f531f0c18c0c589e83b"
+  },
+  "_source": "git://github.com/restorando/angular-pickadate.git",
+  "_target": "*",
+  "_originalSource": "angular-pickadate"
+}
