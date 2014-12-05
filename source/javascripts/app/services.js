@@ -55,17 +55,21 @@ mediavizServices.factory('DataFormatter', function() {
 
 	return {
 		inColumns: function formatData(data, IdKey, key1, key2) {
-			var columns = [];
-			var timeCol = [];
-			var valueCol = [];
-			angular.forEach(data, function(datum) {
-				timeCol.push(datum['' + key1 + '']);
-				valueCol.push(datum['' + key2 + '']);
-			});
-			timeCol.unshift('timeFor' + IdKey);
-			valueCol.unshift(IdKey);
-			columns.push(timeCol, valueCol);
-			return columns;
+			if(data.length > 0) {
+				var columns = [];
+				var timeCol = [];
+				var valueCol = [];
+				angular.forEach(data, function(datum) {
+					timeCol.push(datum['' + key1 + '']);
+					valueCol.push(datum['' + key2 + '']);
+				});
+				timeCol.unshift('timeFor' + IdKey);
+				valueCol.unshift(IdKey);
+				columns.push(timeCol, valueCol);
+				return columns;
+			} else {
+				return [];
+			}
 		}
 	}
 });

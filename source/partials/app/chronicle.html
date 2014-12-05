@@ -2,7 +2,15 @@
 
 	<h3>Chronicle</h3>
 
-	<p><a href="" ng-click="setDataFormat('absolute')">Abs.</a> | <a href="" ng-click="setDataFormat('relative')">Rel.</a></p>
+	<ul class="mode-tools">
+		<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
+		<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
+	<ul>
+	<ul class="mode-tools">
+		<li><a href="" ng-click="setSourceType('newspaper')" ng-class="{'selected':sourceType === 'newspaper'}">Jornais</a></li>
+		<li><a href="" ng-click="setSourceType('blog')" ng-class="{'selected':sourceType === 'blog'}">Blogs</a></li>
+		<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Internacionais</a></li>
+	</ul>
 
 <!-- 	<span class="about-icon"><a href="" ng-click="toggleContentWell()">?</a></span>
 

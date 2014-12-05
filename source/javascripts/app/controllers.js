@@ -31,6 +31,20 @@ mediavizControllers.controller('HomeCtrl', function($scope, $location) {
 		$location.path('/source/' + source.name);
 	}
 
+	$scope.groupSourcesByType = function(item) {
+		if(item.type === 'newspaper') {
+			return 'Jornais';
+		}
+		if(item.type === 'international') {
+			return 'Internacionais';
+		}
+		if(item.type === 'blog') {
+			return 'Blogues';
+		}
+	}
+
+
+
 });
 
 mediavizControllers.controller('SourceSelectCtrl', function($rootScope, $scope, $location) {
@@ -125,8 +139,6 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Reso
 					}
 				},
 				y: {
-					padding: {top: 1, bottom: 1},
-					min: 0,
 					label: {
 						text: 'Artigos',
 						position: 'outer-middle'
@@ -174,6 +186,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	$scope.loading = false;
 
 	$scope.chartCleared = false;
+
+	$scope.sourceType = 'newspaper';
 
 	$scope.since = '2014-10-15' || $routeParams.since;
 	$scope.until;
@@ -314,6 +328,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		}
 	}
 
+	$scope.setSourceType = function(sourceType){
+		if ($scope.sourceType !== sourceType) {
+			$scope.sourceType = sourceType;
+			$scope.loadedSources = [];
+			getTotalsAndDraw();
+		}
+	}
+
 	function getTotalsAndDraw() {
 		// Get data for each keyword
 		angular.forEach($rootScope.keywordParams, function(el, index) {
@@ -321,29 +343,38 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			var timeId = 'timeFor' + keyword;
 			var countId = keyword;
 			var xsObj = {};
-			xsObj[countId] = timeId;
 			if($scope.loadedSources.indexOf(keyword) === -1) {
 				$scope.loading = true;
-				Resources.get({resource: 'totals', q: keyword, since: $scope.since}).$promise.then(function(dataObj) {
-					$scope.loading = false;
-					$scope.loadedSources.push(keyword);
-					if($scope.dataFormat === 'absolute') {
-						var formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
-						keywordChart.options.axis.y.label.text = 'Número de artigos';
-					}
-					if($scope.dataFormat === 'relative') {
-						var formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent');
-						keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
-					} 
-					if(!chart) {
-						keywordChart.options.data.xs = xsObj;
-						keywordChart.options.data.columns = formattedData;
-						chart = Chart.draw(keywordChart);
+				Resources.get({resource: 'totals', q: keyword, since: $scope.since, type: $scope.sourceType}).$promise.then(function(dataObj) {
+					if(dataObj.length > 0) {
+						var formattedData;
+						xsObj[countId] = timeId;
+						$scope.loading = false;
+						$scope.loadedSources.push(keyword);
+						if($scope.dataFormat === 'absolute') {
+							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
+							keywordChart.options.axis.y.label.text = 'Número de artigos';
+						}
+						if($scope.dataFormat === 'relative') {
+							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent');
+							keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+						}
+						if(!chart) {
+							keywordChart.options.data.xs = xsObj;
+							keywordChart.options.data.columns = formattedData;
+							chart = Chart.draw(keywordChart);
+						} else {
+							chart.load({
+								xs: xsObj,
+								columns: formattedData
+							});
+						}
 					} else {
-						chart.load({
-							xs: xsObj,
-							columns: formattedData
-						});
+						$scope.loading = false;
+						$timeout(function() {
+							chart.unload({ids: keyword});
+						}, 500)
+						//alert($scope.loadedSources);
 					}
 				});
 			}
@@ -359,11 +390,11 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		var unformattedDate = datum.x;
 		var formattedDate = dateFormat(unformattedDate);
 		var query = datum.name;
-		displayItems(formattedDate, query);
+		displayItems(formattedDate, query, $scope.sourceType);
 	}
 
-	function displayItems(date1, query) {
-		$location.path('/chronicle/items').search({q: query, since: date1, until: date1});
+	function displayItems(date1, query, sourceType) {
+		$location.path('/chronicle/items').search({q: query, since: date1, until: date1, type: sourceType });
 		$scope.$apply();
 	}
 
@@ -447,12 +478,13 @@ mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location,
 	$scope.since = $routeParams.since;
 	$scope.until = $routeParams.until;
 	$scope.limit = $routeParams.limit || 50;
+	$scope.sourceType = $routeParams.type;
 
 	$scope.loading = true;
 
 	$scope.sourceFilter = '';
 
-	Resources.get({resource: 'items', q: $scope.q, since: $scope.since, until: $scope.until, limit: $scope.limit}).$promise.then(function(dataObj) {
+	Resources.get({resource: 'items', q: $scope.q, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType}).$promise.then(function(dataObj) {
 		$scope.loading = false;
 		$scope.chronicleItems = dataObj;
 		//console.log(dataObj);
@@ -465,6 +497,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 	// $scope.sourceList = [];
 	// $scope.selectedSources = {};
 	// $scope.selectedSources.selected = [];
+	$scope.type = 'newspaper';
 	$scope.by = $routeParams.by || 'hour';
 	$scope.since = $routeParams.since;
 	$scope.until = $routeParams.until;
@@ -476,7 +509,6 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 	$scope.showSearchTools = true;
 	$scope.showSearchToolsNav = false;
 	$scope.loading = false;
-
 	var chart;
 
 	$scope.optionsForDateSelect = [
@@ -575,6 +607,9 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 		if(item.type === 'newspaper') {
 			return 'Jornais';
 		}
+		if(item.type === 'international') {
+			return 'Internacional';
+		}
 		if(item.type === 'blog') {
 			return 'Blogues';
 		}
@@ -630,7 +665,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 			if(keyword !== 'Todas') {
 				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: keyword};
 			} else {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until};
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: $scope.type};
 			}
 
 			if($scope.loadedSources.indexOf(keyword) === -1) {
@@ -672,7 +707,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 							timeChart.options.axis.x.label.text = 'Dia da semana';
 							timeChart.options.data.groups = [$scope.loadedSources];
 							timeChart.options.axis.x.tick.format = function(d) {
-								return moment().weekday(d).format('ddd');
+								return moment().isoWeekday(d).format('ddd');
 							};
 						}
 						chart = Chart.draw(timeChart);
