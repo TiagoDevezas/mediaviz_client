@@ -33,10 +33,10 @@ mediavizControllers.controller('HomeCtrl', function($scope, $location) {
 
 	$scope.groupSourcesByType = function(item) {
 		if(item.type === 'newspaper') {
-			return 'Jornais';
+			return 'Jornais Nacionais';
 		}
 		if(item.type === 'international') {
-			return 'Internacionais';
+			return 'Jornais Internacionais';
 		}
 		if(item.type === 'blog') {
 			return 'Blogues';
@@ -91,10 +91,16 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Reso
 
 	var chart;
 
+	var resourceParams = {resource: 'totals', since: $scope.since, source: $scope.sourceName}
+
+	if($scope.sourceName === 'Todas') {
+		resourceParams = {resource: 'totals', since: $scope.since};
+	}
+
 	getTotalsAndDraw();
 
 	function getTotalsAndDraw() {
-		Resources.get({resource: 'totals', since: $scope.since, source: $scope.sourceName}).$promise.then(function(data) {
+		Resources.get(resourceParams).$promise.then(function(data) {
 			var formattedData = DataFormatter.inColumns(data, $scope.sourceName, 'time', 'articles');
 			timeChart.options.data.columns = formattedData;
 			timeChart.options.data.x = 'timeFor' + $scope.sourceName;
@@ -194,14 +200,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$scope.dataFormat = 'absolute';
 
-	$scope.$watch('dataFormat', function(newVal, oldVal) {
-		var newLocation = angular.extend($location.search(), {format: $scope.dataFormat});
-		$location.search(newLocation);
-	});
+	// $scope.$watch('dataFormat', function(newVal, oldVal) {
+	// 	var newLocation = angular.extend($location.search(), {format: $scope.dataFormat});
+	// 	$location.search(newLocation);
+	// });
 
-	$scope.$watch(function() { return $location.search()['format'] }, function() {
-		$scope.setDataFormat($location.search()['format']);	
-	}, true);
+	// $scope.$watch(function() { return $location.search()['format'] }, function() {
+	// 	$scope.setDataFormat($location.search()['format']);	
+	// }, true);
 
 	var selectedQueries = [
 		['fc porto', 'benfica', 'sporting'],
@@ -212,109 +218,62 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		['sócrates', 'miguel macedo', 'duarte lima']
 	];
 
-	$rootScope.keywordParams = [];
+	$scope.keywords = {};
+	$scope.keywords.selected = [];
+
+	//$rootScope.keywordParams = [];
 
 	showPredefinedQuery();
 
-	// Select a query from the list and draw the chart
-
 	function showPredefinedQuery() {
-		if(!$location.search()['keyword'] && !$scope.chartCleared) {
+		if ($scope.keywords.selected.length === 0) {
 			var selectedQueryIndex = Math.floor(Math.random() * (selectedQueries.length));
-			$rootScope.keywordParams = selectedQueries[selectedQueryIndex].map(function(el) {
+			$scope.keywords.selected = selectedQueries[selectedQueryIndex].map(function(el) {
 				return el;
 			});
-			$location.search({keyword: $rootScope.keywordParams.toString()});
-			$scope.keyword = $rootScope.keywordParams.toString();
+			//$location.search({ keywords: $scope.keywords.selected.toString() });
 			//getTotalsAndDraw();
 		}
 	}
 
-	if($location.search()['keyword']) {
-		angular.extend($location.search(), {format: $scope.dataFormat});
-		if($location.search()['keyword'].split(',').length > -1) {
-			$rootScope.keywordParams = $location.search()['keyword'].split(',').map(function(kw) {
-				var cleanKeyword = kw.trim();
-				return cleanKeyword;
-			});
-		} else {
-			$rootScope.keywordParams.push($location.search()['keyword']);
-		}
-	} else {
-		$rootScope.keywordParams = [];
+	function objectIsEmpty(obj) {
+		Object.keys(obj).length > 0 ? false : true;
 	}
 
-	$scope.wellIsVisible = 'invisible';
-
-	$scope.toggleContentWell = function() {
-		if($scope.wellIsVisible === 'invisible') {
-			$scope.wellIsVisible = 'visible';
-		} else if($scope.wellIsVisible === 'visible') {
-			$scope.wellIsVisible = 'invisible';
-		}
-		// if($scope.wellIsVisible === 'visible') {
-		// 	$scope.wellIsVisible = 'invisible';
-		// }
-	}
-
-
-	$scope.$on('$locationChangeSuccess', function(){
-
-			if($location.search()['keyword']) {
-				if($location.search()['keyword'].toString() !== $rootScope.keywordParams.toString()) {
-					if(chart) { chart.unload() }
-				}
-				if($location.search()['keyword'].split(',').length > -1) {
-					$rootScope.keywordParams = $location.search()['keyword'].split(',').map(function(kw) {
-						var cleanKeyword = kw.trim();
-						return cleanKeyword;
-					});
-					//$scope.loadedSources = [];
-					console.log($rootScope.keywordParams);
-				} else {
-					$rootScope.keywordParams.push($location.search()['keyword']);
-				}
-			} 
-			else {
-				//showPredefinedQuery();
-				$rootScope.keywordParams = [];
-				if(chart) { chart.unload(); }
+	$scope.$watch(function() { return $location.search() }, function() {
+		console.log($location.search())
+		if(!objectIsEmpty($location.search())) {
+			var keywordArray = [];
+			if($location.search()['keywords'].length === 1)
+				keywordArray = $location.search()['keywords'];
+			else if ($location.search()['keywords'].length > 1) {
+				var keywordArray = $location.search()['keywords'].split(',');				
 			}
-
-			getTotalsAndDraw();
-
-	});
-
-
-	$scope.setKeyword = function(keyword) {
-		//$rootScope.keywordParams.unshift(keyword);
-		// check if value is in keywordParams array
-		if($rootScope.keywordParams.indexOf(keyword) === -1) {
-			// add to array
-			$rootScope.keywordParams.push(keyword);
-			var format = $scope.dataFormat ? $scope.dataFormat : 'absolute'
-			$location.search({keyword: $rootScope.keywordParams.toString(), format: format});
-			//getTotalsAndDraw();
-		} else {
-			alert('Palavra já pesquisada');
+			$scope.keywords.selected = keywordArray;
 		}
+		else {
+			$scope.clearChart();
+		} 
+		//$scope.setDataFormat($location.search()['format']);	
+	}, true);
 
-		// $rootScope.keywords.unshift(keyword);
-		// var newKeywords = $rootScope.keywords.map(function(el) {
-		// 	return el;
-		// });
-		// keywordString = newKeywords.reverse().join('.');
-		// $location.search({keyword: keywordString});
-		// $scope.keywordParams = $location.search()['keyword'].split('.');
-	}
+	$scope.$watch('keywords.selected', function(newVal, oldVal) {
+		console.log(newVal, oldVal);
+		if(newVal.length !== 0) {
+			$location.search({keywords: newVal.toString()});
+			getTotalsAndDraw();
+		} else {
+			$location.search('');
+		}
+	});
 
 	$scope.clearChart = function() {
 		//$rootScope.keywordParams = [];
-		$location.search('');
-		$rootScope.keywordParams = [];
+		//$location.search('');
+		$scope.keywords.selected = [];
 		$scope.loadedSources = [];
 		$scope.chartCleared = true;
-		$scope.keyword = '';
+		//$scope.keyword = '';
 		//$scope.$apply();
 		if(chart) { chart.unload(); }
 	}
@@ -336,9 +295,21 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		}
 	}
 
+	$scope.addKeyword = function(item){
+		$scope.keywords.selected.push(item);
+		//$location.search({ keywords: $scope.keywords.selected.toString() });
+		//getTotalsAndDraw();
+	}
+
+	$scope.removeKeyword = function(item) {
+		$scope.keywords.selected.splice($scope.keywords.selected.indexOf(item), 1);
+		$scope.loadedSources.splice($scope.loadedSources.indexOf(item), 1);
+		//$location.search({ keywords: $scope.keywords.selected.toString() });
+		chart.unload({ ids: item });
+	}
+
 	function getTotalsAndDraw() {
-		// Get data for each keyword
-		angular.forEach($rootScope.keywordParams, function(el, index) {
+		angular.forEach($scope.keywords.selected, function(el, index) {
 			var keyword = el;
 			var timeId = 'timeFor' + keyword;
 			var countId = keyword;
@@ -605,10 +576,10 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
 	$scope.groupSourcesByType = function(item) {
 		if(item.type === 'newspaper') {
-			return 'Jornais';
+			return 'Jornais Nacionais';
 		}
 		if(item.type === 'international') {
-			return 'Internacional';
+			return 'Jornais Internacionais';
 		}
 		if(item.type === 'blog') {
 			return 'Blogues';

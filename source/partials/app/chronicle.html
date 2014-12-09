@@ -7,10 +7,17 @@
 		<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
 	<ul>
 	<ul class="mode-tools">
-		<li><a href="" ng-click="setSourceType('newspaper')" ng-class="{'selected':sourceType === 'newspaper'}">Jornais</a></li>
+		<li><a href="" ng-click="setSourceType('newspaper')" ng-class="{'selected':sourceType === 'newspaper'}">Jornais Nacionais</a></li>
+		<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Jornais Internacionais</a></li>
 		<li><a href="" ng-click="setSourceType('blog')" ng-class="{'selected':sourceType === 'blog'}">Blogs</a></li>
-		<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Internacionais</a></li>
 	</ul>
+
+	<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
+    <ui-select-match placeholder="Introduzir palavras para pesquisar...">{{$item}}</ui-select-match>
+    <ui-select-choices repeat="keyword in keywords.selected">
+      {{ keyword }}
+    </ui-select-choices>
+  </ui-select>
 
 <!-- 	<span class="about-icon"><a href="" ng-click="toggleContentWell()">?</a></span>
 
@@ -21,10 +28,10 @@
 
 	
 
-	<form class="keyword-form" ng-submit="setKeyword(keyword)">
+<!-- 	<form class="keyword-form" ng-submit="setKeyword(keyword)">
 		<input type="text" placeholder="Introduzir palavra ou frase" ng-model="keyword">
 		<input type="submit" value="Adicionar">
-	</form>
+	</form> -->
 
 	<loading-flash>A carregar...</loading-flash>
 

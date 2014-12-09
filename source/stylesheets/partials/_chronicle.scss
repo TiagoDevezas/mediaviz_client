@@ -21,16 +21,21 @@
 	ul.mode-tools {
 		margin-top: 0.5em;
 		li {
+			font-size: 0.8em;
 			display: inline-block;
 			margin-right: 0.5em;
 			a {
+				font-weight: bold;
 				color: $dark-gray;
 				padding: 0.3em 0.5em;
+				&:hover {
+					color: $hover-button-color;
+				}
 				&.selected {
 					display: block;
 					border-radius: 10px;
-					background-color: $dark-gray;
-					color: $light-gray;
+					background-color: $base-button-color;
+					color: white;
 				}
 			}
 		}
