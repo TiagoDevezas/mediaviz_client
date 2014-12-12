@@ -30,9 +30,12 @@ $light-gray: #DDD;
 $light-red: #FBE3E4;
 $light-yellow: #FFF6BF;
 $light-green: #E6EFC2;
+$light-brown: #F4F5F7;
+$medium-brown: #F2F2F2;
+$dark-blue: #395762;
 
 // Background Color
-$base-background-color: white;
+$base-background-color: $light-brown;
 
 // Font Colors
 $base-font-color: $dark-gray;

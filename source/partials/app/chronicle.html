@@ -1,44 +1,34 @@
 <div id="chronicle">
 
-	<h3>Chronicle</h3>
-
-	<ul class="mode-tools">
-		<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
-		<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
-	<ul>
-	<ul class="mode-tools">
-		<li><a href="" ng-click="setSourceType('newspaper')" ng-class="{'selected':sourceType === 'newspaper'}">Jornais Nacionais</a></li>
-		<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Jornais Internacionais</a></li>
-		<li><a href="" ng-click="setSourceType('blog')" ng-class="{'selected':sourceType === 'blog'}">Blogs</a></li>
-	</ul>
-
-	<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
-    <ui-select-match placeholder="Introduzir palavras para pesquisar...">{{$item}}</ui-select-match>
-    <ui-select-choices repeat="keyword in keywords.selected">
-      {{ keyword }}
-    </ui-select-choices>
-  </ui-select>
-
-<!-- 	<span class="about-icon"><a href="" ng-click="toggleContentWell()">?</a></span>
-
-	<div class="content-well" ng-class="wellIsVisible">
-		<div class="close-button" ng-click="toggleContentWell()"></div>
-		<p>This tool searches several portuguese media sources for articles containing the given keywords. It then displays the number of articles published by day mentioning each keyword. Multiple keywords can be introduced simultaneously by separating them with a comma. Clicking on a point in the graph displays the corresponding articles for the selected keyword/day.</p>
-	</div> -->
+	<h3>Crónica</h3>
 
 	
+	<div class="chart-tools">
+		<ul class="mode-tools">
+			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
+			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
+		<ul>
+		<ul class="mode-tools">
+			<li><a href="" ng-click="setSourceType('newspaper')" ng-class="{'selected':sourceType === 'newspaper'}">Jornais Nacionais</a></li>
+			<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Jornais Internacionais</a></li>
+			<li><a href="" ng-click="setSourceType('blog')" ng-class="{'selected':sourceType === 'blog'}">Blogs</a></li>
+		</ul>
+	</div>
 
-<!-- 	<form class="keyword-form" ng-submit="setKeyword(keyword)">
-		<input type="text" placeholder="Introduzir palavra ou frase" ng-model="keyword">
-		<input type="submit" value="Adicionar">
-	</form> -->
+	<div class="keyword-select">
+		<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
+	    <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
+	    <ui-select-choices repeat="keyword in keywords.selected">
+	      {{ keyword }}
+	    </ui-select-choices>
+	  </ui-select>
+	  <button class="clear-chart" ng-click="clearChart()">Limpar gráfico</button>		
+	</div>
+
 
 	<loading-flash>A carregar...</loading-flash>
 
 	<div id="keyword-chart">
 	</div>
-	<div class="clear-button">
-		<button ng-click="clearChart()">Limpar gráfico</button>
-	</div>
-	<!-- {{ keywordParams }} -->
+
 </div>

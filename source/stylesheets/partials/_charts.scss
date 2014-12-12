@@ -8,6 +8,16 @@
 	font-size: 14px;
 	font-weight: bold;
 }
+.c3-brush .extent {
+  fill-opacity: .05;
+}
+// g.resize {
+// 	display: block !important;
+// }
+// g.resize rect {
+// 	visibility: visible !important;
+// 	fill: $dark-gray !important;
+// }
 .tick {
  line {
 		stroke: $light-gray;

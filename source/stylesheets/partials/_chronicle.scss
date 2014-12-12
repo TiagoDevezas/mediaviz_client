@@ -1,44 +1,41 @@
 #chronicle {
 	@include span-columns(12);
-	.keyword-form {
-		padding: 2em;
-		@include media($medium-screen-up) {
-			@include span-columns(8);
-			@include shift(2);
-			input[type=text] {
-				@include span-columns(8);
+	.chart-tools {
+		ul.mode-tools {
+			margin-top: 0.5em;
+			li {
+				font-size: 0.8em;
+				display: inline-block;
+				margin-right: 0.5em;
+				a {
+					font-weight: bold;
+					color: $dark-gray;
+					padding: 0.3em 0.5em;
+					&:hover {
+						color: $hover-button-color;
+					}
+					&.selected {
+						display: block;
+						border-radius: 10px;
+						background-color: $base-button-color;
+						color: white;
+					}
+				}
 			}
+		}
+	}
+	.keyword-select {
+		@include span-columns(12);
+		margin: 1em 0;
+		.select2-container {
+			@include span-columns(10);
+		}
+		.clear-chart {
+			@include span-columns(2);
+			padding: 0.5em;
 		}
 	}
 	#keyword-chart {
 		@include span-columns(12);
-	}
-	.clear-button {
-		padding: 1em 0;
-		@include span-columns(12);
-		text-align: center;
-	}
-	ul.mode-tools {
-		margin-top: 0.5em;
-		li {
-			font-size: 0.8em;
-			display: inline-block;
-			margin-right: 0.5em;
-			a {
-				font-weight: bold;
-				color: $dark-gray;
-				padding: 0.3em 0.5em;
-				&:hover {
-					color: $hover-button-color;
-				}
-				&.selected {
-					display: block;
-					border-radius: 10px;
-					background-color: $base-button-color;
-					color: white;
-				}
-			}
-		}
-		
 	}
 }

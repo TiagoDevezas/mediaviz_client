@@ -17,6 +17,14 @@ var jsonp = {
 					}
 				};
 
+mediavizServices.factory('Page', function($rootScope) {
+	var title = 'MediaViz';
+	return {
+		title: function() { $rootScope.pageTitle = title; },
+		setTitle: function(newTitle) { $rootScope.pageTitle = title + ' || ' + newTitle }
+	}
+});
+
 mediavizServices.factory('SourceList', ['$http',
 	function($http) {
 		var callback = '?callback=JSON_CALLBACK';
@@ -27,7 +35,9 @@ mediavizServices.factory('SourceList', ['$http',
 					var sources = response.map(function(el) {
 						return { 'name': el.name, 'type': el.type };
 					});
-					sources.unshift({'name': 'Todas', 'type': ''});
+					sources.unshift({'name': 'Todos os blogues', 'type': 'blog', 'group': true });
+					sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'group': true});
+					sources.unshift({'name': 'Todas nacionais', 'type': 'newspaper', 'group': true });
 					var sourceArray = sources;
 					myCallback(sources);						
 				});			

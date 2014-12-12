@@ -22,7 +22,9 @@ mediavizControllers.controller('RootCtrl', function($scope, SourceList) {
 
 });
 
-mediavizControllers.controller('HomeCtrl', function($scope, $location) {
+mediavizControllers.controller('HomeCtrl', function($scope, $location, Page) {
+
+	Page.setTitle('Início');
 
 	$scope.selectedSources = {};
 	$scope.selectedSources.selected = [];
@@ -47,66 +49,192 @@ mediavizControllers.controller('HomeCtrl', function($scope, $location) {
 
 });
 
-mediavizControllers.controller('SourceSelectCtrl', function($rootScope, $scope, $location) {
+// mediavizControllers.controller('SourceSelectCtrl', function($rootScope, $scope, $location) {
 
-	var rootPath = '/'
+// 	var rootPath = '/'
 
-	$rootScope.loadSource = function(sourceObj) {
-		$rootScope.selectedSource = sourceObj;
-		$location.search('');
-		if(sourceObj.name === 'Todas') {
-			if ($location.path !== rootPath) {
-				$location.path(rootPath);
-			} else {
-				return;
-			}
-		} else {
-			$location.path(sourceObj.name);
-		}
-	}
-});
+// 	$rootScope.loadSource = function(sourceObj) {
+// 		$rootScope.selectedSource = sourceObj;
+// 		$location.search('');
+// 		if(sourceObj.name === 'Todas') {
+// 			if ($location.path !== rootPath) {
+// 				$location.path(rootPath);
+// 			} else {
+// 				return;
+// 			}
+// 		} else {
+// 			$location.path(sourceObj.name);
+// 		}
+// 	}
+// });
 
-mediavizControllers.controller('MainCtrl', function($scope, $rootScope, SourceList) {
+// mediavizControllers.controller('MainCtrl', function($scope, $rootScope, SourceList) {
 
-	// Get the source list from the API
+// 	// Get the source list from the API
 
-	if(!$rootScope.sourceList) {
-		SourceList.get(function success(data) {
-			$rootScope.sourceList = data;
-			$rootScope.selectedSource = $rootScope.sourceList[0];	
-		});
-	} else {
-		$rootScope.selectedSource = $rootScope.sourceList[0];	
-	}
+// 	if(!$rootScope.sourceList) {
+// 		SourceList.get(function success(data) {
+// 			$rootScope.sourceList = data;
+// 			$rootScope.selectedSource = $rootScope.sourceList[0];	
+// 		});
+// 	} else {
+// 		$rootScope.selectedSource = $rootScope.sourceList[0];	
+// 	}
 	
-});
+// });
 
-mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Resources, Chart, DataFormatter) {
+mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page, Resources, Chart, DataFormatter, SourceList) {
 
-	$scope.sourceName = $routeParams.name;
+	$scope.sourceList = [];
+
+	$scope.currentSource = {};
+
+	var resourceParams = {};
+
+	SourceList.get(function(data) {
+		$scope.sourceList = data;
+		$scope.currentSource = $scope.sourceList.filter(function(obj) {
+			if(obj.name === $routeParams.name)
+				return obj;
+		})[0];
+		Page.setTitle($scope.currentSource.name);
+
+		totalsParams = {resource: 'totals', since: $scope.since, source: $scope.currentSource.name};
+		sourcesParams = {resource: 'sources', name: $scope.currentSource.name};
+
+		if($scope.currentSource.group) {
+			totalsParams = {resource: 'totals', since: $scope.since, type: $scope.currentSource.type };
+			sourcesParams = {resource: 'sources', type: $scope.currentSource.type};
+		}
+		
+		getTotalsAndDraw();
+	});
+
+
+
 	$scope.loading = false;
 
 	$scope.since = '2014-10-15' || $routeParams.since;
 	$scope.until;
 
-	var chart;
+	$scope.sourceData = [];
 
-	var resourceParams = {resource: 'totals', since: $scope.since, source: $scope.sourceName}
+	var chart, chart2, chart3, chart4;
 
-	if($scope.sourceName === 'Todas') {
-		resourceParams = {resource: 'totals', since: $scope.since};
-	}
+	$scope.dataXLength = 0;
 
-	getTotalsAndDraw();
+	
 
 	function getTotalsAndDraw() {
-		Resources.get(resourceParams).$promise.then(function(data) {
-			var formattedData = DataFormatter.inColumns(data, $scope.sourceName, 'time', 'articles');
-			timeChart.options.data.columns = formattedData;
-			timeChart.options.data.x = 'timeFor' + $scope.sourceName;
+		Resources.get(totalsParams).$promise.then(function(data) {
+			var articleData = DataFormatter.inColumns(data, $scope.currentSource.name, 'time', 'articles');
+			$scope.dataXLength = articleData[0][0].length;
+			console.log($scope.dataXLength);
+			timeChart.options.data.columns = articleData;
+			timeChart.options.data.x = 'timeFor' + $scope.currentSource.name;
 			chart = Chart.draw(timeChart);
+
+			// Social shares charts
+
+			// timeChart.options.subchart.show = false; 
+
+			// var twitterShareData = DataFormatter.inColumns(data, 'Twitter', 'time', 'twitter_shares');
+			// timeChart.options.data.x = 'Twitter';
+			// timeChart.options.data.columns = twitterShareData;
+			// timeChart.options.bindto = '#twitter-share-chart';
+			// chart2 = Chart.draw(timeChart);
+
+			// var facebookShareData = DataFormatter.inColumns(data, 'Facebook', 'time', 'facebook_shares');
+			// timeChart.options.data.x = 'Facebook';
+			// timeChart.options.data.columns = facebookShareData;
+			// timeChart.options.bindto = '#facebook-share-chart';
+			// chart3 = Chart.draw(timeChart);
+
+
+			Resources.get(sourcesParams).$promise.then(function(data) {
+				if(!$scope.currentSource.group) {
+					$scope.sourceData = data;
+				} else {
+					var total_feeds = 0;
+					var total_items = 0;
+					var total_shares = 0;
+					var twitter_shares = 0;
+					var avg_twitter_shares = 0;
+					var facebook_shares = 0;
+					var avg_facebook_shares = 0;
+					var avg_shares = 0;
+					var avg_day = 0;
+					var avg_month = 0;
+					data.forEach(function(el) {
+						total_feeds += el.total_feeds;
+						total_items += el.total_items;
+						total_shares += el.total_shares;
+						twitter_shares += el.twitter_shares;
+						avg_twitter_shares += el.avg_twitter_shares;
+						facebook_shares += el.facebook_shares;
+						avg_facebook_shares += el.avg_facebook_shares;
+						avg_shares += el.avg_shares;
+						avg_day += el.avg_day;
+						avg_month += el.avg_month;
+					});
+					$scope.sourceData = [
+						{
+							total_feeds: total_feeds,
+							total_items: total_items,
+							total_shares: total_shares,
+							twitter_shares: twitter_shares,
+							avg_twitter_shares: (twitter_shares / total_items).toFixed(2),
+							facebook_shares: facebook_shares,
+							avg_facebook_shares: (facebook_shares / total_items).toFixed(2),
+							avg_shares: (total_shares / total_items).toFixed(2),
+							avg_day: (total_items / $scope.dataXLength).toFixed(2),
+							avg_month: '-'
+						}
+					];
+				}
+				var shareData = [
+					['Twitter', $scope.sourceData[0].twitter_shares],
+					['Facebook', $scope.sourceData[0].facebook_shares]
+				];
+				shareChart.options.data.columns = shareData;
+				chart4 = Chart.draw(shareChart);
+			});
+
 		});
+
 	};
+
+	var shareChart = {
+		options: {
+			bindto: '#share-chart',
+			size: {
+				height: 200
+			},
+			padding: {
+				left: 0,
+				right: 0,
+				top: 0,
+				bottom: 0
+			},
+			data: {
+				type: 'bar',
+				labels: true
+			},
+			axis: {
+        x: {
+	        tick: {
+	            format: function (x) { return ''; }
+	        }
+        }
+    	},
+    	color: {
+    		pattern: ['#00ABF0', '#49639E']
+    	},
+			tooltip: {
+        show: false
+    	}
+		}
+	}
 
 	var timeChart = {
 		options: {
@@ -115,7 +243,7 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Reso
         height: 500
     	},
     	legend: {
-    		position: 'right'
+    		show: false
     	},
 			tooltip: {
         grouped: false 
@@ -151,7 +279,7 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Reso
 					}
 				}
 			},
-			color: function(d) {
+			color: function(d,i) {
 				return d3.scale.category20c(d);
 			}
 		}
@@ -181,7 +309,9 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Reso
 
 });
 
-mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Resources, Chart, DataFormatter) {
+mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Page, Resources, Chart, DataFormatter) {
+
+	Page.setTitle('Chronicle');
 
 	var chart;
 
@@ -191,7 +321,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$scope.loading = false;
 
-	$scope.chartCleared = false;
+	//$scope.chartCleared = false;
 
 	$scope.sourceType = 'newspaper';
 
@@ -199,15 +329,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	$scope.until;
 
 	$scope.dataFormat = 'absolute';
-
-	// $scope.$watch('dataFormat', function(newVal, oldVal) {
-	// 	var newLocation = angular.extend($location.search(), {format: $scope.dataFormat});
-	// 	$location.search(newLocation);
-	// });
-
-	// $scope.$watch(function() { return $location.search()['format'] }, function() {
-	// 	$scope.setDataFormat($location.search()['format']);	
-	// }, true);
 
 	var selectedQueries = [
 		['fc porto', 'benfica', 'sporting'],
@@ -221,7 +342,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	$scope.keywords = {};
 	$scope.keywords.selected = [];
 
-	//$rootScope.keywordParams = [];
 
 	showPredefinedQuery();
 
@@ -231,50 +351,50 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			$scope.keywords.selected = selectedQueries[selectedQueryIndex].map(function(el) {
 				return el;
 			});
-			//$location.search({ keywords: $scope.keywords.selected.toString() });
-			//getTotalsAndDraw();
 		}
 	}
 
 	function objectIsEmpty(obj) {
-		Object.keys(obj).length > 0 ? false : true;
+		return Object.keys(obj).length === 0; 
 	}
 
 	$scope.$watch(function() { return $location.search() }, function() {
-		console.log($location.search())
-		if(!objectIsEmpty($location.search())) {
-			var keywordArray = [];
-			if($location.search()['keywords'].length === 1)
-				keywordArray = $location.search()['keywords'];
-			else if ($location.search()['keywords'].length > 1) {
-				var keywordArray = $location.search()['keywords'].split(',');				
+		var keywordParams = $location.search()['keywords'] || undefined;
+		var keywordArray = [];
+		if(keywordParams) {
+			if(keywordParams.split(',').length === 1) {
+				keywordArray.push(keywordParams);
 			}
-			$scope.keywords.selected = keywordArray;
+			if(keywordParams.split(',').length > 1) {
+				keywordArray = keywordParams.split(',');
+			}
+			$scope.keywords.selected = keywordArray;			
 		}
-		else {
-			$scope.clearChart();
-		} 
-		//$scope.setDataFormat($location.search()['format']);	
+		if(objectIsEmpty($location.search())) {
+			//$scope.clearChart();
+		}
 	}, true);
 
 	$scope.$watch('keywords.selected', function(newVal, oldVal) {
-		console.log(newVal, oldVal);
-		if(newVal.length !== 0) {
+		angular.forEach(oldVal, function(keyword) {
+			if(newVal.indexOf(keyword) === -1) {
+				$scope.loadedSources.splice($scope.loadedSources.indexOf(keyword), 1);
+				chart.unload({ids: keyword});
+			}
+		});
+		if(newVal.length > 0 && newVal !== '') {
 			$location.search({keywords: newVal.toString()});
-			getTotalsAndDraw();
+			getTotalsAndDraw();			
 		} else {
-			$location.search('');
+			$scope.clearChart();
 		}
-	});
+
+	}, true);
 
 	$scope.clearChart = function() {
-		//$rootScope.keywordParams = [];
-		//$location.search('');
+		$location.search('');
 		$scope.keywords.selected = [];
 		$scope.loadedSources = [];
-		$scope.chartCleared = true;
-		//$scope.keyword = '';
-		//$scope.$apply();
 		if(chart) { chart.unload(); }
 	}
 
@@ -347,14 +467,15 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 						}, 500)
 						//alert($scope.loadedSources);
 					}
+					if(chart) {
+						d3.select('.c3-axis-x-label')
+							.attr('transform', 'translate(0, -10)');
+					}
 				});
 			}
 		});
 	};
 
-	if($rootScope.keywordParams) {
-		getTotalsAndDraw();
-	}
 
 	function getItemData(datum) {
 		var dateFormat = d3.time.format("%Y-%m-%d");
@@ -397,8 +518,12 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			subchart: {
 				show: true
 			},
+			transition: {
+				duration: 0
+			},
 			axis: {
 				x: {
+					padding: {left: 0, right: 0},
 					label: {
 						text: 'Dias',
 						position: 'outer-center'
@@ -406,7 +531,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 					type: 'timeseries',
 					tick: {
 						culling: {
-              max: 10 // the number of tick texts will be adjusted to less than this value
+              max: 5 // the number of tick texts will be adjusted to less than this value
             },
 						format: '%d %b'
 					}
@@ -464,11 +589,11 @@ mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location,
 
 });
 
-mediavizControllers.controller('FlowCtrl', function($scope, $location, $routeParams, Resources, SourceList, Chart, DataFormatter) {
-	// $scope.sourceList = [];
-	// $scope.selectedSources = {};
-	// $scope.selectedSources.selected = [];
-	$scope.type = 'newspaper';
+mediavizControllers.controller('FlowCtrl', function($scope, $location, $routeParams, Page, Resources, SourceList, Chart, DataFormatter) {
+
+	Page.setTitle('Flow');
+
+	$scope.type = $scope.selectedSources.selected.type;
 	$scope.by = $routeParams.by || 'hour';
 	$scope.since = $routeParams.since;
 	$scope.until = $routeParams.until;
@@ -628,15 +753,17 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 		angular.forEach($scope.selectedSources.selected, function(el, index) {
 
 			var keyword = el.name;
+			var aggregated = el.group;
+			console.log(aggregated);
 			var timeId = 'timeFor' + keyword;
 			var countId = keyword;
 			var xsObj = {};
 			xsObj[countId] = timeId;
 
-			if(keyword !== 'Todas') {
+			if(!aggregated) {
 				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: keyword};
 			} else {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: $scope.type};
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: el.type};
 			}
 
 			if($scope.loadedSources.indexOf(keyword) === -1) {
@@ -716,6 +843,9 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 			},
 			subchart: {
 				show: true
+			},
+			transition: {
+				duration: 0
 			},
 			axis: {
 				x: {

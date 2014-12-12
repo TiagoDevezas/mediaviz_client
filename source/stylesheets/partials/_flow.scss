@@ -3,9 +3,16 @@
 		@include span-columns(12);
 		margin-top: 1.5em;
 	}
-	.search-bar {
-		background-color: $light-gray;
-		padding: 1.5em;
+	.source-select {
+		@include span-columns(12);
+		margin: 1em 0;
+		.select2-container {
+			@include span-columns(10);
+		}
+		.clear-chart {
+			@include span-columns(2);
+			padding: 0.5em;
+		}
 	}
 	.search-tools {
 		border-bottom: 1px solid $light-gray;
@@ -22,10 +29,11 @@
 					}
 					&.bordered {
 						margin-left: 1em;
+						border: 1px solid $medium-gray;
+						border-radius: 3px;
 						&:hover {
-							margin-left: (1em - em(1px));
-							border: 1px solid $medium-gray;
-							border-radius: 3px;
+							//margin-left: (1em - em(1px));
+							
 						}
 					}
 				}

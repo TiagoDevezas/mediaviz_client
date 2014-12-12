@@ -1,5 +1,55 @@
-<h3>{{ sourceName }}</h3>
+<div id="source-detail">
 
-<div id="time-chart">
+	<div class="source-card">
+		<div class="source-info">
+			<h2>{{ currentSource.name }}</h2>
+			<a href="{{sourceData[0].url}}">{{ sourceData[0].url }}</a>
+		</div>
+		<hr>
+		<div class="source-chart">
+			<div id="time-chart">
+			</div>
+			<div class="chart-controls">
+				<a href="">Hora</a>
+				<a href="" class="selected">Dia</a>
+				<a href="">Mês</a>
+			</div>
+			<div id="twitter-share-chart" class="six-col"></div>
+			<div id="facebook-share-chart" class="six-col"></div>
+		</div>
+	</div>
+
+
+	<div class="source-stats">
+		<p class="stat">{{ sourceData[0].total_items }}</p>
+		<p class="stat-name">Artigos (Total)</p>
+		<hr>
+
+		<p class="stat">{{ sourceData[0].avg_day }}</p>
+		<p class="stat-name">Artigos/Dia (Média)</p>
+		<hr>
+
+		<p class="stat">{{ sourceData[0].avg_month }}</p>
+		<p class="stat-name">Artigos/Mês (Média)</p>
+		<hr>
+
+		<p class="stat">{{ sourceData[0].total_feeds }}</p>
+		<p class="stat-name">Feeds</p>
+		<hr>
+
+		<p class="stat">{{ sourceData[0].total_shares }}</p>
+		<p class="stat-name">Partilhas (Total)</p>
+		<div id="share-chart"></div>	
+		<hr>
+
+		<p class="stat">{{ sourceData[0].avg_shares }}</p>
+		<p class="stat-name">Partilhas (Média)</p>
+		<hr>
+
+	</div>
 	
 </div>
+
+
+
+
