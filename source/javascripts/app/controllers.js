@@ -402,7 +402,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		if ($scope.dataFormat !== dataFormat) {
 			$scope.dataFormat = dataFormat;
 			$scope.loadedSources = [];
-			chart.flush();
+			chart.unload();
 			getTotalsAndDraw();
 		}
 	}
@@ -523,7 +523,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			},
 			axis: {
 				x: {
-					padding: {left: 0, right: 0},
+					//padding: {left: 0, right: 0},
 					label: {
 						text: 'Dias',
 						position: 'outer-center'
@@ -543,8 +543,13 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 						position: 'outer-middle'
 					},
 					tick: {
-						format: function(d) {
-							return d;
+						format: function(d,i) {
+							if($scope.dataFormat === 'absolute') {
+								return d;
+							}
+							if($scope.dataFormat === 'relative') {
+								return d + '%';
+							}
 						}
 					}
 				}
