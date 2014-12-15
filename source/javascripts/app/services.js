@@ -2,9 +2,9 @@
 
 var mediavizServices = angular.module('mediavizServices', ['ngResource']);
 
-var baseUrl2 = 'http://mediaviz.fe.up.pt/panorama/api/';
+var baseUrl = 'http://mediaviz.fe.up.pt/panorama/api/';
 
-var baseUrl = 'panorama/api/';
+var baseUrl2 = 'panorama/api/';
 
 var jsonp = { 
 				options: {
