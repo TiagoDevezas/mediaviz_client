@@ -134,7 +134,40 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 			$scope.until = undefined;
 		}
 		if(chart) { chart.unload(); }
+		if(chart2) { chart2.unload(); }
+		if(chart3) { chart3.unload(); }
 		getTotalsAndDraw();
+	}
+
+	function changeOptionsObj(objName) {
+		if($scope.by === 'hour') {
+			objName.options.axis.x.type = '';
+			objName.options.axis.x.label.text = 'Hora';
+			objName.options.axis.x.tick.format = function(d, i) {
+					var d = d < 10 ? '0' + d : d;
+					return d + ':00';
+			}
+		}
+		if($scope.by === 'day') {
+			objName.options.axis.x.type = 'timeseries';
+			objName.options.axis.x.label.text = 'Dia';
+			objName.options.axis.x.tick.format = '%d %b';
+			//objName.options.data.type = 'area-spline';
+		}
+		if($scope.by === 'month') {
+			objName.options.axis.x.type = '';
+			objName.options.axis.x.label.text = 'Mês';
+			objName.options.axis.x.tick.format = function(d, i) {
+				return d;
+			};
+		}
+		if($scope.by === 'week') {
+			objName.options.axis.x.type = '';
+			objName.options.axis.x.label.text = 'Dia da semana';
+			objName.options.axis.x.tick.format = function(d) {
+				return moment().isoWeekday(d).format('ddd');
+			};
+		}
 	}
 
 	function getTotalsAndDraw() {
@@ -144,51 +177,69 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 			// console.log($scope.dataXLength);
 			timeChart.options.data.columns = articleData;
 			timeChart.options.data.x = 'timeFor' + $scope.currentSource.name;
-			if($scope.by === 'hour') {
-				timeChart.options.axis.x.type = '';
-				timeChart.options.axis.x.label.text = 'Hora';
-				timeChart.options.axis.x.tick.format = function(d, i) {
-						var d = d < 10 ? '0' + d : d;
-						return d + ':00';
-				}
-			}
-			if($scope.by === 'day') {
-				timeChart.options.axis.x.type = 'timeseries';
-				timeChart.options.axis.x.label.text = 'Dia';
-				timeChart.options.axis.x.tick.format = '%d %b';
-				//timeChart.options.data.type = 'area-spline';
-			}
-			if($scope.by === 'month') {
-				timeChart.options.axis.x.type = '';
-				timeChart.options.axis.x.label.text = 'Mês';
-				timeChart.options.axis.x.tick.format = function(d, i) {
-					return d;
-				};
-			}
-			if($scope.by === 'week') {
-				timeChart.options.axis.x.type = '';
-				timeChart.options.axis.x.label.text = 'Dia da semana';
-				timeChart.options.axis.x.tick.format = function(d) {
-					return moment().isoWeekday(d).format('ddd');
-				};
-			}
+			changeOptionsObj(timeChart);
+			// if($scope.by === 'hour') {
+			// 	timeChart.options.axis.x.type = '';
+			// 	timeChart.options.axis.x.label.text = 'Hora';
+			// 	timeChart.options.axis.x.tick.format = function(d, i) {
+			// 			var d = d < 10 ? '0' + d : d;
+			// 			return d + ':00';
+			// 	}
+			// }
+			// if($scope.by === 'day') {
+			// 	timeChart.options.axis.x.type = 'timeseries';
+			// 	timeChart.options.axis.x.label.text = 'Dia';
+			// 	timeChart.options.axis.x.tick.format = '%d %b';
+			// 	//timeChart.options.data.type = 'area-spline';
+			// }
+			// if($scope.by === 'month') {
+			// 	timeChart.options.axis.x.type = '';
+			// 	timeChart.options.axis.x.label.text = 'Mês';
+			// 	timeChart.options.axis.x.tick.format = function(d, i) {
+			// 		return d;
+			// 	};
+			// }
+			// if($scope.by === 'week') {
+			// 	timeChart.options.axis.x.type = '';
+			// 	timeChart.options.axis.x.label.text = 'Dia da semana';
+			// 	timeChart.options.axis.x.tick.format = function(d) {
+			// 		return moment().isoWeekday(d).format('ddd');
+			// 	};
+			// }
 			chart = Chart.draw(timeChart);
 
 			// Social shares charts
 
-			// timeChart.options.subchart.show = false; 
+			var twitterChart = JSON.parse(JSON.stringify(timeChart));
 
-			// var twitterShareData = DataFormatter.inColumns(data, 'Twitter', 'time', 'twitter_shares');
-			// timeChart.options.data.x = 'Twitter';
-			// timeChart.options.data.columns = twitterShareData;
-			// timeChart.options.bindto = '#twitter-share-chart';
-			// chart2 = Chart.draw(timeChart);
+			changeOptionsObj(twitterChart);
 
-			// var facebookShareData = DataFormatter.inColumns(data, 'Facebook', 'time', 'facebook_shares');
-			// timeChart.options.data.x = 'Facebook';
-			// timeChart.options.data.columns = facebookShareData;
-			// timeChart.options.bindto = '#facebook-share-chart';
-			// chart3 = Chart.draw(timeChart);
+			twitterChart.options.subchart.show = false;
+			twitterChart.options.size.height = 250;
+			twitterChart.options.axis.x.label = {};
+			twitterChart.options.axis.x.tick.culling.max = 5;
+			twitterChart.options.axis.y.label.text = 'Partilhas no Twitter';
+			twitterChart.options.color = {pattern: ['#00ABF0'] }; 
+
+			var twitterShareData = DataFormatter.inColumns(data, 'Twitter', 'time', 'twitter_shares');
+			twitterChart.options.data.x = 'timeForTwitter';
+			twitterChart.options.data.columns = twitterShareData;
+			twitterChart.options.bindto = '#twitter-share-chart';
+			chart2 = Chart.draw(twitterChart);
+
+			var facebookChart = JSON.parse(JSON.stringify(twitterChart));
+
+			changeOptionsObj(facebookChart);
+
+			facebookChart.options.axis.x.label = {};
+			facebookChart.options.axis.y.label.text = 'Partilhas no Facebook';
+			facebookChart.options.color = {pattern: ['#49639E'] };
+
+			var facebookShareData = DataFormatter.inColumns(data, 'Facebook', 'time', 'facebook_shares');
+			facebookChart.options.data.x = 'timeForFacebook';
+			facebookChart.options.data.columns = facebookShareData;
+			facebookChart.options.bindto = '#facebook-share-chart';
+			chart3 = Chart.draw(facebookChart);
 
 
 			Resources.get(sourcesParams).$promise.then(function(data) {
