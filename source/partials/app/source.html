@@ -10,9 +10,10 @@
 			<div id="time-chart">
 			</div>
 			<div class="chart-controls">
-				<a href="">Hora</a>
-				<a href="" class="selected">Dia</a>
-				<a href="">Mês</a>
+				<a href="" ng-click="displayBy('hour')" ng-class="{'selected':by === 'hour'}">24 Horas</a>
+				<a href="" ng-click="displayBy('week')" ng-class="{'selected':by === 'week'}">Semana</a>
+				<a href="" ng-click="displayBy('day')" ng-class="{'selected':by === 'day'}">Dia</a>
+				<a href="" ng-click="displayBy('month')" ng-class="{'selected':by === 'month'}">Mês</a>
 			</div>
 			<div id="twitter-share-chart" class="six-col"></div>
 			<div id="facebook-share-chart" class="six-col"></div>

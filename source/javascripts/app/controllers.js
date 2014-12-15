@@ -89,7 +89,10 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 
 	$scope.currentSource = {};
 
-	var resourceParams = {};
+	$scope.by = 'day';
+
+	var totalsParams = {};
+	var sourcesParams = {};
 
 	SourceList.get(function(data) {
 		$scope.sourceList = data;
@@ -99,11 +102,11 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 		})[0];
 		Page.setTitle($scope.currentSource.name);
 
-		totalsParams = {resource: 'totals', since: $scope.since, source: $scope.currentSource.name};
+		totalsParams = {resource: 'totals', since: $scope.since, source: $scope.currentSource.name, by: $scope.by};
 		sourcesParams = {resource: 'sources', name: $scope.currentSource.name};
 
 		if($scope.currentSource.group) {
-			totalsParams = {resource: 'totals', since: $scope.since, type: $scope.currentSource.type };
+			totalsParams = {resource: 'totals', since: $scope.since, type: $scope.currentSource.type, by: $scope.by };
 			sourcesParams = {resource: 'sources', type: $scope.currentSource.type};
 		}
 		
@@ -123,15 +126,52 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 
 	$scope.dataXLength = 0;
 
-	
+	$scope.displayBy = function(timePeriod) {
+		$scope.by = timePeriod;
+		totalsParams.by = $scope.by;
+		if($scope.by === 'month') {
+			$scope.since = undefined;
+			$scope.until = undefined;
+		}
+		if(chart) { chart.unload(); }
+		getTotalsAndDraw();
+	}
 
 	function getTotalsAndDraw() {
 		Resources.get(totalsParams).$promise.then(function(data) {
 			var articleData = DataFormatter.inColumns(data, $scope.currentSource.name, 'time', 'articles');
 			$scope.dataXLength = articleData[0][0].length;
-			console.log($scope.dataXLength);
+			// console.log($scope.dataXLength);
 			timeChart.options.data.columns = articleData;
 			timeChart.options.data.x = 'timeFor' + $scope.currentSource.name;
+			if($scope.by === 'hour') {
+				timeChart.options.axis.x.type = '';
+				timeChart.options.axis.x.label.text = 'Hora';
+				timeChart.options.axis.x.tick.format = function(d, i) {
+						var d = d < 10 ? '0' + d : d;
+						return d + ':00';
+				}
+			}
+			if($scope.by === 'day') {
+				timeChart.options.axis.x.type = 'timeseries';
+				timeChart.options.axis.x.label.text = 'Dia';
+				timeChart.options.axis.x.tick.format = '%d %b';
+				//timeChart.options.data.type = 'area-spline';
+			}
+			if($scope.by === 'month') {
+				timeChart.options.axis.x.type = '';
+				timeChart.options.axis.x.label.text = 'Mês';
+				timeChart.options.axis.x.tick.format = function(d, i) {
+					return d;
+				};
+			}
+			if($scope.by === 'week') {
+				timeChart.options.axis.x.type = '';
+				timeChart.options.axis.x.label.text = 'Dia da semana';
+				timeChart.options.axis.x.tick.format = function(d) {
+					return moment().isoWeekday(d).format('ddd');
+				};
+			}
 			chart = Chart.draw(timeChart);
 
 			// Social shares charts
