@@ -429,8 +429,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	}, true);
 
 	$scope.$watch('keywords.selected', function(newVal, oldVal) {
+		console.log(newVal, oldVal)
 		angular.forEach(oldVal, function(keyword) {
-			if(newVal.indexOf(keyword) === -1 && $scope.loadedSources.indexOf(keyword) === -1) {
+			if(newVal.indexOf(keyword) === -1) {
 				$scope.loadedSources.splice($scope.loadedSources.indexOf(keyword), 1);
 				chart.unload({ids: keyword});
 			}
@@ -474,12 +475,12 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		//getTotalsAndDraw();
 	}
 
-	$scope.removeKeyword = function(item) {
-		$scope.keywords.selected.splice($scope.keywords.selected.indexOf(item), 1);
-		$scope.loadedSources.splice($scope.loadedSources.indexOf(item), 1);
-		//$location.search({ keywords: $scope.keywords.selected.toString() });
-		chart.unload({ ids: item });
-	}
+	// $scope.removeKeyword = function(item) {
+	// 	//$scope.keywords.selected.splice($scope.keywords.selected.indexOf(item), 1);
+	// 	//$scope.loadedSources.splice($scope.loadedSources.indexOf(item), 1);
+	// 	//$location.search({ keywords: $scope.keywords.selected.toString() });
+	// 	//chart.unload({ ids: item });
+	// }
 
 	function getTotalsAndDraw() {
 		angular.forEach($scope.keywords.selected, function(el, index) {

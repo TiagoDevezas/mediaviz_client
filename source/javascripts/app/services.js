@@ -84,37 +84,3 @@ mediavizServices.factory('DataFormatter', function() {
 		}
 	}
 });
-
-
-// mediavizServices.factory('Sources', ['$resource',
-// 	function($resource) {
-// 		return $resource(baseUrl + 'sources', {},
-// 		{
-// 			get: jsonp.options 
-		
-// 		});
-// 	}]);
-
-// mediavizServices.factory('Feeds', ['$resource',
-// 	function($resource) {
-// 		return $resource(baseUrl + 'feeds', {},
-// 		{
-// 			get: jsonp.options
-// 		});
-// 	}]);
-
-// mediavizServices.factory('Items', ['$resource',
-// 	function($resource) {
-// 		return $resource(baseUrl + 'items', {},
-// 		{
-// 			get: jsonp.options
-// 		});
-// 	}]);
-
-// mediavizServices.factory('Totals', ['$resource',
-// 	function($resource) {
-// 		return $resource(baseUrl + 'totals', {},
-// 		{
-// 			get: jsonp.options
-// 		});
-// 	}]);
