@@ -9,7 +9,8 @@ var baseUrl2 = 'panorama/api/';
 var jsonp = { 
 				options: {
 						method: 'JSONP',
-						isArray: true, 
+						isArray: true,
+						cache: true, 
 						params: {
 							callback: 'JSON_CALLBACK',
 							resource: '@resource'

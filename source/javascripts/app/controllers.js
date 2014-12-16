@@ -45,45 +45,9 @@ mediavizControllers.controller('HomeCtrl', function($scope, $location, Page) {
 		}
 	}
 
-
-
 });
 
-// mediavizControllers.controller('SourceSelectCtrl', function($rootScope, $scope, $location) {
-
-// 	var rootPath = '/'
-
-// 	$rootScope.loadSource = function(sourceObj) {
-// 		$rootScope.selectedSource = sourceObj;
-// 		$location.search('');
-// 		if(sourceObj.name === 'Todas') {
-// 			if ($location.path !== rootPath) {
-// 				$location.path(rootPath);
-// 			} else {
-// 				return;
-// 			}
-// 		} else {
-// 			$location.path(sourceObj.name);
-// 		}
-// 	}
-// });
-
-// mediavizControllers.controller('MainCtrl', function($scope, $rootScope, SourceList) {
-
-// 	// Get the source list from the API
-
-// 	if(!$rootScope.sourceList) {
-// 		SourceList.get(function success(data) {
-// 			$rootScope.sourceList = data;
-// 			$rootScope.selectedSource = $rootScope.sourceList[0];	
-// 		});
-// 	} else {
-// 		$rootScope.selectedSource = $rootScope.sourceList[0];	
-// 	}
-	
-// });
-
-mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page, Resources, Chart, DataFormatter, SourceList) {
+mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $location, Page, Resources, Chart, DataFormatter, SourceList) {
 
 	$scope.sourceList = [];
 
@@ -94,6 +58,22 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 	var totalsParams = {};
 	var sourcesParams = {};
 
+	$scope.goToSourcePage = function(source, model) {
+		$location.path('/source/' + source.name);
+	}
+
+	$scope.groupSourcesByType = function(item) {
+		if(item.type === 'newspaper') {
+			return 'Jornais Nacionais';
+		}
+		if(item.type === 'international') {
+			return 'Jornais Internacionais';
+		}
+		if(item.type === 'blog') {
+			return 'Blogues';
+		}
+	}
+
 	SourceList.get(function(data) {
 		$scope.sourceList = data;
 		$scope.currentSource = $scope.sourceList.filter(function(obj) {
@@ -101,6 +81,8 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 				return obj;
 		})[0];
 		Page.setTitle($scope.currentSource.name);
+
+		$scope.selectedSources.selected = $scope.currentSource;
 
 		totalsParams = {resource: 'totals', since: $scope.since, source: $scope.currentSource.name, by: $scope.by};
 		sourcesParams = {resource: 'sources', name: $scope.currentSource.name};
@@ -331,7 +313,7 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 		options: {
 			bindto: '#time-chart',
 			size: {
-        height: 500
+        height: 400
     	},
     	legend: {
     		show: false
@@ -367,6 +349,8 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 					label: {
 						text: 'Artigos',
 						position: 'outer-middle'
+					},
+					tick: {
 					}
 				}
 			},
@@ -375,28 +359,6 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, Page
 			}
 		}
 	}
-
-	// var currentSource = $routeParams.source;
-
-	// function getCurrentSourceFromList(sourceName) {
-	// 	var obj = {};
-	// 	angular.forEach($rootScope.sourceList, function(el) {
-	// 		if(el.name === sourceName) {
-	// 			obj = el;
-	// 		}
-	// 	});
-	// 	return obj;
-	// }
-
-	// // Only get the source list from the API if it's empty
-
-	// if(!$rootScope.sourceList) {
-	// 	SourceList.get(function success(data) {
-	// 		$rootScope.sourceList = data;
-	// 		var sourceObj = getCurrentSourceFromList(currentSource);
-	// 		$rootScope.selectedSource = getCurrentSourceFromList(currentSource);		
-	// 	});
-	// }
 
 });
 
@@ -689,6 +651,9 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
 	Page.setTitle('Flow');
 
+	$scope.selectedSources.selected = [];
+	$scope.selectedSources.selected.push($scope.sourceList[0]);
+
 	$scope.type = $scope.selectedSources.selected.type;
 	$scope.by = $routeParams.by || 'hour';
 	$scope.since = $routeParams.since;
@@ -806,7 +771,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
 	$scope.$watch('selectedSources.selected', function(newVal, oldVal) {
 		var sourceToRemove, sourceToRemoveIndex;
-		if(newVal.length < oldVal.length) {
+		if(newVal.length > 0 && newVal.length < oldVal.length) {
 			angular.forEach(oldVal, function(obj) {
 				if(newVal.indexOf(obj) === -1) {
 					sourceToRemove = obj.name;
