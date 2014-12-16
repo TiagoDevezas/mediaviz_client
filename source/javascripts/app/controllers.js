@@ -455,7 +455,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		if ($scope.dataFormat !== dataFormat) {
 			$scope.dataFormat = dataFormat;
 			$scope.loadedSources = [];
-			chart.unload();
+			chart.flush();
 			getTotalsAndDraw();
 		}
 	}
@@ -809,9 +809,11 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 				$scope.loading = true;
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
 					$scope.loading = false;
+					$scope.loadedSources.push(keyword);
 					if($scope.dataFormat === 'absolute') {
 						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
 						timeChart.options.axis.y.label.text = 'Número de artigos';
+						timeChart.options.data.groups = [$scope.loadedSources];
 						timeChart.options.axis.y.tick.format = function(d, i) {
 							return d;
 						}
@@ -819,11 +821,11 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 					if($scope.dataFormat === 'relative') {
 						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent');
 						timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+						timeChart.options.data.groups = [];
 						timeChart.options.axis.y.tick.format = function(d, i) {
 							return d + '%';
 						}
 					}
-					$scope.loadedSources.push(keyword);
 					if(!chart || chart.internal.data.targets.length === 0) {
 						timeChart.options.data.xs = xsObj;
 						timeChart.options.data.columns = formattedData;
@@ -831,7 +833,6 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 							//timeChart.options.data.type = 'area';
 							timeChart.options.axis.x.type = '';
 							timeChart.options.axis.x.label.text = 'Hora';
-							timeChart.options.data.groups = [$scope.loadedSources];
 							timeChart.options.axis.x.tick.format = function(d, i) {
 									var d = d < 10 ? '0' + d : d;
 									return d + ':00';
@@ -847,7 +848,6 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 						if($scope.by === 'month') {
 							timeChart.options.axis.x.type = '';
 							timeChart.options.axis.x.label.text = 'Mês';
-							timeChart.options.data.groups = [$scope.loadedSources];
 							timeChart.options.axis.x.tick.format = function(d, i) {
 								return d;
 							};
@@ -855,7 +855,6 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 						if($scope.by === 'week') {
 							timeChart.options.axis.x.type = '';
 							timeChart.options.axis.x.label.text = 'Dia da semana';
-							timeChart.options.data.groups = [$scope.loadedSources];
 							timeChart.options.axis.x.tick.format = function(d) {
 								return moment().isoWeekday(d).format('ddd');
 							};
