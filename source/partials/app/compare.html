@@ -21,6 +21,13 @@
 		</ui-select>
 	</div>
 
+	<div class="search-tools">
+		<ul>
+			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
+			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
+		</ul>
+	</div>
+
 
 	<loading-flash>A carregar...</loading-flash>
 

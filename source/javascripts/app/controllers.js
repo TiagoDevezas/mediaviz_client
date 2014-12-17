@@ -378,6 +378,8 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 
 	$scope.selectDisabled = true;
 
+	$scope.dataFormat = 'absolute';
+
 	$scope.$watch('keyword.selected', function(newVal, oldVal) {
 		if(newVal.length > 2) {
 			$scope.selectDisabled = false;
@@ -414,6 +416,15 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 		}
 	});
 
+	$scope.setDataFormat = function(dataFormat){
+		if ($scope.dataFormat !== dataFormat) {
+			$scope.dataFormat = dataFormat;
+			$scope.loadedSources = [];
+			chart.unload();
+			getTotalsAndDraw();
+		}
+	}
+
 	$scope.redrawChart = function() {
 		$scope.loadedSources = [];
 		if(chart) { chart.unload(); }
@@ -441,11 +452,22 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
 					$scope.loading = false;
 					$scope.loadedSources.push(keyword);
-					var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
-					timeChart.options.axis.y.label.text = 'Número de artigos';
-					timeChart.options.data.groups = [$scope.loadedSources];
-					timeChart.options.axis.y.tick.format = function(d, i) {
-						return d;
+					if($scope.dataFormat === 'absolute') {
+						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+						timeChart.options.axis.y.label.text = 'Número de artigos';
+						//timeChart.options.data.groups = [$scope.loadedSources];
+						timeChart.options.axis.y.tick.format = function(d, i) {
+							return d;
+						}
+					}
+					if($scope.dataFormat === 'relative') {
+						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent');
+						timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+						timeChart.options.axis.y.padding = { top: 0, bottom: 0 };
+						//timeChart.options.data.groups = [];
+						timeChart.options.axis.y.tick.format = function(d, i) {
+							return d + '%';
+						}
 					}
 					if(!chart || chart.internal.data.targets.length === 0) {
 						timeChart.options.data.xs = xsObj;
@@ -666,7 +688,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 							keywordChart.options.axis.y.label.text = 'Número de artigos';
 						}
 						if($scope.dataFormat === 'relative') {
-							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent');
+							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type');
 							keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
 						}
 						if(!chart) {
