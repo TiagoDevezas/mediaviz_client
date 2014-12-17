@@ -461,7 +461,11 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 						}
 					}
 					if($scope.dataFormat === 'relative') {
-						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent');
+						if(aggregated) {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
+						} else {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
+						}
 						timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
 						timeChart.options.axis.y.padding = { top: 0, bottom: 0 };
 						//timeChart.options.data.groups = [];
@@ -688,7 +692,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 							keywordChart.options.axis.y.label.text = 'Número de artigos';
 						}
 						if($scope.dataFormat === 'relative') {
-							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type');
+							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type_by_day');
 							keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
 						}
 						if(!chart) {
@@ -1006,7 +1010,11 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 						}
 					}
 					if($scope.dataFormat === 'relative') {
-						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent');
+						if(aggregated) {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
+						} else {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
+						}
 						timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
 						timeChart.options.data.groups = [];
 						timeChart.options.axis.y.tick.format = function(d, i) {
