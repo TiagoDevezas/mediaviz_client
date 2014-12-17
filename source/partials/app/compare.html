@@ -1,0 +1,29 @@
+<div id="compare">
+	<h2>Comparador</h2>
+
+	<div class="keyword-select">
+		<p><span class="step">1</span> Introduzir palavra a pesquisar</p>
+		<form ng-submit="redrawChart()">
+			<input type="text" placeholder="Introduzir palavra-chave" ng-model="keyword.selected">
+		</form>
+	</div>
+
+	<div class="source-select">
+		<p><span class="step">2</span> Seleccionar fontes</p>
+		<ui-select multiple ng-model="selectedSources.selected" ng-change="loadSourceData()" ng-disabled="selectDisabled" style="min-width: 400px;" reset-search-input="true">
+			<ui-select-match placeholder="Escolher fontes...">
+				{{$item.name}}
+			</ui-select-match>
+			<ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
+				{{source.name}}
+				<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
+			</ui-select-choices>
+		</ui-select>
+	</div>
+
+
+	<loading-flash>A carregar...</loading-flash>
+
+	<div id="time-chart"></div>
+
+</div>

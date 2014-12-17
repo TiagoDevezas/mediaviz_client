@@ -3,4 +3,5 @@ body {
 }
 .outer-container {
 	@include outer-container;
+	margin-bottom: 4em;
 }

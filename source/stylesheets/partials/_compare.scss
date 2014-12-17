@@ -1,0 +1,23 @@
+#compare {
+	@include span-columns(12);
+	.keyword-select {
+		@include row();
+		input {
+			@include span-columns(6);
+		}
+		
+	}
+	.source-select {
+		margin-bottom: 1.5em;
+	}
+	.step {
+		background-color: #395762;
+		display: inline-block;
+		width: 2em;
+		height: 2em;
+		line-height: 2em;
+		text-align: center;
+		border-radius: 50%;
+		color: white;
+	}
+}

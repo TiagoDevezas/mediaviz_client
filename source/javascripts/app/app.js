@@ -31,6 +31,10 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			templateUrl: 'partials/app/flow.html',
 			controller: 'FlowCtrl'
 		}).
+		when('/compare', {
+			templateUrl: 'partials/app/compare.html',
+			controller: 'CompareCtrl'
+		}).
 		when('/chronicle', {
 			templateUrl: 'partials/app/chronicle.html',
 			controller: 'ChronicleCtrl',

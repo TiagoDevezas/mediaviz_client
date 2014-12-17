@@ -362,6 +362,172 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 
 });
 
+mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, Chart, DataFormatter) {
+
+	Page.setTitle('Comparador');
+
+	var chart;
+
+	$scope.keyword = {};
+	$scope.keyword.selected = [];
+
+	$scope.selectedSources = {};
+	$scope.selectedSources.selected = [];
+
+	$scope.loadedSources = [];
+
+	$scope.selectDisabled = true;
+
+	$scope.$watch('keyword.selected', function(newVal, oldVal) {
+		if(newVal.length > 2) {
+			$scope.selectDisabled = false;
+		}
+	});
+
+	$scope.groupSourcesByType = function(item) {
+		if(item.type === 'newspaper') {
+			return 'Jornais Nacionais';
+		}
+		if(item.type === 'international') {
+			return 'Jornais Internacionais';
+		}
+		if(item.type === 'blog') {
+			return 'Blogues';
+		}
+	}
+
+	$scope.loadSourceData = function() {
+		getTotalsAndDraw();
+	}
+
+	$scope.$watch('selectedSources.selected', function(newVal, oldVal) {
+		var sourceToRemove, sourceToRemoveIndex;
+		if(newVal.length < oldVal.length) {
+			angular.forEach(oldVal, function(obj) {
+				if(newVal.indexOf(obj) === -1) {
+					sourceToRemove = obj.name;
+				}
+			});
+			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
+			chart.unload({ids: sourceToRemove});
+			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
+		}
+	});
+
+	$scope.redrawChart = function() {
+		$scope.loadedSources = [];
+		if(chart) { chart.unload(); }
+		getTotalsAndDraw();
+	}
+
+	function getTotalsAndDraw() {
+		angular.forEach($scope.selectedSources.selected, function(el, index) {
+
+			var keyword = el.name;
+			var aggregated = el.group;
+			var timeId = 'timeFor' + keyword;
+			var countId = keyword;
+			var xsObj = {};
+			xsObj[countId] = timeId;
+
+			if(!aggregated) {
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: keyword, q: $scope.keyword.selected};
+			} else {
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: el.type, q: $scope.keyword.selected};
+			}
+
+			if($scope.loadedSources.indexOf(keyword) === -1) {
+				$scope.loading = true;
+				Resources.get($scope.paramsObj).$promise.then(function(data) {
+					$scope.loading = false;
+					$scope.loadedSources.push(keyword);
+					var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+					timeChart.options.axis.y.label.text = 'Número de artigos';
+					timeChart.options.data.groups = [$scope.loadedSources];
+					timeChart.options.axis.y.tick.format = function(d, i) {
+						return d;
+					}
+					if(!chart || chart.internal.data.targets.length === 0) {
+						timeChart.options.data.xs = xsObj;
+						timeChart.options.data.columns = formattedData;
+						timeChart.options.axis.x.type = 'timeseries';
+						timeChart.options.axis.x.label.text = 'Dia';
+						timeChart.options.axis.x.tick.format = '%d %b';
+						//timeChart.options.data.type = 'area-spline';
+						timeChart.options.data.groups = [];
+						chart = Chart.draw(timeChart);
+					} else {
+						chart.load({
+							xs: xsObj,
+							columns: formattedData
+						});
+					}
+				});				
+			}
+		});		
+	}
+
+	var timeChart = {
+		options: {
+			bindto: '#time-chart',
+			size: {
+        height: 500
+    	},
+    	legend: {
+    		position: 'right'
+    	},
+			tooltip: {
+        grouped: false 
+	    },
+			data: {
+				type: 'area',
+				//onclick: function (d, i) { getItemData(d) }
+			},
+			point: {
+				r: 1.5
+			},
+			subchart: {
+				show: true
+			},
+			transition: {
+				duration: 0
+			},
+			axis: {
+				x: {
+					padding: {left: 0, right: 0},
+					label: {
+						text: 'Horas',
+						position: 'outer-center'
+					},
+					tick: {
+						culling: {
+              max: 12 // the number of tick texts will be adjusted to less than this value
+            },
+						// format: function(d, i) {
+						// 		var d = d < 10 ? '0' + d : d;
+						// 		return d + ':00';
+						// }
+					}
+				},
+				y: {
+					//padding: {top: 1, bottom: 1},
+					//min: 0,
+					label: {
+						text: 'Artigos',
+						position: 'outer-middle'
+					},
+					tick: {}
+				}
+			},
+			color: function(d) {
+				return d3.scale.category20c(d);
+			}
+		}
+	}
+
+
+});
+
 mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Page, Resources, Chart, DataFormatter) {
 
 	Page.setTitle('Chronicle');
@@ -793,7 +959,6 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
 			var keyword = el.name;
 			var aggregated = el.group;
-			console.log(aggregated);
 			var timeId = 'timeFor' + keyword;
 			var countId = keyword;
 			var xsObj = {};
