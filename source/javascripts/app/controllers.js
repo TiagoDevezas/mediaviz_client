@@ -411,7 +411,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		return Object.keys(obj).length === 0; 
 	}
 
-	$scope.$watch(function() { return $location.search() }, function() {
+	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
 		var keywordParams = $location.search()['keywords'] || undefined;
 		var keywordArray = [];
 		if(keywordParams) {
@@ -423,13 +423,12 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			}
 			$scope.keywords.selected = keywordArray;			
 		}
-		if(objectIsEmpty($location.search())) {
-			//$scope.clearChart();
+		if(objectIsEmpty(newVal) && !objectIsEmpty(oldVal)) {
+			$scope.clearChart();
 		}
 	}, true);
 
 	$scope.$watch('keywords.selected', function(newVal, oldVal) {
-		console.log(newVal, oldVal)
 		angular.forEach(oldVal, function(keyword) {
 			if(newVal.indexOf(keyword) === -1) {
 				$scope.loadedSources.splice($scope.loadedSources.indexOf(keyword), 1);
