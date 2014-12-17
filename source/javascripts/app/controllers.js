@@ -411,7 +411,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 				}
 			});
 			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
-			chart.unload({ids: sourceToRemove});
+			if(chart) { chart.unload({ids: sourceToRemove}); }
 			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
 		}
 	});
@@ -844,9 +844,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 	Page.setTitle('Flow');
 
 	$scope.selectedSources.selected = [];
-	$scope.selectedSources.selected.push($scope.sourceList[0]);
 
-	$scope.type = $scope.selectedSources.selected.type;
 	$scope.by = $routeParams.by || 'hour';
 	$scope.since = $routeParams.since;
 	$scope.until = $routeParams.until;
@@ -963,14 +961,14 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
 	$scope.$watch('selectedSources.selected', function(newVal, oldVal) {
 		var sourceToRemove, sourceToRemoveIndex;
-		if(newVal.length > 0 && newVal.length < oldVal.length) {
+		if(newVal.length < oldVal.length) {
 			angular.forEach(oldVal, function(obj) {
 				if(newVal.indexOf(obj) === -1) {
 					sourceToRemove = obj.name;
 				}
 			});
 			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
-			chart.unload({ids: sourceToRemove});
+			if(chart) { chart.unload({ids: sourceToRemove}); }
 			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
 		}
 	});
