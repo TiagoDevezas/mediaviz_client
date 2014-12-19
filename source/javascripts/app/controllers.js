@@ -197,9 +197,11 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 			changeOptionsObj(twitterChart);
 
 			twitterChart.options.subchart.show = false;
-			twitterChart.options.size.height = 250;
+			twitterChart.options.size.height = 200;
 			twitterChart.options.axis.x.label = {};
 			twitterChart.options.axis.x.tick.culling.max = 5;
+			twitterChart.options.axis.y.tick.format = function(d, i) { return Math.round(d) };
+			twitterChart.options.axis.y.tick.count = 4;
 			twitterChart.options.axis.y.label.text = 'Partilhas no Twitter';
 			twitterChart.options.color = {pattern: ['#00ABF0'] }; 
 
@@ -214,6 +216,7 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 			changeOptionsObj(facebookChart);
 
 			facebookChart.options.axis.x.label = {};
+			facebookChart.options.axis.y.tick.format = function(d, i) { return Math.round(d) };
 			facebookChart.options.axis.y.label.text = 'Partilhas no Facebook';
 			facebookChart.options.color = {pattern: ['#49639E'] };
 
@@ -315,6 +318,7 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 			size: {
         height: 400
     	},
+    	padding: {},
     	legend: {
     		show: false
     	},
@@ -414,12 +418,14 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 			if(chart) { chart.unload({ids: sourceToRemove}); }
 			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
 			columnToRemoveIndex = columns[0].indexOf(sourceToRemove);
-			columns[0].splice(columnToRemoveIndex, 1);
-			columns[1].splice(columnToRemoveIndex, 1);
-			chart2.load({
-				columns: columns,
-				unload: true
-			});
+			if(columnToRemoveIndex !== -1) {
+				columns[0].splice(columnToRemoveIndex, 1);
+				columns[1].splice(columnToRemoveIndex, 1);
+				chart2.load({
+					columns: columns,
+					unload: true
+				});
+			}
 		}
 	});
 
@@ -484,9 +490,13 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 						} else {
 							columns[1].push(data[0]['total_query_articles']);
 						}
+						barChart.options.axis.y.label.text = 'Número de artigos';
 						timeChart.options.axis.y.label.text = 'Número de artigos';
 						//timeChart.options.data.groups = [$scope.loadedSources];
 						timeChart.options.axis.y.tick.format = function(d, i) {
+							return d;
+						}
+						barChart.options.axis.y.tick.format = function(d, i) {
 							return d;
 						}
 					}
@@ -513,9 +523,14 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 							}
 						}
 						timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+						barChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+						barChart.options.axis.y.padding = { top: 0, bottom: 0 };
 						timeChart.options.axis.y.padding = { top: 0, bottom: 0 };
 						//timeChart.options.data.groups = [];
 						timeChart.options.axis.y.tick.format = function(d, i) {
+							return d + '%';
+						}
+						barChart.options.axis.y.tick.format = function(d, i) {
 							return d + '%';
 						}
 					}
@@ -534,11 +549,15 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 							columns: formattedData
 						});
 					}
-						barChart.options.data.x = 'x';
-						var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
-						barChart.options.data.names = JSON.parse(label);
-						barChart.options.data.columns = columns;
-						chart2 = Chart.draw(barChart);
+
+					barChart.options.data.x = 'x';
+					var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
+					barChart.options.data.names = JSON.parse(label);
+					barChart.options.data.columns = columns;
+					chart2 = Chart.draw(barChart);
+
+					// Fix c3 bug where the subchart is shown even when set to false
+					d3.select("#bar-chart svg").select("g.c3-brush").remove();
 					}
 				});				
 			}
@@ -548,6 +567,12 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 	var barChart = {
 		options: {
 			bindto: '#bar-chart',
+			padding: {
+				left: 130
+			},
+			size: {
+				//height: 400
+			},
 			data: {
 				type: 'bar',
 				names: ''
@@ -558,15 +583,26 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
         }
 	    },
 			axis: {
+				rotated: true,
 				x: {
 					type: 'category',
 					tick: {
-            rotate: 75,
-            multiline: false
+            multiline: false,
           },
-          height: 130
+				},
+				y: {
+					label: {
+						position: 'outer-right'
+					},
+					tick: {}
 				}
-			}
+			},
+			subchart: {
+        show: false
+    	},
+			color: {
+    		pattern: ['#395762']
+    	}
 		}
 	}
 
@@ -603,9 +639,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 						position: 'outer-center'
 					},
 					tick: {
-						culling: {
-              max: 12 // the number of tick texts will be adjusted to less than this value
-            },
+						fit: true
 						// format: function(d, i) {
 						// 		var d = d < 10 ? '0' + d : d;
 						// 		return d + ':00';
