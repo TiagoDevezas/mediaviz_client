@@ -451,7 +451,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 	];
 
 	function getTotalsAndDraw() {
-		angular.forEach($scope.selectedSources.selected, function(el, index) {
+		$scope.selectedSources.selected.forEach(function(el, index) {
 
 			var keyword = el.name;
 			var aggregated = el.group;
@@ -470,6 +470,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 				$scope.loading = true;
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
 					$scope.loading = false;
+					if(data.length > 0) {
 					$scope.loadedSources.push(keyword);
 					if(columns[0].length === 0) {
 						columns[0] = ['x'].concat(keyword);
@@ -538,6 +539,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 						barChart.options.data.names = JSON.parse(label);
 						barChart.options.data.columns = columns;
 						chart2 = Chart.draw(barChart);
+					}
 				});				
 			}
 		});		
@@ -552,12 +554,17 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 			},
 			bar: {
         width: {
-            ratio: 0.1
+            //ratio: 0.1
         }
 	    },
 			axis: {
 				x: {
-					type: 'category'
+					type: 'category',
+					tick: {
+            rotate: 75,
+            multiline: false
+          },
+          height: 130
 				}
 			}
 		}
