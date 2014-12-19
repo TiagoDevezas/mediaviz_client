@@ -366,7 +366,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 
 	Page.setTitle('Comparador');
 
-	var chart;
+	var chart, chart2;
 
 	$scope.keyword = {};
 	$scope.keyword.selected = [];
@@ -413,6 +413,13 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
 			if(chart) { chart.unload({ids: sourceToRemove}); }
 			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
+			columnToRemoveIndex = columns[0].indexOf(sourceToRemove);
+			columns[0].splice(columnToRemoveIndex, 1);
+			columns[1].splice(columnToRemoveIndex, 1);
+			chart2.load({
+				columns: columns,
+				unload: true
+			});
 		}
 	});
 
@@ -421,15 +428,27 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 			$scope.dataFormat = dataFormat;
 			$scope.loadedSources = [];
 			chart.unload();
+			chart2.unload();
+			columns = [
+				[],[]
+			];
 			getTotalsAndDraw();
 		}
 	}
 
 	$scope.redrawChart = function() {
 		$scope.loadedSources = [];
-		if(chart) { chart.unload(); }
+		if(chart) { chart.unload(); };
+		if(chart2) { chart2.unload(); };
+		columns = [
+			[],[]
+		];
 		getTotalsAndDraw();
 	}
+
+	var columns = [
+		[],[]
+	];
 
 	function getTotalsAndDraw() {
 		angular.forEach($scope.selectedSources.selected, function(el, index) {
@@ -452,8 +471,18 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
 					$scope.loading = false;
 					$scope.loadedSources.push(keyword);
+					if(columns[0].length === 0) {
+						columns[0] = ['x'].concat(keyword);
+					} else {
+						columns[0].push(keyword);
+					}
 					if($scope.dataFormat === 'absolute') {
 						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+						if(columns[1].length === 0) {
+							columns[1] = [$scope.keyword.selected, data[0]['total_query_articles']];
+						} else {
+							columns[1].push(data[0]['total_query_articles']);
+						}
 						timeChart.options.axis.y.label.text = 'Número de artigos';
 						//timeChart.options.data.groups = [$scope.loadedSources];
 						timeChart.options.axis.y.tick.format = function(d, i) {
@@ -463,8 +492,24 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 					if($scope.dataFormat === 'relative') {
 						if(aggregated) {
 							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
+							var total_query_articles = data[0]['total_query_articles'];
+							var total_type_articles = data[0]['total_type_articles'];
+							var percent = ((total_query_articles/total_type_articles) * 100).toFixed(2);
+							if(columns[1].length === 0) {
+								columns[1] = [$scope.keyword.selected, percent];
+							} else {
+								columns[1].push(percent);
+							}
 						} else {
 							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
+							var total_query_articles = data[0]['total_query_articles'];
+							var total_source_articles = data[0]['total_source_articles'];
+							var percent = ((total_query_articles/total_source_articles) * 100).toFixed(2);
+							if(columns[1].length === 0) {
+								columns[1] = [$scope.keyword.selected, percent];
+							} else {
+								columns[1].push(percent);
+							}
 						}
 						timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
 						timeChart.options.axis.y.padding = { top: 0, bottom: 0 };
@@ -488,9 +533,34 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 							columns: formattedData
 						});
 					}
+						barChart.options.data.x = 'x';
+						var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
+						barChart.options.data.names = JSON.parse(label);
+						barChart.options.data.columns = columns;
+						chart2 = Chart.draw(barChart);
 				});				
 			}
 		});		
+	}
+
+	var barChart = {
+		options: {
+			bindto: '#bar-chart',
+			data: {
+				type: 'bar',
+				names: ''
+			},
+			bar: {
+        width: {
+            ratio: 0.1
+        }
+	    },
+			axis: {
+				x: {
+					type: 'category'
+				}
+			}
+		}
 	}
 
 	var timeChart = {
