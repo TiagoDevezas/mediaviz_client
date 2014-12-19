@@ -1,13 +1,13 @@
 header {
-	background-color: $dark-blue;
+	background-color: #455A64;
 	margin-bottom: 1.5em;
-	border-bottom: 2px solid darken($dark-blue, 20);
+	border-bottom: 1px solid darken($medium-blue, 20);
 	.header-inner {
 		h1 {
 			float: left;
 			display: inline; 
 			a {
-				color: $light-gray;
+				color: #fff;
 			}
 		}
 		@include outer-container;
@@ -22,7 +22,7 @@ header {
 					display: inline;
 					padding: 0 0.5em;
 					a {
-						color: white;
+						color: #CFD8DC;
 						text-transform: uppercase;
 						font-weight: bold;
 						&:hover, &:focus {
