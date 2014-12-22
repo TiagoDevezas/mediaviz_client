@@ -1,7 +1,7 @@
 <h3>Social</h3>
 
 <div class="keyword-select">
-	<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="redrawChart()">
+	<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false">
     <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
     <ui-select-choices repeat="keyword in keywords.selected">
       {{ keyword }}

@@ -418,35 +418,36 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 		}
 	}
 
-	$scope.$watch('keywords.selected', function(newVal, oldVal) { 
-		if($scope.selectedSource.selected.length !== 0) {
+	$scope.$watch('keywords.selected', function(newVal, oldVal) {
+		var keywordToRemove, keywordToRemoveIndex;
+		if(newVal.length < oldVal.length) {
+			angular.forEach(oldVal, function(obj) {
+				if(newVal.indexOf(obj) === -1) {
+					keywordToRemove = obj;
+				}
+			});
+			keywordToRemoveIndex = $scope.loadedKeywords.indexOf(keywordToRemove)
+			if(chart) { chart.unload({ids: keywordToRemove}); }
+			$scope.loadedKeywords.splice(keywordToRemoveIndex, 1);
+		}	else if($scope.selectedSource.selected.length !== 0) {
 			getTotalsAndDraw();
 		}
 	});
 
 	$scope.$watch('selectedSource.selected', function(newVal, oldVal) {
 		$scope.selectedSource.selected = newVal;
+		if(chart) { chart.unload(); }
 		getTotalsAndDraw();
 	});
-
-	// $scope.loadSourceData = function(sourceObj) {
-	// 	$scope.selectedSource.selected = sourceObj;
-	// 	//getTotalsAndDraw();
-	// }
-
-	// $scope.redrawChart = function() {
-	// 	if($scope.selectedSource.selected.length > 0) {
-	// 		$scope.loadedKeywords = [];
-	// 		if(chart) { chart.unload(); };
-	// 		getTotalsAndDraw();			
-	// 	}
-	// }
 
 	function getTotalsAndDraw() {
 		$scope.keywords.selected.forEach(function(keyword) {
 			var keyword = keyword;
+			var timeId = 'timeFor' + keyword;
+			var countId = keyword;
+			var xsObj = {};
+			xsObj[countId] = timeId;
 			var selectedSource = $scope.selectedSource.selected;
-			console.log(selectedSource);
 			var aggregated = selectedSource.group;
 			if(!aggregated) {
 				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: selectedSource.name, q: keyword};
@@ -457,12 +458,93 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 				$scope.loading = true;
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
 					$scope.loading = false;
-					console.log(data);
+					if(data.length > 0) {
+						$scope.loadedKeywords.push(keyword);
+						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares');
+						if(!chart || chart.internal.data.targets.length === 0) {
+							timeChart.options.data.xs = xsObj;
+							timeChart.options.data.columns = formattedData;
+							timeChart.options.axis.x.type = 'timeseries';
+							timeChart.options.axis.x.label.text = 'Dia';
+							timeChart.options.axis.x.tick.format = '%d %b';
+							//timeChart.options.data.type = 'area-spline';
+							timeChart.options.data.groups = [];
+							chart = Chart.draw(timeChart);
+						} else {
+							chart.load({
+								xs: xsObj,
+								columns: formattedData
+							});
+						}
+					}
 				});
 			};
 		});
 	}
 
+var timeChart = {
+		options: {
+			bindto: '#keyword-chart',
+			size: {
+        height: 500
+    	},
+    	legend: {
+    		position: 'right'
+    	},
+			tooltip: {
+        grouped: false 
+	    },
+			data: {
+				type: 'area',
+				//onclick: function (d, i) { getItemData(d) }
+			},
+			point: {
+				r: 1.5
+			},
+			subchart: {
+				show: true
+			},
+			transition: {
+				duration: 0
+			},
+			axis: {
+				x: {
+					padding: {left: 0, right: 0},
+					label: {
+						text: 'Horas',
+						position: 'outer-center'
+					},
+					tick: {
+						fit: true
+						// format: function(d, i) {
+						// 		var d = d < 10 ? '0' + d : d;
+						// 		return d + ':00';
+						// }
+					}
+				},
+				y: {
+					//padding: {top: 1, bottom: 1},
+					//min: 0,
+					label: {
+						text: 'Partilhas (Twitter + Facebook)',
+						position: 'outer-middle'
+					},
+					tick: {}
+				}
+			},
+			grid: {
+        x: {
+          show: false
+        },
+        y: {
+          show: true
+      	}
+      },
+			color: function(d) {
+				return d3.scale.category20c(d);
+			}
+		}
+	}
 
 
 
