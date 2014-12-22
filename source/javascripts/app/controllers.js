@@ -371,6 +371,14 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 					}
 				}
 			},
+			grid: {
+        x: {
+            show: true
+        },
+        y: {
+            show: true
+      	}
+      },
 			color: function(d,i) {
 				return d3.scale.category20c(d);
 			}
