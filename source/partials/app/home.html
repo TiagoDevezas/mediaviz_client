@@ -1,14 +1,14 @@
 <div id="home">
-<h3>Ferramentas</h3>
-<p>Escolha uma fonte</p>
-<div class="home-search-bar">
-  <ui-select ng-model="selectedSources.selected" on-select="goToSourcePage($item, $model)" style="min-width: 300px">
-    <ui-select-match placeholder="Escolher/pesquisar fontes...">{{$select.selected.name}}</ui-select-match>
-    <ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
-    		{{ source.name }}
-      <div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
-    </ui-select-choices>
-  </ui-select>
+	<h3>Ferramentas</h3>
+	<p>Escolha uma fonte</p>
+	<div class="home-search-bar">
+		<ui-select ng-model="selectedSources.selected" on-select="goToSourcePage($item, $model)" style="min-width: 300px">
+		<ui-select-match placeholder="Escolher/pesquisar fontes...">{{$select.selected.name}}</ui-select-match>
+		<ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
+		{{ source.name }}
+		<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
+	</ui-select-choices>
+</ui-select>
 </div>
 <hr>
 <div class="tools">
@@ -33,6 +33,48 @@
 			<p>Comparar a utilização de palavras-chave entre diferentes fontes noticiosas online ao longo do tempo.</p>
 		</a>
 	</div>
+</div>
+
+<div class="source-stats inline" ng-show="hasData">
+		<h3>Estatísticas</h3>
+		<hr>
+		<div class="source-stats-home">
+			<div class="stat-inline-wrapper">
+				<p class="stat">{{ stats.articles_count }}</p>
+				<p class="stat-name">Artigos</p>
+				<hr>	
+			</div>
+			<div class="stat-inline-wrapper">	
+				<p class="stat">{{ stats.sources_count }}</p>
+				<p class="stat-name">Fontes</p>
+				<hr>
+			</div>
+
+			<div class="stat-inline-wrapper">
+				<p class="stat">{{ stats.feeds_count}}</p>
+				<p class="stat-name">Feeds</p>
+				<hr>
+			</div>
+
+			<div class="stat-inline-wrapper">
+				<p class="stat">{{ stats.shares_count }}</p>
+				<p class="stat-name">Partilhas (Total)</p>
+				<hr>
+			</div>
+
+			<div class="stat-inline-wrapper">
+				<p class="stat">{{ stats.twitter_shares }}</p>
+				<p class="stat-name">Partilhas no Twitter</p>
+				<hr>
+			</div>
+
+			<div class="stat-inline-wrapper">
+				<p class="stat">{{ stats.facebook_shares }}</p>
+				<p class="stat-name">Partilhas no Facebook</p>
+				<hr>
+			</div>
+
+		</div>
 </div>
 
 </div>

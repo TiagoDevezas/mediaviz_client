@@ -1,3 +1,40 @@
+.source-stats {
+	@include span-columns(12);
+	&.aside {
+		@include media($medium-screen-up) {
+			@include span-columns(3);
+			@include omega();
+		}		
+	}
+	&.inline {
+		margin-top: 2em;
+	}
+
+	margin-bottom: 2em;
+	background-color: white;
+	padding: 1.5em;
+	border: 1px solid $light-gray;
+	border-radius: 2px;
+	.source-stats-home {
+		@include span-columns(12);
+	}
+	.stat-inline-wrapper {
+		@include span-columns(4 of 12);
+		@include omega(3n);
+	}
+	.stat {
+		font-weight: 500;
+		color: $dark-gray;
+		font-size: 1.5em;
+		margin-bottom: 0;
+	}
+	.stat-name {
+		font-weight: 300;
+		color: $medium-gray;
+		font-size: 1.3em
+	}
+}
+
 .about-icon {
 	text-align: center;
 	width: 20px;

@@ -22,12 +22,17 @@ mediavizControllers.controller('RootCtrl', function($scope, SourceList) {
 
 });
 
-mediavizControllers.controller('HomeCtrl', function($scope, $location, Page) {
+mediavizControllers.controller('HomeCtrl', function($scope, $location, Resources, Page) {
 
 	Page.setTitle('Início');
 
 	$scope.selectedSources = {};
 	$scope.selectedSources.selected = [];
+
+	$scope.stats = [];
+	$scope.hasData = false;
+
+	getStats();
 
 	$scope.goToSourcePage = function(source, model) {
 		$location.path('/source/' + source.name);
@@ -44,6 +49,14 @@ mediavizControllers.controller('HomeCtrl', function($scope, $location, Page) {
 			return 'Blogues';
 		}
 	}
+
+	function getStats() {
+		Resources.get({resource: 'stats'}).$promise.then(function(data) {
+			$scope.stats = data[0];
+			$scope.hasData = true;
+		});	
+	}
+
 
 });
 

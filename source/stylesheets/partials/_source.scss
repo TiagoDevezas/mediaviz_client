@@ -58,27 +58,4 @@
 			}
 		}
 	}
-	.source-stats {
-		@include span-columns(12);
-		@include media($medium-screen-up) {
-			@include span-columns(3);
-			@include omega();
-		}
-		margin-bottom: 2em;
-		background-color: white;
-		padding: 1.5em;
-		border: 1px solid $light-gray;
-		border-radius: 2px;
-		.stat {
-			font-weight: 500;
-			color: $dark-gray;
-			font-size: 1.5em;
-			margin-bottom: 0;
-		}
-		.stat-name {
-			font-weight: 300;
-			color: $medium-gray;
-			font-size: 1.3em
-		}
-	}
 }
