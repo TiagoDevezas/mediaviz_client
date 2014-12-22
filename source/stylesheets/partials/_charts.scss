@@ -1,8 +1,16 @@
 .c3-line {
 	stroke-width: 2px !important;
 }
+
+.c3-ygrid {
+	stroke-dasharray: 0;
+	opacity: 0.2;
+}
 .c3-axis .domain {
 	stroke: $light-gray;
+}
+.c3-axis-y .domain {
+	opacity: 0;
 }
 .c3-axis-y-label, .c3-axis-x-label  {
 	font-size: 14px;
@@ -24,5 +32,11 @@
 	}
 	text {
 		font-size: 12px;
+	}
+}
+
+.c3-axis-y .tick {
+	line {
+		opacity: 0;
 	}
 }

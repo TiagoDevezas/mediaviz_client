@@ -1,4 +1,4 @@
-var c3 = { version: "0.4.7" };
+var c3 = { version: "0.4.8" };
 
 var c3_chart_fn, c3_chart_internal_fn;
 
@@ -109,7 +109,7 @@ c3_chart_internal_fn.initParams = function () {
 
     $$.xOrient = config.axis_rotated ? "left" : "bottom";
     $$.yOrient = config.axis_rotated ? (config.axis_y_inner ? "top" : "bottom") : (config.axis_y_inner ? "right" : "left");
-    $$.y2Orient = config.axis_rotated ? (config.axis_y_inner ? "bottom" : "top") : (config.axis_y_inner ? "left" : "right");
+    $$.y2Orient = config.axis_rotated ? (config.axis_y2_inner ? "bottom" : "top") : (config.axis_y2_inner ? "left" : "right");
     $$.subXOrient = config.axis_rotated ? "left" : "bottom";
 
     $$.isLegendRight = config.legend_position === 'right';
@@ -733,8 +733,14 @@ c3_chart_internal_fn.xx = function (d) {
     return d ? this.x(d.x) : null;
 };
 c3_chart_internal_fn.xv = function (d) {
-    var $$ = this;
-    return Math.ceil($$.x($$.isTimeSeries() ? $$.parseDate(d.value) : d.value));
+    var $$ = this, value = d.value;
+    if ($$.isTimeSeries()) {
+        value = $$.parseDate(d.value);
+    }
+    else if ($$.isCategorized() && typeof d.value === 'string') {
+        value = $$.config.axis_x_categories.indexOf(d.value);
+    }
+    return Math.ceil($$.x(value));
 };
 c3_chart_internal_fn.yv = function (d) {
     var $$ = this,
@@ -907,8 +913,8 @@ c3_chart_internal_fn.parseDate = function (date) {
     var $$ = this, parsedDate;
     if (date instanceof Date) {
         parsedDate = date;
-    } else if (typeof date === 'number') {
-        parsedDate = new Date(date);
+    } else if (typeof date === 'number' || !isNaN(date)) {
+        parsedDate = new Date(+date);
     } else {
         parsedDate = $$.dataTimeFormat($$.config.data_xFormat).parse(date);
     }

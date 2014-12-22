@@ -35,6 +35,10 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			templateUrl: 'partials/app/compare.html',
 			controller: 'CompareCtrl'
 		}).
+		when('/social', {
+			templateUrl: 'partials/app/social.html',
+			controller: 'SocialCtrl'
+		}).
 		when('/chronicle', {
 			templateUrl: 'partials/app/chronicle.html',
 			controller: 'ChronicleCtrl',
@@ -48,10 +52,10 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			templateUrl: 'partials/app/main.html',
 			controller: 'MainCtrl'
 		}).
-		when('/:source', {
-			templateUrl: 'partials/app/main.html',
-			controller: 'SourceCtrl'
-		}).
+		// when('/:source', {
+		// 	templateUrl: 'partials/app/main.html',
+		// 	controller: 'SourceCtrl'
+		// }).
 		otherwise({
 			redirectTo: '/'
 		});

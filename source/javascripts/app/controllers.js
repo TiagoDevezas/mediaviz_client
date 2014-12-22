@@ -373,10 +373,10 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 			},
 			grid: {
         x: {
-            show: true
+          show: false
         },
         y: {
-            show: true
+          show: true
       	}
       },
 			color: function(d,i) {
@@ -384,6 +384,87 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 			}
 		}
 	}
+
+});
+
+mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, Chart, DataFormatter) {
+
+	// Multiple keywords, one source; time series for articles and shares
+
+
+	Page.setTitle('Social');
+
+	var chart;
+
+	$scope.keywords = {};
+	$scope.keywords.selected = [];
+
+	$scope.selectedSource = {};
+	$scope.selectedSource.selected = [];
+
+	$scope.loadedKeywords = [];
+
+	$scope.dataFormat = 'absolute';
+
+	$scope.groupSourcesByType = function(item) {
+		if(item.type === 'newspaper') {
+			return 'Jornais Nacionais';
+		}
+		if(item.type === 'international') {
+			return 'Jornais Internacionais';
+		}
+		if(item.type === 'blog') {
+			return 'Blogues';
+		}
+	}
+
+	$scope.$watch('keywords.selected', function(newVal, oldVal) { 
+		if($scope.selectedSource.selected.length !== 0) {
+			getTotalsAndDraw();
+		}
+	});
+
+	$scope.$watch('selectedSource.selected', function(newVal, oldVal) {
+		$scope.selectedSource.selected = newVal;
+		getTotalsAndDraw();
+	});
+
+	// $scope.loadSourceData = function(sourceObj) {
+	// 	$scope.selectedSource.selected = sourceObj;
+	// 	//getTotalsAndDraw();
+	// }
+
+	// $scope.redrawChart = function() {
+	// 	if($scope.selectedSource.selected.length > 0) {
+	// 		$scope.loadedKeywords = [];
+	// 		if(chart) { chart.unload(); };
+	// 		getTotalsAndDraw();			
+	// 	}
+	// }
+
+	function getTotalsAndDraw() {
+		$scope.keywords.selected.forEach(function(keyword) {
+			var keyword = keyword;
+			var selectedSource = $scope.selectedSource.selected;
+			console.log(selectedSource);
+			var aggregated = selectedSource.group;
+			if(!aggregated) {
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: selectedSource.name, q: keyword};
+			} else {
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: selectedSource.type, q: keyword};
+			}
+			if($scope.loadedKeywords.indexOf(keyword === -1)) {
+				$scope.loading = true;
+				Resources.get($scope.paramsObj).$promise.then(function(data) {
+					$scope.loading = false;
+					console.log(data);
+				});
+			};
+		});
+	}
+
+
+
 
 });
 
@@ -498,87 +579,87 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
 					$scope.loading = false;
 					if(data.length > 0) {
-					$scope.loadedSources.push(keyword);
-					if(columns[0].length === 0) {
-						columns[0] = ['x'].concat(keyword);
-					} else {
-						columns[0].push(keyword);
-					}
-					if($scope.dataFormat === 'absolute') {
-						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
-						if(columns[1].length === 0) {
-							columns[1] = [$scope.keyword.selected, data[0]['total_query_articles']];
+						$scope.loadedSources.push(keyword);
+						if(columns[0].length === 0) {
+							columns[0] = ['x'].concat(keyword);
 						} else {
-							columns[1].push(data[0]['total_query_articles']);
+							columns[0].push(keyword);
 						}
-						barChart.options.axis.y.label.text = 'Número de artigos';
-						timeChart.options.axis.y.label.text = 'Número de artigos';
-						//timeChart.options.data.groups = [$scope.loadedSources];
-						timeChart.options.axis.y.tick.format = function(d, i) {
-							return d;
-						}
-						barChart.options.axis.y.tick.format = function(d, i) {
-							return d;
-						}
-					}
-					if($scope.dataFormat === 'relative') {
-						if(aggregated) {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
-							var total_query_articles = data[0]['total_query_articles'];
-							var total_type_articles = data[0]['total_type_articles'];
-							var percent = ((total_query_articles/total_type_articles) * 100).toFixed(2);
+						if($scope.dataFormat === 'absolute') {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
 							if(columns[1].length === 0) {
-								columns[1] = [$scope.keyword.selected, percent];
+								columns[1] = [$scope.keyword.selected, data[0]['total_query_articles']];
 							} else {
-								columns[1].push(percent);
+								columns[1].push(data[0]['total_query_articles']);
 							}
-						} else {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
-							var total_query_articles = data[0]['total_query_articles'];
-							var total_source_articles = data[0]['total_source_articles'];
-							var percent = ((total_query_articles/total_source_articles) * 100).toFixed(2);
-							if(columns[1].length === 0) {
-								columns[1] = [$scope.keyword.selected, percent];
-							} else {
-								columns[1].push(percent);
+							barChart.options.axis.y.label.text = 'Número de artigos';
+							timeChart.options.axis.y.label.text = 'Número de artigos';
+							//timeChart.options.data.groups = [$scope.loadedSources];
+							timeChart.options.axis.y.tick.format = function(d, i) {
+								return d;
+							}
+							barChart.options.axis.y.tick.format = function(d, i) {
+								return d;
 							}
 						}
-						timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
-						barChart.options.axis.y.label.text = 'Percentagem do total de artigos';
-						barChart.options.axis.y.padding = { top: 0, bottom: 0 };
-						timeChart.options.axis.y.padding = { top: 0, bottom: 0 };
-						//timeChart.options.data.groups = [];
-						timeChart.options.axis.y.tick.format = function(d, i) {
-							return d + '%';
+						if($scope.dataFormat === 'relative') {
+							if(aggregated) {
+								var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
+								var total_query_articles = data[0]['total_query_articles'];
+								var total_type_articles = data[0]['total_type_articles'];
+								var percent = ((total_query_articles/total_type_articles) * 100).toFixed(2);
+								if(columns[1].length === 0) {
+									columns[1] = [$scope.keyword.selected, percent];
+								} else {
+									columns[1].push(percent);
+								}
+							} else {
+								var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
+								var total_query_articles = data[0]['total_query_articles'];
+								var total_source_articles = data[0]['total_source_articles'];
+								var percent = ((total_query_articles/total_source_articles) * 100).toFixed(2);
+								if(columns[1].length === 0) {
+									columns[1] = [$scope.keyword.selected, percent];
+								} else {
+									columns[1].push(percent);
+								}
+							}
+							timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+							barChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+							barChart.options.axis.y.padding = { top: 0, bottom: 0 };
+							timeChart.options.axis.y.padding = { top: 0, bottom: 0 };
+							//timeChart.options.data.groups = [];
+							timeChart.options.axis.y.tick.format = function(d, i) {
+								return d + '%';
+							}
+							barChart.options.axis.y.tick.format = function(d, i) {
+								return d + '%';
+							}
 						}
-						barChart.options.axis.y.tick.format = function(d, i) {
-							return d + '%';
+						if(!chart || chart.internal.data.targets.length === 0) {
+							timeChart.options.data.xs = xsObj;
+							timeChart.options.data.columns = formattedData;
+							timeChart.options.axis.x.type = 'timeseries';
+							timeChart.options.axis.x.label.text = 'Dia';
+							timeChart.options.axis.x.tick.format = '%d %b';
+							//timeChart.options.data.type = 'area-spline';
+							timeChart.options.data.groups = [];
+							chart = Chart.draw(timeChart);
+						} else {
+							chart.load({
+								xs: xsObj,
+								columns: formattedData
+							});
 						}
-					}
-					if(!chart || chart.internal.data.targets.length === 0) {
-						timeChart.options.data.xs = xsObj;
-						timeChart.options.data.columns = formattedData;
-						timeChart.options.axis.x.type = 'timeseries';
-						timeChart.options.axis.x.label.text = 'Dia';
-						timeChart.options.axis.x.tick.format = '%d %b';
-						//timeChart.options.data.type = 'area-spline';
-						timeChart.options.data.groups = [];
-						chart = Chart.draw(timeChart);
-					} else {
-						chart.load({
-							xs: xsObj,
-							columns: formattedData
-						});
-					}
 
-					barChart.options.data.x = 'x';
-					var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
-					barChart.options.data.names = JSON.parse(label);
-					barChart.options.data.columns = columns;
-					chart2 = Chart.draw(barChart);
+						barChart.options.data.x = 'x';
+						var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
+						barChart.options.data.names = JSON.parse(label);
+						barChart.options.data.columns = columns;
+						chart2 = Chart.draw(barChart);
 
-					// Fix c3 bug where the subchart is shown even when set to false
-					d3.select("#bar-chart svg").select("g.c3-brush").remove();
+						// Fix c3 issue where the subchart is shown even when set to false
+						d3.select("#bar-chart svg").select("g.c3-brush").remove();
 					}
 				});				
 			}
@@ -677,6 +758,14 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 					tick: {}
 				}
 			},
+			grid: {
+        x: {
+          show: false
+        },
+        y: {
+          show: true
+      	}
+      },
 			color: function(d) {
 				return d3.scale.category20c(d);
 			}
@@ -694,7 +783,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	var count = 0;
 
-	$scope.loadedSources = [];
+	$scope.loadedKeywords = [];
 
 	$scope.loading = false;
 
@@ -755,7 +844,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	$scope.$watch('keywords.selected', function(newVal, oldVal) {
 		angular.forEach(oldVal, function(keyword) {
 			if(newVal.indexOf(keyword) === -1) {
-				$scope.loadedSources.splice($scope.loadedSources.indexOf(keyword), 1);
+				$scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(keyword), 1);
 				chart.unload({ids: keyword});
 			}
 		});
@@ -771,14 +860,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	$scope.clearChart = function() {
 		$location.search('');
 		$scope.keywords.selected = [];
-		$scope.loadedSources = [];
+		$scope.loadedKeywords = [];
 		if(chart) { chart.unload(); }
 	}
 
 	$scope.setDataFormat = function(dataFormat){
 		if ($scope.dataFormat !== dataFormat) {
 			$scope.dataFormat = dataFormat;
-			$scope.loadedSources = [];
+			$scope.loadedKeywords = [];
 			chart.flush();
 			getTotalsAndDraw();
 		}
@@ -787,7 +876,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	$scope.setSourceType = function(sourceType){
 		if ($scope.sourceType !== sourceType) {
 			$scope.sourceType = sourceType;
-			$scope.loadedSources = [];
+			$scope.loadedKeywords = [];
 			getTotalsAndDraw();
 		}
 	}
@@ -800,7 +889,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	// $scope.removeKeyword = function(item) {
 	// 	//$scope.keywords.selected.splice($scope.keywords.selected.indexOf(item), 1);
-	// 	//$scope.loadedSources.splice($scope.loadedSources.indexOf(item), 1);
+	// 	//$scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(item), 1);
 	// 	//$location.search({ keywords: $scope.keywords.selected.toString() });
 	// 	//chart.unload({ ids: item });
 	// }
@@ -811,14 +900,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			var timeId = 'timeFor' + keyword;
 			var countId = keyword;
 			var xsObj = {};
-			if($scope.loadedSources.indexOf(keyword) === -1) {
+			if($scope.loadedKeywords.indexOf(keyword) === -1) {
 				$scope.loading = true;
 				Resources.get({resource: 'totals', q: keyword, since: $scope.since, type: $scope.sourceType}).$promise.then(function(dataObj) {
 					if(dataObj.length > 0) {
 						var formattedData;
 						xsObj[countId] = timeId;
 						$scope.loading = false;
-						$scope.loadedSources.push(keyword);
+						$scope.loadedKeywords.push(keyword);
 						if($scope.dataFormat === 'absolute') {
 							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
 							keywordChart.options.axis.y.label.text = 'Número de artigos';
@@ -842,7 +931,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 						$timeout(function() {
 							chart.unload({ids: keyword});
 						}, 500)
-						//alert($scope.loadedSources);
+						//alert($scope.loadedKeywords);
 					}
 					if(chart) {
 						d3.select('.c3-axis-x-label')
@@ -866,12 +955,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		$location.path('/chronicle/items').search({q: query, since: date1, until: date1, type: sourceType });
 		$scope.$apply();
 	}
-
-	var patterns = {
-    light: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896'],
-    dark: ['#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7'],
-    material: ['#e51c23', '#673ab7', '#5677fc', '#03a9f4', '#00bcd4', '#259b24', '#ffeb3b', '#ff9800']
-  };
 
 	var keywordChart = {
 		options: {
@@ -943,6 +1026,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 					}
 				}
 			},
+			grid: {
+        x: {
+          show: false
+        },
+        y: {
+          show: true
+      	}
+      },
 			color: function(d) {
 				return d3.scale.category20c(d);
 			}
@@ -1231,9 +1322,10 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 						position: 'outer-center'
 					},
 					tick: {
-						culling: {
-              max: 12 // the number of tick texts will be adjusted to less than this value
-            },
+						fit: true
+						// culling: {
+              // max: 12 // the number of tick texts will be adjusted to less than this value
+            // },
 						// format: function(d, i) {
 						// 		var d = d < 10 ? '0' + d : d;
 						// 		return d + ':00';
@@ -1250,6 +1342,14 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 					tick: {}
 				}
 			},
+			grid: {
+        x: {
+          show: false
+        },
+        y: {
+          show: true
+      	}
+      },
 			color: function(d) {
 				return d3.scale.category20c(d);
 			}
