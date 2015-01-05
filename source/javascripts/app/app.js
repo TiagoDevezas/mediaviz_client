@@ -44,7 +44,7 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			controller: 'ChronicleCtrl',
 			reloadOnSearch: false
 		}).
-		when('/chronicle/items', {
+		when('/articles', {
 			templateUrl: 'partials/app/chronicle-items.html',
 			controller: 'ChronicleItemsCtrl'
 		}).

@@ -2,19 +2,6 @@
 
 	<h3>Crónica</h3>
 
-	
-	<div class="chart-tools">
-		<ul class="mode-tools">
-			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
-			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
-		<ul>
-		<ul class="mode-tools">
-			<li><a href="" ng-click="setSourceType('newspaper')" ng-class="{'selected':sourceType === 'newspaper'}">Jornais Nacionais</a></li>
-			<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Jornais Internacionais</a></li>
-			<li><a href="" ng-click="setSourceType('blog')" ng-class="{'selected':sourceType === 'blog'}">Blogs</a></li>
-		</ul>
-	</div>
-
 	<div class="keyword-select">
 		<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
 	    <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
@@ -23,6 +10,17 @@
 	    </ui-select-choices>
 	  </ui-select>
 	  <button class="clear-chart" ng-click="clearChart()">Limpar gráfico</button>		
+	</div>
+
+	<div class="search-tools">
+		<ul>
+			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
+			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
+			<li class="menu-separator"> | </li>
+			<li><a href="" ng-click="setSourceType('newspaper')" ng-class="{'selected':sourceType === 'newspaper'}">Jornais Nacionais</a></li>
+			<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Jornais Internacionais</a></li>
+			<li><a href="" ng-click="setSourceType('blog')" ng-class="{'selected':sourceType === 'blog'}">Blogs</a></li></li>
+		</ul>
 	</div>
 
 

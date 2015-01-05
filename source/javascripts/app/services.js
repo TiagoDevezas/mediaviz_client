@@ -31,7 +31,7 @@ mediavizServices.factory('SourceList', ['$http',
 		var callback = '?callback=JSON_CALLBACK';
 		return {
 			get: function(myCallback) {
-				return $http.jsonp(baseUrl + 'sources' + callback)
+				return $http.jsonp(baseUrl + 'sources' + callback, {cache: true})
 				.success(function(response) {
 					var sources = response.map(function(el) {
 						return { 'name': el.name, 'type': el.type };

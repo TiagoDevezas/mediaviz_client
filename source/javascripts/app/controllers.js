@@ -387,7 +387,7 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 
 });
 
-mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, Chart, DataFormatter) {
+mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, Chart, DataFormatter, $location) {
 
 	// Multiple keywords, one source; time series for articles and shares
 
@@ -406,6 +406,8 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 
 	$scope.dataFormat = 'absolute';
 
+	$scope.selectedNetwork = 'twitter_facebook';
+
 	$scope.groupSourcesByType = function(item) {
 		if(item.type === 'newspaper') {
 			return 'Jornais Nacionais';
@@ -417,6 +419,24 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 			return 'Blogues';
 		}
 	}
+
+	$scope.setSocialNetwork = function(socialNetwork) {
+		if($scope.selectedNetwork !== socialNetwork) {
+			$scope.selectedNetwork = socialNetwork;
+			$scope.loadedKeywords = [];
+			if(chart) { chart.flush(); }
+			getTotalsAndDraw();
+		}
+	}
+
+	// $scope.setDataFormat = function(dataFormat){
+	// 	if ($scope.dataFormat !== dataFormat) {
+	// 		$scope.dataFormat = dataFormat;
+	// 		$scope.loadedKeywords = [];
+	// 		chart.flush();
+	// 		getTotalsAndDraw();
+	// 	}
+	// }
 
 	$scope.$watch('keywords.selected', function(newVal, oldVal) {
 		var keywordToRemove, keywordToRemoveIndex;
@@ -435,10 +455,29 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 	});
 
 	$scope.$watch('selectedSource.selected', function(newVal, oldVal) {
+		console.log($scope.selectedSource.selected);
 		$scope.selectedSource.selected = newVal;
 		if(chart) { chart.unload(); }
 		getTotalsAndDraw();
 	});
+
+	function getItemData(datum) {
+		var dateFormat = d3.time.format("%Y-%m-%d");
+		var unformattedDate = datum.x;
+		var formattedDate = dateFormat(unformattedDate);
+		var query = datum.name;
+		var sourceObj = $scope.selectedSource.selected;
+		displayItems(formattedDate, query, sourceObj);
+	}
+
+	function displayItems(date1, query, source) {
+		if(source.group) {
+			$location.path('/articles').search({q: query, since: date1, until: date1, type: source.type });
+		} else {
+			$location.path('/articles').search({q: query, since: date1, until: date1, source: source.name });			
+		}
+		$scope.$apply();
+	}
 
 	function getTotalsAndDraw() {
 		$scope.keywords.selected.forEach(function(keyword) {
@@ -460,7 +499,19 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 					$scope.loading = false;
 					if(data.length > 0) {
 						$scope.loadedKeywords.push(keyword);
-						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares');
+						if($scope.selectedNetwork === 'twitter_facebook') {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares');
+							timeChart.options.axis.y.label.text = 'Partilhas (Twitter + Facebook)';
+						} else if ($scope.selectedNetwork === 'twitter') {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'twitter_shares');
+							timeChart.options.axis.y.label.text = 'Partilhas (Twitter)';
+						} else if ($scope.selectedNetwork === 'facebook') {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'facebook_shares');
+							timeChart.options.axis.y.label.text = 'Partilhas (Facebook)';
+						} else if ($scope.selectedNetwork === 'articlesCount') {
+							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+							timeChart.options.axis.y.label.text = 'Número de artigos';							
+						}
 						if(!chart || chart.internal.data.targets.length === 0) {
 							timeChart.options.data.xs = xsObj;
 							timeChart.options.data.columns = formattedData;
@@ -496,7 +547,7 @@ var timeChart = {
 	    },
 			data: {
 				type: 'area',
-				//onclick: function (d, i) { getItemData(d) }
+				onclick: function (d, i) { getItemData(d) }
 			},
 			point: {
 				r: 1.5
@@ -526,7 +577,7 @@ var timeChart = {
 					//padding: {top: 1, bottom: 1},
 					//min: 0,
 					label: {
-						text: 'Partilhas (Twitter + Facebook)',
+						//text: 'Partilhas (Twitter + Facebook)',
 						position: 'outer-middle'
 					},
 					tick: {}
@@ -1034,7 +1085,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	}
 
 	function displayItems(date1, query, sourceType) {
-		$location.path('/chronicle/items').search({q: query, since: date1, until: date1, type: sourceType });
+		$location.path('/articles').search({q: query, since: date1, until: date1, type: sourceType });
 		$scope.$apply();
 	}
 
@@ -1129,13 +1180,14 @@ mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location,
 	$scope.since = $routeParams.since;
 	$scope.until = $routeParams.until;
 	$scope.limit = $routeParams.limit || 50;
+	$scope.sourceName = $routeParams.source;
 	$scope.sourceType = $routeParams.type;
 
 	$scope.loading = true;
 
 	$scope.sourceFilter = '';
 
-	Resources.get({resource: 'items', q: $scope.q, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType}).$promise.then(function(dataObj) {
+	Resources.get({resource: 'items', q: $scope.q, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType, source: $scope.sourceName}).$promise.then(function(dataObj) {
 		$scope.loading = false;
 		$scope.chronicleItems = dataObj;
 		//console.log(dataObj);
