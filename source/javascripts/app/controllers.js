@@ -112,7 +112,7 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 
 	$scope.loading = false;
 
-	$scope.since = '2014-10-15' || $routeParams.since;
+	$scope.since = '' || $routeParams.since;
 	$scope.until;
 
 	$scope.sourceData = [];
@@ -455,7 +455,6 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 	});
 
 	$scope.$watch('selectedSource.selected', function(newVal, oldVal) {
-		console.log($scope.selectedSource.selected);
 		$scope.selectedSource.selected = newVal;
 		if(chart) { chart.unload(); }
 		getTotalsAndDraw();
@@ -924,7 +923,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$scope.sourceType = 'newspaper';
 
-	$scope.since = '2014-10-15' || $routeParams.since;
+	$scope.since = '' || $routeParams.since;
 	$scope.until;
 
 	$scope.dataFormat = 'absolute';

@@ -10,7 +10,7 @@ var jsonp = {
 				options: {
 						method: 'JSONP',
 						isArray: true,
-						cache: true, 
+						// cache: true, 
 						params: {
 							callback: 'JSON_CALLBACK',
 							resource: '@resource'
