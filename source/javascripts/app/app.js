@@ -33,7 +33,8 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 		}).
 		when('/compare', {
 			templateUrl: 'partials/app/compare.html',
-			controller: 'CompareCtrl'
+			controller: 'CompareCtrl',
+			reloadOnSearch: false
 		}).
 		when('/social', {
 			templateUrl: 'partials/app/social.html',

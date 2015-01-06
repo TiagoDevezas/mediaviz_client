@@ -406,7 +406,7 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 
 	$scope.dataFormat = 'absolute';
 
-	$scope.selectedNetwork = 'twitter_facebook';
+	$scope.selectedNetwork = 'articlesCount';
 
 	$scope.groupSourcesByType = function(item) {
 		if(item.type === 'newspaper') {
@@ -600,7 +600,7 @@ var timeChart = {
 
 });
 
-mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, Chart, DataFormatter) {
+mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, Chart, DataFormatter, $location) {
 
 	Page.setTitle('Comparador');
 
@@ -624,6 +624,17 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 		}
 	});
 
+	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+		var keyword = $location.search()['keyword'] || undefined;
+		if(keyword && newVal !== oldVal) {
+			$scope.keyword.selected = keyword;
+			$scope.redrawChart();
+		}
+		// if(objectIsEmpty(newVal) && !objectIsEmpty(oldVal)) {
+		// 	$scope.clearChart();
+		// }
+	}, true);
+
 	$scope.groupSourcesByType = function(item) {
 		if(item.type === 'newspaper') {
 			return 'Jornais Nacionais';
@@ -637,6 +648,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 	}
 
 	$scope.loadSourceData = function() {
+		setLocation();
 		getTotalsAndDraw();
 	}
 
@@ -663,6 +675,10 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 		}
 	});
 
+	function setLocation() {
+		$location.search({keyword: $scope.keyword.selected });		
+	}
+
 	$scope.setDataFormat = function(dataFormat){
 		if ($scope.dataFormat !== dataFormat) {
 			$scope.dataFormat = dataFormat;
@@ -677,6 +693,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 	}
 
 	$scope.redrawChart = function() {
+		setLocation();
 		$scope.loadedSources = [];
 		if(chart) { chart.unload(); };
 		if(chart2) { chart2.unload(); };
@@ -1020,16 +1037,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$scope.addKeyword = function(item){
 		$scope.keywords.selected.push(item);
-		//$location.search({ keywords: $scope.keywords.selected.toString() });
-		//getTotalsAndDraw();
 	}
 
-	// $scope.removeKeyword = function(item) {
-	// 	//$scope.keywords.selected.splice($scope.keywords.selected.indexOf(item), 1);
-	// 	//$scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(item), 1);
-	// 	//$location.search({ keywords: $scope.keywords.selected.toString() });
-	// 	//chart.unload({ ids: item });
-	// }
 
 	function getTotalsAndDraw() {
 		angular.forEach($scope.keywords.selected, function(el, index) {
