@@ -649,17 +649,17 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 				}
 			});
 			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
-			if(chart) { chart.unload({ids: sourceToRemove}); }
 			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
 			columnToRemoveIndex = columns[0].indexOf(sourceToRemove);
 			if(columnToRemoveIndex !== -1) {
 				columns[0].splice(columnToRemoveIndex, 1);
 				columns[1].splice(columnToRemoveIndex, 1);
-				chart2.load({
-					columns: columns,
-					unload: true
-				});
 			}
+			if(chart) { chart.unload({ids: sourceToRemove}); }
+			chart2.load({
+				columns: columns,
+				unload: [sourceToRemove]
+			});
 		}
 	});
 
@@ -706,7 +706,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: el.type, q: $scope.keyword.selected};
 			}
 
-			if($scope.loadedSources.indexOf(keyword) === -1) {
+			if($scope.loadedSources.indexOf(keyword) === -1 && columns[0].indexOf(keyword) === -1) {
 				$scope.loading = true;
 				Resources.get($scope.paramsObj).$promise.then(function(data) {
 					$scope.loading = false;
@@ -783,12 +783,17 @@ mediavizControllers.controller('CompareCtrl', function($scope, Page, Resources, 
 								columns: formattedData
 							});
 						}
-
-						barChart.options.data.x = 'x';
-						var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
-						barChart.options.data.names = JSON.parse(label);
-						barChart.options.data.columns = columns;
-						chart2 = Chart.draw(barChart);
+						if(!chart2 || chart2.internal.data.targets.length === 0) {
+							barChart.options.data.x = 'x';
+							var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
+							barChart.options.data.names = JSON.parse(label);
+							barChart.options.data.columns = columns;
+							chart2 = Chart.draw(barChart);
+						} else {
+							chart2.load({
+								columns: columns
+							});
+						}
 
 						// Fix c3 issue where the subchart is shown even when set to false
 						d3.select("#bar-chart svg").select("g.c3-brush").remove();
