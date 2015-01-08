@@ -142,3 +142,10 @@
 		}
 	}
 }
+.pickadate-selector {
+	@include row();
+	.pickadate-input {
+		@include span-columns(4 of 12);
+	}
+}
+

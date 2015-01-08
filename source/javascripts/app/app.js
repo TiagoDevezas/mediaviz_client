@@ -25,7 +25,8 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			controller: 'SourceCtrl'
 		}).
 		when('/about', {
-			templateUrl: 'partials/app/about.html'
+			templateUrl: 'partials/app/about.html',
+			controller: 'AboutCtrl'
 		}).
 		when('/flow', {
 			templateUrl: 'partials/app/flow.html',

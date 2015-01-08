@@ -23,16 +23,44 @@
 
 	<div class="search-tools">
 		<ul>
+			<li><a href="" ng-click="displayBy('hour')" ng-class="{'selected':by === 'hour'}">24 Horas</a></li>
+			<li><a href="" ng-click="displayBy('week')" ng-class="{'selected':by === 'week'}">Semana</a></li>
+			<li><a href="" ng-click="displayBy('day')" ng-class="{'selected':by === 'day'}">Dia</a></li>
+			<li><a href="" ng-click="displayBy('month')" ng-class="{'selected':by === 'month'}">Mês</a></li>
+			<li><a href="" class="bordered" ng-show="showSearchTools" ng-click="openSearchTools();">Ferramentas de pesquisa &dtrif;</a></li>
+			<li class="menu-separator"> | </li>
 			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
 			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
 		</ul>
 	</div>
+	<div class="search-tools" ng-show="showSearchToolsNav">
+		<ul>
+			<li ng-repeat="option in optionsForDateSelect"><a href="" ng-click="setSelectedOption(option)" ng-class="{'selected':dateOptions.selected === option, 'bordered':option.name === optionsForDateSelect[4].name}">{{ option.name }}</a></li>
+		</ul>
+	</div>
+
+<!-- 	<select ng-change="selectAction()" ng-model="dateOptions.selected" ng-options="option.name for option in optionsForDateSelect">
+		
+	</select> -->
+
+	<div class="pickadate-selector" ng-show="pickadayOpen">
+		<div class="pickadate-input" pickadate ng-model="dateSince" max-date="today"></div>
+		<div class="pickadate-input" pickadate ng-model="dateUntil" max-date="today"></div>
+		<button ng-click="setDateInterval()">Submeter</button>
+	</div>
+
+<!-- 	<div class="search-tools">
+		<ul>
+			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
+			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
+		</ul>
+	</div> -->
 
 
 	<loading-flash>A carregar...</loading-flash>
 
 	<div id="time-chart"></div>
 
-	<div id="bar-chart"></div>
+<!-- 	<div id="bar-chart"></div> -->
 
 </div>

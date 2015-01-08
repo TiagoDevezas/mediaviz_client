@@ -61,6 +61,17 @@ set :js_dir, 'javascripts'
 
 set :images_dir, 'images'
 
+activate :deploy do |deploy|
+  deploy.method   = :sftp
+  deploy.host     = 'mediaviz.fe.up.pt'
+  deploy.port     = 22
+  deploy.path     = '/home/tiagodevezas/Projects/public_html/dashboard'
+  deploy.build_before = true
+  # Optional Settings
+  deploy.user     = 'tiagodevezas' # no default
+  # deploy.password = 'secret' # no default
+end
+
 # Build-specific configuration
 configure :build do
   # For example, change the Compass output style for deployment

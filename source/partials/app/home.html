@@ -47,36 +47,46 @@
 		<hr>
 		<div class="source-stats-home">
 			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.articles_count }}</p>
+				<p class="stat">{{ stats.articles_count.toLocaleString('pt-PT') }}</p>
 				<p class="stat-name">Artigos</p>
 				<hr>	
 			</div>
+			<div class="stat-inline-wrapper">
+				<p class="stat">{{ stats.articles_day.toLocaleString('pt-PT') }}</p>
+				<p class="stat-name">Artigos/dia</p>
+				<hr>	
+			</div>
+			<div class="stat-inline-wrapper">
+				<p class="stat">{{ stats.articles_hour.toLocaleString('pt-PT') }}</p>
+				<p class="stat-name">Artigos/hora</p>
+				<hr>	
+			</div>
 			<div class="stat-inline-wrapper">	
-				<p class="stat">{{ stats.sources_count }}</p>
+				<p class="stat">{{ stats.sources_count.toLocaleString('pt-PT') }}</p>
 				<p class="stat-name">Fontes</p>
 				<hr>
 			</div>
 
 			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.feeds_count}}</p>
+				<p class="stat">{{ stats.feeds_count.toLocaleString('pt-PT') }}</p>
 				<p class="stat-name">Feeds</p>
 				<hr>
 			</div>
 
 			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.shares_count }}</p>
+				<p class="stat">{{ stats.shares_count.toLocaleString('pt-PT') }}</p>
 				<p class="stat-name">Partilhas (Total)</p>
 				<hr>
 			</div>
 
 			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.twitter_shares }}</p>
+				<p class="stat">{{ stats.twitter_shares.toLocaleString('pt-PT') }}</p>
 				<p class="stat-name">Partilhas no Twitter</p>
 				<hr>
 			</div>
 
 			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.facebook_shares }}</p>
+				<p class="stat">{{ stats.facebook_shares.toLocaleString('pt-PT') }}</p>
 				<p class="stat-name">Partilhas no Facebook</p>
 				<hr>
 			</div>

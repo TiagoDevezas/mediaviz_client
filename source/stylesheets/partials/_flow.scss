@@ -14,39 +14,39 @@
 			padding: 0.5em;
 		}
 	}
-	.search-tools {
-		border-bottom: 1px solid $light-gray;
-		padding: 1em;
-		ul {
-			li {
-				display: inline-block;
-				a {
-					padding: 0.5em 0.75em;
-					color: $dark-gray;
-					font-size: 0.9em;
-					&:hover {
-						border-bottom: 2px solid $medium-gray;
-					}
-					&.bordered {
-						margin-left: 1em;
-						border: 1px solid $medium-gray;
-						border-radius: 3px;
-						&:hover {
-							//margin-left: (1em - em(1px));
+// 	.search-tools {
+// 		border-bottom: 1px solid $light-gray;
+// 		padding: 1em;
+// 		ul {
+// 			li {
+// 				display: inline-block;
+// 				a {
+// 					padding: 0.5em 0.75em;
+// 					color: $dark-gray;
+// 					font-size: 0.9em;
+// 					&:hover {
+// 						border-bottom: 2px solid $medium-gray;
+// 					}
+// 					&.bordered {
+// 						margin-left: 1em;
+// 						border: 1px solid $medium-gray;
+// 						border-radius: 3px;
+// 						&:hover {
+// 							//margin-left: (1em - em(1px));
 							
-						}
-					}
-				}
-			}
-		}
-	}
-	.selected {
-		border-bottom: 2px solid $medium-gray;
-	}
-	.pickadate-selector {
-		@include row();
-		.pickadate-input {
-			@include span-columns(4 of 12);
-		}
-	}
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// 	.selected {
+// 		border-bottom: 2px solid $medium-gray;
+// 	}
+// 	.pickadate-selector {
+// 		@include row();
+// 		.pickadate-input {
+// 			@include span-columns(4 of 12);
+// 		}
+// 	}
 }

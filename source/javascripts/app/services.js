@@ -6,18 +6,6 @@ var baseUrl = 'http://mediaviz.fe.up.pt/panorama/api/';
 
 var baseUrl2 = 'panorama/api/';
 
-var jsonp = { 
-				options: {
-						method: 'JSONP',
-						isArray: true,
-						// cache: true, 
-						params: {
-							callback: 'JSON_CALLBACK',
-							resource: '@resource'
-						}
-					}
-				};
-
 mediavizServices.factory('Page', function($rootScope) {
 	var title = 'MediaViz';
 	return {
@@ -34,11 +22,11 @@ mediavizServices.factory('SourceList', ['$http',
 				return $http.jsonp(baseUrl + 'sources' + callback, {cache: true})
 				.success(function(response) {
 					var sources = response.map(function(el) {
-						return { 'name': el.name, 'type': el.type };
+						return { 'name': el.name, 'type': el.type, 'acronym': el.acronym };
 					});
-					sources.unshift({'name': 'Todos os blogues', 'type': 'blog', 'group': true });
-					sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'group': true});
-					sources.unshift({'name': 'Todas nacionais', 'type': 'newspaper', 'group': true });
+					sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
+					sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
+					sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
 					var sourceArray = sources;
 					myCallback(sources);						
 				});			
@@ -46,11 +34,23 @@ mediavizServices.factory('SourceList', ['$http',
 		};
 	}]);
 
-mediavizServices.factory('Resources', ['$resource',
-	function($resource) {
+mediavizServices.factory('Resources', ['$resource', '$q',
+	function($resource, $q) {
+		//var canceller = $q.defer();
+		var jsonp = { 
+				options: {
+						method: 'JSONP',
+						isArray: true,
+						// cache: true, 
+						params: {
+							callback: 'JSON_CALLBACK',
+							resource: '@resource'
+						}
+					}
+				};
 		return $resource(baseUrl + ':resource', {},
 		{
-			get: jsonp.options	
+			get: jsonp.options
 		});
 	}]);
 
