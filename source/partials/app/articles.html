@@ -1,0 +1,26 @@
+<div id="articles">
+	<form class="search-bar" ng-submit="loadData()">
+		<input type="search" placeholder="Pesquisar" ng-model="query">
+		<!-- <button type="submit">Pesquisar</button> -->
+		<loading-flash>A carregar...</loading-flash>
+	</form>
+	<div class="article-controls">
+		<a href="" class="selected">Todas</a>
+		<a href="">Nacionais</a>
+		<a href="">Internacionais</a>
+		<a href="">Blogues</a>
+	</div>
+<!-- 	<ul class="source-type-links">
+		<li class="all" ng-class="{'selected':sourceFilter === ''}"><a href="" ng-click="sourceFilter = ''">Tudo</a></li>
+		<li class="newspapers" ng-class="{'selected':sourceFilter === 'national'}"><a href="" ng-click="sourceFilter = 'national'">Nacionais</a></li>
+		<li class="blogs" ng-class="{'selected':sourceFilter === 'blogs'}"><a href="" ng-click="sourceFilter = 'blogs'">Blogs</a></li>
+		<li class="newspapers" ng-class="{'selected':sourceFilter === 'international'}"><a href="" ng-click="sourceFilter = 'international'">Internacionais</a></li>
+	</ul> -->
+	<article class="{{ item.source_type }}" ng-repeat="item in chronicleItems | filter: sourceFilter">
+		<div class="article-content">
+			<p class="article-pub-date">{{ item.pub_date | date:'yyyy-MM-dd HH:mm' }}</p>
+			<h2 class="article-title"><a href="{{ item.url }}">{{ item.title }}</a></h1>
+			<p class="article-source">{{ item.source }} </p>
+		</div>
+	</article>
+</div>

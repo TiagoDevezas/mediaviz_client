@@ -28,7 +28,7 @@ mediavizServices.factory('SourceList', ['$http',
 					sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
 					sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
 					var sourceArray = sources;
-					myCallback(sources);						
+					myCallback(sources);				
 				});			
 			}
 		};

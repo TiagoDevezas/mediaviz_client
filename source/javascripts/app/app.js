@@ -30,7 +30,8 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 		}).
 		when('/flow', {
 			templateUrl: 'partials/app/flow.html',
-			controller: 'FlowCtrl'
+			controller: 'FlowCtrl',
+			reloadOnSearch: false
 		}).
 		when('/compare', {
 			templateUrl: 'partials/app/compare.html',
@@ -39,7 +40,8 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 		}).
 		when('/social', {
 			templateUrl: 'partials/app/social.html',
-			controller: 'SocialCtrl'
+			controller: 'SocialCtrl',
+			reloadOnSearch: false
 		}).
 		when('/chronicle', {
 			templateUrl: 'partials/app/chronicle.html',
@@ -47,8 +49,9 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			reloadOnSearch: false
 		}).
 		when('/articles', {
-			templateUrl: 'partials/app/chronicle-items.html',
-			controller: 'ChronicleItemsCtrl'
+			templateUrl: 'partials/app/articles.html',
+			controller: 'ArticlesCtrl',
+			reloadOnSearch: false
 		}).
 		when('/dashboard', {
 			templateUrl: 'partials/app/main.html',

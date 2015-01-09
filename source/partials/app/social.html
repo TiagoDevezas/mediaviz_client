@@ -1,7 +1,7 @@
 <h3>Social</h3>
 
 <div class="keyword-select">
-	<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false">
+	<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-remove="removeFromChart($item, $model)" on-select="addToChart($item)">
     <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
     <ui-select-choices repeat="keyword in keywords.selected">
       {{ keyword }}
@@ -11,7 +11,7 @@
 </div>
 
 <div class="home-search-bar">
-  <ui-select ng-model="selectedSource.selected" on-select="loadSourceData($item, $model)" style="min-width: 300px">
+  <ui-select ng-model="selectedSource.selected" on-select="loadSourceData($item)" style="min-width: 300px">
     <ui-select-match placeholder="Escolher/pesquisar fontes...">{{$select.selected.name}}</ui-select-match>
     <ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
     		{{ source.name }}

@@ -418,7 +418,7 @@ mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $loc
 
 });
 
-mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, Chart, DataFormatter, $location) {
+mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, Chart, DataFormatter, $location, $timeout) {
 
 	// Multiple keywords, one source; time series for articles and shares
 
@@ -431,25 +431,13 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 	$scope.keywords.selected = [];
 
 	$scope.selectedSource = {};
-	$scope.selectedSource.selected = [];
+	$scope.selectedSource.selected = '';
 
 	$scope.loadedKeywords = [];
 
 	$scope.dataFormat = 'absolute';
 
 	$scope.selectedNetwork = 'articlesCount';
-
-	// $scope.groupSourcesByType = function(item) {
-	// 	if(item.type === 'national') {
-	// 		return 'Jornais Nacionais';
-	// 	}
-	// 	if(item.type === 'international') {
-	// 		return 'Jornais Internacionais';
-	// 	}
-	// 	if(item.type === 'blogs') {
-	// 		return 'Blogues';
-	// 	}
-	// }
 
 	$scope.setSocialNetwork = function(socialNetwork) {
 		if($scope.selectedNetwork !== socialNetwork) {
@@ -460,36 +448,47 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 		}
 	}
 
-	// $scope.setDataFormat = function(dataFormat){
-	// 	if ($scope.dataFormat !== dataFormat) {
-	// 		$scope.dataFormat = dataFormat;
-	// 		$scope.loadedKeywords = [];
-	// 		chart.flush();
-	// 		getTotalsAndDraw();
-	// 	}
-	// }
+	$scope.removeFromChart = function(keyword) {
+		$scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
+		setLocation({keywords: $scope.keywords.selected.toString()})
+		if(chart) { chart.unload({ids: keyword}); }
+	}
 
-	$scope.$watch('keywords.selected', function(newVal, oldVal) {
-		var keywordToRemove, keywordToRemoveIndex;
-		if(newVal.length < oldVal.length) {
-			angular.forEach(oldVal, function(obj) {
-				if(newVal.indexOf(obj) === -1) {
-					keywordToRemove = obj;
+	function setLocation(locationObj) {
+		$location.search(angular.extend($location.search(), locationObj));
+	}
+
+	$scope.addToChart = function(keyword) {
+		$scope.keywords.selected.push(keyword);
+		setLocation({keywords: $scope.keywords.selected.toString() })
+	}
+
+	$scope.loadSourceData = function(source) {
+		setLocation({source: source.acronym});
+	}
+
+	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+		var keywords = $location.search()['keywords'] || undefined;
+		var source = $location.search()['source'] || undefined;
+		if(source) {
+			$timeout(function() {
+				source = getSourceObjByAcronym($scope.sourceList, source);
+				$scope.selectedSource.selected = source;
+				if(keywords) {
+					$scope.keywords.selected = keywords.split(',');
 				}
-			});
-			keywordToRemoveIndex = $scope.loadedKeywords.indexOf(keywordToRemove)
-			if(chart) { chart.unload({ids: keywordToRemove}); }
-			$scope.loadedKeywords.splice(keywordToRemoveIndex, 1);
-		}	else if($scope.selectedSource.selected.length !== 0) {
-			getTotalsAndDraw();
+				if(chart) { chart.unload(); }
+				getTotalsAndDraw();
+			}, 500);
 		}
-	});
+	}, true);
 
-	$scope.$watch('selectedSource.selected', function(newVal, oldVal) {
-		$scope.selectedSource.selected = newVal;
-		if(chart) { chart.unload(); }
-		getTotalsAndDraw();
-	});
+	function getSourceObjByAcronym(array, acronym) {
+		var obj = array.filter(function(el) {
+			return el.acronym === acronym;
+		});
+		return obj[0];
+	}
 
 	function getItemData(datum) {
 		var dateFormat = d3.time.format("%Y-%m-%d");
@@ -519,7 +518,7 @@ mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, C
 			var selectedSource = $scope.selectedSource.selected;
 			var aggregated = selectedSource.group;
 			if(!aggregated) {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: selectedSource.name, q: keyword};
+				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: selectedSource.acronym, q: keyword};
 			} else {
 				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: selectedSource.type, q: keyword};
 			}
@@ -649,7 +648,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
 
 	$scope.dataFormat = 'absolute';
 
-	$scope.by = $routeParams.by || 'hour';
+	$scope.by = $routeParams.by || 'day';
 	$scope.since = $routeParams.since;
 	$scope.until = $routeParams.until;
 
@@ -706,9 +705,11 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
 			$scope.redrawChart();			
 		}
 	}
+
 	$scope.openSearchTools = function() {
 		$scope.showSearchToolsNav = !$scope.showSearchToolsNav;
 	}
+
 	$scope.displayBy = function(timePeriod) {
 		$scope.by = timePeriod;
 		$scope.showSearchTools = true;
@@ -774,27 +775,25 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
 	}
 
 	$scope.$watch('selectedSources.selected', function(newVal, oldVal) {
-		if($scope.selectedSources.selected.length > 0) {
-			var sourceToRemove, sourceToRemoveIndex;
-			if(newVal.length < oldVal.length) {
-				angular.forEach(oldVal, function(obj) {
-					if(newVal.indexOf(obj) === -1) {
-						sourceToRemove = obj.name;
-					}
-				});
-				sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
-				$scope.loadedSources.splice(sourceToRemoveIndex, 1);
-				columnToRemoveIndex = columns[0].indexOf(sourceToRemove);
-				if(columnToRemoveIndex !== -1) {
-					columns[0].splice(columnToRemoveIndex, 1);
-					columns[1].splice(columnToRemoveIndex, 1);
+		var sourceToRemove, sourceToRemoveIndex;
+		if(newVal.length < oldVal.length) {
+			angular.forEach(oldVal, function(obj) {
+				if(newVal.indexOf(obj) === -1) {
+					sourceToRemove = obj.name;
 				}
-				if(chart) { chart.unload({ids: sourceToRemove}); }
-				// chart2.load({
-				// 	columns: columns,
-				// 	unload: [sourceToRemove]
-				// });
+			});
+			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
+			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
+			columnToRemoveIndex = columns[0].indexOf(sourceToRemove);
+			if(columnToRemoveIndex !== -1) {
+				columns[0].splice(columnToRemoveIndex, 1);
+				columns[1].splice(columnToRemoveIndex, 1);
 			}
+			if(chart) { chart.unload({ids: sourceToRemove}); }
+			// chart2.load({
+			// 	columns: columns,
+			// 	unload: [sourceToRemove]
+			// });
 		}
 	});
 
@@ -1163,7 +1162,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 			if(keywordParams.split(',').length > 1) {
 				keywordArray = keywordParams.split(',');
 			}
-			$scope.keywords.selected = keywordArray;			
+			$scope.keywords.selected = keywordArray;
 		}
 		if(objectIsEmpty(newVal) && !objectIsEmpty(oldVal)) {
 			$scope.clearChart();
@@ -1196,7 +1195,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 	}, true);
 
 	$scope.$watch('loadingQueue', function(newVal, oldVal) {
-		console.log(newVal, oldVal);
 		if($scope.loadingQueue.length !== 0) {
 			$scope.loading = true;
 		} else {
@@ -1398,36 +1396,73 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 });
 
-mediavizControllers.controller('ChronicleItemsCtrl', function($scope, $location, $routeParams, Resources, Chart) {
-	$scope.q = $routeParams.q;
-	$scope.since = $routeParams.since;
-	$scope.until = $routeParams.until;
-	$scope.limit = $routeParams.limit || 50;
-	$scope.sourceName = $routeParams.source;
-	$scope.sourceType = $routeParams.type;
+mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $routeParams, Resources, Chart, Page) {
 
-	$scope.loading = true;
+	Page.setTitle('Artigos');
+
+	$scope.query;
+	$scope.since;
+	$scope.until;
+	$scope.limit;
+	$scope.sourceName;
+	$scope.sourceType;
+
+	$scope.loading = false;
 
 	$scope.sourceFilter = '';
 
-	Resources.get({resource: 'items', q: $scope.q, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType, source: $scope.sourceName}).$promise.then(function(dataObj) {
-		$scope.loading = false;
-		$scope.chronicleItems = dataObj;
-		//console.log(dataObj);
-		//$location.path('/chronicle/items');
-	});
+	$scope.loadData = function() {
+		$location.search({q: $scope.query});
+	}
+
+	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+		$scope.query = $location.search()['q'];
+		$scope.since = $location.search()['since'];
+		$scope.until = $location.search()['until'];
+		$scope.limit = $location.search()['limit'] || 50;
+		$scope.sourceName = $location.search()['source'];
+		$scope.sourceType = $location.search()['type'];
+
+		//if($scope.query) {
+		getData();
+		//}
+
+		// var keywords = $location.search()['keywords'] || undefined;
+		// var source = $location.search()['source'] || undefined;
+		// if(source) {
+		// 	$timeout(function() {
+		// 		source = getSourceObjByAcronym($scope.sourceList, source);
+		// 		$scope.selectedSource.selected = source;
+		// 		if(keywords) {
+		// 			$scope.keywords.selected = keywords.split(',');
+		// 		}
+		// 		if(chart) { chart.unload(); }
+		// 		getTotalsAndDraw();
+		// 	}, 500);
+		// }
+	}, true);
+
+	function getData() {
+		$scope.loading = true;
+		Resources.get({resource: 'items', q: $scope.query, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType, source: $scope.sourceName}).$promise.then(function(dataObj) {
+			$scope.loading = false;
+			$scope.chronicleItems = dataObj;
+		});
+	}
 
 });
 
-mediavizControllers.controller('FlowCtrl', function($scope, $location, $routeParams, Page, Resources, SourceList, Chart, DataFormatter) {
+mediavizControllers.controller('FlowCtrl', function($scope, $location, $routeParams, $timeout, Page, Resources, SourceList, Chart, DataFormatter) {
 
 	Page.setTitle('Fluxo');
 
+	$scope.selectedSources = {};
+
 	$scope.selectedSources.selected = [];
 
-	$scope.by = $routeParams.by || 'hour';
-	$scope.since = $routeParams.since;
-	$scope.until = $routeParams.until;
+	$scope.by = $location.search()['by'] || 'hour';
+	// $scope.since = $routeParams.since;
+	// $scope.until = $routeParams.until;
 	$scope.sourceData = [];
 	$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since};
 
@@ -1535,23 +1570,68 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 		getTotalsAndDraw();
 	}
 
-	$scope.loadSourceData = function() {
-		getTotalsAndDraw();
+	$scope.unloadSource = function(source) {
+		$scope.selectedSources.selected.splice($scope.selectedSources.selected.indexOf(source), 1);
+		getAcronyms();
+		if(chart) { chart.unload({ids: source.name})}
 	}
 
-	$scope.$watch('selectedSources.selected', function(newVal, oldVal) {
-		var sourceToRemove, sourceToRemoveIndex;
-		if(newVal.length < oldVal.length) {
-			angular.forEach(oldVal, function(obj) {
-				if(newVal.indexOf(obj) === -1) {
-					sourceToRemove = obj.name;
-				}
-			});
-			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
-			if(chart) { chart.unload({ids: sourceToRemove}); }
-			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
+	$scope.loadSource = function(source) {
+		$scope.selectedSources.selected.push(source);
+		getAcronyms();
+		//getTotalsAndDraw();
+	}
+
+	function getAcronyms() {
+		var sourcesArray = [];
+		$scope.selectedSources.selected.forEach(function(el) {
+			sourcesArray.push(el.acronym);
+		});
+		setLocation({sources: sourcesArray.toString()})
+	}
+
+	function setLocation(locationObj) {
+		$location.search(angular.extend($location.search(), locationObj));
+	}
+
+	function getSourceObjByAcronym(array, acronym) {
+		var obj = array.filter(function(el) {
+			return el.acronym === acronym;
+		});
+		return obj[0];
+	}
+
+	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+		var sources = $location.search()['sources'] || undefined;
+		if(sources) {
+			$timeout(function() {
+				sources = sources.split(',');
+				var newSourcesArray = [];
+				sources.forEach(function(el) {
+					var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
+					newSourcesArray.push(sourceObj);
+				});
+				$scope.selectedSources.selected = newSourcesArray;
+				if(chart) { chart.unload(); }
+				$scope.loadedSources = [];
+				getTotalsAndDraw();
+			}, 500);
 		}
-	});
+	}, true);
+
+	// $scope.$watch('selectedSources.selected', function(newVal, oldVal) {
+	// 	var sourceToRemove, sourceToRemoveIndex;
+	// 	if(newVal.length < oldVal.length) {
+	// 		angular.forEach(oldVal, function(obj) {
+	// 			if(newVal.indexOf(obj) === -1) {
+	// 				sourceToRemove = obj.name;
+	// 			}
+	// 		});
+	// 		sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
+	// 		if(chart) { chart.unload({ids: sourceToRemove}); }
+	// 		$scope.loadedSources.splice(sourceToRemoveIndex, 1);
+	// 	}
+	// });
 
 	$scope.setDates = function(){
 		$scope.loadedSources = [];
@@ -1647,6 +1727,31 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 		});		
 	}
 
+	function getSourceObjByName(array, name) {
+		var obj = array.filter(function(el) {
+			return el.name === name;
+		});
+		return obj[0];
+	}
+
+	function getItemData(datum) {
+		//var dateFormat = d3.time.format("%Y-%m-%d");
+		//var unformattedDate = datum.x;
+		//var formattedDate = dateFormat(unformattedDate);
+		var source = datum.name;
+		var sourceObj = getSourceObjByName($scope.selectedSources.selected, source);
+		displayItems(sourceObj);
+	}
+
+	function displayItems(source) {
+		if(source.group) {
+			$location.path('/articles').search({type: source.type });
+		} else {
+			$location.path('/articles').search({source: source.acronym });			
+		}
+		$scope.$apply();
+	}
+
 	var timeChart = {
 		options: {
 			bindto: '#time-chart',
@@ -1661,7 +1766,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 	    },
 			data: {
 				type: 'area',
-				//onclick: function (d, i) { getItemData(d) }
+				onclick: function (d, i) { getItemData(d) }
 			},
 			point: {
 				r: 1.5
