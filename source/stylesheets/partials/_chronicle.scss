@@ -1,5 +1,12 @@
 #chronicle {
 	@include span-columns(12);
+	.search-form {
+		@include span-columns(12);
+		background-color: $light-gray;
+		padding: 0 1em 1em;
+		border: 1px solid $medium-gray;
+		margin-bottom: 1em;
+	}
 	.chart-tools {
 		ul.mode-tools {
 			margin-top: 0.5em;
@@ -23,6 +30,25 @@
 				}
 			}
 		}
+	}
+	.field-select {
+		@include span-columns(12);
+		span {
+			float: left;
+			font-size: 0.9em;
+			margin-right: 1em;
+		}
+		label, input[type=radio] {
+			float: left;
+		}
+		label {
+			font-size: 0.9em;
+			font-weight: normal;
+		}
+		input[type=radio] {
+			margin-right: 1em;
+		}
+
 	}
 	.keyword-select {
 		@include span-columns(12);

@@ -1106,6 +1106,10 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	$scope.loading = false;
 
+	$scope.searchFields = 'title_summary';
+
+	$scope.fields;
+
 	//$scope.chartCleared = false;
 
 	$scope.sourceType = 'national';
@@ -1202,6 +1206,18 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 		}
 	}, true);
 
+	$scope.redrawChart = function() {
+		if(chart) {
+			if($scope.searchFields !== 'title_summary') {
+				$scope.fields = $scope.searchFields;				
+			} else {
+				$scope.fields = undefined;
+			}
+			$scope.loadedKeywords = [];
+			getTotalsAndDraw();
+		}
+	}
+
 	$scope.clearChart = function() {
 		$location.search('');
 		$scope.keywords.selected = [];
@@ -1233,9 +1249,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
 	function createParamsObj(keyword) {
 		if($scope.sourceType === 'all') {
-			return {resource: 'totals', q: keyword, since: $scope.since};
+			return {resource: 'totals', q: keyword, since: $scope.since, fields: $scope.fields};
 		} else {
-			return {resource: 'totals', q: keyword, since: $scope.since, type: $scope.sourceType};
+			return {resource: 'totals', q: keyword, since: $scope.since, type: $scope.sourceType, fields: $scope.fields};
 		}
 	}
 

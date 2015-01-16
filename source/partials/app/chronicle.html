@@ -2,15 +2,30 @@
 
 	<h3>Crónica</h3>
 
-	<div class="keyword-select">
-		<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
-	    <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
-	    <ui-select-choices repeat="keyword in keywords.selected">
-	      {{ keyword }}
-	    </ui-select-choices>
-	  </ui-select>
-	  <button class="clear-chart" ng-click="clearChart()">Limpar gráfico</button>		
+	<div class="search-form">
+		<div class="keyword-select">
+			<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
+		    <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
+		    <ui-select-choices repeat="keyword in keywords.selected">
+		      {{ keyword }}
+		    </ui-select-choices>
+		  </ui-select>
+		  <button class="clear-chart" ng-click="clearChart()">Limpar gráfico</button>		
+		</div>
+
+		<div class="field-select">
+			<span><strong>Campos a pesquisar: </strong></span>
+			<label>Título ou sumário</label>
+			<input type="radio" value="title_summary" ng-model="searchFields" ng-change="redrawChart()">
+
+			<label>Título</label>
+			<input type="radio" value="title" ng-model="searchFields" ng-change="redrawChart()">
+
+			<label>Sumário</label>
+			<input type="radio" value="summary" ng-model="searchFields" ng-change="redrawChart()">
+		</div>		
 	</div>
+
 
 	<div class="search-tools">
 		<ul>
