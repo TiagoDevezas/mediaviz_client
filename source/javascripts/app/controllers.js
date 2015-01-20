@@ -815,7 +815,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
 			$scope.dataFormat = dataFormat;
 			$scope.loadedSources = [];
 			chart.unload();
-			chart2.unload();
+			if(chart2) { chart2.unload(); };
 			columns = [
 				[],[]
 			];
@@ -962,17 +962,17 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
 								columns: formattedData
 							});
 						}
-						if(!chart2 || chart2.internal.data.targets.length === 0) {
-							barChart.options.data.x = 'x';
-							var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
-							barChart.options.data.names = JSON.parse(label);
-							barChart.options.data.columns = columns;
-							chart2 = Chart.draw(barChart);
-						} else {
-							chart2.load({
-								columns: columns
-							});
-						}
+						// if(!chart2 || chart2.internal.data.targets.length === 0) {
+						// 	barChart.options.data.x = 'x';
+						// 	var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
+						// 	barChart.options.data.names = JSON.parse(label);
+						// 	barChart.options.data.columns = columns;
+						// 	chart2 = Chart.draw(barChart);
+						// } else {
+						// 	chart2.load({
+						// 		columns: columns
+						// 	});
+						// }
 
 						// Fix c3 issue where the subchart is shown even when set to false
 						d3.select("#bar-chart svg").select("g.c3-brush").remove();
