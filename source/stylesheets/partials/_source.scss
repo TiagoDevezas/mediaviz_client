@@ -15,6 +15,7 @@
 		border: 1px solid $light-gray;
 		border-radius: 2px;
 		.source-info {
+			@include row();
 			h2 {
 				font-weight: 400;
 			}
@@ -25,7 +26,7 @@
 				&:hover, &:focus {
 					border-bottom: 1px solid $medium-gray;
 				}
-			}			
+			}
 		}
 		.source-chart {
 			.chart-controls {
@@ -57,5 +58,31 @@
 				border-left: 1px solid $light-gray;
 			}
 		}
+	}
+}
+
+.split-stats {
+	.twitter-stats, .facebook-stats {
+		@include span-columns(6);
+		text-align: center;
+		padding: 1em 0;
+		&:first-child {
+			border-right: 1px solid $light-gray;
+		}
+	}
+	.stat-name {
+		color: $medium-gray;
+		font-size: 1em;
+	}
+}
+
+button.white {
+	width: 100%;
+	background-color: white;
+	border: 1px solid $medium-gray;
+	color: $dark-gray;
+	font-weight: normal;
+	&:hover, &:focus {
+		background-color: $light-gray;
 	}
 }

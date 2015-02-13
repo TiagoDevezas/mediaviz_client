@@ -4,627 +4,627 @@ var mediavizControllers = angular.module('mediavizControllers', []);
 
 mediavizControllers.controller('RootCtrl', function($scope, SourceList) {
 
-	$scope.sourceList = [];
-	$scope.sourceListOriginal = [];
-	$scope.selectedSources = {};
-	$scope.selectedSources.selected = [];
+  $scope.sourceList = [];
+  $scope.sourceListOriginal = [];
+  $scope.selectedSources = {};
+  $scope.selectedSources.selected = [];
 
 
-	if($scope.sourceList.length === 0) {
-		SourceList.get(function(data) {
-			$scope.sourceList = data;
-			//$scope.sourceListOriginal = $scope.sourceList;
-			//$scope.sourceListOriginal.splice(0, 3);
-			//$scope.selectedSource = $scope.sourceList[0];
-			$scope.selectedSources.selected.push($scope.sourceList[0]);
-			//getTotalsAndDraw();
-		});
-	} else {
-		$scope.selectedSources.selected.push($scope.sourceList[0]);	
-	}
+  if($scope.sourceList.length === 0) {
+    SourceList.get(function(data) {
+      $scope.sourceList = data;
+      //$scope.sourceListOriginal = $scope.sourceList;
+      //$scope.sourceListOriginal.splice(0, 3);
+      //$scope.selectedSource = $scope.sourceList[0];
+      $scope.selectedSources.selected.push($scope.sourceList[0]);
+      //getTotalsAndDraw();
+    });
+  } else {
+    $scope.selectedSources.selected.push($scope.sourceList[0]); 
+  }
 
-	$scope.groupSourcesByType = function(item) {
-		if(item.type === 'national') {
-			return 'Jornais Nacionais';
-		}
-		if(item.type === 'international') {
-			return 'Jornais Internacionais';
-		}
-		if(item.type === 'blogs') {
-			return 'Blogues';
-		}
-	}
+  $scope.groupSourcesByType = function(item) {
+    if(item.type === 'national') {
+      return 'Jornais Nacionais';
+    }
+    if(item.type === 'international') {
+      return 'Jornais Internacionais';
+    }
+    if(item.type === 'blogs') {
+      return 'Blogues';
+    }
+  }
 
 });
 
 mediavizControllers.controller('HomeCtrl', function($scope, $location, Resources, Page, $timeout) {
 
-	Page.setTitle('Início');
+  Page.setTitle('Início');
 
-	$scope.selectedSources = {};
-	$scope.selectedSources.selected = [];
+  $scope.selectedSources = {};
+  $scope.selectedSources.selected = [];
 
-	$scope.stats = [];
-	$scope.hasData = false;
+  $scope.stats = [];
+  $scope.hasData = false;
 
-	getStats();
+  getStats();
 
-	$scope.goToSourcePage = function(source, model) {
-		$location.path('/source/' + source.acronym);
-	}
+  $scope.goToSourcePage = function(source, model) {
+    $location.path('/source/' + source.acronym);
+  }
 
-	// $scope.groupSourcesByType = function(item) {
-	// 	if(item.type === 'national') {
-	// 		return 'Jornais Nacionais';
-	// 	}
-	// 	if(item.type === 'international') {
-	// 		return 'Jornais Internacionais';
-	// 	}
-	// 	if(item.type === 'blogs') {
-	// 		return 'Blogues';
-	// 	}
-	// }
+  // $scope.groupSourcesByType = function(item) {
+  //  if(item.type === 'national') {
+  //    return 'Jornais Nacionais';
+  //  }
+  //  if(item.type === 'international') {
+  //    return 'Jornais Internacionais';
+  //  }
+  //  if(item.type === 'blogs') {
+  //    return 'Blogues';
+  //  }
+  // }
 
-	function getStats() {
-		Resources.get({resource: 'stats'}).$promise.then(function(data) {
-			$scope.stats = data[0];
-			$scope.hasData = true;
-		});	
-	}
+  function getStats() {
+    Resources.get({resource: 'stats'}).$promise.then(function(data) {
+      $scope.stats = data[0];
+      $scope.hasData = true;
+    }); 
+  }
 
 });
 
 mediavizControllers.controller('AboutCtrl', function($scope, Resources, Page) {
-	Page.setTitle('Sobre');
+  Page.setTitle('Sobre');
 
-	$scope.stats = [];
+  $scope.stats = [];
 
-	getStats();
+  getStats();
 
-	function getStats() {
-		Resources.get({resource: 'stats'}).$promise.then(function(data) {
-			$scope.stats = data[0];
-		});	
-	}
+  function getStats() {
+    Resources.get({resource: 'stats'}).$promise.then(function(data) {
+      $scope.stats = data[0];
+    }); 
+  }
 
 });
 
 mediavizControllers.controller('SourceCtrl', function($scope, $routeParams, $location, Page, Resources, Chart, DataFormatter, SourceList) {
 
-	$scope.sourceList = [];
+  $scope.sourceList = [];
 
-	$scope.currentSource = {};
+  $scope.currentSource = {};
 
-	$scope.by = 'day';
+  $scope.by = 'day';
 
-	$scope.loading = false;
+  $scope.loading = false;
 
-	var totalsParams = {};
-	var sourcesParams = {};
+  var totalsParams = {};
+  var sourcesParams = {};
 
-	$scope.goToSourcePage = function(source, model) {
-		$location.path('/source/' + source.acronym);
-	}
+  $scope.goToSourcePage = function(source, model) {
+    $location.path('/source/' + source.acronym);
+  }
 
-	// $scope.groupSourcesByType = function(item) {
-	// 	if(item.type === 'national') {
-	// 		return 'Jornais Nacionais';
-	// 	}
-	// 	if(item.type === 'international') {
-	// 		return 'Jornais Internacionais';
-	// 	}
-	// 	if(item.type === 'blogs') {
-	// 		return 'Blogues';
-	// 	}
-	// }
+  // $scope.groupSourcesByType = function(item) {
+  //  if(item.type === 'national') {
+  //    return 'Jornais Nacionais';
+  //  }
+  //  if(item.type === 'international') {
+  //    return 'Jornais Internacionais';
+  //  }
+  //  if(item.type === 'blogs') {
+  //    return 'Blogues';
+  //  }
+  // }
 
-	SourceList.get(function(data) {
-		$scope.sourceList = data;
-		$scope.currentSource = $scope.sourceList.filter(function(obj) {
-			if(obj.acronym === $routeParams.name)
-				return obj;
-		})[0];
-		Page.setTitle($scope.currentSource.name);
+  SourceList.get(function(data) {
+    $scope.sourceList = data;
+    $scope.currentSource = $scope.sourceList.filter(function(obj) {
+      if(obj.acronym === $routeParams.name)
+        return obj;
+    })[0];
+    Page.setTitle($scope.currentSource.name);
 
-		$scope.selectedSources.selected = $scope.currentSource;
+    $scope.selectedSources.selected = $scope.currentSource;
 
-		totalsParams = {resource: 'totals', since: $scope.since, source: $scope.currentSource.acronym, by: $scope.by};
-		sourcesParams = {resource: 'sources', name: $scope.currentSource.acronym};
+    totalsParams = {resource: 'totals', since: $scope.since, source: $scope.currentSource.acronym, by: $scope.by};
+    sourcesParams = {resource: 'sources', name: $scope.currentSource.acronym};
 
-		if($scope.currentSource.group) {
-			totalsParams = {resource: 'totals', since: $scope.since, type: $scope.currentSource.type, by: $scope.by };
-			sourcesParams = {resource: 'sources', type: $scope.currentSource.type};
-		}
-		
-		getTotalsAndDraw();
-	});
+    if($scope.currentSource.group) {
+      totalsParams = {resource: 'totals', since: $scope.since, type: $scope.currentSource.type, by: $scope.by };
+      sourcesParams = {resource: 'sources', type: $scope.currentSource.type};
+    }
+    
+    getTotalsAndDraw();
+  });
 
-	$scope.since = '' || $routeParams.since;
-	$scope.until;
+  $scope.since = '' || $routeParams.since;
+  $scope.until;
 
-	$scope.sourceData = [];
+  $scope.sourceData = [];
 
-	var chart, chart2, chart3, chart4;
+  var chart, chart2, chart3, chart4;
 
-	$scope.dataXLength = 0;
+  $scope.dataXLength = 0;
 
-	$scope.displayBy = function(timePeriod) {
-		$scope.by = timePeriod;
-		totalsParams.by = $scope.by;
-		if($scope.by === 'month') {
-			$scope.since = undefined;
-			$scope.until = undefined;
-		}
-		if(chart) { chart.unload(); }
-		if(chart2) { chart2.unload(); }
-		if(chart3) { chart3.unload(); }
-		getTotalsAndDraw();
-	}
+  $scope.displayBy = function(timePeriod) {
+    $scope.by = timePeriod;
+    totalsParams.by = $scope.by;
+    if($scope.by === 'month') {
+      $scope.since = undefined;
+      $scope.until = undefined;
+    }
+    if(chart) { chart.unload(); }
+    if(chart2) { chart2.unload(); }
+    if(chart3) { chart3.unload(); }
+    getTotalsAndDraw();
+  }
 
-	function changeOptionsObj(objName) {
-		if($scope.by === 'hour') {
-			objName.options.axis.x.type = '';
-			objName.options.axis.x.label.text = 'Hora';
-			objName.options.axis.x.tick.format = function(d, i) {
-					var d = d < 10 ? '0' + d : d;
-					return d + ':00';
-			}
-		}
-		if($scope.by === 'day') {
-			objName.options.axis.x.type = 'timeseries';
-			objName.options.axis.x.label.text = 'Dia';
-			objName.options.axis.x.tick.format = '%d %b';
-			//objName.options.data.type = 'area-spline';
-		}
-		if($scope.by === 'month') {
-			objName.options.axis.x.type = '';
-			objName.options.axis.x.label.text = 'Mês';
-			objName.options.axis.x.tick.format = function(d, i) {
-				return d;
-			};
-		}
-		if($scope.by === 'week') {
-			objName.options.axis.x.type = '';
-			objName.options.axis.x.label.text = 'Dia da semana';
-			objName.options.axis.x.tick.format = function(d) {
-				return moment().isoWeekday(d).format('ddd');
-			};
-		}
-	}
+  function changeOptionsObj(objName) {
+    if($scope.by === 'hour') {
+      objName.options.axis.x.type = '';
+      objName.options.axis.x.label.text = 'Hora';
+      objName.options.axis.x.tick.format = function(d, i) {
+        var d = d < 10 ? '0' + d : d;
+        return d + ':00';
+      }
+    }
+    if($scope.by === 'day') {
+      objName.options.axis.x.type = 'timeseries';
+      objName.options.axis.x.label.text = 'Dia';
+      objName.options.axis.x.tick.format = '%d %b';
+      //objName.options.data.type = 'area-spline';
+    }
+    if($scope.by === 'month') {
+      objName.options.axis.x.type = '';
+      objName.options.axis.x.label.text = 'Mês';
+      objName.options.axis.x.tick.format = function(d, i) {
+        return d;
+      };
+    }
+    if($scope.by === 'week') {
+      objName.options.axis.x.type = '';
+      objName.options.axis.x.label.text = 'Dia da semana';
+      objName.options.axis.x.tick.format = function(d) {
+        return moment().isoWeekday(d).format('ddd');
+      };
+    }
+  }
 
-	function getTotalsAndDraw() {
-		$scope.loading = true;
-		Resources.get(totalsParams).$promise.then(function(data) {
-			$scope.loading = false;
-			var articleData = DataFormatter.inColumns(data, $scope.currentSource.name, 'time', 'articles');
-			$scope.dataXLength = articleData[0][0].length;
-			// console.log($scope.dataXLength);
-			timeChart.options.data.columns = articleData;
-			timeChart.options.data.x = 'timeFor' + $scope.currentSource.name;
-			changeOptionsObj(timeChart);
-			// if($scope.by === 'hour') {
-			// 	timeChart.options.axis.x.type = '';
-			// 	timeChart.options.axis.x.label.text = 'Hora';
-			// 	timeChart.options.axis.x.tick.format = function(d, i) {
-			// 			var d = d < 10 ? '0' + d : d;
-			// 			return d + ':00';
-			// 	}
-			// }
-			// if($scope.by === 'day') {
-			// 	timeChart.options.axis.x.type = 'timeseries';
-			// 	timeChart.options.axis.x.label.text = 'Dia';
-			// 	timeChart.options.axis.x.tick.format = '%d %b';
-			// 	//timeChart.options.data.type = 'area-spline';
-			// }
-			// if($scope.by === 'month') {
-			// 	timeChart.options.axis.x.type = '';
-			// 	timeChart.options.axis.x.label.text = 'Mês';
-			// 	timeChart.options.axis.x.tick.format = function(d, i) {
-			// 		return d;
-			// 	};
-			// }
-			// if($scope.by === 'week') {
-			// 	timeChart.options.axis.x.type = '';
-			// 	timeChart.options.axis.x.label.text = 'Dia da semana';
-			// 	timeChart.options.axis.x.tick.format = function(d) {
-			// 		return moment().isoWeekday(d).format('ddd');
-			// 	};
-			// }
-			chart = Chart.draw(timeChart);
+  function getTotalsAndDraw() {
+    $scope.loading = true;
+    Resources.get(totalsParams).$promise.then(function(data) {
+      $scope.loading = false;
+      var articleData = DataFormatter.inColumns(data, $scope.currentSource.name, 'time', 'articles');
+      $scope.dataXLength = articleData[0][0].length;
+      // console.log($scope.dataXLength);
+      timeChart.options.data.columns = articleData;
+      timeChart.options.data.x = 'timeFor' + $scope.currentSource.name;
+      changeOptionsObj(timeChart);
+      // if($scope.by === 'hour') {
+      //  timeChart.options.axis.x.type = '';
+      //  timeChart.options.axis.x.label.text = 'Hora';
+      //  timeChart.options.axis.x.tick.format = function(d, i) {
+      //      var d = d < 10 ? '0' + d : d;
+      //      return d + ':00';
+      //  }
+      // }
+      // if($scope.by === 'day') {
+      //  timeChart.options.axis.x.type = 'timeseries';
+      //  timeChart.options.axis.x.label.text = 'Dia';
+      //  timeChart.options.axis.x.tick.format = '%d %b';
+      //  //timeChart.options.data.type = 'area-spline';
+      // }
+      // if($scope.by === 'month') {
+      //  timeChart.options.axis.x.type = '';
+      //  timeChart.options.axis.x.label.text = 'Mês';
+      //  timeChart.options.axis.x.tick.format = function(d, i) {
+      //    return d;
+      //  };
+      // }
+      // if($scope.by === 'week') {
+      //  timeChart.options.axis.x.type = '';
+      //  timeChart.options.axis.x.label.text = 'Dia da semana';
+      //  timeChart.options.axis.x.tick.format = function(d) {
+      //    return moment().isoWeekday(d).format('ddd');
+      //  };
+      // }
+      chart = Chart.draw(timeChart);
 
-			// Social shares charts
+      // Social shares charts
 
-			var twitterChart = JSON.parse(JSON.stringify(timeChart));
+      var twitterChart = JSON.parse(JSON.stringify(timeChart));
 
-			changeOptionsObj(twitterChart);
+      changeOptionsObj(twitterChart);
 
-			twitterChart.options.subchart.show = false;
-			twitterChart.options.size.height = 200;
-			twitterChart.options.axis.x.label = {};
-			twitterChart.options.axis.x.tick.culling.max = 5;
-			twitterChart.options.axis.y.tick.format = function(d, i) { return Math.round(d) };
-			twitterChart.options.axis.y.tick.count = 4;
-			twitterChart.options.axis.y.label.text = 'Partilhas no Twitter';
-			twitterChart.options.color = {pattern: ['#00ABF0'] }; 
+      twitterChart.options.subchart.show = false;
+      twitterChart.options.size.height = 200;
+      twitterChart.options.axis.x.label = {};
+      twitterChart.options.axis.x.tick.culling.max = 5;
+      twitterChart.options.axis.y.tick.format = function(d, i) { return Math.round(d) };
+      twitterChart.options.axis.y.tick.count = 4;
+      twitterChart.options.axis.y.label.text = 'Partilhas no Twitter';
+      twitterChart.options.color = {pattern: ['#00ABF0'] }; 
 
-			var twitterShareData = DataFormatter.inColumns(data, 'Twitter', 'time', 'twitter_shares');
-			twitterChart.options.data.x = 'timeForTwitter';
-			twitterChart.options.data.columns = twitterShareData;
-			twitterChart.options.bindto = '#twitter-share-chart';
-			chart2 = Chart.draw(twitterChart);
+      var twitterShareData = DataFormatter.inColumns(data, 'Twitter', 'time', 'twitter_shares');
+      twitterChart.options.data.x = 'timeForTwitter';
+      twitterChart.options.data.columns = twitterShareData;
+      twitterChart.options.bindto = '#twitter-share-chart';
+      chart2 = Chart.draw(twitterChart);
 
-			var facebookChart = JSON.parse(JSON.stringify(twitterChart));
+      var facebookChart = JSON.parse(JSON.stringify(twitterChart));
 
-			changeOptionsObj(facebookChart);
+      changeOptionsObj(facebookChart);
 
-			facebookChart.options.axis.x.label = {};
-			facebookChart.options.axis.y.tick.format = function(d, i) { return Math.round(d) };
-			facebookChart.options.axis.y.label.text = 'Partilhas no Facebook';
-			facebookChart.options.color = {pattern: ['#49639E'] };
+      facebookChart.options.axis.x.label = {};
+      facebookChart.options.axis.y.tick.format = function(d, i) { return Math.round(d) };
+      facebookChart.options.axis.y.label.text = 'Partilhas no Facebook';
+      facebookChart.options.color = {pattern: ['#49639E'] };
 
-			var facebookShareData = DataFormatter.inColumns(data, 'Facebook', 'time', 'facebook_shares');
-			facebookChart.options.data.x = 'timeForFacebook';
-			facebookChart.options.data.columns = facebookShareData;
-			facebookChart.options.bindto = '#facebook-share-chart';
-			chart3 = Chart.draw(facebookChart);
+      var facebookShareData = DataFormatter.inColumns(data, 'Facebook', 'time', 'facebook_shares');
+      facebookChart.options.data.x = 'timeForFacebook';
+      facebookChart.options.data.columns = facebookShareData;
+      facebookChart.options.bindto = '#facebook-share-chart';
+      chart3 = Chart.draw(facebookChart);
 
-			$scope.loading = true;
+      $scope.loading = true;
 
-			Resources.get(sourcesParams).$promise.then(function(data) {
-				$scope.loading = false;
-				if(!$scope.currentSource.group) {
-					$scope.sourceData = data;
-				} else {
-					var total_feeds = 0;
-					var total_items = 0;
-					var total_shares = 0;
-					var twitter_shares = 0;
-					var avg_twitter_shares = 0;
-					var facebook_shares = 0;
-					var avg_facebook_shares = 0;
-					var avg_shares = 0;
-					var avg_day = 0;
-					var avg_month = 0;
-					data.forEach(function(el) {
-						total_feeds += el.total_feeds;
-						total_items += el.total_items;
-						total_shares += el.total_shares;
-						twitter_shares += el.twitter_shares;
-						avg_twitter_shares += el.avg_twitter_shares;
-						facebook_shares += el.facebook_shares;
-						avg_facebook_shares += el.avg_facebook_shares;
-						avg_shares += el.avg_shares;
-						avg_day += el.avg_day;
-						avg_month += el.avg_month;
-					});
-					$scope.sourceData = [
-						{
-							total_feeds: total_feeds,
-							total_items: total_items,
-							total_shares: total_shares,
-							twitter_shares: twitter_shares,
-							avg_twitter_shares: (twitter_shares / total_items).toFixed(2),
-							facebook_shares: facebook_shares,
-							avg_facebook_shares: (facebook_shares / total_items).toFixed(2),
-							avg_shares: (total_shares / total_items).toFixed(2),
-							avg_day: (total_items / $scope.dataXLength).toFixed(2),
-							avg_month: '-'
-						}
-					];
-				}
-				var shareData = [
-					['Twitter', $scope.sourceData[0].twitter_shares],
-					['Facebook', $scope.sourceData[0].facebook_shares]
-				];
-				shareChart.options.data.columns = shareData;
-				chart4 = Chart.draw(shareChart);
-			});
-
-		});
-
-	};
-
-	var shareChart = {
-		options: {
-			bindto: '#share-chart',
-			size: {
-				height: 200
-			},
-			padding: {
-				left: 0,
-				right: 0,
-				top: 0,
-				bottom: 0
-			},
-			data: {
-				type: 'bar',
-				labels: true
-			},
-			axis: {
-        x: {
-	        tick: {
-	            format: function (x) { return ''; }
-	        }
+      Resources.get(sourcesParams).$promise.then(function(data) {
+        $scope.loading = false;
+        if(!$scope.currentSource.group) {
+          $scope.sourceData = data;
+        } else {
+          var total_feeds = 0;
+          var total_items = 0;
+          var total_shares = 0;
+          var twitter_shares = 0;
+          var avg_twitter_shares = 0;
+          var facebook_shares = 0;
+          var avg_facebook_shares = 0;
+          var avg_shares = 0;
+          var avg_day = 0;
+          var avg_month = 0;
+          data.forEach(function(el) {
+            total_feeds += el.total_feeds;
+            total_items += el.total_items;
+            total_shares += el.total_shares;
+            twitter_shares += el.twitter_shares;
+            avg_twitter_shares += el.avg_twitter_shares;
+            facebook_shares += el.facebook_shares;
+            avg_facebook_shares += el.avg_facebook_shares;
+            avg_shares += el.avg_shares;
+            avg_day += el.avg_day;
+            avg_month += el.avg_month;
+          });
+          $scope.sourceData = [
+          {
+            total_feeds: total_feeds,
+            total_items: total_items,
+            total_shares: total_shares,
+            twitter_shares: twitter_shares,
+            avg_twitter_shares: (twitter_shares / total_items).toFixed(2),
+            facebook_shares: facebook_shares,
+            avg_facebook_shares: (facebook_shares / total_items).toFixed(2),
+            avg_shares: (total_shares / total_items).toFixed(2),
+            avg_day: (total_items / $scope.dataXLength).toFixed(2),
+            avg_month: '-'
+          }
+          ];
         }
-    	},
-    	color: {
-    		pattern: ['#00ABF0', '#49639E']
-    	},
-			tooltip: {
-        show: false
-    	}
-		}
-	}
+        var shareData = [
+        ['Twitter', $scope.sourceData[0].twitter_shares],
+        ['Facebook', $scope.sourceData[0].facebook_shares]
+        ];
+        shareChart.options.data.columns = shareData;
+        chart4 = Chart.draw(shareChart);
+      });
 
-	var timeChart = {
-		options: {
-			bindto: '#time-chart',
-			size: {
-        height: 400
-    	},
-    	padding: {},
-    	legend: {
-    		show: false
-    	},
-			tooltip: {
-        grouped: false 
-	    },
-			data: {
-				type: 'area',
-				//onclick: function (d, i) { getItemData(d) }
-			},
-			point: {
-				r: 1.5
-			},
-			subchart: {
-				show: true
-			},
-			axis: {
-				x: {
-					label: {
-						text: 'Dias',
-						position: 'outer-center'
-					},
-					type: 'timeseries',
-					tick: {
-						culling: {
+});
+
+};
+
+var shareChart = {
+  options: {
+    bindto: '#share-chart',
+    size: {
+      height: 200
+    },
+    padding: {
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0
+    },
+    data: {
+      type: 'bar',
+      labels: true
+    },
+    axis: {
+      x: {
+        tick: {
+          format: function (x) { return ''; }
+        }
+      }
+    },
+    color: {
+      pattern: ['#00ABF0', '#49639E']
+    },
+    tooltip: {
+      show: false
+    }
+  }
+}
+
+var timeChart = {
+  options: {
+    bindto: '#time-chart',
+    size: {
+      height: 400
+    },
+    padding: {},
+    legend: {
+      show: false
+    },
+    tooltip: {
+      grouped: false 
+    },
+    data: {
+      type: 'area',
+        //onclick: function (d, i) { getItemData(d) }
+      },
+      point: {
+        r: 1.5
+      },
+      subchart: {
+        show: true
+      },
+      axis: {
+        x: {
+          label: {
+            text: 'Dias',
+            position: 'outer-center'
+          },
+          type: 'timeseries',
+          tick: {
+            culling: {
               max: 10 // the number of tick texts will be adjusted to less than this value
             },
-						format: '%d %b'
-					}
-				},
-				y: {
-					label: {
-						text: 'Artigos',
-						position: 'outer-middle'
-					},
-					tick: {
-					}
-				}
-			},
-			grid: {
+            format: '%d %b'
+          }
+        },
+        y: {
+          label: {
+            text: 'Artigos',
+            position: 'outer-middle'
+          },
+          tick: {
+          }
+        }
+      },
+      grid: {
         x: {
           show: false
         },
         y: {
           show: true
-      	}
+        }
       },
-			color: function(d,i) {
-				return d3.scale.category20c(d);
-			}
-		}
-	}
+      color: function(d,i) {
+        return d3.scale.category20c(d);
+      }
+    }
+  }
 
 });
 
 mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, Chart, DataFormatter, $location, $timeout) {
 
-	// Multiple keywords, one source; time series for articles and shares
+  // Multiple keywords, one source; time series for articles and shares
 
 
-	Page.setTitle('Social');
+  Page.setTitle('Social');
 
-	var chart;
+  var chart;
 
-	$scope.keywords = {};
-	$scope.keywords.selected = [];
+  $scope.keywords = {};
+  $scope.keywords.selected = [];
 
-	$scope.selectedSource = {};
-	$scope.selectedSource.selected = '';
+  $scope.selectedSource = {};
+  $scope.selectedSource.selected = '';
 
-	$scope.loadedKeywords = [];
+  $scope.loadedKeywords = [];
 
-	$scope.dataFormat = 'absolute';
+  $scope.dataFormat = 'absolute';
 
-	$scope.selectedNetwork = 'articlesCount';
+  $scope.selectedNetwork = 'articlesCount';
 
-	$scope.setSocialNetwork = function(socialNetwork) {
-		if($scope.selectedNetwork !== socialNetwork) {
-			$scope.selectedNetwork = socialNetwork;
-			$scope.loadedKeywords = [];
-			if(chart) { chart.flush(); }
-			getTotalsAndDraw();
-		}
-	}
+  $scope.setSocialNetwork = function(socialNetwork) {
+    if($scope.selectedNetwork !== socialNetwork) {
+      $scope.selectedNetwork = socialNetwork;
+      $scope.loadedKeywords = [];
+      if(chart) { chart.flush(); }
+      getTotalsAndDraw();
+    }
+  }
 
-	$scope.removeFromChart = function(keyword) {
-		$scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
-		setLocation({keywords: $scope.keywords.selected.toString()})
-		if(chart) { chart.unload({ids: keyword}); }
-	}
+  $scope.removeFromChart = function(keyword) {
+    $scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
+    setLocation({keywords: $scope.keywords.selected.toString()})
+    if(chart) { chart.unload({ids: keyword}); }
+  }
 
-	function setLocation(locationObj) {
-		$location.search(angular.extend($location.search(), locationObj));
-	}
+  function setLocation(locationObj) {
+    $location.search(angular.extend($location.search(), locationObj));
+  }
 
-	$scope.addToChart = function(keyword) {
-		$scope.keywords.selected.push(keyword);
-		setLocation({keywords: $scope.keywords.selected.toString() })
-	}
+  $scope.addToChart = function(keyword) {
+    $scope.keywords.selected.push(keyword);
+    setLocation({keywords: $scope.keywords.selected.toString() })
+  }
 
-	$scope.loadSourceData = function(source) {
-		setLocation({source: source.acronym});
-	}
+  $scope.loadSourceData = function(source) {
+    setLocation({source: source.acronym});
+  }
 
-	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-		var keywords = $location.search()['keywords'] || undefined;
-		var source = $location.search()['source'] || undefined;
-		if(source) {
-			$timeout(function() {
-				source = getSourceObjByAcronym($scope.sourceList, source);
-				$scope.selectedSource.selected = source;
-				if(keywords) {
-					$scope.keywords.selected = keywords.split(',');
-				}
-				if(chart) { chart.unload(); }
-				getTotalsAndDraw();
-			}, 500);
-		}
-	}, true);
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var keywords = $location.search()['keywords'] || undefined;
+    var source = $location.search()['source'] || undefined;
+    if(source) {
+      $timeout(function() {
+        source = getSourceObjByAcronym($scope.sourceList, source);
+        $scope.selectedSource.selected = source;
+        if(keywords) {
+          $scope.keywords.selected = keywords.split(',');
+        }
+        if(chart) { chart.unload(); }
+        getTotalsAndDraw();
+      }, 500);
+    }
+  }, true);
 
-	function getSourceObjByAcronym(array, acronym) {
-		var obj = array.filter(function(el) {
-			return el.acronym === acronym;
-		});
-		return obj[0];
-	}
+  function getSourceObjByAcronym(array, acronym) {
+    var obj = array.filter(function(el) {
+      return el.acronym === acronym;
+    });
+    return obj[0];
+  }
 
-	function getItemData(datum) {
-		var dateFormat = d3.time.format("%Y-%m-%d");
-		var unformattedDate = datum.x;
-		var formattedDate = dateFormat(unformattedDate);
-		var query = datum.name;
-		var sourceObj = $scope.selectedSource.selected;
-		displayItems(formattedDate, query, sourceObj);
-	}
+  function getItemData(datum) {
+    var dateFormat = d3.time.format("%Y-%m-%d");
+    var unformattedDate = datum.x;
+    var formattedDate = dateFormat(unformattedDate);
+    var query = datum.name;
+    var sourceObj = $scope.selectedSource.selected;
+    displayItems(formattedDate, query, sourceObj);
+  }
 
-	function displayItems(date1, query, source) {
-		if(source.group) {
-			$location.path('/articles').search({q: query, since: date1, until: date1, type: source.type });
-		} else {
-			$location.path('/articles').search({q: query, since: date1, until: date1, source: source.name });			
-		}
-		$scope.$apply();
-	}
+  function displayItems(date1, query, source) {
+    if(source.group) {
+      $location.path('/articles').search({q: query, since: date1, until: date1, type: source.type });
+    } else {
+      $location.path('/articles').search({q: query, since: date1, until: date1, source: source.name });     
+    }
+    $scope.$apply();
+  }
 
-	function getTotalsAndDraw() {
-		$scope.keywords.selected.forEach(function(keyword) {
-			var keyword = keyword;
-			var timeId = 'timeFor' + keyword;
-			var countId = keyword;
-			var xsObj = {};
-			xsObj[countId] = timeId;
-			var selectedSource = $scope.selectedSource.selected;
-			var aggregated = selectedSource.group;
-			if(!aggregated) {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: selectedSource.acronym, q: keyword};
-			} else {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: selectedSource.type, q: keyword};
-			}
-			if($scope.loadedKeywords.indexOf(keyword === -1)) {
-				$scope.loading = true;
-				Resources.get($scope.paramsObj).$promise.then(function(data) {
-					$scope.loading = false;
-					if(data.length > 0) {
-						$scope.loadedKeywords.push(keyword);
-						if($scope.selectedNetwork === 'twitter_facebook') {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares');
-							timeChart.options.axis.y.label.text = 'Partilhas (Twitter + Facebook)';
-						} else if ($scope.selectedNetwork === 'twitter') {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'twitter_shares');
-							timeChart.options.axis.y.label.text = 'Partilhas (Twitter)';
-						} else if ($scope.selectedNetwork === 'facebook') {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'facebook_shares');
-							timeChart.options.axis.y.label.text = 'Partilhas (Facebook)';
-						} else if ($scope.selectedNetwork === 'articlesCount') {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
-							timeChart.options.axis.y.label.text = 'Número de artigos';							
-						}
-						if(!chart || chart.internal.data.targets.length === 0) {
-							timeChart.options.data.xs = xsObj;
-							timeChart.options.data.columns = formattedData;
-							timeChart.options.axis.x.type = 'timeseries';
-							timeChart.options.axis.x.label.text = 'Dia';
-							timeChart.options.axis.x.tick.format = '%d %b';
-							//timeChart.options.data.type = 'area-spline';
-							timeChart.options.data.groups = [];
-							chart = Chart.draw(timeChart);
-						} else {
-							chart.load({
-								xs: xsObj,
-								columns: formattedData
-							});
-						}
-					}
-				});
-			};
-		});
-	}
+  function getTotalsAndDraw() {
+    $scope.keywords.selected.forEach(function(keyword) {
+      var keyword = keyword;
+      var timeId = 'timeFor' + keyword;
+      var countId = keyword;
+      var xsObj = {};
+      xsObj[countId] = timeId;
+      var selectedSource = $scope.selectedSource.selected;
+      var aggregated = selectedSource.group;
+      if(!aggregated) {
+        $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: selectedSource.acronym, q: keyword};
+      } else {
+        $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: selectedSource.type, q: keyword};
+      }
+      if($scope.loadedKeywords.indexOf(keyword === -1)) {
+        $scope.loading = true;
+        Resources.get($scope.paramsObj).$promise.then(function(data) {
+          $scope.loading = false;
+          if(data.length > 0) {
+            $scope.loadedKeywords.push(keyword);
+            if($scope.selectedNetwork === 'twitter_facebook') {
+              var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares');
+              timeChart.options.axis.y.label.text = 'Partilhas (Twitter + Facebook)';
+            } else if ($scope.selectedNetwork === 'twitter') {
+              var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'twitter_shares');
+              timeChart.options.axis.y.label.text = 'Partilhas (Twitter)';
+            } else if ($scope.selectedNetwork === 'facebook') {
+              var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'facebook_shares');
+              timeChart.options.axis.y.label.text = 'Partilhas (Facebook)';
+            } else if ($scope.selectedNetwork === 'articlesCount') {
+              var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+              timeChart.options.axis.y.label.text = 'Número de artigos';              
+            }
+            if(!chart || chart.internal.data.targets.length === 0) {
+              timeChart.options.data.xs = xsObj;
+              timeChart.options.data.columns = formattedData;
+              timeChart.options.axis.x.type = 'timeseries';
+              timeChart.options.axis.x.label.text = 'Dia';
+              timeChart.options.axis.x.tick.format = '%d %b';
+              //timeChart.options.data.type = 'area-spline';
+              timeChart.options.data.groups = [];
+              chart = Chart.draw(timeChart);
+            } else {
+              chart.load({
+                xs: xsObj,
+                columns: formattedData
+              });
+            }
+          }
+        });
+};
+});
+}
 
 var timeChart = {
-		options: {
-			bindto: '#keyword-chart',
-			size: {
-        height: 500
-    	},
-    	legend: {
-    		position: 'right'
-    	},
-			tooltip: {
-        grouped: false 
-	    },
-			data: {
-				type: 'area',
-				onclick: function (d, i) { getItemData(d) }
-			},
-			point: {
-				r: 1.5
-			},
-			subchart: {
-				show: true
-			},
-			transition: {
-				duration: 0
-			},
-			axis: {
-				x: {
-					padding: {left: 0, right: 0},
-					label: {
-						text: 'Horas',
-						position: 'outer-center'
-					},
-					tick: {
-						fit: true
-						// format: function(d, i) {
-						// 		var d = d < 10 ? '0' + d : d;
-						// 		return d + ':00';
-						// }
-					}
-				},
-				y: {
-					//padding: {top: 1, bottom: 1},
-					//min: 0,
-					label: {
-						//text: 'Partilhas (Twitter + Facebook)',
-						position: 'outer-middle'
-					},
-					tick: {}
-				}
-			},
-			grid: {
+  options: {
+    bindto: '#keyword-chart',
+    size: {
+      height: 500
+    },
+    legend: {
+      position: 'right'
+    },
+    tooltip: {
+      grouped: false 
+    },
+    data: {
+      type: 'area',
+      onclick: function (d, i) { getItemData(d) }
+    },
+    point: {
+      r: 1.5
+    },
+    subchart: {
+      show: true
+    },
+    transition: {
+      duration: 0
+    },
+    axis: {
+      x: {
+        padding: {left: 0, right: 0},
+        label: {
+          text: 'Horas',
+          position: 'outer-center'
+        },
+        tick: {
+          fit: true
+            // format: function(d, i) {
+            //    var d = d < 10 ? '0' + d : d;
+            //    return d + ':00';
+            // }
+          }
+        },
+        y: {
+          //padding: {top: 1, bottom: 1},
+          //min: 0,
+          label: {
+            //text: 'Partilhas (Twitter + Facebook)',
+            position: 'outer-middle'
+          },
+          tick: {}
+        }
+      },
+      grid: {
         x: {
           show: false
         },
         y: {
           show: true
-      	}
+        }
       },
-			color: function(d) {
-				return d3.scale.category20c(d);
-			}
-		}
-	}
+      color: function(d) {
+        return d3.scale.category20c(d);
+      }
+    }
+  }
 
 
 
@@ -632,1208 +632,1289 @@ var timeChart = {
 
 mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, Resources, Chart, DataFormatter, $location, $routeParams) {
 
-	Page.setTitle('Comparador');
+  Page.setTitle('Comparador');
 
-	var chart, chart2;
+  var chart, chart2;
 
-	$scope.keyword = {};
-	$scope.keyword.selected = [];
+  $scope.keyword = {};
+  $scope.keyword.selected = [];
 
-	$scope.selectedSources = {};
-	$scope.selectedSources.selected = [];
+  $scope.selectedSources = {};
+  $scope.selectedSources.selected = [];
 
-	$scope.loadedSources = [];
+  $scope.loadedSources = [];
 
-	$scope.selectDisabled = true;
+  $scope.selectDisabled = true;
 
-	$scope.dataFormat = 'absolute';
+  $scope.dataFormat = 'absolute';
 
-	$scope.by = $routeParams.by || 'day';
-	$scope.since = $routeParams.since;
-	$scope.until = $routeParams.until;
+  $scope.by = $routeParams.by || 'day';
+  $scope.since = $routeParams.since;
+  $scope.until = $routeParams.until;
 
-	$scope.showSearchTools = true;
-	$scope.showSearchToolsNav = false;
-	$scope.optionsForDateSelect = [
-		{name: 'Tudo'},
-		{name: 'Último dia'},
-		{name: 'Últimos 7 dias'},
-		{name: 'Últimos 30 dias'},
-		{name: 'Intervalo Personalizado'}
-	];
+  $scope.showSearchTools = true;
+  $scope.showSearchToolsNav = false;
+  $scope.optionsForDateSelect = [
+  {name: 'Tudo'},
+  {name: 'Último dia'},
+  {name: 'Últimos 7 dias'},
+  {name: 'Últimos 30 dias'},
+  {name: 'Intervalo Personalizado'}
+  ];
 
-	$scope.dateOptions = [];
-	$scope.dateOptions.selected = $scope.optionsForDateSelect[0];
+  $scope.dateOptions = [];
+  $scope.dateOptions.selected = $scope.optionsForDateSelect[0];
 
-	$scope.today = moment().format('YYYY-MM-DD');
-	$scope.yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
-	$scope.oneWeekAgo = moment().subtract(7, 'day').format('YYYY-MM-DD');
-	$scope.oneMonthAgo = moment().subtract(30, 'day').format('YYYY-MM-DD');
+  $scope.today = moment().format('YYYY-MM-DD');
+  $scope.yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
+  $scope.oneWeekAgo = moment().subtract(7, 'day').format('YYYY-MM-DD');
+  $scope.oneMonthAgo = moment().subtract(30, 'day').format('YYYY-MM-DD');
 
-	$scope.pickadayOpen = false;
-	$scope.dateSince = '';
-	$scope.dateUntil = '';
+  $scope.pickadayOpen = false;
+  $scope.dateSince = '';
+  $scope.dateUntil = '';
 
-	$scope.setDateInterval = function() {
-		$scope.since = $scope.dateSince;
-		$scope.until = $scope.dateUntil;
-		$scope.pickadayOpen = false;
-		$scope.loadedSources = [];
-		getTotalsAndDraw();		
-	}
-	$scope.setSelectedOption = function(option) {
-		$scope.dateOptions.selected = option;
-		if(option.name === $scope.optionsForDateSelect[4].name) {
-			$scope.pickadayOpen = !$scope.pickadayOpen;
-		} else {
-			$scope.until = $scope.today;
-			if(option.name  === $scope.optionsForDateSelect[0].name) {
-				$scope.since = undefined;
-			}
-			if(option.name  === $scope.optionsForDateSelect[1].name) {
-				$scope.since = $scope.yesterday;
-			}
-			if(option.name  === $scope.optionsForDateSelect[2].name) {
-				$scope.since = $scope.oneWeekAgo;
-			}
-			if(option.name  === $scope.optionsForDateSelect[3].name) {
-				$scope.since = $scope.oneMonthAgo;
-			}
+  $scope.setDateInterval = function() {
+    $scope.since = $scope.dateSince;
+    $scope.until = $scope.dateUntil;
+    $scope.pickadayOpen = false;
+    $scope.loadedSources = [];
+    getTotalsAndDraw();   
+  }
+  $scope.setSelectedOption = function(option) {
+    $scope.dateOptions.selected = option;
+    if(option.name === $scope.optionsForDateSelect[4].name) {
+      $scope.pickadayOpen = !$scope.pickadayOpen;
+    } else {
+      $scope.until = $scope.today;
+      if(option.name  === $scope.optionsForDateSelect[0].name) {
+        $scope.since = undefined;
+      }
+      if(option.name  === $scope.optionsForDateSelect[1].name) {
+        $scope.since = $scope.yesterday;
+      }
+      if(option.name  === $scope.optionsForDateSelect[2].name) {
+        $scope.since = $scope.oneWeekAgo;
+      }
+      if(option.name  === $scope.optionsForDateSelect[3].name) {
+        $scope.since = $scope.oneMonthAgo;
+      }
 
-			$scope.pickadayOpen = false;
+      $scope.pickadayOpen = false;
 
-			$scope.redrawChart();			
-		}
-	}
+      $scope.redrawChart();     
+    }
+  }
 
-	$scope.openSearchTools = function() {
-		$scope.showSearchToolsNav = !$scope.showSearchToolsNav;
-	}
+  $scope.openSearchTools = function() {
+    $scope.showSearchToolsNav = !$scope.showSearchToolsNav;
+  }
 
-	$scope.displayBy = function(timePeriod) {
-		$scope.by = timePeriod;
-		$scope.showSearchTools = true;
-		if($scope.by === 'month') {
-			$scope.since = undefined;
-			$scope.until = undefined;
-			$scope.dateOptions.selected = $scope.optionsForDateSelect[0];
-			$scope.showSearchTools = false;
-			$scope.showSearchToolsNav = false;
-		}
-		$scope.redrawChart();
-	}
+  $scope.displayBy = function(timePeriod) {
+    $scope.by = timePeriod;
+    $scope.showSearchTools = true;
+    if($scope.by === 'month') {
+      $scope.since = undefined;
+      $scope.until = undefined;
+      $scope.dateOptions.selected = $scope.optionsForDateSelect[0];
+      $scope.showSearchTools = false;
+      $scope.showSearchToolsNav = false;
+    }
+    $scope.redrawChart();
+  }
 
-	$scope.$watch('keyword.selected', function(newVal, oldVal) {
-		if(newVal.length > 2) {
-			$scope.selectDisabled = false;
-		}
-	});
+  $scope.$watch('keyword.selected', function(newVal, oldVal) {
+    if(newVal.length > 2) {
+      $scope.selectDisabled = false;
+    }
+  });
 
-	function getSourceObjByAcronym(array, acronym) {
-		var obj = array.filter(function(el) {
-			return el.acronym === acronym;
-		});
-		return obj[0];
-	}
+  function getSourceObjByAcronym(array, acronym) {
+    var obj = array.filter(function(el) {
+      return el.acronym === acronym;
+    });
+    return obj[0];
+  }
 
-	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-		var keyword = $location.search()['keyword'] || undefined;
-		var sources = $location.search()['sources'] || undefined;
-		if(keyword) {
-			$scope.keyword.selected = keyword;
-		}
-		if(sources) {
-			$timeout(function() {
-				sources = sources.split(',');
-				var newSourcesArray = [];
-				sources.forEach(function(el) {
-					var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
-					newSourcesArray.push(sourceObj);
-				});
-				$scope.selectedSources.selected = newSourcesArray;
-				$scope.redrawChart();
-			}, 500);
-		}
-	}, true);
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var keyword = $location.search()['keyword'] || undefined;
+    var sources = $location.search()['sources'] || undefined;
+    if(keyword) {
+      $scope.keyword.selected = keyword;
+    }
+    if(sources) {
+      $timeout(function() {
+        sources = sources.split(',');
+        var newSourcesArray = [];
+        sources.forEach(function(el) {
+          var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
+          newSourcesArray.push(sourceObj);
+        });
+        $scope.selectedSources.selected = newSourcesArray;
+        $scope.redrawChart();
+      }, 500);
+    }
+  }, true);
 
-	// $scope.groupSourcesByType = function(item) {
-	// 	if(item.type === 'national') {
-	// 		return 'Jornais Nacionais';
-	// 	}
-	// 	if(item.type === 'international') {
-	// 		return 'Jornais Internacionais';
-	// 	}
-	// 	if(item.type === 'blogs') {
-	// 		return 'Blogues';
-	// 	}
-	// }
+  // $scope.groupSourcesByType = function(item) {
+  //  if(item.type === 'national') {
+  //    return 'Jornais Nacionais';
+  //  }
+  //  if(item.type === 'international') {
+  //    return 'Jornais Internacionais';
+  //  }
+  //  if(item.type === 'blogs') {
+  //    return 'Blogues';
+  //  }
+  // }
 
-	$scope.loadSourceData = function() {
-		//console.log($scope.selectedSources.selected);
-		setLocation();
-		//getTotalsAndDraw();
-	}
+  $scope.loadSourceData = function() {
+    //console.log($scope.selectedSources.selected);
+    setLocation();
+    //getTotalsAndDraw();
+  }
 
-	$scope.$watch('selectedSources.selected', function(newVal, oldVal) {
-		var sourceToRemove, sourceToRemoveIndex;
-		if(newVal.length < oldVal.length) {
-			angular.forEach(oldVal, function(obj) {
-				if(newVal.indexOf(obj) === -1) {
-					sourceToRemove = obj.name;
-				}
-			});
-			sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
-			$scope.loadedSources.splice(sourceToRemoveIndex, 1);
-			columnToRemoveIndex = columns[0].indexOf(sourceToRemove);
-			if(columnToRemoveIndex !== -1) {
-				columns[0].splice(columnToRemoveIndex, 1);
-				columns[1].splice(columnToRemoveIndex, 1);
-			}
-			if(chart) { chart.unload({ids: sourceToRemove}); }
-			// chart2.load({
-			// 	columns: columns,
-			// 	unload: [sourceToRemove]
-			// });
-		}
-	});
+  $scope.$watch('selectedSources.selected', function(newVal, oldVal) {
+    var sourceToRemove, sourceToRemoveIndex;
+    if(newVal.length < oldVal.length) {
+      angular.forEach(oldVal, function(obj) {
+        if(newVal.indexOf(obj) === -1) {
+          sourceToRemove = obj.name;
+        }
+      });
+      sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
+      $scope.loadedSources.splice(sourceToRemoveIndex, 1);
+      columnToRemoveIndex = columns[0].indexOf(sourceToRemove);
+      if(columnToRemoveIndex !== -1) {
+        columns[0].splice(columnToRemoveIndex, 1);
+        columns[1].splice(columnToRemoveIndex, 1);
+      }
+      if(chart) { chart.unload({ids: sourceToRemove}); }
+      // chart2.load({
+      //  columns: columns,
+      //  unload: [sourceToRemove]
+      // });
+}
+});
 
-	function setLocation() {
-		$location.search({keyword: $scope.keyword.selected});
-		var selectedSourcesArray = [];
-		if($scope.selectedSources.selected.length > 0) {
-			$scope.selectedSources.selected.forEach(function(el) {
-				selectedSourcesArray.push(el.acronym);
-			});
-			if(selectedSourcesArray.length > 0) {
-				$location.search(angular.extend($location.search(), { sources: selectedSourcesArray.toString() }));
-			}
-		}
-	}
+  function setLocation() {
+    $location.search({keyword: $scope.keyword.selected});
+    var selectedSourcesArray = [];
+    if($scope.selectedSources.selected.length > 0) {
+      $scope.selectedSources.selected.forEach(function(el) {
+        selectedSourcesArray.push(el.acronym);
+      });
+      if(selectedSourcesArray.length > 0) {
+        $location.search(angular.extend($location.search(), { sources: selectedSourcesArray.toString() }));
+      }
+    }
+  }
 
-	$scope.setDataFormat = function(dataFormat){
-		if ($scope.dataFormat !== dataFormat) {
-			$scope.dataFormat = dataFormat;
-			$scope.loadedSources = [];
-			chart.unload();
-			if(chart2) { chart2.unload(); };
-			columns = [
-				[],[]
-			];
-			getTotalsAndDraw();
-		}
-	}
+  $scope.setDataFormat = function(dataFormat){
+    if ($scope.dataFormat !== dataFormat) {
+      $scope.dataFormat = dataFormat;
+      $scope.loadedSources = [];
+      chart.unload();
+      if(chart2) { chart2.unload(); };
+      columns = [
+      [],[]
+      ];
+      getTotalsAndDraw();
+    }
+  }
 
-	$scope.redrawChart = function() {
-		setLocation();
-		$scope.loadedSources = [];
-		if(chart) { chart.unload(); };
-		if(chart2) { chart2.unload(); };
-		columns = [
-			[],[]
-		];
-		getTotalsAndDraw();
-	}
+  $scope.redrawChart = function() {
+    setLocation();
+    $scope.loadedSources = [];
+    if(chart) { chart.unload(); };
+    if(chart2) { chart2.unload(); };
+    columns = [
+    [],[]
+    ];
+    getTotalsAndDraw();
+  }
 
-	var columns = [
-		[],[]
-	];
+  var columns = [
+  [],[]
+  ];
 
-	function getTotalsAndDraw() {
-		$scope.selectedSources.selected.forEach(function(el, index) {
+  function getTotalsAndDraw() {
+    $scope.selectedSources.selected.forEach(function(el, index) {
 
-			var keyword = el.name;
-			var acronym = el.acronym;
-			var aggregated = el.group;
-			var timeId = 'timeFor' + keyword;
-			var countId = keyword;
-			var xsObj = {};
-			xsObj[countId] = timeId;
+      var keyword = el.name;
+      var acronym = el.acronym;
+      var aggregated = el.group;
+      var timeId = 'timeFor' + keyword;
+      var countId = keyword;
+      var xsObj = {};
+      xsObj[countId] = timeId;
 
-			if(!aggregated) {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: acronym, q: $scope.keyword.selected};
-			} else {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: el.type, q: $scope.keyword.selected};
-			}
+      if(!aggregated) {
+        $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: acronym, q: $scope.keyword.selected};
+      } else {
+        $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: el.type, q: $scope.keyword.selected};
+      }
 
-			if($scope.loadedSources.indexOf(keyword) === -1 && columns[0].indexOf(keyword) === -1) {
-				$scope.loading = true;
-				Resources.get($scope.paramsObj).$promise.then(function(data) {
-					$scope.loading = false;
-					if(data.length > 0) {
-						$scope.loadedSources.push(keyword);
-						if(columns[0].length === 0) {
-							columns[0] = ['x'].concat(keyword);
-						} else {
-							columns[0].push(keyword);
-						}
-						if($scope.dataFormat === 'absolute') {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
-							if(columns[1].length === 0) {
-								columns[1] = [$scope.keyword.selected, data[0]['total_query_articles']];
-							} else {
-								columns[1].push(data[0]['total_query_articles']);
-							}
-							barChart.options.axis.y.label.text = 'Número de artigos';
-							timeChart.options.axis.y.label.text = 'Número de artigos';
-							//timeChart.options.data.groups = [$scope.loadedSources];
-							timeChart.options.axis.y.tick.format = function(d, i) {
-								return d;
-							}
-							barChart.options.axis.y.tick.format = function(d, i) {
-								return d;
-							}
-						}
-						if($scope.dataFormat === 'relative') {
-							if(aggregated) {
-								var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
-								var total_query_articles = data[0]['total_query_articles'];
-								var total_type_articles = data[0]['total_type_articles'];
-								var percent = ((total_query_articles/total_type_articles) * 100).toFixed(2);
-								if(columns[1].length === 0) {
-									columns[1] = [$scope.keyword.selected, percent];
-								} else {
-									columns[1].push(percent);
-								}
-							} else {
-								var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
-								var total_query_articles = data[0]['total_query_articles'];
-								var total_source_articles = data[0]['total_source_articles'];
-								var percent = ((total_query_articles/total_source_articles) * 100).toFixed(2);
-								if(columns[1].length === 0) {
-									columns[1] = [$scope.keyword.selected, percent];
-								} else {
-									columns[1].push(percent);
-								}
-							}
-							timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
-							barChart.options.axis.y.label.text = 'Percentagem do total de artigos';
-							barChart.options.axis.y.padding = { top: 0, bottom: 0 };
-							timeChart.options.axis.y.padding = { top: 0, bottom: 0 };
-							//timeChart.options.data.groups = [];
-							timeChart.options.axis.y.tick.format = function(d, i) {
-								return d + '%';
-							}
-							barChart.options.axis.y.tick.format = function(d, i) {
-								return d + '%';
-							}
-						}
-						if(!chart || chart.internal.data.targets.length === 0) {
-							if($scope.by === 'hour') {
-								//timeChart.options.data.type = 'area';
-								timeChart.options.axis.x.type = '';
-								timeChart.options.axis.x.label.text = 'Hora';
-								timeChart.options.axis.x.tick.format = function(d, i) {
-										var d = d < 10 ? '0' + d : d;
-										return d + ':00';
-								}
-							}
-							if($scope.by === 'day') {
-								timeChart.options.axis.x.type = 'timeseries';
-								timeChart.options.axis.x.label.text = 'Dia';
-								timeChart.options.axis.x.tick.format = '%d %b';
-								//timeChart.options.data.type = 'area-spline';
-								timeChart.options.data.groups = [];
-							}
-							if($scope.by === 'month') {
-								timeChart.options.axis.x.type = '';
-								timeChart.options.axis.x.label.text = 'Mês';
-								timeChart.options.axis.x.tick.format = function(d, i) {
-									return d;
-								};
-							}
-							if($scope.by === 'week') {
-								timeChart.options.axis.x.type = '';
-								timeChart.options.axis.x.label.text = 'Dia da semana';
-								timeChart.options.axis.x.tick.format = function(d) {
-									return moment().isoWeekday(d).format('ddd');
-								};
-							}
-							timeChart.options.data.xs = xsObj;
-							timeChart.options.data.columns = formattedData;
-							//timeChart.options.axis.x.type = 'timeseries';
-							//timeChart.options.axis.x.label.text = 'Dia';
-							//timeChart.options.axis.x.tick.format = '%d %b';
-							//timeChart.options.data.type = 'area-spline';
-							timeChart.options.data.groups = [];
-							chart = Chart.draw(timeChart);
-						} else {
-							chart.load({
-								xs: xsObj,
-								columns: formattedData
-							});
-						}
-						// if(!chart2 || chart2.internal.data.targets.length === 0) {
-						// 	barChart.options.data.x = 'x';
-						// 	var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
-						// 	barChart.options.data.names = JSON.parse(label);
-						// 	barChart.options.data.columns = columns;
-						// 	chart2 = Chart.draw(barChart);
-						// } else {
-						// 	chart2.load({
-						// 		columns: columns
-						// 	});
-						// }
+      if($scope.loadedSources.indexOf(keyword) === -1 && columns[0].indexOf(keyword) === -1) {
+        $scope.loading = true;
+        Resources.get($scope.paramsObj).$promise.then(function(data) {
+          $scope.loading = false;
+          if(data.length > 0) {
+            $scope.loadedSources.push(keyword);
+            if(columns[0].length === 0) {
+              columns[0] = ['x'].concat(keyword);
+            } else {
+              columns[0].push(keyword);
+            }
+            if($scope.dataFormat === 'absolute') {
+              var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+              if(columns[1].length === 0) {
+                columns[1] = [$scope.keyword.selected, data[0]['total_query_articles']];
+              } else {
+                columns[1].push(data[0]['total_query_articles']);
+              }
+              barChart.options.axis.y.label.text = 'Número de artigos';
+              timeChart.options.axis.y.label.text = 'Número de artigos';
+              //timeChart.options.data.groups = [$scope.loadedSources];
+              timeChart.options.axis.y.tick.format = function(d, i) {
+                return d;
+              }
+              barChart.options.axis.y.tick.format = function(d, i) {
+                return d;
+              }
+            }
+            if($scope.dataFormat === 'relative') {
+              if(aggregated) {
+                var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
+                var total_query_articles = data[0]['total_query_articles'];
+                var total_type_articles = data[0]['total_type_articles'];
+                var percent = ((total_query_articles/total_type_articles) * 100).toFixed(2);
+                if(columns[1].length === 0) {
+                  columns[1] = [$scope.keyword.selected, percent];
+                } else {
+                  columns[1].push(percent);
+                }
+              } else {
+                var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
+                var total_query_articles = data[0]['total_query_articles'];
+                var total_source_articles = data[0]['total_source_articles'];
+                var percent = ((total_query_articles/total_source_articles) * 100).toFixed(2);
+                if(columns[1].length === 0) {
+                  columns[1] = [$scope.keyword.selected, percent];
+                } else {
+                  columns[1].push(percent);
+                }
+              }
+              timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+              barChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+              barChart.options.axis.y.padding = { top: 0, bottom: 0 };
+              timeChart.options.axis.y.padding = { top: 0, bottom: 0 };
+              //timeChart.options.data.groups = [];
+              timeChart.options.axis.y.tick.format = function(d, i) {
+                return d + '%';
+              }
+              barChart.options.axis.y.tick.format = function(d, i) {
+                return d + '%';
+              }
+            }
+            if(!chart || chart.internal.data.targets.length === 0) {
+              if($scope.by === 'hour') {
+                //timeChart.options.data.type = 'area';
+                timeChart.options.axis.x.type = '';
+                timeChart.options.axis.x.label.text = 'Hora';
+                timeChart.options.axis.x.tick.format = function(d, i) {
+                  var d = d < 10 ? '0' + d : d;
+                  return d + ':00';
+                }
+              }
+              if($scope.by === 'day') {
+                timeChart.options.axis.x.type = 'timeseries';
+                timeChart.options.axis.x.label.text = 'Dia';
+                timeChart.options.axis.x.tick.format = '%d %b';
+                //timeChart.options.data.type = 'area-spline';
+                timeChart.options.data.groups = [];
+              }
+              if($scope.by === 'month') {
+                timeChart.options.axis.x.type = '';
+                timeChart.options.axis.x.label.text = 'Mês';
+                timeChart.options.axis.x.tick.format = function(d, i) {
+                  return d;
+                };
+              }
+              if($scope.by === 'week') {
+                timeChart.options.axis.x.type = '';
+                timeChart.options.axis.x.label.text = 'Dia da semana';
+                timeChart.options.axis.x.tick.format = function(d) {
+                  return moment().isoWeekday(d).format('ddd');
+                };
+              }
+              timeChart.options.data.xs = xsObj;
+              timeChart.options.data.columns = formattedData;
+              //timeChart.options.axis.x.type = 'timeseries';
+              //timeChart.options.axis.x.label.text = 'Dia';
+              //timeChart.options.axis.x.tick.format = '%d %b';
+              //timeChart.options.data.type = 'area-spline';
+              timeChart.options.data.groups = [];
+              chart = Chart.draw(timeChart);
+            } else {
+              chart.load({
+                xs: xsObj,
+                columns: formattedData
+              });
+            }
+            // if(!chart2 || chart2.internal.data.targets.length === 0) {
+            //  barChart.options.data.x = 'x';
+            //  var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
+            //  barChart.options.data.names = JSON.parse(label);
+            //  barChart.options.data.columns = columns;
+            //  chart2 = Chart.draw(barChart);
+            // } else {
+            //  chart2.load({
+            //    columns: columns
+            //  });
+            // }
 
-						// Fix c3 issue where the subchart is shown even when set to false
-						d3.select("#bar-chart svg").select("g.c3-brush").remove();
-					}
-				}, function() {
-					$scope.loading = false;
-					alert('Nenhum resultado encontrado');
-				});				
-			}
-		});		
-	}
+            // Fix c3 issue where the subchart is shown even when set to false
+            d3.select("#bar-chart svg").select("g.c3-brush").remove();
+          }
+        }, function() {
+          $scope.loading = false;
+          alert('Nenhum resultado encontrado');
+        });       
+}
+});   
+}
 
-	var barChart = {
-		options: {
-			bindto: '#bar-chart',
-			padding: {
-				left: 130
-			},
-			size: {
-				//height: 400
-			},
-			data: {
-				type: 'bar',
-				names: ''
-			},
-			bar: {
+var barChart = {
+  options: {
+    bindto: '#bar-chart',
+    padding: {
+      left: 130
+    },
+    size: {
+        //height: 400
+      },
+      data: {
+        type: 'bar',
+        names: ''
+      },
+      bar: {
         width: {
             //ratio: 0.1
-        }
-	    },
-			axis: {
-				rotated: true,
-				x: {
-					type: 'category',
-					tick: {
-            multiline: false,
+          }
+        },
+        axis: {
+          rotated: true,
+          x: {
+            type: 'category',
+            tick: {
+              multiline: false,
+            },
           },
-				},
-				y: {
-					label: {
-						position: 'outer-right'
-					},
-					tick: {}
-				}
-			},
-			subchart: {
-        show: false
-    	},
-			color: {
-    		pattern: ['#395762']
-    	}
-		}
-	}
+          y: {
+            label: {
+              position: 'outer-right'
+            },
+            tick: {}
+          }
+        },
+        subchart: {
+          show: false
+        },
+        color: {
+          pattern: ['#395762']
+        }
+      }
+    }
 
-	var timeChart = {
-		options: {
-			bindto: '#time-chart',
-			size: {
-        height: 500
-    	},
-    	legend: {
-    		position: 'right'
-    	},
-			tooltip: {
-        grouped: false 
-	    },
-			data: {
-				type: 'area',
-				//onclick: function (d, i) { getItemData(d) }
-			},
-			point: {
-				r: 1.5
-			},
-			subchart: {
-				show: true
-			},
-			transition: {
-				duration: 0
-			},
-			axis: {
-				x: {
-					padding: {left: 0, right: 0},
-					label: {
-						text: 'Horas',
-						position: 'outer-center'
-					},
-					tick: {
-						fit: true
-						// format: function(d, i) {
-						// 		var d = d < 10 ? '0' + d : d;
-						// 		return d + ':00';
-						// }
-					}
-				},
-				y: {
-					//padding: {top: 1, bottom: 1},
-					//min: 0,
-					label: {
-						text: 'Artigos',
-						position: 'outer-middle'
-					},
-					tick: {}
-				}
-			},
-			grid: {
+    var timeChart = {
+      options: {
+        bindto: '#time-chart',
+        size: {
+          height: 500
+        },
+        legend: {
+          position: 'right'
+        },
+        tooltip: {
+          grouped: false 
+        },
+        data: {
+          type: 'area',
+        //onclick: function (d, i) { getItemData(d) }
+      },
+      point: {
+        r: 1.5
+      },
+      subchart: {
+        show: true
+      },
+      transition: {
+        duration: 0
+      },
+      axis: {
+        x: {
+          padding: {left: 0, right: 0},
+          label: {
+            text: 'Horas',
+            position: 'outer-center'
+          },
+          tick: {
+            fit: true
+            // format: function(d, i) {
+            //    var d = d < 10 ? '0' + d : d;
+            //    return d + ':00';
+            // }
+          }
+        },
+        y: {
+          //padding: {top: 1, bottom: 1},
+          //min: 0,
+          label: {
+            text: 'Artigos',
+            position: 'outer-middle'
+          },
+          tick: {}
+        }
+      },
+      grid: {
         x: {
           show: false
         },
         y: {
           show: true
-      	}
+        }
       },
-			color: function(d) {
-				return d3.scale.category20c(d);
-			}
-		}
-	}
+      color: function(d) {
+        return d3.scale.category20c(d);
+      }
+    }
+  }
 
 
 });
 
 mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Page, Resources, Chart, DataFormatter) {
 
-	Page.setTitle('Chronicle');
+  Page.setTitle('Chronicle');
 
-	var chart;
+  var chart;
 
-	var count = 0;
+  var count = 0;
 
-	$scope.loadedKeywords = [];
+  $scope.loadedKeywords = [];
 
-	$scope.loading = false;
+  $scope.loading = false;
 
-	$scope.searchFields = 'title_summary';
+  $scope.searchFields = 'title_summary';
 
-	$scope.fields;
+  $scope.fields;
 
-	//$scope.chartCleared = false;
+  //$scope.chartCleared = false;
 
-	$scope.sourceType = 'national';
+  $scope.sourceType = 'national';
 
-	$scope.since = '' || $routeParams.since;
-	$scope.until;
+  $scope.chartType = 'line';
 
-	$scope.dataFormat = 'absolute';
+  $scope.since = '' || $routeParams.since;
+  $scope.until;
 
-	$scope.loadingQueue = [];
+  $scope.dataFormat = 'absolute';
 
-	var selectedQueries = [
-		['fc porto', 'benfica', 'sporting'],
-		['ébola', 'legionella'],
-		['passos coelho', 'antónio costa'],
-		['défice', 'dívida'],
-		['ricardo salgado', 'bes'],
-		['sócrates', 'miguel macedo', 'duarte lima'],
-		['charlie hebdo', 'terrorismo'],
-		['austeridade', 'desemprego']
-	];
+  $scope.loadingQueue = [];
 
-	$scope.keywords = {};
-	$scope.keywords.selected = [];
+  var selectedQueries = [
+  ['fc porto', 'benfica', 'sporting'],
+  ['ébola', 'legionella'],
+  ['passos coelho', 'antónio costa'],
+  ['défice', 'dívida'],
+  ['ricardo salgado', 'bes'],
+  ['sócrates', 'miguel macedo', 'duarte lima'],
+  ['charlie hebdo', 'terrorismo'],
+  ['austeridade', 'desemprego']
+  ];
 
-
-	showPredefinedQuery();
-
-	function showPredefinedQuery() {
-		if ($scope.keywords.selected.length === 0) {
-			var selectedQueryIndex = Math.floor(Math.random() * (selectedQueries.length));
-			$scope.keywords.selected = selectedQueries[selectedQueryIndex].map(function(el) {
-				return el;
-			});
-		}
-	}
-
-	function objectIsEmpty(obj) {
-		return Object.keys(obj).length === 0; 
-	}
-
-	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-		var keywordParams = $location.search()['keywords'] || undefined;
-		var keywordArray = [];
-		var sourceParams = $location.search()['sources'] || undefined;
-		if(sourceParams) {
-			$location.search(angular.extend($location.search(), {sources: sourceParams.toString()}));
-			$scope.sourceType = sourceParams;
-		}
-		if(keywordParams) {
-			if(keywordParams.split(',').length === 1) {
-				keywordArray.push(keywordParams);
-			}
-			if(keywordParams.split(',').length > 1) {
-				keywordArray = keywordParams.split(',');
-			}
-			$scope.keywords.selected = keywordArray;
-		}
-		if(objectIsEmpty(newVal) && !objectIsEmpty(oldVal)) {
-			$scope.clearChart();
-		}
-	}, true);
-
-	$scope.$watch('sourceType', function(newVal, oldVal) {
-		if(newVal !== oldVal) {
-			$location.search(angular.extend($location.search(), {sources: newVal.toString()}));
-			$scope.loadedKeywords = [];
-			if(chart) { chart.flush(); }
-			getTotalsAndDraw();
-		}
-	}, true);
-
-	$scope.$watch('keywords.selected', function(newVal, oldVal) {
-		angular.forEach(oldVal, function(keyword) {
-			if(newVal.indexOf(keyword) === -1) {
-				$scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(keyword), 1);
-				chart.unload({ids: keyword});
-			}
-		});
-		if(newVal.length > 0 && newVal !== '') {
-			$location.search(angular.extend($location.search(), {keywords: newVal.toString()}));
-			getTotalsAndDraw();		
-		} else {
-			$scope.clearChart();
-		}
-
-	}, true);
-
-	$scope.$watch('loadingQueue', function(newVal, oldVal) {
-		if($scope.loadingQueue.length !== 0) {
-			$scope.loading = true;
-		} else {
-			$scope.loading = false;
-		}
-	}, true);
-
-	$scope.redrawChart = function() {
-		if(chart) {
-			if($scope.searchFields !== 'title_summary') {
-				$scope.fields = $scope.searchFields;				
-			} else {
-				$scope.fields = undefined;
-			}
-			$scope.loadedKeywords = [];
-			getTotalsAndDraw();
-		}
-	}
-
-	$scope.clearChart = function() {
-		$location.search('');
-		$scope.keywords.selected = [];
-		$scope.loadedKeywords = [];
-		if(chart) { chart.unload(); }
-	}
-
-	$scope.setDataFormat = function(dataFormat){
-		if ($scope.dataFormat !== dataFormat) {
-			$scope.dataFormat = dataFormat;
-			$scope.loadedKeywords = [];
-			chart.flush();
-			getTotalsAndDraw();
-		}
-	}
-
-	$scope.setSourceType = function(sourceType){
-		if ($scope.sourceType !== sourceType) {
-			$scope.sourceType = sourceType;
-			//$scope.loadedKeywords = [];
-			//getTotalsAndDraw();
-		}
-	}
-
-	$scope.addKeyword = function(item){
-		$scope.keywords.selected.push(item);
-	}
+  $scope.keywords = {};
+  $scope.keywords.selected = [];
 
 
-	function createParamsObj(keyword) {
-		if($scope.sourceType === 'all') {
-			return {resource: 'totals', q: keyword, since: $scope.since, fields: $scope.fields};
-		} else {
-			return {resource: 'totals', q: keyword, since: $scope.since, type: $scope.sourceType, fields: $scope.fields};
-		}
-	}
+  showPredefinedQuery();
+
+  function showPredefinedQuery() {
+    if ($scope.keywords.selected.length === 0) {
+      var selectedQueryIndex = Math.floor(Math.random() * (selectedQueries.length));
+      $scope.keywords.selected = selectedQueries[selectedQueryIndex].map(function(el) {
+        return el;
+      });
+    }
+  }
+
+  function objectIsEmpty(obj) {
+    return Object.keys(obj).length === 0; 
+  }
+
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var keywordParams = $location.search()['keywords'] || undefined;
+    var keywordArray = [];
+    var sourceParams = $location.search()['sources'] || undefined;
+    if(sourceParams) {
+      $location.search(angular.extend($location.search(), {sources: sourceParams.toString()}));
+      $scope.sourceType = sourceParams;
+    }
+    if(keywordParams) {
+      if(keywordParams.split(',').length === 1) {
+        keywordArray.push(keywordParams);
+      }
+      if(keywordParams.split(',').length > 1) {
+        keywordArray = keywordParams.split(',');
+      }
+      $scope.keywords.selected = keywordArray;
+    }
+    if(objectIsEmpty(newVal) && !objectIsEmpty(oldVal)) {
+      $scope.clearChart();
+    }
+  }, true);
+
+  $scope.$watch('sourceType', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {sources: newVal.toString()}));
+      $scope.loadedKeywords = [];
+      if(chart) { chart.flush(); }
+      getTotalsAndDraw();
+    }
+  }, true);
+
+  $scope.$watch('keywords.selected', function(newVal, oldVal) {
+    angular.forEach(oldVal, function(keyword) {
+      if(newVal.indexOf(keyword) === -1) {
+        $scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(keyword), 1);
+        chart.unload({ids: keyword});
+      }
+    });
+    if(newVal.length > 0 && newVal !== '') {
+      $location.search(angular.extend($location.search(), {keywords: newVal.toString()}));
+      getTotalsAndDraw();   
+    } else {
+      $scope.clearChart();
+    }
+
+  }, true);
+
+  $scope.$watch('loadingQueue', function(newVal, oldVal) {
+    if($scope.loadingQueue.length !== 0) {
+      $scope.loading = true;
+    } else {
+      $scope.loading = false;
+    }
+  }, true);
+
+  $scope.setChartType = function(chartType) {
+    if(chartType != $scope.chartType) {
+      $scope.chartType = chartType;
+      if(chart) chart.transform(chartType);
+    }
+  }
+
+  $scope.redrawChart = function() {
+    if(chart) {
+      if($scope.searchFields !== 'title_summary') {
+        $scope.fields = $scope.searchFields;        
+      } else {
+        $scope.fields = undefined;
+      }
+      $scope.loadedKeywords = [];
+      getTotalsAndDraw();
+    }
+  }
+
+  $scope.clearChart = function() {
+    $location.search('');
+    $scope.keywords.selected = [];
+    $scope.loadedKeywords = [];
+    if(chart) { chart.unload(); }
+  }
+
+  $scope.setDataFormat = function(dataFormat){
+    if ($scope.dataFormat !== dataFormat) {
+      $scope.dataFormat = dataFormat;
+      $scope.loadedKeywords = [];
+      chart.flush();
+      getTotalsAndDraw();
+    }
+  }
+
+  $scope.setSourceType = function(sourceType){
+    if ($scope.sourceType !== sourceType) {
+      $scope.sourceType = sourceType;
+      //$scope.loadedKeywords = [];
+      //getTotalsAndDraw();
+    }
+  }
+
+  $scope.addKeyword = function(item){
+    $scope.keywords.selected.push(item);
+  }
 
 
-	function getTotalsAndDraw() {
-		angular.forEach($scope.keywords.selected, function(el, index) {
-			var keyword = el;
-			var timeId = 'timeFor' + keyword;
-			var countId = keyword;
-			var xsObj = {};
-
-			var paramsObj = createParamsObj(keyword);
-
-			if($scope.loadedKeywords.indexOf(keyword) === -1) {
-				$scope.loadingQueue.push(keyword);
-				Resources.get(paramsObj).$promise.then(function(dataObj) {
-					$scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
-					if(dataObj.length > 0) {
-						//$scope.loading = false;
-						var formattedData;
-						xsObj[countId] = timeId;
-						$scope.loadedKeywords.push(keyword);
-						if($scope.dataFormat === 'absolute') {
-							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
-							keywordChart.options.axis.y.label.text = 'Número de artigos';
-						}
-						if($scope.dataFormat === 'relative') {
-							formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type_by_day');
-							keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
-						}
-						if(!chart) {
-							keywordChart.options.data.xs = xsObj;
-							keywordChart.options.data.columns = formattedData;
-							chart = Chart.draw(keywordChart);
-						} else {
-							chart.load({
-								xs: xsObj,
-								columns: formattedData
-							});
-						}
-					} else {
-						//$scope.loading = false;
-						$timeout(function() {
-							chart.unload({ids: keyword});
-						}, 500)
-						//alert($scope.loadedKeywords);
-					}
-					if(chart) {
-						d3.select('.c3-axis-x-label')
-							.attr('transform', 'translate(0, -10)');
-					}
-				});
-			}
-		});
-	};
+  function createParamsObj(keyword) {
+    if($scope.sourceType === 'all') {
+      return {resource: 'totals', q: keyword, since: $scope.since, fields: $scope.fields};
+    } else {
+      return {resource: 'totals', q: keyword, since: $scope.since, type: $scope.sourceType, fields: $scope.fields};
+    }
+  }
 
 
-	function getItemData(datum) {
-		var dateFormat = d3.time.format("%Y-%m-%d");
-		var unformattedDate = datum.x;
-		var formattedDate = dateFormat(unformattedDate);
-		var query = datum.name;
-		displayItems(formattedDate, query, $scope.sourceType);
-	}
+  function getTotalsAndDraw() {
+    angular.forEach($scope.keywords.selected, function(el, index) {
+      var keyword = el;
+      var timeId = 'timeFor' + keyword;
+      var countId = keyword;
+      var xsObj = {};
 
-	function displayItems(date1, query, sourceType) {
-		if(sourceType === 'all') {
-			$location.path('/articles').search({q: query, since: date1, until: date1 });
-		} else {
-			$location.path('/articles').search({q: query, since: date1, until: date1, type: sourceType });
-		}
-		$scope.$apply();
-	}
+      var paramsObj = createParamsObj(keyword);
 
-	var keywordChart = {
-		options: {
-			bindto: '#keyword-chart',
-			size: {
-        height: 500
-    	},
-    	legend: {
-    		position: 'right'
-    	},
-			tooltip: {
-        grouped: false 
-	    },
-			data: {
-				type: 'area',
-				onclick: function (d, i) { getItemData(d) }
-			},
-			point: {
-				r: 1.5
-			},
-			subchart: {
-				show: true
-			},
-			transition: {
-				duration: 0
-			},
-			axis: {
-				x: {
-					//padding: {left: 0, right: 0},
-					label: {
-						text: 'Dias',
-						position: 'outer-center'
-					},
-					type: 'timeseries',
-					tick: {
-						culling: {
+      if($scope.loadedKeywords.indexOf(keyword) === -1) {
+        $scope.loadingQueue.push(keyword);
+        Resources.get(paramsObj).$promise.then(function(dataObj) {
+          $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
+          if(dataObj.length > 0) {
+            //$scope.loading = false;
+            var formattedData;
+            xsObj[countId] = timeId;
+            $scope.loadedKeywords.push(keyword);
+            if($scope.dataFormat === 'absolute') {
+              formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
+              keywordChart.options.axis.y.label.text = 'Número de artigos';
+            }
+            if($scope.dataFormat === 'relative') {
+              formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type_by_day');
+              keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+            }
+            if(!chart) {
+              keywordChart.options.data.xs = xsObj;
+              keywordChart.options.data.columns = formattedData;
+              chart = Chart.draw(keywordChart);
+            } else {
+              chart.load({
+                xs: xsObj,
+                columns: formattedData
+              });
+            }
+          } else {
+            //$scope.loading = false;
+            $timeout(function() {
+              chart.unload({ids: keyword});
+            }, 500)
+            //alert($scope.loadedKeywords);
+          }
+          if(chart) {
+            d3.select('.c3-axis-x-label')
+            .attr('transform', 'translate(0, -10)');
+          }
+        });
+}
+});
+};
+
+
+function getItemData(datum) {
+  var dateFormat = d3.time.format("%Y-%m-%d");
+  var unformattedDate = datum.x;
+  var formattedDate = dateFormat(unformattedDate);
+  var query = datum.name;
+  displayItems(formattedDate, query, $scope.sourceType);
+}
+
+function displayItems(date1, query, sourceType) {
+  if(sourceType === 'all') {
+    $location.path('/articles').search({q: query, since: date1, until: date1 });
+  } else {
+    $location.path('/articles').search({q: query, since: date1, until: date1, type: sourceType });
+  }
+  $scope.$apply();
+}
+
+var keywordChart = {
+  options: {
+    bindto: '#keyword-chart',
+    size: {
+      height: 500
+    },
+    legend: {
+      position: 'right'
+    },
+    tooltip: {
+      grouped: false 
+    },
+    data: {
+      type: $scope.chartType,
+      onclick: function (d, i) { getItemData(d) }
+    },
+    point: {
+      r: 1.5
+    },
+    subchart: {
+      show: true
+    },
+    transition: {
+      duration: 0
+    },
+    axis: {
+      x: {
+          //padding: {left: 0, right: 0},
+          label: {
+            text: 'Dias',
+            position: 'outer-center'
+          },
+          type: 'timeseries',
+          tick: {
+            culling: {
               max: 5 // the number of tick texts will be adjusted to less than this value
             },
-						format: '%d %b'
-					}
-				},
-				y: {
-					//padding: {top: 10, bottom: 5},
-					label: {
-						text: '',
-						position: 'outer-middle'
-					},
-					tick: {
-						format: function(d,i) {
-							if($scope.dataFormat === 'absolute') {
-								return d;
-							}
-							if($scope.dataFormat === 'relative') {
-								return d + '%';
-							}
-						}
-					}
-				}
-			},
-			tooltip: {
-				format: {
-					value: function(value, ratio, id) {
-						if($scope.dataFormat === 'relative') {
-							return value + '% de todos os artigos publicados nesta data';
-						}
-						if($scope.dataFormat === 'absolute') {
-							return value;
-						}
-					}
-				}
-			},
-			grid: {
+            format: '%d %b'
+          }
+        },
+        y: {
+          padding: {top: 10, bottom: 1},
+          label: {
+            text: '',
+            position: 'outer-middle'
+          },
+          tick: {
+            format: function(d,i) {
+              if($scope.dataFormat === 'absolute') {
+                return d;
+              }
+              if($scope.dataFormat === 'relative') {
+                return d + '%';
+              }
+            }
+          }
+        }
+      },
+      tooltip: {
+        format: {
+          value: function(value, ratio, id) {
+            if($scope.dataFormat === 'relative') {
+              return value + '% de todos os artigos publicados nesta data';
+            }
+            if($scope.dataFormat === 'absolute') {
+              return value;
+            }
+          }
+        }
+      },
+      grid: {
         x: {
           show: false
         },
         y: {
           show: true
-      	}
+        }
       },
-			color: function(d) {
-				return d3.scale.category20c(d);
-			}
-		}
-	}
+      color: function(d) {
+        return d3.scale.category20c(d);
+      }
+    }
+  }
 
 });
 
-mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $routeParams, Resources, Chart, Page) {
+mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $routeParams, Resources, Chart, Page, $timeout) {
 
-	Page.setTitle('Artigos');
+  Page.setTitle('Artigos');
 
-	$scope.query;
-	$scope.since;
-	$scope.until;
-	$scope.limit;
-	$scope.sourceName;
-	$scope.sourceType;
+  $scope.query;
+  $scope.since;
+  $scope.until;
+  $scope.limit;
+  $scope.sourceName;
+  $scope.sourceType;
 
-	$scope.loading = false;
+  $scope.loading = false;
 
-	$scope.sourceFilter = '';
+  $scope.sourceFilter = '';
 
-	$scope.loadData = function() {
-		$location.search({q: $scope.query});
-	}
+  $scope.loadData = function() {
+    $location.search({q: $scope.query});
+  }
 
-	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-		$scope.query = $location.search()['q'];
-		$scope.since = $location.search()['since'];
-		$scope.until = $location.search()['until'];
-		$scope.limit = $location.search()['limit'] || 50;
-		$scope.sourceName = $location.search()['source'];
-		$scope.sourceType = $location.search()['type'];
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    $scope.query = $location.search()['q'];
+    $scope.since = $location.search()['since'];
+    $scope.until = $location.search()['until'];
+    $scope.limit = $location.search()['limit'] || 50;
+    $scope.sourceName = $location.search()['source'];
+    $scope.sourceType = $location.search()['type'];
 
-		//if($scope.query) {
-		getData();
-		//}
+    //if($scope.query) {
+      getData();
+    //}
 
-		// var keywords = $location.search()['keywords'] || undefined;
-		// var source = $location.search()['source'] || undefined;
-		// if(source) {
-		// 	$timeout(function() {
-		// 		source = getSourceObjByAcronym($scope.sourceList, source);
-		// 		$scope.selectedSource.selected = source;
-		// 		if(keywords) {
-		// 			$scope.keywords.selected = keywords.split(',');
-		// 		}
-		// 		if(chart) { chart.unload(); }
-		// 		getTotalsAndDraw();
-		// 	}, 500);
-		// }
-	}, true);
+    // var keywords = $location.search()['keywords'] || undefined;
+    // var source = $location.search()['source'] || undefined;
+    // if(source) {
+    //  $timeout(function() {
+    //    source = getSourceObjByAcronym($scope.sourceList, source);
+    //    $scope.selectedSource.selected = source;
+    //    if(keywords) {
+    //      $scope.keywords.selected = keywords.split(',');
+    //    }
+    //    if(chart) { chart.unload(); }
+    //    getTotalsAndDraw();
+    //  }, 500);
+    // }
+  }, true);
 
-	function getData() {
-		$scope.loading = true;
-		Resources.get({resource: 'items', q: $scope.query, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType, source: $scope.sourceName}).$promise.then(function(dataObj) {
-			$scope.loading = false;
-			$scope.chronicleItems = dataObj;
-		});
-	}
+  function getData() {
+    $scope.loading = true;
+    Resources.get({resource: 'items', q: $scope.query, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType, source: $scope.sourceName}).$promise.then(function(dataObj) {
+      $scope.loading = false;
+      $scope.chronicleItems = dataObj;
+
+      $timeout(function() {
+        var n = 0;
+        dataObj.forEach(function(el) {
+          twitter_shares = +el.twitter_shares;
+          facebook_shares = +el.facebook_shares;
+          if(twitter_shares != 0 && facebook_shares != 0) {
+            shareChart.options.bindto = '#index-' + n;
+            shareChart.options.data.columns = [
+              ['Twiter', twitter_shares],
+              ['Facebook', facebook_shares]
+            ];
+            Chart.draw(shareChart);
+            n++;
+          }
+        });
+      }, 100);
+
+      
+
+    });
+  }
+
+    var shareChart = {
+    options: {
+      bindto: '',
+      size: {
+        height: 150
+      },
+      padding: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0
+      },
+      data: {
+        type: 'pie'
+      },
+      pie: {
+        label: {
+          format: function(value, ratio, id) {
+            return value;
+          }
+        }
+      },
+      tooltip: {
+        format: {
+          title: function(d) {
+            return d;
+          },
+          value: function(value, ratio, id) {
+            console.log(value, ratio, id);
+            return value;
+          }
+        }
+      },
+      legend: {
+        show: false
+      },
+      // axis: {
+      //   x: {
+      //     tick: {
+      //       format: function (x) { return ''; }
+      //     }
+      //   }
+      // },
+      color: {
+        pattern: ['#00ABF0', '#49639E']
+      },
+      tooltip: {
+        show: true
+      }
+    }
+  }
 
 });
 
 mediavizControllers.controller('FlowCtrl', function($scope, $location, $routeParams, $timeout, Page, Resources, SourceList, Chart, DataFormatter) {
 
-	Page.setTitle('Fluxo');
+  Page.setTitle('Fluxo');
 
-	$scope.selectedSources = {};
+  $scope.selectedSources = {};
 
-	$scope.selectedSources.selected = [];
+  $scope.selectedSources.selected = [];
 
-	$scope.by = $location.search()['by'] || 'hour';
-	// $scope.since = $routeParams.since;
-	// $scope.until = $routeParams.until;
-	$scope.sourceData = [];
-	$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since};
+  $scope.by = $location.search()['by'] || 'hour';
+  // $scope.since = $routeParams.since;
+  // $scope.until = $routeParams.until;
+  $scope.sourceData = [];
+  $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since};
 
-	$scope.dataFormat = 'absolute';
+  $scope.dataFormat = 'absolute';
 
-	$scope.loadedSources = [];
+  $scope.loadedSources = [];
 
-	$scope.showSearchTools = true;
-	$scope.showSearchToolsNav = false;
-	$scope.loading = false;
-	var chart;
+  $scope.showSearchTools = true;
+  $scope.showSearchToolsNav = false;
+  $scope.loading = false;
+  var chart;
 
-	$scope.optionsForDateSelect = [
-		{name: 'Tudo'},
-		{name: 'Último dia'},
-		{name: 'Últimos 7 dias'},
-		{name: 'Últimos 30 dias'},
-		{name: 'Intervalo Personalizado'}
-	];
+  $scope.optionsForDateSelect = [
+  {name: 'Tudo'},
+  {name: 'Último dia'},
+  {name: 'Últimos 7 dias'},
+  {name: 'Últimos 30 dias'},
+  {name: 'Intervalo Personalizado'}
+  ];
 
-	$scope.dateOptions = [];
-	$scope.dateOptions.selected = $scope.optionsForDateSelect[0];
+  $scope.dateOptions = [];
+  $scope.dateOptions.selected = $scope.optionsForDateSelect[0];
 
-	$scope.today = moment().format('YYYY-MM-DD');
-	$scope.yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
-	$scope.oneWeekAgo = moment().subtract(7, 'day').format('YYYY-MM-DD');
-	$scope.oneMonthAgo = moment().subtract(30, 'day').format('YYYY-MM-DD');
+  $scope.today = moment().format('YYYY-MM-DD');
+  $scope.yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
+  $scope.oneWeekAgo = moment().subtract(7, 'day').format('YYYY-MM-DD');
+  $scope.oneMonthAgo = moment().subtract(30, 'day').format('YYYY-MM-DD');
 
-	$scope.pickadayOpen = false;
-	$scope.dateSince = '';
-	$scope.dateUntil = '';
+  $scope.pickadayOpen = false;
+  $scope.dateSince = '';
+  $scope.dateUntil = '';
 
-	$scope.setDateInterval = function() {
-		$scope.since = $scope.dateSince;
-		$scope.until = $scope.dateUntil;
-		$scope.pickadayOpen = false;
-		$scope.loadedSources = [];
-		getTotalsAndDraw();		
-	}
+  $scope.setDateInterval = function() {
+    $scope.since = $scope.dateSince;
+    $scope.until = $scope.dateUntil;
+    $scope.pickadayOpen = false;
+    $scope.loadedSources = [];
+    getTotalsAndDraw();   
+  }
 
-	$scope.setSelectedOption = function(option) {
-		$scope.dateOptions.selected = option;
-		if(option.name === $scope.optionsForDateSelect[4].name) {
-			$scope.pickadayOpen = !$scope.pickadayOpen;
-		} else {
-			$scope.until = $scope.today;
-			if(option.name  === $scope.optionsForDateSelect[0].name) {
-				$scope.since = undefined;
-			}
-			if(option.name  === $scope.optionsForDateSelect[1].name) {
-				$scope.since = $scope.yesterday;
-			}
-			if(option.name  === $scope.optionsForDateSelect[2].name) {
-				$scope.since = $scope.oneWeekAgo;
-			}
-			if(option.name  === $scope.optionsForDateSelect[3].name) {
-				$scope.since = $scope.oneMonthAgo;
-			}
+  $scope.setSelectedOption = function(option) {
+    $scope.dateOptions.selected = option;
+    if(option.name === $scope.optionsForDateSelect[4].name) {
+      $scope.pickadayOpen = !$scope.pickadayOpen;
+    } else {
+      $scope.until = $scope.today;
+      if(option.name  === $scope.optionsForDateSelect[0].name) {
+        $scope.since = undefined;
+      }
+      if(option.name  === $scope.optionsForDateSelect[1].name) {
+        $scope.since = $scope.yesterday;
+      }
+      if(option.name  === $scope.optionsForDateSelect[2].name) {
+        $scope.since = $scope.oneWeekAgo;
+      }
+      if(option.name  === $scope.optionsForDateSelect[3].name) {
+        $scope.since = $scope.oneMonthAgo;
+      }
 
-			$scope.pickadayOpen = false;
+      $scope.pickadayOpen = false;
 
-			$scope.loadedSources = [];
-			getTotalsAndDraw();			
-		}
-	}
+      $scope.loadedSources = [];
+      getTotalsAndDraw();     
+    }
+  }
 
-	$scope.openSearchTools = function() {
-		$scope.showSearchToolsNav = !$scope.showSearchToolsNav;
-	}
+  $scope.openSearchTools = function() {
+    $scope.showSearchToolsNav = !$scope.showSearchToolsNav;
+  }
 
-	// $scope.groupSourcesByType = function(item) {
-	// 	if(item.type === 'national') {
-	// 		return 'Jornais Nacionais';
-	// 	}
-	// 	if(item.type === 'international') {
-	// 		return 'Jornais Internacionais';
-	// 	}
-	// 	if(item.type === 'blogs') {
-	// 		return 'Blogues';
-	// 	}
-	// }
-
-
-	$scope.setDataFormat = function(dataFormat){
-		if ($scope.dataFormat !== dataFormat) {
-			$scope.dataFormat = dataFormat;
-			$scope.loadedSources = [];
-			chart.unload();
-			getTotalsAndDraw();
-		}
-	}
-
-	$scope.displayBy = function(timePeriod) {
-		$scope.by = timePeriod;
-		$scope.showSearchTools = true;
-		if($scope.by === 'month') {
-			$scope.since = undefined;
-			$scope.until = undefined;
-			$scope.dateOptions.selected = $scope.optionsForDateSelect[0];
-			$scope.showSearchTools = false;
-			$scope.showSearchToolsNav = false;
-		}
-		if(chart) { chart.unload(); }
-		$scope.loadedSources = [];
-		getTotalsAndDraw();
-	}
-
-	$scope.unloadSource = function(source) {
-		$scope.selectedSources.selected.splice($scope.selectedSources.selected.indexOf(source), 1);
-		getAcronyms();
-		if(chart) { chart.unload({ids: source.name})}
-	}
-
-	$scope.loadSource = function(source) {
-		$scope.selectedSources.selected.push(source);
-		getAcronyms();
-		//getTotalsAndDraw();
-	}
-
-	function getAcronyms() {
-		var sourcesArray = [];
-		$scope.selectedSources.selected.forEach(function(el) {
-			sourcesArray.push(el.acronym);
-		});
-		setLocation({sources: sourcesArray.toString()})
-	}
-
-	function setLocation(locationObj) {
-		$location.search(angular.extend($location.search(), locationObj));
-	}
-
-	function getSourceObjByAcronym(array, acronym) {
-		var obj = array.filter(function(el) {
-			return el.acronym === acronym;
-		});
-		return obj[0];
-	}
-
-	$scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-		var sources = $location.search()['sources'] || undefined;
-		if(sources) {
-			$timeout(function() {
-				sources = sources.split(',');
-				var newSourcesArray = [];
-				sources.forEach(function(el) {
-					var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
-					newSourcesArray.push(sourceObj);
-				});
-				$scope.selectedSources.selected = newSourcesArray;
-				if(chart) { chart.unload(); }
-				$scope.loadedSources = [];
-				getTotalsAndDraw();
-			}, 500);
-		}
-	}, true);
-
-	// $scope.$watch('selectedSources.selected', function(newVal, oldVal) {
-	// 	var sourceToRemove, sourceToRemoveIndex;
-	// 	if(newVal.length < oldVal.length) {
-	// 		angular.forEach(oldVal, function(obj) {
-	// 			if(newVal.indexOf(obj) === -1) {
-	// 				sourceToRemove = obj.name;
-	// 			}
-	// 		});
-	// 		sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
-	// 		if(chart) { chart.unload({ids: sourceToRemove}); }
-	// 		$scope.loadedSources.splice(sourceToRemoveIndex, 1);
-	// 	}
-	// });
-
-	$scope.setDates = function(){
-		$scope.loadedSources = [];
-		getTotalsAndDraw();
-	}
-
-	function getTotalsAndDraw() {
-		angular.forEach($scope.selectedSources.selected, function(el, index) {
-
-			var keyword = el.name;
-			var acronym = el.acronym;
-			var aggregated = el.group;
-			var timeId = 'timeFor' + keyword;
-			var countId = keyword;
-			var xsObj = {};
-			xsObj[countId] = timeId;
-
-			if(!aggregated) {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: acronym};
-			} else {
-				$scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: el.type};
-			}
-
-			if($scope.loadedSources.indexOf(keyword) === -1) {
-				$scope.loading = true;
-				Resources.get($scope.paramsObj).$promise.then(function(data) {
-					$scope.loading = false;
-					$scope.loadedSources.push(keyword);
-					if($scope.dataFormat === 'absolute') {
-						var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
-						timeChart.options.axis.y.label.text = 'Número de artigos';
-						timeChart.options.data.groups = [$scope.loadedSources];
-						timeChart.options.axis.y.tick.format = function(d, i) {
-							return d;
-						}
-					}
-					if($scope.dataFormat === 'relative') {
-						if(aggregated) {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
-						} else {
-							var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
-						}
-						timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
-						timeChart.options.data.groups = [];
-						timeChart.options.axis.y.tick.format = function(d, i) {
-							return d + '%';
-						}
-					}
-					if(!chart || chart.internal.data.targets.length === 0) {
-						timeChart.options.data.xs = xsObj;
-						timeChart.options.data.columns = formattedData;
-						if($scope.by === 'hour') {
-							//timeChart.options.data.type = 'area';
-							timeChart.options.axis.x.type = '';
-							timeChart.options.axis.x.label.text = 'Hora';
-							timeChart.options.axis.x.tick.format = function(d, i) {
-									var d = d < 10 ? '0' + d : d;
-									return d + ':00';
-							}
-						}
-						if($scope.by === 'day') {
-							timeChart.options.axis.x.type = 'timeseries';
-							timeChart.options.axis.x.label.text = 'Dia';
-							timeChart.options.axis.x.tick.format = '%d %b';
-							//timeChart.options.data.type = 'area-spline';
-							timeChart.options.data.groups = [];
-						}
-						if($scope.by === 'month') {
-							timeChart.options.axis.x.type = '';
-							timeChart.options.axis.x.label.text = 'Mês';
-							timeChart.options.axis.x.tick.format = function(d, i) {
-								return d;
-							};
-						}
-						if($scope.by === 'week') {
-							timeChart.options.axis.x.type = '';
-							timeChart.options.axis.x.label.text = 'Dia da semana';
-							timeChart.options.axis.x.tick.format = function(d) {
-								return moment().isoWeekday(d).format('ddd');
-							};
-						}
-						chart = Chart.draw(timeChart);
-					} else {
-						chart.load({
-							xs: xsObj,
-							columns: formattedData
-						});
-					}
-				});				
-			}
+  // $scope.groupSourcesByType = function(item) {
+  //  if(item.type === 'national') {
+  //    return 'Jornais Nacionais';
+  //  }
+  //  if(item.type === 'international') {
+  //    return 'Jornais Internacionais';
+  //  }
+  //  if(item.type === 'blogs') {
+  //    return 'Blogues';
+  //  }
+  // }
 
 
-		});		
-	}
+  $scope.setDataFormat = function(dataFormat){
+    if ($scope.dataFormat !== dataFormat) {
+      $scope.dataFormat = dataFormat;
+      $scope.loadedSources = [];
+      chart.unload();
+      getTotalsAndDraw();
+    }
+  }
 
-	function getSourceObjByName(array, name) {
-		var obj = array.filter(function(el) {
-			return el.name === name;
-		});
-		return obj[0];
-	}
+  $scope.displayBy = function(timePeriod) {
+    $scope.by = timePeriod;
+    $scope.showSearchTools = true;
+    if($scope.by === 'month') {
+      $scope.since = undefined;
+      $scope.until = undefined;
+      $scope.dateOptions.selected = $scope.optionsForDateSelect[0];
+      $scope.showSearchTools = false;
+      $scope.showSearchToolsNav = false;
+    }
+    if(chart) { chart.unload(); }
+    $scope.loadedSources = [];
+    getTotalsAndDraw();
+  }
 
-	function getItemData(datum) {
-		//var dateFormat = d3.time.format("%Y-%m-%d");
-		//var unformattedDate = datum.x;
-		//var formattedDate = dateFormat(unformattedDate);
-		var source = datum.name;
-		var sourceObj = getSourceObjByName($scope.selectedSources.selected, source);
-		displayItems(sourceObj);
-	}
+  $scope.unloadSource = function(source) {
+    $scope.selectedSources.selected.splice($scope.selectedSources.selected.indexOf(source), 1);
+    getAcronyms();
+    if(chart) { chart.unload({ids: source.name})}
+  }
 
-	function displayItems(source) {
-		if(source.group) {
-			$location.path('/articles').search({type: source.type });
-		} else {
-			$location.path('/articles').search({source: source.acronym });			
-		}
-		$scope.$apply();
-	}
+$scope.loadSource = function(source) {
+  $scope.selectedSources.selected.push(source);
+  getAcronyms();
+    //getTotalsAndDraw();
+  }
 
-	var timeChart = {
-		options: {
-			bindto: '#time-chart',
-			size: {
+  function getAcronyms() {
+    var sourcesArray = [];
+    $scope.selectedSources.selected.forEach(function(el) {
+      sourcesArray.push(el.acronym);
+    });
+    setLocation({sources: sourcesArray.toString()})
+  }
+
+  function setLocation(locationObj) {
+    $location.search(angular.extend($location.search(), locationObj));
+  }
+
+  function getSourceObjByAcronym(array, acronym) {
+    var obj = array.filter(function(el) {
+      return el.acronym === acronym;
+    });
+    return obj[0];
+  }
+
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var sources = $location.search()['sources'] || undefined;
+    if(sources) {
+      $timeout(function() {
+        sources = sources.split(',');
+        var newSourcesArray = [];
+        sources.forEach(function(el) {
+          var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
+          newSourcesArray.push(sourceObj);
+        });
+        $scope.selectedSources.selected = newSourcesArray;
+        if(chart) { chart.unload(); }
+        $scope.loadedSources = [];
+        getTotalsAndDraw();
+      }, 500);
+    }
+  }, true);
+
+  // $scope.$watch('selectedSources.selected', function(newVal, oldVal) {
+  //  var sourceToRemove, sourceToRemoveIndex;
+  //  if(newVal.length < oldVal.length) {
+  //    angular.forEach(oldVal, function(obj) {
+  //      if(newVal.indexOf(obj) === -1) {
+  //        sourceToRemove = obj.name;
+  //      }
+  //    });
+  //    sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
+  //    if(chart) { chart.unload({ids: sourceToRemove}); }
+  //    $scope.loadedSources.splice(sourceToRemoveIndex, 1);
+  //  }
+  // });
+
+$scope.setDates = function(){
+  $scope.loadedSources = [];
+  getTotalsAndDraw();
+}
+
+function getTotalsAndDraw() {
+  angular.forEach($scope.selectedSources.selected, function(el, index) {
+
+    var keyword = el.name;
+    var acronym = el.acronym;
+    var aggregated = el.group;
+    var timeId = 'timeFor' + keyword;
+    var countId = keyword;
+    var xsObj = {};
+    xsObj[countId] = timeId;
+
+    if(!aggregated) {
+      $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: acronym};
+    } else {
+      $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: el.type};
+    }
+
+    if($scope.loadedSources.indexOf(keyword) === -1) {
+      $scope.loading = true;
+      Resources.get($scope.paramsObj).$promise.then(function(data) {
+        $scope.loading = false;
+        $scope.loadedSources.push(keyword);
+        if($scope.dataFormat === 'absolute') {
+          var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+          timeChart.options.axis.y.label.text = 'Número de artigos';
+          timeChart.options.data.groups = [$scope.loadedSources];
+          timeChart.options.axis.y.tick.format = function(d, i) {
+            return d;
+          }
+        }
+        if($scope.dataFormat === 'relative') {
+          if(aggregated) {
+            var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
+          } else {
+            var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
+          }
+          timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+          timeChart.options.data.groups = [];
+          timeChart.options.axis.y.tick.format = function(d, i) {
+            return d + '%';
+          }
+        }
+        if(!chart || chart.internal.data.targets.length === 0) {
+          timeChart.options.data.xs = xsObj;
+          timeChart.options.data.columns = formattedData;
+          if($scope.by === 'hour') {
+              //timeChart.options.data.type = 'area';
+              timeChart.options.axis.x.type = '';
+              timeChart.options.axis.x.label.text = 'Hora';
+              timeChart.options.axis.x.tick.format = function(d, i) {
+                var d = d < 10 ? '0' + d : d;
+                return d + ':00';
+              }
+            }
+            if($scope.by === 'day') {
+              timeChart.options.axis.x.type = 'timeseries';
+              timeChart.options.axis.x.label.text = 'Dia';
+              timeChart.options.axis.x.tick.format = '%d %b';
+              //timeChart.options.data.type = 'area-spline';
+              timeChart.options.data.groups = [];
+            }
+            if($scope.by === 'month') {
+              timeChart.options.axis.x.type = '';
+              timeChart.options.axis.x.label.text = 'Mês';
+              timeChart.options.axis.x.tick.format = function(d, i) {
+                return d;
+              };
+            }
+            if($scope.by === 'week') {
+              timeChart.options.axis.x.type = '';
+              timeChart.options.axis.x.label.text = 'Dia da semana';
+              timeChart.options.axis.x.tick.format = function(d) {
+                return moment().isoWeekday(d).format('ddd');
+              };
+            }
+            chart = Chart.draw(timeChart);
+          } else {
+            chart.load({
+              xs: xsObj,
+              columns: formattedData
+            });
+          }
+        });       
+}
+
+
+});   
+}
+
+function getSourceObjByName(array, name) {
+  var obj = array.filter(function(el) {
+    return el.name === name;
+  });
+  return obj[0];
+}
+
+function getItemData(datum) {
+    //var dateFormat = d3.time.format("%Y-%m-%d");
+    //var unformattedDate = datum.x;
+    //var formattedDate = dateFormat(unformattedDate);
+    var source = datum.name;
+    var sourceObj = getSourceObjByName($scope.selectedSources.selected, source);
+    displayItems(sourceObj);
+  }
+
+  function displayItems(source) {
+    if(source.group) {
+      $location.path('/articles').search({type: source.type });
+    } else {
+      $location.path('/articles').search({source: source.acronym });      
+    }
+    $scope.$apply();
+  }
+
+  var timeChart = {
+    options: {
+      bindto: '#time-chart',
+      size: {
         height: 500
-    	},
-    	legend: {
-    		position: 'right'
-    	},
-			tooltip: {
+      },
+      legend: {
+        position: 'right'
+      },
+      tooltip: {
         grouped: false 
-	    },
-			data: {
-				type: 'area',
-				onclick: function (d, i) { getItemData(d) }
-			},
-			point: {
-				r: 1.5
-			},
-			subchart: {
-				show: true
-			},
-			transition: {
-				duration: 0
-			},
-			axis: {
-				x: {
-					padding: {left: 0, right: 0},
-					label: {
-						text: 'Horas',
-						position: 'outer-center'
-					},
-					tick: {
-						fit: true
-						// culling: {
+      },
+      data: {
+        type: 'area',
+        onclick: function (d, i) { getItemData(d) }
+      },
+      point: {
+        r: 1.5
+      },
+      subchart: {
+        show: true
+      },
+      transition: {
+        duration: 0
+      },
+      axis: {
+        x: {
+          padding: {left: 0, right: 0},
+          label: {
+            text: 'Horas',
+            position: 'outer-center'
+          },
+          tick: {
+            fit: true
+            // culling: {
               // max: 12 // the number of tick texts will be adjusted to less than this value
             // },
-						// format: function(d, i) {
-						// 		var d = d < 10 ? '0' + d : d;
-						// 		return d + ':00';
-						// }
-					}
-				},
-				y: {
-					//padding: {top: 1, bottom: 1},
-					//min: 0,
-					label: {
-						text: 'Artigos',
-						position: 'outer-middle'
-					},
-					tick: {}
-				}
-			},
-			grid: {
+            // format: function(d, i) {
+            //    var d = d < 10 ? '0' + d : d;
+            //    return d + ':00';
+            // }
+          }
+        },
+        y: {
+          //padding: {top: 1, bottom: 1},
+          //min: 0,
+          label: {
+            text: 'Artigos',
+            position: 'outer-middle'
+          },
+          tick: {}
+        }
+      },
+      grid: {
         x: {
           show: false
         },
         y: {
           show: true
-      	}
+        }
       },
-			color: function(d) {
-				return d3.scale.category20c(d);
-			}
-		}
-	}
+      color: function(d) {
+        return d3.scale.category20c(d);
+      }
+    }
+  }
 
 
 
@@ -1841,295 +1922,295 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
 mediavizControllers.controller('DashboardCtrl', function($scope, $location, $q, $routeParams, Resources, Chart) {
 
-	$scope.query = $routeParams.q;
-	$scope.since = $routeParams.since;
-	$scope.until = $routeParams.until;
-	$scope.category = $routeParams.category;
+  $scope.query = $routeParams.q;
+  $scope.since = $routeParams.since;
+  $scope.until = $routeParams.until;
+  $scope.category = $routeParams.category;
 
-	// Set a default start date if none is passed
-	$scope.startDate = $scope.since ? $scope.since : '2014-10-16';
+  // Set a default start date if none is passed
+  $scope.startDate = $scope.since ? $scope.since : '2014-10-16';
 
-	var chart1, chart2;
+  var chart1, chart2;
 
-	$scope.loading = {
-		chart1: true,
-		chart2: true
-	}
+  $scope.loading = {
+    chart1: true,
+    chart2: true
+  }
 
-	var sourceName;
+  var sourceName;
 
-	if($location.path() === '/') {
-		sourceName = 'All'
-	} else {
-		sourceName = $routeParams.source;
-	}
+  if($location.path() === '/') {
+    sourceName = 'All'
+  } else {
+    sourceName = $routeParams.source;
+  }
 
 
-	getItems().then(function() {
-		getTotalsAndDraw().then(function() {
-			getSourceData().then(function() {
-			});
-		});
-	});
+  getItems().then(function() {
+    getTotalsAndDraw().then(function() {
+      getSourceData().then(function() {
+      });
+    });
+  });
 
-	// Get the source data for the selected source
+  // Get the source data for the selected source
 
-	function getSourceData() {
-		var deferred = $q.defer();
-		deferred.resolve(
-			Resources.get({resource: 'sources', name: sourceName}).$promise.then(function(obj) {
-				$scope.allData = obj;
-				$scope.categories = $scope.allData[0].categories;
-				// chart2_opts.options.data.json = obj;
-				// chart2 = Chart.draw(chart2_opts);
-				// $scope.loading.chart2 = false;
-			})
-		);
-		return deferred.promise;
-	}
+  function getSourceData() {
+    var deferred = $q.defer();
+    deferred.resolve(
+      Resources.get({resource: 'sources', name: sourceName}).$promise.then(function(obj) {
+        $scope.allData = obj;
+        $scope.categories = $scope.allData[0].categories;
+        // chart2_opts.options.data.json = obj;
+        // chart2 = Chart.draw(chart2_opts);
+        // $scope.loading.chart2 = false;
+      })
+      );
+    return deferred.promise;
+  }
 
-	function getTotalsAndDraw() {
-		var deferred = $q.defer();
-		if(sourceName === 'All') {
-			deferred.resolve(
-				Resources.get({resource: 'totals', since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
-					$scope.sourceData = obj;
-					var twitterShareSum = 0;
-					var facebookShareSum = 0;
-					angular.forEach(obj, function(el) {
-						twitterShareSum += el.twitter_shares;
-						facebookShareSum += el.facebook_shares;
-					});
-					var shareCountObj = [{twitter_shares: twitterShareSum, facebook_shares: facebookShareSum}];
-					chart1_opts.options.data.json = obj;
-					chart1 = Chart.draw(chart1_opts);
-					$scope.loading.chart1 = false;
-					chart2_opts.options.data.json = shareCountObj;
-					chart2 = Chart.draw(chart2_opts);
-					$scope.loading.chart2 = false;					
-				})
-			);	
-		} else {
-			deferred.resolve(
-			Resources.get({resource: 'totals', source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
-				$scope.sourceData = obj;
-				var twitterShareSum = 0;
-				var facebookShareSum = 0;
-				angular.forEach(obj, function(el) {
-					twitterShareSum += el.twitter_shares;
-					facebookShareSum += el.facebook_shares;
-				});
-				var shareCountObj = [{twitter_shares: twitterShareSum, facebook_shares: facebookShareSum}];
-				chart1_opts.options.data.json = obj;
-				chart1 = Chart.draw(chart1_opts);
-				$scope.loading.chart1 = false;
-				chart2_opts.options.data.json = shareCountObj;
-				chart2 = Chart.draw(chart2_opts);
-				$scope.loading.chart2 = false;
-			})
-			);
-		}
-		return deferred.promise;
-	}
+  function getTotalsAndDraw() {
+    var deferred = $q.defer();
+    if(sourceName === 'All') {
+      deferred.resolve(
+        Resources.get({resource: 'totals', since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
+          $scope.sourceData = obj;
+          var twitterShareSum = 0;
+          var facebookShareSum = 0;
+          angular.forEach(obj, function(el) {
+            twitterShareSum += el.twitter_shares;
+            facebookShareSum += el.facebook_shares;
+          });
+          var shareCountObj = [{twitter_shares: twitterShareSum, facebook_shares: facebookShareSum}];
+          chart1_opts.options.data.json = obj;
+          chart1 = Chart.draw(chart1_opts);
+          $scope.loading.chart1 = false;
+          chart2_opts.options.data.json = shareCountObj;
+          chart2 = Chart.draw(chart2_opts);
+          $scope.loading.chart2 = false;          
+        })
+        );  
+    } else {
+      deferred.resolve(
+        Resources.get({resource: 'totals', source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
+          $scope.sourceData = obj;
+          var twitterShareSum = 0;
+          var facebookShareSum = 0;
+          angular.forEach(obj, function(el) {
+            twitterShareSum += el.twitter_shares;
+            facebookShareSum += el.facebook_shares;
+          });
+          var shareCountObj = [{twitter_shares: twitterShareSum, facebook_shares: facebookShareSum}];
+          chart1_opts.options.data.json = obj;
+          chart1 = Chart.draw(chart1_opts);
+          $scope.loading.chart1 = false;
+          chart2_opts.options.data.json = shareCountObj;
+          chart2 = Chart.draw(chart2_opts);
+          $scope.loading.chart2 = false;
+        })
+        );
+    }
+    return deferred.promise;
+  }
 
-	function getItems() {
-		var deferred = $q.defer();
-		if(sourceName === 'All') {
-			deferred.resolve(
-			Resources.get({resource: 'items', since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
-					$scope.itemsData = obj;
-					//chart1_opts.options.data.json = obj;
-					//chart1 = Chart.draw(chart1_opts);
-					//$scope.loading.chart1 = false;
-				})
-			);
-		} else {
-			deferred.resolve(
-			Resources.get({resource: 'items', source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
-					$scope.itemsData = obj;
-					//chart1_opts.options.data.json = obj;
-					//chart1 = Chart.draw(chart1_opts);
-					//$scope.loading.chart1 = false;
-				})
-			);			
-		}
-		return deferred.promise;
-	}
+  function getItems() {
+    var deferred = $q.defer();
+    if(sourceName === 'All') {
+      deferred.resolve(
+        Resources.get({resource: 'items', since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
+          $scope.itemsData = obj;
+          //chart1_opts.options.data.json = obj;
+          //chart1 = Chart.draw(chart1_opts);
+          //$scope.loading.chart1 = false;
+        })
+        );
+    } else {
+      deferred.resolve(
+        Resources.get({resource: 'items', source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
+          $scope.itemsData = obj;
+          //chart1_opts.options.data.json = obj;
+          //chart1 = Chart.draw(chart1_opts);
+          //$scope.loading.chart1 = false;
+        })
+        );      
+    }
+    return deferred.promise;
+  }
 
-	$scope.setParams = function() {
-		var params = {};
-		if($scope.since) {
-			params['since'] = $scope.since;
-		}
-		if($scope.until) {
-			params['until'] = $scope.until;
-		}
-		if($scope.query) {
-			params['q'] = $scope.query;
-		}
-		if($scope.category) {
-			params['category'] = $scope.category;
-		}
-		$location.search(params);	
-	}
+  $scope.setParams = function() {
+    var params = {};
+    if($scope.since) {
+      params['since'] = $scope.since;
+    }
+    if($scope.until) {
+      params['until'] = $scope.until;
+    }
+    if($scope.query) {
+      params['q'] = $scope.query;
+    }
+    if($scope.category) {
+      params['category'] = $scope.category;
+    }
+    $location.search(params); 
+  }
 
-	$scope.addCategoryToParams = function(categoryName) {
-		$scope.category = categoryName;
-		$scope.setParams();
-	}
+  $scope.addCategoryToParams = function(categoryName) {
+    $scope.category = categoryName;
+    $scope.setParams();
+  }
 
-	// Set the default time period
+  // Set the default time period
 
-	$scope.selectedTime = $scope.selectedTime || 'day';
+  $scope.selectedTime = $scope.selectedTime || 'day';
 
-	$scope.changeTime = function(){
-		$scope.loading.chart1 = true;
-		if($scope.selectedTime === 'day') {
-			chart1_opts.options.axis = {
-				x: {
-					type: 'timeseries',
-					tick: {
-						format: '%d %b'
-					}
-				}
-			}
-		} else {
-		chart1_opts.options.axis = {
-			x: {
-					tick: {
-						format: function(d) { return d; }
-					}
-				}
-			}
-		}
-		getTotalsAndDraw();
-	}
+  $scope.changeTime = function(){
+    $scope.loading.chart1 = true;
+    if($scope.selectedTime === 'day') {
+      chart1_opts.options.axis = {
+        x: {
+          type: 'timeseries',
+          tick: {
+            format: '%d %b'
+          }
+        }
+      }
+    } else {
+      chart1_opts.options.axis = {
+        x: {
+          tick: {
+            format: function(d) { return d; }
+          }
+        }
+      }
+    }
+    getTotalsAndDraw();
+  }
 
-	// Tag cloud stuff
+  // Tag cloud stuff
 
-	$scope.tagLimit = 50;
+  $scope.tagLimit = 50;
 
-	$scope.tagClasses = ['small', 'medium', 'large'];
+  $scope.tagClasses = ['small', 'medium', 'large'];
 
-	$scope.setSizeClass = function(count) {
-		var maxCount = $scope.categories[0].count;
-		var index = count / maxCount * ($scope.tagClasses.length - 1);
-		index = Math.round(index);
-		return $scope.tagClasses[index]; 
-	}
+  $scope.setSizeClass = function(count) {
+    var maxCount = $scope.categories[0].count;
+    var index = count / maxCount * ($scope.tagClasses.length - 1);
+    index = Math.round(index);
+    return $scope.tagClasses[index]; 
+  }
 
-	$scope.twitterLoaded = false;
-	$scope.facebookLoaded = false;
+  $scope.twitterLoaded = false;
+  $scope.facebookLoaded = false;
 
-	$scope.loadData = function(dataToLoad) {
-		if(dataToLoad === 'twitter' && $scope.twitterLoaded) {
-			chart1.load({
-				json: $scope.sourceData,
-				keys: {
-					//x: 'time',
-					value: ['twitter_shares']
-				},
-				types: {
-					twitter_shares: 'area'
-				}
-			});
-			chart2.unload({
-				ids: 'facebook_shares'
-			});
-			$scope.twitterLoaded != $scope.twitterLoaded;
-		} 
-		if ($scope.twitterLoaded === false) {
-			chart1.unload({
-				ids: 'twitter_shares'
-			});
-			chart2.load({
-				json: $scope.allData,
-				keys: {
-					value: ['facebook_shares']
-				}
-			});
-			$scope.twitterLoaded === false;
-		}
-		if (dataToLoad === 'facebook' && $scope.facebookLoaded) {
-			chart1.load({
-				json: $scope.sourceData,
-				keys: {
-					//x: 'time',
-					value: ['facebook_shares']
-				},
-				types: {
-					facebook_shares: 'area'
-				}
-			});		
-			$scope.facebookLoaded != $scope.facebookLoaded;	
-		}
-		if (!$scope.facebookLoaded) {
-			chart1.unload({
-				ids: 'facebook_shares'
-			});
-			$scope.facebookLoaded != $scope.facebookLoaded;
-		}
-	}
+  $scope.loadData = function(dataToLoad) {
+    if(dataToLoad === 'twitter' && $scope.twitterLoaded) {
+      chart1.load({
+        json: $scope.sourceData,
+        keys: {
+          //x: 'time',
+          value: ['twitter_shares']
+        },
+        types: {
+          twitter_shares: 'area'
+        }
+      });
+      chart2.unload({
+        ids: 'facebook_shares'
+      });
+      $scope.twitterLoaded != $scope.twitterLoaded;
+    } 
+    if ($scope.twitterLoaded === false) {
+      chart1.unload({
+        ids: 'twitter_shares'
+      });
+      chart2.load({
+        json: $scope.allData,
+        keys: {
+          value: ['facebook_shares']
+        }
+      });
+      $scope.twitterLoaded === false;
+    }
+    if (dataToLoad === 'facebook' && $scope.facebookLoaded) {
+      chart1.load({
+        json: $scope.sourceData,
+        keys: {
+          //x: 'time',
+          value: ['facebook_shares']
+        },
+        types: {
+          facebook_shares: 'area'
+        }
+      });   
+      $scope.facebookLoaded != $scope.facebookLoaded; 
+    }
+    if (!$scope.facebookLoaded) {
+      chart1.unload({
+        ids: 'facebook_shares'
+      });
+      $scope.facebookLoaded != $scope.facebookLoaded;
+    }
+  }
 
-	var patterns = {
+  var patterns = {
     light: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896'],
     dark: ['#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7'],
     material: ['#e51c23', '#673ab7', '#5677fc', '#03a9f4', '#00bcd4', '#259b24', '#ffeb3b', '#ff9800']
   };
 
-	var chart1_opts = {
-		options: {
-			bindto: '.chart',
-			data: {
-				json: '',
-				keys: {
-					x: 'time',
-					value: ['time', 'articles']
-				},
-				types: {
-					articles: 'area'
-				},
-				onclick: function (d, i) { console.log("onclick", d); }
-			},
-			subchart: {
-				show: true
-			},
-			axis: {
-				x: {
-					type: 'timeseries',
-					tick: {
-						format: '%d %b'
-					}
-				}
-			},
-			color: {
-				pattern: patterns.material
-			}
-		}
-	}
+  var chart1_opts = {
+    options: {
+      bindto: '.chart',
+      data: {
+        json: '',
+        keys: {
+          x: 'time',
+          value: ['time', 'articles']
+        },
+        types: {
+          articles: 'area'
+        },
+        onclick: function (d, i) { console.log("onclick", d); }
+      },
+      subchart: {
+        show: true
+      },
+      axis: {
+        x: {
+          type: 'timeseries',
+          tick: {
+            format: '%d %b'
+          }
+        }
+      },
+      color: {
+        pattern: patterns.material
+      }
+    }
+  }
 
-	var chart2_opts = {
-		options: {
-			bindto: '.chart2',
-			data: {
-				json: '',
-				keys: {
-					value: ['twitter_shares', 'facebook_shares']
-				},
-				type: 'pie',
-			},
-			color: {
-				pattern : patterns.material
-			},
-			pie: {
-				label: {
-					format: function(d) {
-						return d;
-					}
-				}				
-			}
-		}
-	}
+  var chart2_opts = {
+    options: {
+      bindto: '.chart2',
+      data: {
+        json: '',
+        keys: {
+          value: ['twitter_shares', 'facebook_shares']
+        },
+        type: 'pie',
+      },
+      color: {
+        pattern : patterns.material
+      },
+      pie: {
+        label: {
+          format: function(d) {
+            return d;
+          }
+        }       
+      }
+    }
+  }
 
 });
 

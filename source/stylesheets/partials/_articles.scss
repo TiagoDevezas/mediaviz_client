@@ -41,6 +41,7 @@
 		@include span-columns(12);
 		border-bottom: 1px solid $light-gray;
 		.article-content {
+			@include span-columns(9);
 			padding: 2em;
 			.article-title {
 				a {
@@ -58,9 +59,25 @@
 				color: $medium-gray;
 				font-size: 1em;
 			}
+			.article-url {
+				word-wrap: break-word;
+				a {
+					color: $medium-gray;
+					text-decoration: underline;
+					&:hover, &:focus {
+						color: $dark-gray;						
+						text-decoration: none;
+					}
+				}
+			}
 			.article-source {
 				color: darken($medium-gray, 20);
 			}
+		}
+		.article-shares-chart {
+			@include span-columns(3);
+			@include omega();
+			padding: 2em;
 		}
 	}
 	// h1.item-title {

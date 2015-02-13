@@ -28,7 +28,7 @@
 
 
 	<div class="search-tools">
-		<ul>
+		<ul style="float: left;">
 			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
 			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
 			<li class="menu-separator"> | </li>
@@ -36,6 +36,10 @@
 			<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Jornais Internacionais</a></li>
 			<li><a href="" ng-click="setSourceType('blogs')" ng-class="{'selected':sourceType === 'blogs'}">Blogs</a></li>
 			<li><a href="" ng-click="setSourceType('all')" ng-class="{'selected':sourceType === 'all'}">Todas</a></li>
+		</ul>
+		<ul style="float: right;">
+			<li><a href="" ng-click="setChartType('line')" ng-class="{'selected':chartType === 'line'}">Linha</a></li>
+			<li><a href="" ng-click="setChartType('area')" ng-class="{'selected':chartType === 'area'}">Área</a></li>
 		</ul>
 	</div>
 

@@ -16,7 +16,7 @@
 	<div class="source-card">
 		<div class="source-info">
 			<h2>{{ currentSource.name }}</h2>
-			<a href="{{sourceData[0].url}}">{{ sourceData[0].url }}</a>
+			<a href="{{sourceData[0].url}}">{{ sourceData[0].url }}</a>			
 		</div>
 		<hr>
 		<div class="source-chart">
@@ -42,15 +42,19 @@
 		<hr>
 
 		<p class="stat">{{ sourceData[0].avg_day }}</p>
-		<p class="stat-name">Artigos/Dia (Média)</p>
+		<p class="stat-name">Artigos/Dia (Méd.)</p>
 		<hr>
 
 		<p class="stat">{{ sourceData[0].avg_month }}</p>
-		<p class="stat-name">Artigos/Mês (Média)</p>
+		<p class="stat-name">Artigos/Mês (Méd.)</p>
 		<hr>
 
 		<p class="stat">{{ sourceData[0].total_feeds }}</p>
 		<p class="stat-name">Feeds</p>
+		<button class="white" ng-click="showFeedList = !showFeedList">Ver lista</button>
+		<div class="feed-list animate-show" ng-show="showFeedList" ng-init="showFeedList = false">
+			<p ng-repeat="feed in sourceData[0]['feeds']"><a href="{{ feed.url }}">{{ feed.name }}</a></p>			
+		</div>
 		<hr>
 
 		<p class="stat">{{ sourceData[0].total_shares }}</p>
@@ -59,7 +63,18 @@
 		<hr>
 
 		<p class="stat">{{ sourceData[0].avg_shares }}</p>
-		<p class="stat-name">Partilhas (Média)</p>
+		<p class="stat-name">Partilhas/Artigo (Méd.)</p>
+
+		<div class="split-stats">
+			<div class="twitter-stats">
+				<p class="stat">{{ sourceData[0].avg_twitter_shares }}</p>
+				<p class="stat-name">Twitter</p>
+			</div>
+			<div class="facebook-stats">
+				<p class="stat">{{ sourceData[0].avg_facebook_shares }}</p>
+				<p class="stat-name">Facebook</p>
+			</div>
+		</div>
 		<hr>
 
 	</div>	

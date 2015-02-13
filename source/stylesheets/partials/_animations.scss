@@ -6,3 +6,26 @@
 .search-tools.ng-hide {
 	opacity: 0;
 }
+
+.animate-show {
+  margin-top: 1em;
+  a {
+  font-weight: 300;
+  color: $medium-gray;
+  font-size: 1em;
+  &:hover, &:focus {
+    border-bottom: 1px solid $medium-gray;
+  }
+}
+}
+
+.animate-show.ng-hide-add.ng-hide-add-active,
+.animate-show.ng-hide-remove.ng-hide-remove-active {
+  -webkit-transition: all linear 0.3s;
+  transition: all linear 0.3s;
+}
+
+.animate-show.ng-hide {
+  line-height: 0;
+  opacity: 0;
+}
