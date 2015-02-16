@@ -13,6 +13,18 @@ var mediavizApp = angular.module('mediavizApp', [
 	'mediavizDirectives'
 ]);
 
+mediavizApp.run(function($rootScope, $location, $window) {
+  $rootScope.$on('$routeChangeSuccess',
+    function(event) {
+      if (!$window.ga) {
+        return;
+      }
+      $window.ga('send', 'pageview', {
+        page: $location.path()
+      });
+    });
+});
+
 mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 	function($routeProvider, uiSelectConfig, $locationProvider) {
 
