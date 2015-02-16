@@ -20,7 +20,7 @@ mediavizApp.run(function($rootScope, $location, $window) {
         return;
       }
       $window.ga('send', 'pageview', {
-        page: $location.path()
+        page: $location.path().search(search)
       });
     });
 });
