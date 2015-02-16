@@ -14,13 +14,13 @@ var mediavizApp = angular.module('mediavizApp', [
 ]);
 
 mediavizApp.run(function($rootScope, $location, $window) {
-  $rootScope.$on('$routeChangeSuccess',
+  $rootScope.$on('$locationChangeSuccess',
     function(event) {
       if (!$window.ga) {
         return;
       }
       $window.ga('send', 'pageview', {
-        page: $location.path().search(search)
+        page: $location.url()
       });
     });
 });
