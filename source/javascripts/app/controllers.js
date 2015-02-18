@@ -1565,7 +1565,11 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
   $scope.dataFormat = 'absolute';
 
+  $scope.shareFormat = '';
+
   $scope.loadedSources = [];
+
+  $scope.loadingQueue = [];
 
   $scope.showSearchTools = true;
   $scope.showSearchToolsNav = false;
@@ -1630,22 +1634,28 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
     $scope.showSearchToolsNav = !$scope.showSearchToolsNav;
   }
 
-  // $scope.groupSourcesByType = function(item) {
-  //  if(item.type === 'national') {
-  //    return 'Jornais Nacionais';
-  //  }
-  //  if(item.type === 'international') {
-  //    return 'Jornais Internacionais';
-  //  }
-  //  if(item.type === 'blogs') {
-  //    return 'Blogues';
-  //  }
-  // }
+  $scope.$watch('loadingQueue', function(newVal, oldVal) {
+    if($scope.loadingQueue.length !== 0) {
+      $scope.loading = true;
+    } else {
+      $scope.loading = false;
+    }
+  }, true);
 
 
   $scope.setDataFormat = function(dataFormat){
     if ($scope.dataFormat !== dataFormat) {
       $scope.dataFormat = dataFormat;
+      $scope.shareFormat = '';
+      $scope.loadedSources = [];
+      chart.unload();
+      getTotalsAndDraw();
+    }
+  }
+
+  $scope.viewShares = function(shareFormat) {
+    if($scope.shareFormat !== shareFormat) {
+      $scope.shareFormat = shareFormat;
       $scope.loadedSources = [];
       chart.unload();
       getTotalsAndDraw();
@@ -1716,20 +1726,6 @@ $scope.loadSource = function(source) {
     }
   }, true);
 
-  // $scope.$watch('selectedSources.selected', function(newVal, oldVal) {
-  //  var sourceToRemove, sourceToRemoveIndex;
-  //  if(newVal.length < oldVal.length) {
-  //    angular.forEach(oldVal, function(obj) {
-  //      if(newVal.indexOf(obj) === -1) {
-  //        sourceToRemove = obj.name;
-  //      }
-  //    });
-  //    sourceToRemoveIndex = $scope.loadedSources.indexOf(sourceToRemove)
-  //    if(chart) { chart.unload({ids: sourceToRemove}); }
-  //    $scope.loadedSources.splice(sourceToRemoveIndex, 1);
-  //  }
-  // });
-
 $scope.setDates = function(){
   $scope.loadedSources = [];
   getTotalsAndDraw();
@@ -1753,13 +1749,24 @@ function getTotalsAndDraw() {
     }
 
     if($scope.loadedSources.indexOf(keyword) === -1) {
-      $scope.loading = true;
+      $scope.loadingQueue.push(keyword);
       Resources.get($scope.paramsObj).$promise.then(function(data) {
-        $scope.loading = false;
+        $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
         $scope.loadedSources.push(keyword);
+        timeChart.options.data.type = 'area';
+        timeChart.options.axis.x.padding = {left: 0, right: 0};
+        timeChart.options.axis.y.label.text = 'Número de artigos';
         if($scope.dataFormat === 'absolute') {
-          var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
-          timeChart.options.axis.y.label.text = 'Número de artigos';
+          if($scope.shareFormat === '') {
+            var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+          }
+          else {
+            var formattedData = getShareData($scope.shareFormat);
+            timeChart.options.axis.y.label.text = 'Partilhas';
+            timeChart.options.data.type = 'bar';
+            timeChart.options.axis.x.padding = {left: 1, right: 1};
+          }
+          
           timeChart.options.data.groups = [$scope.loadedSources];
           timeChart.options.axis.y.tick.format = function(d, i) {
             return d;
@@ -1794,7 +1801,9 @@ function getTotalsAndDraw() {
               timeChart.options.axis.x.label.text = 'Dia';
               timeChart.options.axis.x.tick.format = '%d %b';
               //timeChart.options.data.type = 'area-spline';
-              timeChart.options.data.groups = [];
+              if($scope.shareFormat === '') {
+                timeChart.options.data.groups = [];                
+              }
             }
             if($scope.by === 'month') {
               timeChart.options.axis.x.type = '';
@@ -1817,6 +1826,19 @@ function getTotalsAndDraw() {
               columns: formattedData
             });
           }
+
+          function getShareData(shareFormat) {
+            var formattedData;
+            if(shareFormat === 'all_shares') {
+              formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares');
+            } else if(shareFormat === 'twitter_shares') {
+              formattedData = DataFormatter.inColumns(data, keyword, 'time', 'twitter_shares');
+            } else if(shareFormat === 'facebook_shares') {
+              formattedData = DataFormatter.inColumns(data, keyword, 'time', 'facebook_shares');
+            }
+            return formattedData;
+          }
+
         });       
 }
 
