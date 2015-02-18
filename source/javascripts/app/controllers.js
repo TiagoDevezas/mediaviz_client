@@ -1499,7 +1499,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $rout
     options: {
       bindto: '',
       size: {
-        height: 150
+        height: 125
       },
       padding: {
         left: 0,
@@ -1763,11 +1763,11 @@ function getTotalsAndDraw() {
           else {
             var formattedData = getShareData($scope.shareFormat);
             timeChart.options.axis.y.label.text = 'Partilhas';
-            timeChart.options.data.type = 'bar';
-            timeChart.options.axis.x.padding = {left: 1, right: 1};
+            //timeChart.options.data.type = 'bar';
+            //timeChart.options.axis.x.padding = {left: 1, right: 1};
           }
           
-          timeChart.options.data.groups = [$scope.loadedSources];
+          //timeChart.options.data.groups = [$scope.loadedSources];
           timeChart.options.axis.y.tick.format = function(d, i) {
             return d;
           }
@@ -1801,9 +1801,7 @@ function getTotalsAndDraw() {
               timeChart.options.axis.x.label.text = 'Dia';
               timeChart.options.axis.x.tick.format = '%d %b';
               //timeChart.options.data.type = 'area-spline';
-              if($scope.shareFormat === '') {
-                timeChart.options.data.groups = [];                
-              }
+                timeChart.options.data.groups = [];
             }
             if($scope.by === 'month') {
               timeChart.options.axis.x.type = '';
