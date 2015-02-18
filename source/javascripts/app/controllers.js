@@ -1478,15 +1478,15 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $rout
         dataObj.forEach(function(el) {
           twitter_shares = +el.twitter_shares;
           facebook_shares = +el.facebook_shares;
-          if(twitter_shares != 0 && facebook_shares != 0) {
+          if(twitter_shares != 0 || facebook_shares != 0) {
             shareChart.options.bindto = '#index-' + n;
             shareChart.options.data.columns = [
               ['Twiter', twitter_shares],
               ['Facebook', facebook_shares]
             ];
             Chart.draw(shareChart);
-            n++;
           }
+          n++;
         });
       }, 100);
 
