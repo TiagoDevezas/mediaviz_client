@@ -1933,8 +1933,10 @@ function getItemData(datum) {
 mediavizControllers.controller('D3Ctrl', function($scope, $location, Resources) {
   $scope.jsonData = [];
   $scope.query = $location.search()['q'];
+  $scope.since = $location.search()['since'];
+  $scope.until = $location.search()['until'];
 
-  Resources.get({resource: 'pf', q: $scope.query}).$promise.then(function(data) {
+  Resources.get({resource: 'pf', q: $scope.query, since: $scope.since, until: $scope.until}).$promise.then(function(data) {
     $scope.jsonData = data;
   });
 
