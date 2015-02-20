@@ -15,9 +15,6 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
     restrict: 'AE',
     template: '',
     link: function(scope, elem, attrs) {
-      // var margin = {top: 50, right: 50, bottom: 50, left: 100 };
-      // var width = 960 - margin.left - margin.right;
-      // var height = 500 - margin.top - margin.bottom;
 
       var d3 = $window.d3;
 
