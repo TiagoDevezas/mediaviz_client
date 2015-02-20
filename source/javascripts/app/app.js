@@ -60,6 +60,11 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			controller: 'ChronicleCtrl',
 			reloadOnSearch: false
 		}).
+		when('/stacks', {
+			templateUrl: 'partials/app/stacks.html',
+			controller: 'StacksCtrl',
+			reloadOnSearch: false
+		}).
 		when('/articles', {
 			templateUrl: 'partials/app/articles.html',
 			controller: 'ArticlesCtrl',

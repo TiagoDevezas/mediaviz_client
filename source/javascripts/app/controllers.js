@@ -1930,6 +1930,53 @@ function getItemData(datum) {
 
 });
 
+mediavizControllers.controller('StacksCtrl', function($scope, $location, Resources, Chart) {
+
+  var chart;
+
+  $scope.source = $location.search()['source'];
+  $scope.query = $location.search()['q'];
+  $scope.since = $location.search()['since'];
+  $scope.until = $location.search()['until'];
+
+  getData();
+
+  function getData() {
+    Resources.get({resource: 'totals', q: $scope.query, source: $scope.source, since: $scope.since, until: $scope.until}).$promise.then(function(data) {
+      var columns = [
+        [$scope.query, data[0].total_query_articles],
+        ['Outros', data[0].total_source_articles - data[0].total_query_articles]
+      ];
+      var groups = columns.map(function(el) {
+        return el[0];
+      });
+      stackChart.options.data.columns = columns;
+      stackChart.options.data.groups = [groups];
+      stackChart.options.axis.y.max = data[0].total_source_articles;
+      stackChart.options.axis.x.categories = [$scope.source];
+      chart = Chart.draw(stackChart);
+    });
+  }
+
+  stackChart = {
+    options: {
+      bindto: '#stack-chart',
+      data: {
+        type: 'area-step',
+      },
+      axis: {
+        x: {
+          type: 'category'
+        },
+        y: {
+          padding: {top: 0, bottom: 0}
+        }
+      }
+    }
+  }
+
+});
+
 mediavizControllers.controller('D3Ctrl', function($scope, $location, Resources) {
   $scope.jsonData = [];
   $scope.query = $location.search()['q'];
@@ -1946,7 +1993,6 @@ mediavizControllers.controller('D3Ctrl', function($scope, $location, Resources) 
       $scope.loading = false;
     });
   }
-
 
 });
 
