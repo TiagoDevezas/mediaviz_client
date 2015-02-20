@@ -1935,10 +1935,18 @@ mediavizControllers.controller('D3Ctrl', function($scope, $location, Resources) 
   $scope.query = $location.search()['q'];
   $scope.since = $location.search()['since'];
   $scope.until = $location.search()['until'];
+  $scope.loading = false;
 
-  Resources.get({resource: 'pf', q: $scope.query, since: $scope.since, until: $scope.until}).$promise.then(function(data) {
-    $scope.jsonData = data;
-  });
+  getData();
+
+  function getData() {
+    $scope.loading = true;
+    Resources.get({resource: 'pf', q: $scope.query, since: $scope.since, until: $scope.until}).$promise.then(function(data) {
+      $scope.jsonData = data;
+      $scope.loading = false;
+    });
+  }
+
 
 });
 
