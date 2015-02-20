@@ -2,9 +2,9 @@
 
 var mediavizServices = angular.module('mediavizServices', ['ngResource']);
 
-var baseUrl2 = 'http://mediaviz.fe.up.pt/panorama/api/';
+var baseUrl = 'http://mediaviz.fe.up.pt/panorama/api/';
 
-var baseUrl = 'panorama/api/';
+var baseUrl2 = 'panorama/api/';
 
 mediavizServices.factory('Page', function($rootScope) {
 	var title = 'MediaViz';
@@ -27,6 +27,7 @@ mediavizServices.factory('SourceList', ['$http',
 					sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
 					sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
 					sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
+					sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
 					var sourceArray = sources;
 					myCallback(sources);				
 				});			

@@ -26,13 +26,16 @@ mediavizControllers.controller('RootCtrl', function($scope, SourceList) {
   $scope.groupSourcesByType = function(item) {
     if(item.type === 'national') {
       return 'Jornais Nacionais';
-    }
+    };
     if(item.type === 'international') {
       return 'Jornais Internacionais';
-    }
+    };
     if(item.type === 'blogs') {
       return 'Blogues';
-    }
+    };
+    if(item.type === 'archive') {
+      return 'Arquivo';
+    };
   }
 
 });
@@ -1522,27 +1525,16 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $rout
           title: function(d) {
             return d;
           },
-          value: function(value, ratio, id) {
-            console.log(value, ratio, id);
-            return value;
+          value: function(value, ratio, id, index) {
+            return value + ' (' + (ratio*100).toFixed(1) + '%)';
           }
         }
       },
       legend: {
         show: false
       },
-      // axis: {
-      //   x: {
-      //     tick: {
-      //       format: function (x) { return ''; }
-      //     }
-      //   }
-      // },
       color: {
         pattern: ['#00ABF0', '#49639E']
-      },
-      tooltip: {
-        show: true
       }
     }
   }
@@ -1936,301 +1928,15 @@ function getItemData(datum) {
     }
   }
 
-
-
 });
 
-mediavizControllers.controller('DashboardCtrl', function($scope, $location, $q, $routeParams, Resources, Chart) {
+mediavizControllers.controller('D3Ctrl', function($scope, $location, Resources) {
+  $scope.jsonData = [];
+  $scope.query = $location.search()['q'];
 
-  $scope.query = $routeParams.q;
-  $scope.since = $routeParams.since;
-  $scope.until = $routeParams.until;
-  $scope.category = $routeParams.category;
-
-  // Set a default start date if none is passed
-  $scope.startDate = $scope.since ? $scope.since : '2014-10-16';
-
-  var chart1, chart2;
-
-  $scope.loading = {
-    chart1: true,
-    chart2: true
-  }
-
-  var sourceName;
-
-  if($location.path() === '/') {
-    sourceName = 'All'
-  } else {
-    sourceName = $routeParams.source;
-  }
-
-
-  getItems().then(function() {
-    getTotalsAndDraw().then(function() {
-      getSourceData().then(function() {
-      });
-    });
+  Resources.get({resource: 'pf', q: $scope.query}).$promise.then(function(data) {
+    $scope.jsonData = data;
   });
-
-  // Get the source data for the selected source
-
-  function getSourceData() {
-    var deferred = $q.defer();
-    deferred.resolve(
-      Resources.get({resource: 'sources', name: sourceName}).$promise.then(function(obj) {
-        $scope.allData = obj;
-        $scope.categories = $scope.allData[0].categories;
-        // chart2_opts.options.data.json = obj;
-        // chart2 = Chart.draw(chart2_opts);
-        // $scope.loading.chart2 = false;
-      })
-      );
-    return deferred.promise;
-  }
-
-  function getTotalsAndDraw() {
-    var deferred = $q.defer();
-    if(sourceName === 'All') {
-      deferred.resolve(
-        Resources.get({resource: 'totals', since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
-          $scope.sourceData = obj;
-          var twitterShareSum = 0;
-          var facebookShareSum = 0;
-          angular.forEach(obj, function(el) {
-            twitterShareSum += el.twitter_shares;
-            facebookShareSum += el.facebook_shares;
-          });
-          var shareCountObj = [{twitter_shares: twitterShareSum, facebook_shares: facebookShareSum}];
-          chart1_opts.options.data.json = obj;
-          chart1 = Chart.draw(chart1_opts);
-          $scope.loading.chart1 = false;
-          chart2_opts.options.data.json = shareCountObj;
-          chart2 = Chart.draw(chart2_opts);
-          $scope.loading.chart2 = false;          
-        })
-        );  
-    } else {
-      deferred.resolve(
-        Resources.get({resource: 'totals', source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
-          $scope.sourceData = obj;
-          var twitterShareSum = 0;
-          var facebookShareSum = 0;
-          angular.forEach(obj, function(el) {
-            twitterShareSum += el.twitter_shares;
-            facebookShareSum += el.facebook_shares;
-          });
-          var shareCountObj = [{twitter_shares: twitterShareSum, facebook_shares: facebookShareSum}];
-          chart1_opts.options.data.json = obj;
-          chart1 = Chart.draw(chart1_opts);
-          $scope.loading.chart1 = false;
-          chart2_opts.options.data.json = shareCountObj;
-          chart2 = Chart.draw(chart2_opts);
-          $scope.loading.chart2 = false;
-        })
-        );
-    }
-    return deferred.promise;
-  }
-
-  function getItems() {
-    var deferred = $q.defer();
-    if(sourceName === 'All') {
-      deferred.resolve(
-        Resources.get({resource: 'items', since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
-          $scope.itemsData = obj;
-          //chart1_opts.options.data.json = obj;
-          //chart1 = Chart.draw(chart1_opts);
-          //$scope.loading.chart1 = false;
-        })
-        );
-    } else {
-      deferred.resolve(
-        Resources.get({resource: 'items', source: sourceName, since: $scope.startDate, until: $scope.until, q: $scope.query, by: $scope.selectedTime, category: $scope.category }).$promise.then(function(obj) {
-          $scope.itemsData = obj;
-          //chart1_opts.options.data.json = obj;
-          //chart1 = Chart.draw(chart1_opts);
-          //$scope.loading.chart1 = false;
-        })
-        );      
-    }
-    return deferred.promise;
-  }
-
-  $scope.setParams = function() {
-    var params = {};
-    if($scope.since) {
-      params['since'] = $scope.since;
-    }
-    if($scope.until) {
-      params['until'] = $scope.until;
-    }
-    if($scope.query) {
-      params['q'] = $scope.query;
-    }
-    if($scope.category) {
-      params['category'] = $scope.category;
-    }
-    $location.search(params); 
-  }
-
-  $scope.addCategoryToParams = function(categoryName) {
-    $scope.category = categoryName;
-    $scope.setParams();
-  }
-
-  // Set the default time period
-
-  $scope.selectedTime = $scope.selectedTime || 'day';
-
-  $scope.changeTime = function(){
-    $scope.loading.chart1 = true;
-    if($scope.selectedTime === 'day') {
-      chart1_opts.options.axis = {
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%d %b'
-          }
-        }
-      }
-    } else {
-      chart1_opts.options.axis = {
-        x: {
-          tick: {
-            format: function(d) { return d; }
-          }
-        }
-      }
-    }
-    getTotalsAndDraw();
-  }
-
-  // Tag cloud stuff
-
-  $scope.tagLimit = 50;
-
-  $scope.tagClasses = ['small', 'medium', 'large'];
-
-  $scope.setSizeClass = function(count) {
-    var maxCount = $scope.categories[0].count;
-    var index = count / maxCount * ($scope.tagClasses.length - 1);
-    index = Math.round(index);
-    return $scope.tagClasses[index]; 
-  }
-
-  $scope.twitterLoaded = false;
-  $scope.facebookLoaded = false;
-
-  $scope.loadData = function(dataToLoad) {
-    if(dataToLoad === 'twitter' && $scope.twitterLoaded) {
-      chart1.load({
-        json: $scope.sourceData,
-        keys: {
-          //x: 'time',
-          value: ['twitter_shares']
-        },
-        types: {
-          twitter_shares: 'area'
-        }
-      });
-      chart2.unload({
-        ids: 'facebook_shares'
-      });
-      $scope.twitterLoaded != $scope.twitterLoaded;
-    } 
-    if ($scope.twitterLoaded === false) {
-      chart1.unload({
-        ids: 'twitter_shares'
-      });
-      chart2.load({
-        json: $scope.allData,
-        keys: {
-          value: ['facebook_shares']
-        }
-      });
-      $scope.twitterLoaded === false;
-    }
-    if (dataToLoad === 'facebook' && $scope.facebookLoaded) {
-      chart1.load({
-        json: $scope.sourceData,
-        keys: {
-          //x: 'time',
-          value: ['facebook_shares']
-        },
-        types: {
-          facebook_shares: 'area'
-        }
-      });   
-      $scope.facebookLoaded != $scope.facebookLoaded; 
-    }
-    if (!$scope.facebookLoaded) {
-      chart1.unload({
-        ids: 'facebook_shares'
-      });
-      $scope.facebookLoaded != $scope.facebookLoaded;
-    }
-  }
-
-  var patterns = {
-    light: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896'],
-    dark: ['#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7'],
-    material: ['#e51c23', '#673ab7', '#5677fc', '#03a9f4', '#00bcd4', '#259b24', '#ffeb3b', '#ff9800']
-  };
-
-  var chart1_opts = {
-    options: {
-      bindto: '.chart',
-      data: {
-        json: '',
-        keys: {
-          x: 'time',
-          value: ['time', 'articles']
-        },
-        types: {
-          articles: 'area'
-        },
-        onclick: function (d, i) { console.log("onclick", d); }
-      },
-      subchart: {
-        show: true
-      },
-      axis: {
-        x: {
-          type: 'timeseries',
-          tick: {
-            format: '%d %b'
-          }
-        }
-      },
-      color: {
-        pattern: patterns.material
-      }
-    }
-  }
-
-  var chart2_opts = {
-    options: {
-      bindto: '.chart2',
-      data: {
-        json: '',
-        keys: {
-          value: ['twitter_shares', 'facebook_shares']
-        },
-        type: 'pie',
-      },
-      color: {
-        pattern : patterns.material
-      },
-      pie: {
-        label: {
-          format: function(d) {
-            return d;
-          }
-        }       
-      }
-    }
-  }
 
 });
 

@@ -1,0 +1,53 @@
+svg {
+  background-color: #eee;
+}
+
+text {
+  fill: #2A363B;
+}
+
+.axis text {
+  font: 10px sans-serif;;
+}
+
+.label {
+  font: 12px sans-serif;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #bbb;
+  shape-rendering: crispEdges;
+  stroke-width: 1px;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.source {
+  stroke: #222;
+  stroke-width: 1px;
+  cursor: pointer;
+}
+
+.source.highlight, .source.winner {
+  stroke: #222;
+  stroke-width: 2px;
+}
+
+.label.highlight, .label.winner {
+  font-weight: bold;
+  opacity: 1;
+  /*fill: #E1F5C4;*/
+}
+
+line.finish {
+  fill: none;
+  stroke: #FF4E50;
+  stroke-width: 2px;
+  shape-rendering: crispEdges;  
+}
