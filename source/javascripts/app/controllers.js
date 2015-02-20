@@ -1930,32 +1930,120 @@ function getItemData(datum) {
 
 });
 
-mediavizControllers.controller('StacksCtrl', function($scope, $location, Resources, Chart) {
+mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeout, Resources, Chart, Page) {
+
+  Page.setTitle('Stacks');
 
   var chart;
 
-  $scope.source = $location.search()['source'];
-  $scope.query = $location.search()['q'];
-  $scope.since = $location.search()['since'];
-  $scope.until = $location.search()['until'];
+  // $scope.source = $location.search()['source'];
+  // $scope.query = $location.search()['q'];
+  // $scope.since = $location.search()['since'];
+  // $scope.until = $location.search()['until'];
 
-  getData();
 
-  function getData() {
-    Resources.get({resource: 'totals', q: $scope.query, source: $scope.source, since: $scope.since, until: $scope.until}).$promise.then(function(data) {
-      var columns = [
-        [$scope.query, data[0].total_query_articles],
-        ['Outros', data[0].total_source_articles - data[0].total_query_articles]
-      ];
-      var groups = columns.map(function(el) {
-        return el[0];
-      });
-      stackChart.options.data.columns = columns;
-      stackChart.options.data.groups = [groups];
-      stackChart.options.axis.y.max = data[0].total_source_articles;
-      stackChart.options.axis.x.categories = [$scope.source];
-      chart = Chart.draw(stackChart);
+  $scope.keywords = {};
+  $scope.keywords.selected = [];
+
+  $scope.selectedSource = {};
+  $scope.selectedSource.selected = '';
+
+  $scope.loadedKeywords = [];
+
+  $scope.loadSourceData = function(source) {
+    setLocation({source: source.acronym});
+  }
+
+  $scope.addToChart = function(keyword) {
+    $scope.keywords.selected.push(keyword);
+    setLocation({keywords: $scope.keywords.selected.toString() })
+  }
+
+  $scope.removeFromChart = function(keyword) {
+    $scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
+    setLocation({keywords: $scope.keywords.selected.toString()})
+    if(chart) { chart.unload({ids: keyword}); }
+  }
+
+  function setLocation(locationObj) {
+    $location.search(angular.extend($location.search(), locationObj));
+  }
+
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var keywords = $location.search()['keywords'] || undefined;
+    var source = $location.search()['source'] || undefined;
+    if(source) {
+      $timeout(function() {
+        source = getSourceObjByAcronym($scope.sourceList, source);
+        $scope.selectedSource.selected = source;
+        if(keywords) {
+          $scope.keywords.selected = keywords.split(',');
+        }
+        if(chart) { chart.unload(); }
+        getTotalsAndDraw();
+      }, 500);
+    }
+  }, true);
+
+  function getSourceObjByAcronym(array, acronym) {
+    var obj = array.filter(function(el) {
+      return el.acronym === acronym;
     });
+    return obj[0];
+  }
+
+  var columns = [];
+
+  function getTotalsAndDraw() {
+    $scope.keywords.selected.forEach(function(keyword) {
+      var keyword = keyword;
+      var selectedSource = $scope.selectedSource.selected;
+      var aggregated = selectedSource.group;
+      if(!aggregated) {
+        $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: selectedSource.acronym, q: keyword};
+      } else {
+        $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: selectedSource.type, q: keyword};
+      }
+      if($scope.loadedKeywords.indexOf(keyword === -1)) {
+        var sum = 0;
+        $scope.loading = true;
+        Resources.get($scope.paramsObj).$promise.then(function(data) {
+          console.log(data);
+          $scope.loading = false;
+          columns.push([keyword, data[0].total_query_articles]);
+          //columns.push(['Outros', data[0].total_source_articles - data[0].total_query_articles]);
+
+          columns.forEach(function(el) {
+            if(el.indexOf('Outros') !== -1) {
+              
+            }
+          });
+
+          columns.map(function(el) {
+            sum += el[1];
+          });
+
+          console.log(data[0].total_source_articles - sum);
+
+          columns.push(['Outros', data[0].total_source_articles - sum]);
+
+          console.log(columns);
+          // var columns = [
+          //   [keyword, data[0].total_query_articles],
+          //   ['Outros', data[0].total_source_articles - data[0].total_query_articles]
+          // ];
+          var groups = columns.map(function(el) {
+            return el[0];
+          });
+          stackChart.options.data.columns = columns;
+          stackChart.options.data.groups = [].push(groups);
+          stackChart.options.axis.y.max = data[0].total_source_articles;
+          stackChart.options.axis.x.categories = [$scope.selectedSource.selected.name];
+          chart = Chart.draw(stackChart);
+        });
+      }
+
+    })
   }
 
   stackChart = {
