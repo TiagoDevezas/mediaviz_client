@@ -18,9 +18,9 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
 
       var d3 = $window.d3;
 
-      var svg = d3.select('svg');
+      //var svg = d3.select('svg');
 
-      var scopedData = $parse(attrs.chartData);
+      //var scopedData = $parse(attrs.chartData);
 
       var data = attrs.chartData;
 
@@ -207,3 +207,163 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
     }
   }
 });
+
+mediavizDirectives.directive('stacksChart', function($window) {
+  return {
+    restrict: 'AE',
+    template: '',
+    scope: {
+      chartData: '='
+    },
+    link: function(scope, elem, attrs) {
+      var d3 = $window.d3;
+
+      var margin = {top: 50, right: 50, bottom: 50, left: 100 };
+      var width = 960 - margin.left - margin.right;
+      var height = 500 - margin.top - margin.bottom;
+
+
+      var svg = d3.select('#viz')
+          .append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.left)
+          .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+
+      // Create scales
+
+      var xScale = d3.scale.ordinal()
+        .rangeRoundBands([0, width]);
+
+      var yScale = d3.scale.linear()
+        .rangeRound([height, 0]);
+
+      var colorScale = d3.scale.category20();
+
+      // Create axis
+
+      var xAxis = d3.svg.axis()
+        .scale(xScale)
+        .orient('bottom');
+
+      var yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient('left');
+
+      // var data = [
+      //   {
+      //     source: 'Público',
+      //     total_count: 200,
+      //     keywords: [
+      //       { name: 'portugal', count: 25 },
+      //       { name: 'sócrates', count: 37 },
+      //       { name: 'lisboa', count: 14}
+      //     ]
+      //   }
+      // ];
+
+      //drawChart(data);
+
+      scope.$watch('chartData', function(newVal, oldVal) {
+        var data = newVal;
+        if(data) {
+          scope.render(data);          
+        } else {
+          console.log('No data');
+        }
+      }, true);
+
+
+      scope.render = function(incomingData) {
+
+        // Get keyword data
+
+        var newData = incomingData;
+
+        var keywords = newData[0].keywords;
+
+        var totalCount = newData[0].total_count;
+
+        var keywordTotalCount = d3.sum(keywords.map(function(el) {
+          return el.count;
+        }));
+
+        // Transform data
+
+        newData.forEach(function(d, i) {
+          var y0 = 0;
+          d.total = d.total_count;
+          d.counts = d.keywords.map(function(el) {
+            return({name: el.name, y0: y0, y1: y0 += +el.count});
+          });
+        });
+
+
+        var keywordCounts = newData.map(function(el) {
+          return el.counts;
+        })[0];
+
+        console.log(keywordCounts);
+
+        xScale
+          .domain(newData.map(function(d) { return d.source}));
+
+        yScale
+          .domain([0, totalCount]);
+
+        // colorScale
+        //   .domain(newData[0].counts.map(function(el) {
+        //     return el.name;
+        //   }));
+
+        svg.selectAll('g.axis').remove();
+
+        svg.select('rect.background').remove();
+
+        svg.selectAll('rect.band').remove();
+
+        svg.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(' + 0 + ',' + height + ')')
+          .call(xAxis);
+
+        svg.append('g')
+          .attr('class', 'y axis')
+        //.attr('transform', 'translate(' + 0 + ',' + 0 + ')')
+          .call(yAxis);
+
+       svg.append('rect')
+          .attr('class', 'background')
+          //.attr('transform', "translate(0,0)")
+          .attr('width', xScale.rangeBand())
+          .attr('height', height)
+          .style('fill', 'lightgray');
+
+        // var stack = svg.selectAll('.stack')
+        //   .data(newData)
+        //   .enter().append('g')
+        //   .attr('class', 'stack')
+        //   .attr('transform', "translate(0,0)");
+
+        svg.selectAll('rect.band')
+          .data(keywordCounts, function(d) {
+            return d.name + d.count;
+          })
+          .enter().append('rect')
+          .attr('y', -height)
+          .attr('class', 'band')
+          .attr('width', xScale.rangeBand())
+          .attr('height', function(d) {return yScale(d.y0) - yScale(d.y1);})
+          .style("fill", function(d) { return colorScale(d.name); })
+          .transition()
+          .delay(function(d, i) { return 200 * i})
+          .attr('y', function(d) { return yScale(d.y1); });
+
+
+
+      }
+
+    }
+  }
+})

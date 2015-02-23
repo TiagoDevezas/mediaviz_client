@@ -1934,8 +1934,6 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
 
   Page.setTitle('Stacks');
 
-  var chart;
-
   // $scope.source = $location.search()['source'];
   // $scope.query = $location.search()['q'];
   // $scope.since = $location.search()['since'];
@@ -1950,6 +1948,8 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
 
   $scope.loadedKeywords = [];
 
+  $scope.chartData = '';
+
   $scope.loadSourceData = function(source) {
     setLocation({source: source.acronym});
   }
@@ -1962,7 +1962,7 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
   $scope.removeFromChart = function(keyword) {
     $scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
     setLocation({keywords: $scope.keywords.selected.toString()})
-    if(chart) { chart.unload({ids: keyword}); }
+    //if(chart) { chart.unload({ids: keyword}); }
   }
 
   function setLocation(locationObj) {
@@ -1979,7 +1979,6 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         if(keywords) {
           $scope.keywords.selected = keywords.split(',');
         }
-        if(chart) { chart.unload(); }
         getTotalsAndDraw();
       }, 500);
     }
@@ -1992,9 +1991,10 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
     return obj[0];
   }
 
-  var columns = [];
 
   function getTotalsAndDraw() {
+    var incomingData = [];
+    var keywords = [];
     $scope.keywords.selected.forEach(function(keyword) {
       var keyword = keyword;
       var selectedSource = $scope.selectedSource.selected;
@@ -2005,63 +2005,31 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: selectedSource.type, q: keyword};
       }
       if($scope.loadedKeywords.indexOf(keyword === -1)) {
-        var sum = 0;
         $scope.loading = true;
         Resources.get($scope.paramsObj).$promise.then(function(data) {
-          console.log(data);
-          $scope.loading = false;
-          columns.push([keyword, data[0].total_query_articles]);
-          //columns.push(['Outros', data[0].total_source_articles - data[0].total_query_articles]);
-
-          columns.forEach(function(el) {
-            if(el.indexOf('Outros') !== -1) {
-              
+          if(data.length) {
+            if(incomingData.length === 0) {
+              incomingData.push({source: selectedSource.name, total_count: data[0].total_source_articles});
             }
-          });
-
-          columns.map(function(el) {
-            sum += el[1];
-          });
-
-          console.log(data[0].total_source_articles - sum);
-
-          columns.push(['Outros', data[0].total_source_articles - sum]);
-
-          console.log(columns);
-          // var columns = [
-          //   [keyword, data[0].total_query_articles],
-          //   ['Outros', data[0].total_source_articles - data[0].total_query_articles]
-          // ];
-          var groups = columns.map(function(el) {
-            return el[0];
-          });
-          stackChart.options.data.columns = columns;
-          stackChart.options.data.groups = [].push(groups);
-          stackChart.options.axis.y.max = data[0].total_source_articles;
-          stackChart.options.axis.x.categories = [$scope.selectedSource.selected.name];
-          chart = Chart.draw(stackChart);
+            pushKeywords({name: keyword, count: data[0].total_query_articles});
+          //keywords.push();            
+          } else {
+            $scope.loading = false;
+          }
         });
       }
-
-    })
-  }
-
-  stackChart = {
-    options: {
-      bindto: '#stack-chart',
-      data: {
-        type: 'area-step',
-      },
-      axis: {
-        x: {
-          type: 'category'
-        },
-        y: {
-          padding: {top: 0, bottom: 0}
+      function pushKeywords(keywordObj) {
+        keywords.push(keywordObj);
+        if(keywords.length === $scope.keywords.selected.length) {
+          $scope.loading = false;
+          incomingData[0].keywords = keywords;
+          $scope.chartData = incomingData;
         }
       }
-    }
+      
+    });
   }
+
 
 });
 
