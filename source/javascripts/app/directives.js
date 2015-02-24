@@ -218,7 +218,7 @@ mediavizDirectives.directive('stacksChart', function($window) {
     link: function(scope, elem, attrs) {
       var d3 = $window.d3;
 
-      var margin = {top: 25, right: 100, bottom: 25, left: 25 };
+      var margin = {top: 25, right: 100, bottom: 25, left: 35 };
       var width = 960 - margin.left - margin.right;
       var height = 500 - margin.top - margin.bottom;
 

@@ -2008,8 +2008,13 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         $scope.loading = true;
         Resources.get($scope.paramsObj).$promise.then(function(data) {
           if(data.length) {
+            if(!aggregated) {
+              var total_count = data[0].total_source_articles;
+            } else {
+              var total_count = data[0].total_type_articles;
+            }
             if(incomingData.length === 0) {
-              incomingData.push({source: selectedSource.name, total_count: data[0].total_source_articles});
+              incomingData.push({source: selectedSource.name, total_count: total_count});
             }
             pushKeywords({name: keyword, count: data[0].total_query_articles});
           //keywords.push();            
@@ -2051,5 +2056,3 @@ mediavizControllers.controller('D3Ctrl', function($scope, $location, Resources) 
   }
 
 });
-
-
