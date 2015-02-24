@@ -218,7 +218,7 @@ mediavizDirectives.directive('stacksChart', function($window) {
     link: function(scope, elem, attrs) {
       var d3 = $window.d3;
 
-      var margin = {top: 25, right: 100, bottom: 25, left: 35 };
+      var margin = {top: 25, right: 100, bottom: 25, left: 50 };
       var width = 960 - margin.left - margin.right;
       var height = 500 - margin.top - margin.bottom;
 
@@ -297,7 +297,7 @@ mediavizDirectives.directive('stacksChart', function($window) {
           return sum;
         });
 
-        counts.push(totalCount);
+        //counts.push(totalCount);
         counts.unshift(0);
 
         var keywordCounts = newData.map(function(el) {
@@ -312,11 +312,6 @@ mediavizDirectives.directive('stacksChart', function($window) {
 
         yAxis
           .tickValues(counts);
-
-        // colorScale
-        //   .domain(newData[0].counts.map(function(el) {
-        //     return el.name;
-        //   }));
 
         svg.selectAll('g.axis').remove();
 
@@ -340,12 +335,6 @@ mediavizDirectives.directive('stacksChart', function($window) {
           .attr('width', xScale.rangeBand())
           .attr('height', height)
           .style('fill', 'lightgray');
-
-        // var stack = svg.selectAll('.stack')
-        //   .data(newData)
-        //   .enter().append('g')
-        //   .attr('class', 'stack')
-        //   .attr('transform', "translate(0,0)");
 
         var bands = svg.selectAll('g.band')
           .data(keywordCounts, function(d) {
@@ -381,9 +370,6 @@ mediavizDirectives.directive('stacksChart', function($window) {
             .style('font', '10px sans-serif')
             .style('fill', 'black');
         };
-
-
-
       }
 
     }
