@@ -366,7 +366,7 @@ mediavizDirectives.directive('stacksChart', function($window) {
             })
             //.attr('x', -6)
             //.attr('y', function(d) { return yScale(d.y0); })
-            .text(function(d) { return d.name })
+            .text(function(d) { return d.name + ' (' + (d.y1-d.y0) + ')' })
             .style('font', '10px sans-serif')
             .style('fill', 'black');
         };
