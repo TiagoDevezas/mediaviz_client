@@ -218,12 +218,12 @@ mediavizDirectives.directive('stacksChart', function($window) {
     link: function(scope, elem, attrs) {
       var d3 = $window.d3;
 
-      var margin = {top: 50, right: 50, bottom: 50, left: 100 };
+      var margin = {top: 25, right: 100, bottom: 25, left: 25 };
       var width = 960 - margin.left - margin.right;
       var height = 500 - margin.top - margin.bottom;
 
 
-      var svg = d3.select('#viz')
+      var svg = d3.select(elem[0])
           .append('svg')
           .attr('width', width + margin.left + margin.right)
           .attr('height', height + margin.top + margin.left)
@@ -251,20 +251,6 @@ mediavizDirectives.directive('stacksChart', function($window) {
         .scale(yScale)
         .orient('left');
 
-      // var data = [
-      //   {
-      //     source: 'Público',
-      //     total_count: 200,
-      //     keywords: [
-      //       { name: 'portugal', count: 25 },
-      //       { name: 'sócrates', count: 37 },
-      //       { name: 'lisboa', count: 14}
-      //     ]
-      //   }
-      // ];
-
-      //drawChart(data);
-
       scope.$watch('chartData', function(newVal, oldVal) {
         var data = newVal;
         if(data) {
@@ -276,6 +262,8 @@ mediavizDirectives.directive('stacksChart', function($window) {
 
 
       scope.render = function(incomingData) {
+
+        console.log(incomingData);
 
         // Get keyword data
 
@@ -291,6 +279,10 @@ mediavizDirectives.directive('stacksChart', function($window) {
 
         // Transform data
 
+        newData[0].keywords.sort(function(a, b) {
+          return d3.descending(a.count, b.count);
+        });
+
         newData.forEach(function(d, i) {
           var y0 = 0;
           d.total = d.total_count;
@@ -299,18 +291,27 @@ mediavizDirectives.directive('stacksChart', function($window) {
           });
         });
 
+        var sum = 0;
+        var counts = keywords.map(function(el) {
+          sum = el.count + sum;
+          return sum;
+        });
+
+        counts.push(totalCount);
+        counts.unshift(0);
 
         var keywordCounts = newData.map(function(el) {
           return el.counts;
         })[0];
 
-        console.log(keywordCounts);
-
         xScale
           .domain(newData.map(function(d) { return d.source}));
 
         yScale
-          .domain([0, totalCount]);
+          .domain([0, keywordTotalCount]);
+
+        yAxis
+          .tickValues(counts);
 
         // colorScale
         //   .domain(newData[0].counts.map(function(el) {
@@ -321,7 +322,7 @@ mediavizDirectives.directive('stacksChart', function($window) {
 
         svg.select('rect.background').remove();
 
-        svg.selectAll('rect.band').remove();
+        svg.selectAll('g.band').remove();
 
         svg.append('g')
           .attr('class', 'x axis')
@@ -346,19 +347,40 @@ mediavizDirectives.directive('stacksChart', function($window) {
         //   .attr('class', 'stack')
         //   .attr('transform', "translate(0,0)");
 
-        svg.selectAll('rect.band')
+        var bands = svg.selectAll('g.band')
           .data(keywordCounts, function(d) {
             return d.name + d.count;
           })
-          .enter().append('rect')
+          .enter().append('g')
+          .attr('class', 'band');
+
+        bands.each(function(d, i) {
+          d3.select(this)
+          .append('rect')
           .attr('y', -height)
-          .attr('class', 'band')
+          //.attr('class', 'band')
           .attr('width', xScale.rangeBand())
           .attr('height', function(d) {return yScale(d.y0) - yScale(d.y1);})
           .style("fill", function(d) { return colorScale(d.name); })
           .transition()
-          .delay(function(d, i) { return 200 * i})
-          .attr('y', function(d) { return yScale(d.y1); });
+          .delay(function() { return 200 * i})
+          .attr('y', function(d) { return yScale(d.y1); })
+          .each('end', drawLabels);
+        });
+
+        function drawLabels() {
+            d3.select(this.parentElement)
+            .append('text')
+            //.attr('text-anchor', 'middle')
+            .attr('transform', function(d) {
+              return 'translate(' + (width + 6) + ',' + (((yScale(d.y0) + yScale(d.y1)) / 2) + 2) + ')'
+            })
+            //.attr('x', -6)
+            //.attr('y', function(d) { return yScale(d.y0); })
+            .text(function(d) { return d.name })
+            .style('font', '10px sans-serif')
+            .style('fill', 'black');
+        };
 
 
 
