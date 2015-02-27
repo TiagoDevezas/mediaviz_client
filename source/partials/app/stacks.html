@@ -20,6 +20,13 @@
       </ui-select-choices>
     </ui-select>
   </div>
+  <div class="search-tools" style="border: none;">
+    <ul style="float: left;">
+      <li><a href="" ng-click="setDataFormat('all')" ng-class="{'selected':dataFormat === 'all'}">Total</a></li>
+      <li><a href="" ng-click="setDataFormat('selected')" ng-class="{'selected':dataFormat === 'selected'}">Apenas seleccionadas</a></li>
+    </ul>
+
+  </div>
   <hr>
 
 <!-- <loading-flash>A carregar...</loading-flash>
@@ -28,5 +35,5 @@
   </div> -->
 
   <loading-flash>A carregar...</loading-flash>
-  <div id="viz" stacks-chart chart-data="chartData"></div>
+  <div id="viz" stacks-chart2 chart-data="chartData" view-mode="{{dataFormat}}"></div>
 </div>

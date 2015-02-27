@@ -1934,10 +1934,8 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
 
   Page.setTitle('Stacks');
 
-  // $scope.source = $location.search()['source'];
-  // $scope.query = $location.search()['q'];
-  // $scope.since = $location.search()['since'];
-  // $scope.until = $location.search()['until'];
+  $scope.since = $location.search()['since'];
+  $scope.until = $location.search()['until'];
 
 
   $scope.keywords = {};
@@ -1950,6 +1948,15 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
 
   $scope.chartData = '';
 
+  $scope.dataFormat = 'all';
+
+  $scope.setDataFormat = function(dataFormat) {
+    if(dataFormat !== $scope.dataFormat) {
+      $scope.dataFormat = dataFormat;
+      getTotalsAndDraw();
+    }
+  }
+
   $scope.loadSourceData = function(source) {
     setLocation({source: source.acronym});
   }
@@ -1961,7 +1968,11 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
 
   $scope.removeFromChart = function(keyword) {
     $scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
-    setLocation({keywords: $scope.keywords.selected.toString()})
+    setLocation({keywords: $scope.keywords.selected.toString()});
+    if(!$scope.keywords.selected.length) {
+      $scope.keywords.selected.push('no keyword');
+      getTotalsAndDraw();
+    }
     //if(chart) { chart.unload({ids: keyword}); }
   }
 
@@ -2005,9 +2016,15 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: selectedSource.type, q: keyword};
       }
       if($scope.loadedKeywords.indexOf(keyword === -1)) {
+        if(keyword === 'no keyword') {
+          return $scope.chartData = '';
+        };
         $scope.loading = true;
         Resources.get($scope.paramsObj).$promise.then(function(data) {
           if(data.length) {
+            var count = d3.sum(data.map(function(el) {
+              return el.articles;
+            }));
             if(!aggregated) {
               var total_count = data[0].total_source_articles;
             } else {
@@ -2016,7 +2033,7 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
             if(incomingData.length === 0) {
               incomingData.push({source: selectedSource.name, total_count: total_count});
             }
-            pushKeywords({name: keyword, count: data[0].total_query_articles});
+            pushKeywords({name: keyword, count: count});
           //keywords.push();            
           } else {
             $scope.loading = false;

@@ -213,15 +213,31 @@ mediavizDirectives.directive('stacksChart', function($window) {
     restrict: 'AE',
     template: '',
     scope: {
-      chartData: '='
+      chartData: '=',
+      viewMode: '@'
     },
     link: function(scope, elem, attrs) {
       var d3 = $window.d3;
+
+      scope.$watch('chartData', function(newVal, oldVal) {
+        var mode = scope.viewMode;
+        var data = newVal;
+        if(data.length) {
+          //svg.style('opacity', '1');
+          scope.render(data, mode);          
+        } else {
+          console.log('No data');
+          //svg.style('opacity', '0');
+        }
+      }, true);
+
+      // Set dimensions
 
       var margin = {top: 25, right: 100, bottom: 25, left: 50 };
       var width = 960 - margin.left - margin.right;
       var height = 500 - margin.top - margin.bottom;
 
+      // Create parent SVG
 
       var svg = d3.select(elem[0])
           .append('svg')
@@ -241,7 +257,7 @@ mediavizDirectives.directive('stacksChart', function($window) {
 
       var colorScale = d3.scale.category20();
 
-      // Create axis
+      // Create axes
 
       var xAxis = d3.svg.axis()
         .scale(xScale)
@@ -251,19 +267,16 @@ mediavizDirectives.directive('stacksChart', function($window) {
         .scale(yScale)
         .orient('left');
 
-      scope.$watch('chartData', function(newVal, oldVal) {
-        var data = newVal;
-        if(data) {
-          scope.render(data);          
-        } else {
-          console.log('No data');
-        }
-      }, true);
+      // Generate axes
 
+      svg.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(' + 0 + ',' + height + ')');
 
-      scope.render = function(incomingData) {
+      svg.append('g')
+          .attr('class', 'y axis');
 
-        console.log(incomingData);
+      scope.render = function(incomingData, vizMode) {
 
         // Get keyword data
 
@@ -297,6 +310,15 @@ mediavizDirectives.directive('stacksChart', function($window) {
           return sum;
         });
 
+        if(vizMode === 'all') {
+          counts.push(totalCount);
+          yScale
+            .domain([0, totalCount]);
+        } else if(vizMode === 'selected') {
+          yScale
+            .domain([0, keywordTotalCount]);
+        }
+
         //counts.push(totalCount);
         counts.unshift(0);
 
@@ -307,27 +329,25 @@ mediavizDirectives.directive('stacksChart', function($window) {
         xScale
           .domain(newData.map(function(d) { return d.source}));
 
-        yScale
-          .domain([0, keywordTotalCount]);
 
         yAxis
           .tickValues(counts);
 
-        svg.selectAll('g.axis').remove();
+        //svg.selectAll('g.axis').remove();
 
         svg.select('rect.background').remove();
 
-        svg.selectAll('g.band').remove();
+        //svg.selectAll('g.band').remove();
 
-        svg.append('g')
-          .attr('class', 'x axis')
-          .attr('transform', 'translate(' + 0 + ',' + height + ')')
-          .call(xAxis);
+        // svg.append('g')
+        //   .attr('class', 'x axis')
+        //   .attr('transform', 'translate(' + 0 + ',' + height + ')')
+        //   .call(xAxis);
 
-        svg.append('g')
-          .attr('class', 'y axis')
-        //.attr('transform', 'translate(' + 0 + ',' + 0 + ')')
-          .call(yAxis);
+        // svg.append('g')
+        //   .attr('class', 'y axis')
+        // //.attr('transform', 'translate(' + 0 + ',' + 0 + ')')
+        //   .call(yAxis);
 
        svg.append('rect')
           .attr('class', 'background')
@@ -336,42 +356,277 @@ mediavizDirectives.directive('stacksChart', function($window) {
           .attr('height', height)
           .style('fill', 'lightgray');
 
-        var bands = svg.selectAll('g.band')
+      var bands = svg.selectAll('g.band')
           .data(keywordCounts, function(d) {
             return d.name + d.count;
-          })
+          });
+
+      var bandsEnter = bands
           .enter().append('g')
           .attr('class', 'band');
 
-        bands.each(function(d, i) {
-          d3.select(this)
+      bandsEnter
           .append('rect')
           .attr('y', -height)
           //.attr('class', 'band')
           .attr('width', xScale.rangeBand())
           .attr('height', function(d) {return yScale(d.y0) - yScale(d.y1);})
-          .style("fill", function(d) { return colorScale(d.name); })
-          .transition()
-          .delay(function() { return 200 * i})
-          .attr('y', function(d) { return yScale(d.y1); })
-          .each('end', drawLabels);
-        });
+          .style("fill", function(d) { return colorScale(d.name); });
 
-        function drawLabels() {
-            d3.select(this.parentElement)
-            .append('text')
-            //.attr('text-anchor', 'middle')
-            .attr('transform', function(d) {
-              return 'translate(' + (width + 6) + ',' + (((yScale(d.y0) + yScale(d.y1)) / 2) + 2) + ')'
-            })
-            //.attr('x', -6)
-            //.attr('y', function(d) { return yScale(d.y0); })
-            .text(function(d) { return d.name + ' (' + (d.y1-d.y0) + ')' })
-            .style('font', '10px sans-serif')
-            .style('fill', 'black');
-        };
+      bandsEnter
+        .append('text')
+        .attr('class', 'label')
+        //.attr('text-anchor', 'middle')
+        .attr('transform', function(d) {
+          return 'translate(' + (width + 6) + ',' + (((yScale(d.y0) + yScale(d.y1)) / 2) + 2) + ')'
+        })
+        //.attr('x', -6)
+        //.attr('y', function(d) { return yScale(d.y0); })
+        .text(function(d) { return d.name + ' (' + (d.y1-d.y0) + ')' })
+        .style('font', '10px sans-serif')
+        .style('fill', 'black')
+        .style('opacity', 1);
+
+      var bandsUpdate = bands.transition()
+          .duration(500)
+          .attr('y', function(d) { return yScale(d.y1); })
+          //.each('end', drawLabels);
+        // .attr('transform', function(d) {
+        //   'translate(' + 0 + ',' + yScale(d.y1) + ')';
+        // });
+
+      bandsUpdate.select('rect')
+        .attr('height', function(d) {return yScale(d.y0) - yScale(d.y1);})
+        .attr('y', function(d) { return yScale(d.y1); });
+
+      bandsUpdate.select('text.label')
+        .attr('transform', function(d) {
+            return 'translate(' + (width + 6) + ',' + (((yScale(d.y0) + yScale(d.y1)) / 2) + 2) + ')'
+          })
+        .text(function(d) { return d.name + ' (' + (d.y1-d.y0) + ')' });
+
+      var bandsExit = bands.exit();
+
+      bandsExit
+        .select('text.label')
+        .style('opacity', '0');
+
+      bandsExit
+        .transition()
+        .duration(200)
+        .attr('height', 0)
+        .remove();
+
+      d3.transition(svg).select(".x.axis")
+        .call(xAxis);
+
+      d3.transition(svg).select(".y.axis")
+        .call(yAxis);
+
       }
 
     }
   }
-})
+});
+
+mediavizDirectives.directive('stacksChart2', function($window) {
+  return {
+    restrict: 'AE',
+    template: '',
+    scope: {
+      chartData: '='
+    },
+    link: function(scope, elem, attrs) {
+      var d3 = $window.d3;
+
+      var dummyData = 
+      [
+        {
+          "keyword": "sócrates",
+          "totals": [
+            {
+              "time": "2014-12-05",
+              "articles": 5,
+              "total_type_articles": 3202,
+              "percent_of_type": 0.16,
+              "total_query_articles": 204,
+              "percent_of_query": 2.45,
+              "total_articles_of_type_by_day": 26,
+              "percent_of_type_by_day": 19.23,
+              "total_period_articles": 204,
+              "twitter_shares": 16,
+              "facebook_shares": 33,
+              "total_shares": 49
+            },
+            {
+              "time": "2014-12-06",
+              "articles": 2,
+              "total_type_articles": 3202,
+              "percent_of_type": 0.06,
+              "total_query_articles": 204,
+              "percent_of_query": 0.98,
+              "total_articles_of_type_by_day": 13,
+              "percent_of_type_by_day": 15.38,
+              "total_period_articles": 204,
+              "twitter_shares": 2,
+              "facebook_shares": 7,
+              "total_shares": 9
+            },
+            {
+              "time": "2014-12-07",
+              "articles": 3,
+              "total_type_articles": 3202,
+              "percent_of_type": 0.09,
+              "total_query_articles": 204,
+              "percent_of_query": 1.47,
+              "total_articles_of_type_by_day": 28,
+              "percent_of_type_by_day": 10.71,
+              "total_period_articles": 204,
+              "twitter_shares": 4,
+              "facebook_shares": 4,
+              "total_shares": 8
+            }
+          ]
+        },
+        {
+          "keyword": "mourinho",
+          "totals": [
+            {
+              "time": "2014-12-06",
+              "articles": 1,
+              "total_source_articles": 6229,
+              "percent_of_source": 0.02,
+              "total_query_articles": 22,
+              "percent_of_query": 4.55,
+              "total_period_articles": 22,
+              "twitter_shares": 7,
+              "facebook_shares": 3,
+              "total_shares": 10
+            },
+            {
+              "time": "2014-12-09",
+              "articles": 1,
+              "total_source_articles": 6229,
+              "percent_of_source": 0.02,
+              "total_query_articles": 22,
+              "percent_of_query": 4.55,
+              "total_period_articles": 22,
+              "twitter_shares": 6,
+              "facebook_shares": 8,
+              "total_shares": 14
+            },
+            {
+              "time": "2014-12-10",
+              "articles": 1,
+              "total_source_articles": 6229,
+              "percent_of_source": 0.02,
+              "total_query_articles": 22,
+              "percent_of_query": 4.55,
+              "total_period_articles": 22,
+              "twitter_shares": 7,
+              "facebook_shares": 0,
+              "total_shares": 7
+            },
+            {
+              "time": "2014-12-15",
+              "articles": 1,
+              "total_source_articles": 6229,
+              "percent_of_source": 0.02,
+              "total_query_articles": 22,
+              "percent_of_query": 4.55,
+              "total_period_articles": 22,
+              "twitter_shares": 5,
+              "facebook_shares": 0,
+              "total_shares": 5
+            }
+          ]
+        }
+      ];
+
+      // Watcher
+
+      // scope.$watch('chartData', function(newVal, oldVal) {
+      //   var data = newVal;
+      //   if(data.length) {
+      //     scope.render(data);
+      //   }
+      // }, true);
+
+      // Set parent SVG dimensions
+      var margin = {top: 25, right: 100, bottom: 25, left: 50 };
+      var width = 960 - margin.left - margin.right;
+      var height = 500 - margin.top - margin.bottom;
+
+      // Create parent SVG
+
+      var svg = d3.select(elem[0])
+        .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.left)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      // Create scales
+
+      var xScale = d3.scale.ordinal()
+        .rangeRoundBands([0, width]);
+
+      var yScale = d3.scale.linear()
+        .rangeRound([height, 0]);
+
+
+      var colorScale = d3.scale.category20();
+
+      // Create axes
+
+      var xAxis = d3.svg.axis()
+        .scale(xScale)
+        .orient('bottom');
+
+      var yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient('left');
+
+      // Generate axes
+
+      svg.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(' + 0 + ',' + height + ')');
+
+      svg.append('g')
+          .attr('class', 'y axis');
+
+      renderGraph(dummyData);
+
+      function renderGraph(incomingData) {
+        
+        var dates = [];
+
+        incomingData.map(function(obj) {
+          obj.totals.map(function(arr) {
+            dates.push(arr.time);
+          });
+        });
+
+        incomingData.forEach(function(d) {
+          d.keyword = d.keyword;
+          console.log(d.totals);
+        });
+
+        console.log(incomingData);
+
+        xScale
+          .domain(dates);
+
+        svg.select('.x.axis')
+          .call(xAxis);
+
+
+      }
+
+
+    }
+
+
+  }
+});
