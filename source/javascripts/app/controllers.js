@@ -2022,23 +2022,34 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         $scope.loading = true;
         Resources.get($scope.paramsObj).$promise.then(function(data) {
           if(data.length) {
-            var count = d3.sum(data.map(function(el) {
-              return el.articles;
-            }));
-            if(!aggregated) {
-              var total_count = data[0].total_source_articles;
-            } else {
-              var total_count = data[0].total_type_articles;
-            }
-            if(incomingData.length === 0) {
-              incomingData.push({source: selectedSource.name, total_count: total_count});
-            }
-            pushKeywords({name: keyword, count: count});
+            data.forEach(function(obj) {
+              obj.keyword = keyword
+            });
+            pushData(data);
+            //incomingData.push(data[0]);
+            // var count = d3.sum(data.map(function(el) {
+            //   return el.articles;
+            // }));
+            // if(!aggregated) {
+            //   var total_count = data[0].total_source_articles;
+            // } else {
+            //   var total_count = data[0].total_type_articles;
+            // }
+            // if(incomingData.length === 0) {
+            //   incomingData.push({source: selectedSource.name, total_count: total_count});
+            // }
+            // pushKeywords({name: keyword, count: count});
           //keywords.push();            
           } else {
             $scope.loading = false;
           }
         });
+      }
+      function pushData(data) {
+        $scope.loading = false;
+        incomingData.push(data);
+        console.log(incomingData);
+        $scope.chartData = incomingData;
       }
       function pushKeywords(keywordObj) {
         keywords.push(keywordObj);

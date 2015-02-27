@@ -293,7 +293,7 @@ mediavizDirectives.directive('stacksChart', function($window) {
         // Transform data
 
         newData[0].keywords.sort(function(a, b) {
-          return d3.descending(a.count, b.count);
+          return d3.ascending(a.count, b.count);
         });
 
         newData.forEach(function(d, i) {
@@ -441,10 +441,8 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
       var dummyData = 
       [
-        {
-          "keyword": "sócrates",
-          "totals": [
             {
+              "keyword": "sócrates",
               "time": "2014-12-05",
               "articles": 5,
               "total_type_articles": 3202,
@@ -459,6 +457,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               "total_shares": 49
             },
             {
+              "keyword": "sócrates",
               "time": "2014-12-06",
               "articles": 2,
               "total_type_articles": 3202,
@@ -473,6 +472,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               "total_shares": 9
             },
             {
+              "keyword": "sócrates",
               "time": "2014-12-07",
               "articles": 3,
               "total_type_articles": 3202,
@@ -485,13 +485,10 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               "twitter_shares": 4,
               "facebook_shares": 4,
               "total_shares": 8
-            }
-          ]
-        },
-        {
-          "keyword": "mourinho",
-          "totals": [
+            },
+
             {
+              "keyword": "mourinho",
               "time": "2014-12-06",
               "articles": 1,
               "total_source_articles": 6229,
@@ -504,6 +501,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               "total_shares": 10
             },
             {
+              "keyword": "mourinho",
               "time": "2014-12-09",
               "articles": 1,
               "total_source_articles": 6229,
@@ -516,6 +514,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               "total_shares": 14
             },
             {
+              "keyword": "mourinho",
               "time": "2014-12-10",
               "articles": 1,
               "total_source_articles": 6229,
@@ -528,6 +527,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               "total_shares": 7
             },
             {
+              "keyword": "mourinho",
               "time": "2014-12-15",
               "articles": 1,
               "total_source_articles": 6229,
@@ -539,18 +539,16 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               "facebook_shares": 0,
               "total_shares": 5
             }
-          ]
-        }
       ];
 
       // Watcher
 
-      // scope.$watch('chartData', function(newVal, oldVal) {
-      //   var data = newVal;
-      //   if(data.length) {
-      //     scope.render(data);
-      //   }
-      // }, true);
+      scope.$watch('chartData', function(newVal, oldVal) {
+        var data = newVal;
+        if(data.length) {
+          scope.render(data);
+        }
+      }, true);
 
       // Set parent SVG dimensions
       var margin = {top: 25, right: 100, bottom: 25, left: 50 };
@@ -569,7 +567,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
       // Create scales
 
       var xScale = d3.scale.ordinal()
-        .rangeRoundBands([0, width]);
+        .rangeBands([0, width]);
 
       var yScale = d3.scale.linear()
         .rangeRound([height, 0]);
@@ -596,30 +594,86 @@ mediavizDirectives.directive('stacksChart2', function($window) {
       svg.append('g')
           .attr('class', 'y axis');
 
-      renderGraph(dummyData);
+      //renderGraph(dummyData);
 
-      function renderGraph(incomingData) {
-        
-        var dates = [];
+      scope.render = function(data) {
 
-        incomingData.map(function(obj) {
-          obj.totals.map(function(arr) {
-            dates.push(arr.time);
-          });
-        });
+        var incomingData = d3.merge(data);
 
-        incomingData.forEach(function(d) {
-          d.keyword = d.keyword;
-          console.log(d.totals);
+        incomingData.sort(function(a, b) {
+          return b.time - a.time;
         });
 
         console.log(incomingData);
+        
+        var dates = [];
+
+        var nest = d3.nest()
+          .key(function(d) { return d.time; })
+          .entries(incomingData);
+
+        incomingData.forEach(function(obj) {
+          dates.push(obj.time);
+        });
+
+        nest.forEach(function(d, i) {
+          var y0 = 0;
+          d.counts = d.values.map(function(el) {
+            return ({keyword: el.keyword, time: el.time, y0: y0, y1: y0 += el.articles});
+          });
+        });
+
+        var articleMax = d3.max(incomingData, function(obj){
+          return obj.articles;
+        });
+
+        console.log(nest);
 
         xScale
           .domain(dates);
 
+        yScale.domain([0, 100]);
+
         svg.select('.x.axis')
           .call(xAxis);
+
+        svg.select('.y.axis')
+          .call(yAxis);
+
+        var dateCounts = nest.map(function(el) {
+          return el.counts;
+        });
+
+        //console.log(nest);
+
+        var bands = svg.selectAll('g.band')
+          .data(nest);
+
+        var bandsEnter = bands.enter().append('g')
+          .attr('class', 'band')
+          .attr('transform', function(d, i) {
+            return "translate(" + xScale(d.key) + "," + 0 + ")";
+          });
+
+        bandsEnter.each(function(d, i) {
+          d3.select(this)
+          .selectAll('rect.stack')
+          .data(d.counts)
+          .enter()
+          .append('rect')
+          .attr('width', xScale.rangeBand())
+          .attr('y', function(d) { return yScale(d.y1);})
+          .attr('height', function(d) {return yScale(d.y0) - yScale(d.y1)})
+          .style("fill", function(d) { return colorScale(d.keyword); });
+        })
+
+        // bandsEnter
+        //   .append('rect')
+        //   .attr('width', xScale.rangeBand())
+        //   .attr('height', function(d, i) {console.log(d.counts[i]); return yScale(d.y0) - yScale(d.y1)})
+        //   .attr('y', function(d) { return yScale(d.y1);})
+        //   .style("fill", function(d) { return colorScale(d.keyword); });
+
 
 
       }
