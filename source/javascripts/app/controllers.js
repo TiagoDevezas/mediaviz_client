@@ -2021,11 +2021,14 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         };
         $scope.loading = true;
         Resources.get($scope.paramsObj).$promise.then(function(data) {
-          if(data.length) {
-            data.forEach(function(obj) {
+          if(data.length !== 0) {    
+            newData = {};
+            newData.keyword = keyword;
+            newData.counts = data;
+/*            data.forEach(function(obj) {
               obj.keyword = keyword
-            });
-            pushData(data);
+            });*/
+            pushData(newData);
             //incomingData.push(data[0]);
             // var count = d3.sum(data.map(function(el) {
             //   return el.articles;
@@ -2039,26 +2042,27 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
             //   incomingData.push({source: selectedSource.name, total_count: total_count});
             // }
             // pushKeywords({name: keyword, count: count});
-          //keywords.push();            
           } else {
             $scope.loading = false;
           }
         });
       }
       function pushData(data) {
-        $scope.loading = false;
-        incomingData.push(data);
-        console.log(incomingData);
-        $scope.chartData = incomingData;
+        //keywords.push(data[0]);
+        //if(keywords.length === $scope.keywords.selected.length) {
+          $scope.loading = false;
+          incomingData.push(data);
+          $scope.chartData = incomingData;          
+        //}
       }
-      function pushKeywords(keywordObj) {
+/*      function pushKeywords(keywordObj) {
         keywords.push(keywordObj);
         if(keywords.length === $scope.keywords.selected.length) {
           $scope.loading = false;
           incomingData[0].keywords = keywords;
           $scope.chartData = incomingData;
         }
-      }
+      }*/
       
     });
   }

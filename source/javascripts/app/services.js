@@ -30,7 +30,7 @@ mediavizServices.factory('SourceList', ['$http',
 					sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
 					var sourceArray = sources;
 					myCallback(sources);				
-				});			
+				});
 			}
 		};
 	}]);

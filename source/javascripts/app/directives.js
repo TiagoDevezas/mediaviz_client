@@ -439,108 +439,6 @@ mediavizDirectives.directive('stacksChart2', function($window) {
     link: function(scope, elem, attrs) {
       var d3 = $window.d3;
 
-      var dummyData = 
-      [
-            {
-              "keyword": "sócrates",
-              "time": "2014-12-05",
-              "articles": 5,
-              "total_type_articles": 3202,
-              "percent_of_type": 0.16,
-              "total_query_articles": 204,
-              "percent_of_query": 2.45,
-              "total_articles_of_type_by_day": 26,
-              "percent_of_type_by_day": 19.23,
-              "total_period_articles": 204,
-              "twitter_shares": 16,
-              "facebook_shares": 33,
-              "total_shares": 49
-            },
-            {
-              "keyword": "sócrates",
-              "time": "2014-12-06",
-              "articles": 2,
-              "total_type_articles": 3202,
-              "percent_of_type": 0.06,
-              "total_query_articles": 204,
-              "percent_of_query": 0.98,
-              "total_articles_of_type_by_day": 13,
-              "percent_of_type_by_day": 15.38,
-              "total_period_articles": 204,
-              "twitter_shares": 2,
-              "facebook_shares": 7,
-              "total_shares": 9
-            },
-            {
-              "keyword": "sócrates",
-              "time": "2014-12-07",
-              "articles": 3,
-              "total_type_articles": 3202,
-              "percent_of_type": 0.09,
-              "total_query_articles": 204,
-              "percent_of_query": 1.47,
-              "total_articles_of_type_by_day": 28,
-              "percent_of_type_by_day": 10.71,
-              "total_period_articles": 204,
-              "twitter_shares": 4,
-              "facebook_shares": 4,
-              "total_shares": 8
-            },
-
-            {
-              "keyword": "mourinho",
-              "time": "2014-12-06",
-              "articles": 1,
-              "total_source_articles": 6229,
-              "percent_of_source": 0.02,
-              "total_query_articles": 22,
-              "percent_of_query": 4.55,
-              "total_period_articles": 22,
-              "twitter_shares": 7,
-              "facebook_shares": 3,
-              "total_shares": 10
-            },
-            {
-              "keyword": "mourinho",
-              "time": "2014-12-09",
-              "articles": 1,
-              "total_source_articles": 6229,
-              "percent_of_source": 0.02,
-              "total_query_articles": 22,
-              "percent_of_query": 4.55,
-              "total_period_articles": 22,
-              "twitter_shares": 6,
-              "facebook_shares": 8,
-              "total_shares": 14
-            },
-            {
-              "keyword": "mourinho",
-              "time": "2014-12-10",
-              "articles": 1,
-              "total_source_articles": 6229,
-              "percent_of_source": 0.02,
-              "total_query_articles": 22,
-              "percent_of_query": 4.55,
-              "total_period_articles": 22,
-              "twitter_shares": 7,
-              "facebook_shares": 0,
-              "total_shares": 7
-            },
-            {
-              "keyword": "mourinho",
-              "time": "2014-12-15",
-              "articles": 1,
-              "total_source_articles": 6229,
-              "percent_of_source": 0.02,
-              "total_query_articles": 22,
-              "percent_of_query": 4.55,
-              "total_period_articles": 22,
-              "twitter_shares": 5,
-              "facebook_shares": 0,
-              "total_shares": 5
-            }
-      ];
-
       // Watcher
 
       scope.$watch('chartData', function(newVal, oldVal) {
@@ -566,8 +464,8 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
       // Create scales
 
-      var xScale = d3.scale.ordinal()
-        .rangeBands([0, width]);
+      var xScale = d3.time.scale()
+        .range([0, width]);
 
       var yScale = d3.scale.linear()
         .rangeRound([height, 0]);
@@ -598,41 +496,61 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
       scope.render = function(data) {
 
-        var incomingData = d3.merge(data);
+        var keywords = data;
 
-        incomingData.sort(function(a, b) {
-          return b.time - a.time;
-        });
+        var stack = d3.layout.stack()
+          .values(function(d, i) { return d.counts; })
+          .x(function(d) { return new Date(Date.parse(d.time)); })
+          .y(function(d) { return +d.articles; });
 
-        console.log(incomingData);
+        var stacked = stack(keywords);
+
+        console.log(stacked);
         
-        var dates = [];
+        var allDates = [];
 
-        var nest = d3.nest()
-          .key(function(d) { return d.time; })
-          .entries(incomingData);
-
-        incomingData.forEach(function(obj) {
-          dates.push(obj.time);
-        });
-
-        nest.forEach(function(d, i) {
-          var y0 = 0;
-          d.counts = d.values.map(function(el) {
-            return ({keyword: el.keyword, time: el.time, y0: y0, y1: y0 += el.articles});
+        keywords.forEach(function(obj) {
+          obj.counts.forEach(function(count) {
+            allDates.push(new Date(Date.parse(count.time)));
           });
         });
 
-        var articleMax = d3.max(incomingData, function(obj){
-          return obj.articles;
+        var dateExtent = d3.extent(allDates);
+
+        var maxCount = d3.max(stacked, function(d) {
+          return d3.max(d.counts, function(d) {
+            return d.y0 + d.y;
+          });
         });
 
-        console.log(nest);
+        // var dateExtent = d3.extend(keywords.forEach(function(keyword.counts) {
+        //   return new Date(Date.parse(keyword.counts.time))
+        // }));
+
+        // var nest = d3.nest()
+        //   .key(function(d) { return d.time; })
+        //   .entries(incomingData);
+
+        // incomingData.forEach(function(obj) {
+        //   dates.push(obj.time);
+        // });
+
+        // nest.forEach(function(d, i) {
+        //   var y0 = 0;
+        //   d.counts = d.values.map(function(el) {
+        //     return ({keyword: el.keyword, time: el.time, y0: y0, y1: y0 += el.articles});
+        //   });
+        // });
+
+        // var articleMax = d3.max(incomingData, function(obj){
+        //   return obj.articles;
+        // });
+
 
         xScale
-          .domain(dates);
+          .domain(dateExtent);
 
-        yScale.domain([0, 100]);
+        yScale.domain([0, maxCount]);
 
         svg.select('.x.axis')
           .call(xAxis);
@@ -640,22 +558,22 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         svg.select('.y.axis')
           .call(yAxis);
 
-        var dateCounts = nest.map(function(el) {
-          return el.counts;
-        });
+        var layers = svg.selectAll('g.layer')
+          .data(stacked, function(d) { return d.keyword; })
+          .enter().append('g')
+          .attr('class', 'layer')
+          .attr('fill', function(d) { return colorScale(d.keyword); });
 
-        //console.log(nest);
+        layers.selectAll('rect')
+          .data(function(d) { return d.counts; })
+          .enter()
+            .append('rect')
+            .attr('x', function(d) { return xScale(new Date(Date.parse(d.time))); })
+            .attr('width', 5)
+            .attr('y', function(d) { return yScale(d.y0 + d.y); })
+            .attr('height', function(d) { return height - yScale(d.y); })
 
-        var bands = svg.selectAll('g.band')
-          .data(nest);
-
-        var bandsEnter = bands.enter().append('g')
-          .attr('class', 'band')
-          .attr('transform', function(d, i) {
-            return "translate(" + xScale(d.key) + "," + 0 + ")";
-          });
-
-        bandsEnter.each(function(d, i) {
+/*        bandsEnter.each(function(d, i) {
           d3.select(this)
           .selectAll('rect.stack')
           .data(d.counts)
@@ -665,7 +583,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
           .attr('y', function(d) { return yScale(d.y1);})
           .attr('height', function(d) {return yScale(d.y0) - yScale(d.y1)})
           .style("fill", function(d) { return colorScale(d.keyword); });
-        })
+        })*/
 
         // bandsEnter
         //   .append('rect')
