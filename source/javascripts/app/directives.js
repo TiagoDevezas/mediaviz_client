@@ -444,6 +444,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
       scope.$watch('chartData', function(newVal, oldVal) {
         var data = newVal;
         if(data.length) {
+          //console.log(data);
           scope.render(data);
         }
       }, true);
@@ -498,31 +499,47 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         var keywords = data;
 
-        var stack = d3.layout.stack()
-          .values(function(d, i) { return d.counts; })
-          .x(function(d) { return new Date(Date.parse(d.time)); })
-          .y(function(d) { return +d.articles; });
+        // var stack = d3.layout.stack()
+        //   .values(function(d) { return d.counts; })
+        //   //.x(function(d) { return new Date(Date.parse(d.time)); })
+        //   .y(function(d) { return +d.articles; });
 
-        var stacked = stack(keywords);
+        // var stacked = stack(keywords);
 
-        console.log(stacked);
+        //console.log(stacked);
+
+        keywords.forEach(function(d) {
+          var y0 = 0;
+          d.counts.forEach(function(count) {
+            count.time = new Date(Date.parse(count.time));
+            count.y0 = y0;
+            count.y1 = y0 += count.articles;
+            count.keyword = d.keyword;
+          });
+          // d.counts = d.counts.map(function(el) {
+          //   return ({time: el.time, y0: y0, y1: y0 += +el.articles})
+          // });
+          d.total = d.counts[d.counts.length -1].y1;
+        })
         
         var allDates = [];
 
         keywords.forEach(function(obj) {
           obj.counts.forEach(function(count) {
-            allDates.push(new Date(Date.parse(count.time)));
+            //allDates.push(new Date(Date.parse(count.time)));
+            allDates.push(count.time);
           });
         });
 
         var dateExtent = d3.extent(allDates);
 
-        var maxCount = d3.max(stacked, function(d) {
-          return d3.max(d.counts, function(d) {
-            return d.y0 + d.y;
-          });
-        });
+        // var maxCount = d3.max(stacked, function(d) {
+        //   return d3.max(d.counts, function(d) {
+        //     return d.y0 + d.y;
+        //   });
+        // });
 
+        var maxCount = d3.max(keywords, function(d) { return d.total; })
         // var dateExtent = d3.extend(keywords.forEach(function(keyword.counts) {
         //   return new Date(Date.parse(keyword.counts.time))
         // }));
@@ -558,20 +575,29 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         svg.select('.y.axis')
           .call(yAxis);
 
+        var allCounts = [];
+
+        keywords.forEach(function(kw) {
+          kw.counts.forEach(function(el) {
+            allCounts.push(el);
+          });
+        });
+
         var layers = svg.selectAll('g.layer')
-          .data(stacked, function(d) { return d.keyword; })
+          .data(allCounts)
           .enter().append('g')
           .attr('class', 'layer')
-          .attr('fill', function(d) { return colorScale(d.keyword); });
+          //.attr("transform", function(d) { return "translate(" + xScale(d.time) + ",0)"; });
+          //.attr("transform", function(d) { return "translate(" + xScale(d.time) + ",0)"; });
 
-        layers.selectAll('rect')
-          .data(function(d) { return d.counts; })
-          .enter()
+        layers
             .append('rect')
-            .attr('x', function(d) { return xScale(new Date(Date.parse(d.time))); })
+            //.attr('x', function(d) { return xScale(new Date(Date.parse(d.time))); })
+            .attr('x', function(d) { return xScale(d.time); })
             .attr('width', 5)
-            .attr('y', function(d) { return yScale(d.y0 + d.y); })
-            .attr('height', function(d) { return height - yScale(d.y); })
+            .attr('y', function(d) { return yScale(d.y1); })
+            .attr('height', function(d) { return yScale(d.y0) - yScale(d.y1); })
+            .attr('fill', function(d) { return colorScale(d.keyword); });
 
 /*        bandsEnter.each(function(d, i) {
           d3.select(this)

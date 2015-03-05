@@ -742,21 +742,41 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
   $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
     var keyword = $location.search()['keyword'] || undefined;
     var sources = $location.search()['sources'] || undefined;
-    if(keyword) {
-      $scope.keyword.selected = keyword;
-    }
-    if(sources) {
-      $timeout(function() {
-        sources = sources.split(',');
-        var newSourcesArray = [];
-        sources.forEach(function(el) {
-          var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
-          newSourcesArray.push(sourceObj);
-        });
-        $scope.selectedSources.selected = newSourcesArray;
-        $scope.redrawChart();
-      }, 500);
-    }
+    var byTimeParams = $location.search()['by'] || undefined;
+    var formatParams = $location.search()['format'] || undefined;
+    var sinceParams = $location.search()['since'] || undefined;
+    var untilParams = $location.search()['until'] || undefined;
+    $timeout(function() {
+      if(keyword) {
+        $scope.keyword.selected = keyword;
+      }
+      if(sources) {
+          sources = sources.split(',');
+          var newSourcesArray = [];
+          sources.forEach(function(el) {
+            var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
+            newSourcesArray.push(sourceObj);
+          });
+          $scope.selectedSources.selected = newSourcesArray;
+          $scope.redrawChart();
+      }
+      if(byTimeParams) {
+        $location.search(angular.extend($location.search(), {by: byTimeParams.toString()}));
+        $scope.by = byTimeParams;
+      }
+      if(formatParams) {
+        $location.search(angular.extend($location.search(), {format: formatParams.toString()}));
+        $scope.dataFormat = formatParams;
+      }
+      if(sinceParams) {
+        $location.search(angular.extend($location.search(), {since: sinceParams.toString()}));
+        $scope.since = sinceParams;
+      }
+      if(untilParams) {
+        $location.search(angular.extend($location.search(), {until: untilParams.toString()}));
+        $scope.until = untilParams;
+      }
+    }, 500);
   }, true);
 
   // $scope.groupSourcesByType = function(item) {
@@ -797,8 +817,44 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
       //  columns: columns,
       //  unload: [sourceToRemove]
       // });
-}
-});
+      }
+    });
+
+  $scope.$watch('by', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $scope.by = newVal;
+      $location.search(angular.extend($location.search(), {by: newVal.toString()}));
+      if(chart) { chart.unload(); }
+      $scope.loadedSources = [];
+      getTotalsAndDraw();
+    }
+  });
+
+  $scope.$watch('dataFormat', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {format: newVal.toString()}));
+      $scope.loadedKeywords = [];
+      if(chart) { chart.flush(); }
+      getTotalsAndDraw();
+    }
+  }, true);
+
+  $scope.$watch('since', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {since: newVal.toString()}));      
+      $scope.loadedSources = [];
+      getTotalsAndDraw();  
+    }
+  }, true);
+
+  $scope.$watch('until', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {until: newVal.toString()}));      
+      $scope.loadedSources = [];
+      getTotalsAndDraw();  
+    }
+  }, true);
+
 
   function setLocation() {
     $location.search({keyword: $scope.keyword.selected});
@@ -808,7 +864,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
         selectedSourcesArray.push(el.acronym);
       });
       if(selectedSourcesArray.length > 0) {
-        $location.search(angular.extend($location.search(), { sources: selectedSourcesArray.toString() }));
+        $location.search(angular.extend($location.search(), { sources: selectedSourcesArray.toString(), by: $scope.by, format: $scope.dataFormat }));
       }
     }
   }
@@ -1160,6 +1216,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     var keywordParams = $location.search()['keywords'] || undefined;
     var keywordArray = [];
     var sourceParams = $location.search()['sources'] || undefined;
+    var formatParams = $location.search()['format'] || undefined;
     if(sourceParams) {
       $location.search(angular.extend($location.search(), {sources: sourceParams.toString()}));
       $scope.sourceType = sourceParams;
@@ -1172,6 +1229,10 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
         keywordArray = keywordParams.split(',');
       }
       $scope.keywords.selected = keywordArray;
+    }
+    if(formatParams) {
+      $location.search(angular.extend($location.search(), {format: formatParams.toString()}));
+      $scope.dataFormat = formatParams;
     }
     if(objectIsEmpty(newVal) && !objectIsEmpty(oldVal)) {
       $scope.clearChart();
@@ -1187,6 +1248,15 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     }
   }, true);
 
+  $scope.$watch('dataFormat', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {format: newVal.toString()}));
+      $scope.loadedKeywords = [];
+      if(chart) { chart.flush(); }
+      getTotalsAndDraw();
+    }
+  }, true)
+
   $scope.$watch('keywords.selected', function(newVal, oldVal) {
     angular.forEach(oldVal, function(keyword) {
       if(newVal.indexOf(keyword) === -1) {
@@ -1195,7 +1265,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
       }
     });
     if(newVal.length > 0 && newVal !== '') {
-      $location.search(angular.extend($location.search(), {keywords: newVal.toString()}));
+      $location.search(angular.extend($location.search(), {keywords: newVal.toString(), format: $scope.dataFormat, sources: $scope.sourceType}));
       getTotalsAndDraw();   
     } else {
       $scope.clearChart();
@@ -1240,9 +1310,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   $scope.setDataFormat = function(dataFormat){
     if ($scope.dataFormat !== dataFormat) {
       $scope.dataFormat = dataFormat;
-      $scope.loadedKeywords = [];
-      chart.flush();
-      getTotalsAndDraw();
     }
   }
 
@@ -1365,7 +1432,8 @@ var keywordChart = {
     },
     axis: {
       x: {
-          //padding: {left: 0, right: 0},
+          padding: {left: 0, right: 0},
+          max: new Date(),
           label: {
             text: 'Dias',
             position: 'outer-center'
@@ -1379,7 +1447,8 @@ var keywordChart = {
           }
         },
         y: {
-          padding: {top: 10, bottom: 1},
+          min: 0,
+          padding: {top: 0, bottom: 0},
           label: {
             text: '',
             position: 'outer-middle'
@@ -1588,12 +1657,48 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
   $scope.dateSince = '';
   $scope.dateUntil = '';
 
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var sources = $location.search()['sources'] || undefined;
+    var byTimeParams = $location.search()['by'] || undefined;
+    var formatParams = $location.search()['format'] || undefined;
+    var sinceParams = $location.search()['since'] || undefined;
+    var untilParams = $location.search()['until'] || undefined;
+    $timeout(function() {
+      if(sources) {
+        sources = sources.split(',');
+        var newSourcesArray = [];
+        sources.forEach(function(el) {
+          var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
+          newSourcesArray.push(sourceObj);
+        });
+        $scope.selectedSources.selected = newSourcesArray;
+        if(chart) { chart.unload(); }
+        $scope.loadedSources = [];
+        getTotalsAndDraw();
+      }
+      if(byTimeParams) {
+        $location.search(angular.extend($location.search(), {by: byTimeParams.toString()}));
+        $scope.by = byTimeParams;
+      }
+      if(formatParams) {
+        $location.search(angular.extend($location.search(), {format: formatParams.toString()}));
+        $scope.dataFormat = formatParams;
+      }
+      if(sinceParams) {
+        $location.search(angular.extend($location.search(), {since: sinceParams.toString()}));
+        $scope.since = sinceParams;
+      }
+      if(untilParams) {
+        $location.search(angular.extend($location.search(), {until: untilParams.toString()}));
+        $scope.until = untilParams;
+      }
+    }, 500);
+  }, true);
+
   $scope.setDateInterval = function() {
     $scope.since = $scope.dateSince;
     $scope.until = $scope.dateUntil;
-    $scope.pickadayOpen = false;
-    $scope.loadedSources = [];
-    getTotalsAndDraw();   
+    $scope.pickadayOpen = false; 
   }
 
   $scope.setSelectedOption = function(option) {
@@ -1639,9 +1744,9 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
     if ($scope.dataFormat !== dataFormat) {
       $scope.dataFormat = dataFormat;
       $scope.shareFormat = '';
-      $scope.loadedSources = [];
-      chart.unload();
-      getTotalsAndDraw();
+      // $scope.loadedSources = [];
+      // chart.unload();
+      // getTotalsAndDraw();
     }
   }
 
@@ -1649,13 +1754,15 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
     if($scope.shareFormat !== shareFormat) {
       $scope.shareFormat = shareFormat;
       $scope.loadedSources = [];
-      chart.unload();
+      if(chart) { chart.flush(); };
       getTotalsAndDraw();
     }
   }
 
   $scope.displayBy = function(timePeriod) {
-    $scope.by = timePeriod;
+    if(timePeriod != $scope.by) {
+      $scope.by = timePeriod;      
+    }
     $scope.showSearchTools = true;
     if($scope.by === 'month') {
       $scope.since = undefined;
@@ -1664,10 +1771,45 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
       $scope.showSearchTools = false;
       $scope.showSearchToolsNav = false;
     }
-    if(chart) { chart.unload(); }
-    $scope.loadedSources = [];
-    getTotalsAndDraw();
+    // if(chart) { chart.unload(); }
+    // $scope.loadedSources = [];
+    // getTotalsAndDraw();
   }
+
+  $scope.$watch('by', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $scope.by = newVal;
+      $location.search(angular.extend($location.search(), {by: newVal.toString()}));
+      if(chart) { chart.unload(); }
+      $scope.loadedSources = [];
+      getTotalsAndDraw();
+    }
+  });
+
+  $scope.$watch('dataFormat', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {format: newVal.toString()}));
+      $scope.loadedKeywords = [];
+      if(chart) { chart.flush(); }
+      getTotalsAndDraw();
+    }
+  }, true);
+
+  $scope.$watch('since', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {since: newVal.toString()}));      
+      $scope.loadedSources = [];
+      getTotalsAndDraw();  
+    }
+  }, true);
+
+  $scope.$watch('until', function(newVal, oldVal) {
+    if(newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {until: newVal.toString()}));      
+      $scope.loadedSources = [];
+      getTotalsAndDraw();  
+    }
+  }, true);
 
   $scope.unloadSource = function(source) {
     $scope.selectedSources.selected.splice($scope.selectedSources.selected.indexOf(source), 1);
@@ -1675,9 +1817,9 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
     if(chart) { chart.unload({ids: source.name})}
   }
 
-$scope.loadSource = function(source) {
-  $scope.selectedSources.selected.push(source);
-  getAcronyms();
+  $scope.loadSource = function(source) {
+    $scope.selectedSources.selected.push(source);
+    getAcronyms();
     //getTotalsAndDraw();
   }
 
@@ -1686,7 +1828,7 @@ $scope.loadSource = function(source) {
     $scope.selectedSources.selected.forEach(function(el) {
       sourcesArray.push(el.acronym);
     });
-    setLocation({sources: sourcesArray.toString()})
+    setLocation({sources: sourcesArray.toString(), by: $scope.by, format: $scope.dataFormat});
   }
 
   function setLocation(locationObj) {
@@ -1699,24 +1841,6 @@ $scope.loadSource = function(source) {
     });
     return obj[0];
   }
-
-  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-    var sources = $location.search()['sources'] || undefined;
-    if(sources) {
-      $timeout(function() {
-        sources = sources.split(',');
-        var newSourcesArray = [];
-        sources.forEach(function(el) {
-          var sourceObj = getSourceObjByAcronym($scope.sourceList, el);
-          newSourcesArray.push(sourceObj);
-        });
-        $scope.selectedSources.selected = newSourcesArray;
-        if(chart) { chart.unload(); }
-        $scope.loadedSources = [];
-        getTotalsAndDraw();
-      }, 500);
-    }
-  }, true);
 
 $scope.setDates = function(){
   $scope.loadedSources = [];
@@ -1930,7 +2054,7 @@ function getItemData(datum) {
 
 });
 
-mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeout, Resources, Chart, Page) {
+mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeout, Resources, Chart, DataFormatter, Page) {
 
   Page.setTitle('Stacks');
 
@@ -1950,10 +2074,12 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
 
   $scope.dataFormat = 'all';
 
+  var chart;
+
   $scope.setDataFormat = function(dataFormat) {
     if(dataFormat !== $scope.dataFormat) {
       $scope.dataFormat = dataFormat;
-      getTotalsAndDraw();
+      getTotalsAndDrawChart();
     }
   }
 
@@ -1971,7 +2097,7 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
     setLocation({keywords: $scope.keywords.selected.toString()});
     if(!$scope.keywords.selected.length) {
       $scope.keywords.selected.push('no keyword');
-      getTotalsAndDraw();
+      getTotalsAndDrawChart();
     }
     //if(chart) { chart.unload({ids: keyword}); }
   }
@@ -1990,7 +2116,7 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         if(keywords) {
           $scope.keywords.selected = keywords.split(',');
         }
-        getTotalsAndDraw();
+        getTotalsAndDrawChart();
       }, 500);
     }
   }, true);
@@ -2001,6 +2127,174 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
     });
     return obj[0];
   }
+
+  function getTotalsAndDrawChart() {
+    var selectedKeywords = [];
+    var formattedData = [];
+    var xsObj = {};
+    $scope.keywords.selected.forEach(function(keyword) {
+      var keyword = keyword;
+      var selectedSource = $scope.selectedSource.selected;
+      var aggregated = selectedSource.group;
+      var timeId = 'timeFor' + keyword;
+      var countId = keyword;
+      //var xsObj = {};
+      xsObj[countId] = timeId;
+      if(!aggregated) {
+        $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, source: selectedSource.acronym, q: keyword};
+      } else {
+        $scope.paramsObj = {resource: 'totals', by: $scope.by, since: $scope.since, until: $scope.until, type: selectedSource.type, q: keyword};
+      }
+      if($scope.loadedKeywords.indexOf(keyword === -1)) {
+        $scope.loading = true;
+        Resources.get($scope.paramsObj).$promise.then(function(data) {
+          $scope.loading = false;
+          var fData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+          fData.forEach(function(el) {
+            formattedData.push(el);
+          });
+          // selectedKeywords.push(keyword);
+          // Arrays must be the same size or else the graph won't render
+          var dummyData = [
+            ['timeForsócrates', '2014-12-10', '2014-12-13', '2014-12-15'],
+            ['sócrates', '5', '25', '15'],
+            ['timeForévora', '2014-12-10', '2014-12-15'],
+            ['évora', '7', '25']
+          ];
+          newData = fillWithZeros(dummyData);
+          console.log(newData);
+          areaChart.options.axis.x.type = 'timeseries';
+          areaChart.options.axis.x.label.text = 'Dia';
+          areaChart.options.axis.x.tick.format = '%d %b';
+          areaChart.options.data.xs = {sócrates: 'timeForsócrates', évora: 'timeForévora'};
+          areaChart.options.data.groups = [['sócrates', 'évora']];
+          //if(!chart) {
+            areaChart.options.data.columns = newData;
+            chart = Chart.draw(areaChart);
+          // } else {
+          //   chart.load({
+          //     xs: xsObj,
+          //     columns: dummyData
+          //   })
+          // }
+        });
+      }
+    })
+  }
+
+  function fillWithZeros(data) {
+
+    // Store the keyword
+    // First we must check the size of the time array data
+    var arrLength = 0;
+    var dateExtent;
+    data.forEach(function(el, i) {
+      // First get the largest array
+      if(el.length > arrLength) {
+        arrLength = el.length;
+        dateExtent = el;
+      } else {
+        if(el.length < arrLength) {
+          if(el[0].indexOf('timeFor') > -1) {
+            el.push('2014-12-17');
+          } else {
+            el.push('0');
+          }
+
+        }
+        // while(el.length != arrLength) {
+        //   // Find if its the timeFor or the values array
+        //   if(el[0].indexOf('timeFor') > 1) {
+        //     console.log(el);
+        //     // dateExtent.forEach(function(dateEl, j) {
+        //     //   el.forEach(function(d, k) {
+        //     //   })
+        //     // });
+        //   } else {
+        //     // It's the values array
+        //     el.push(0);
+        //   }
+        // }
+      }
+      //console.log(el.length, el[0].indexOf('timeFor'));
+      // if(el[0].indexOf('timeFor') > -1) {
+      //   if(el.length > arrLength) {
+      //     arrLength = el.length;
+      //     dateExtent = el;
+      //     dateExtent.shift();
+      //   } else {
+      //     // Its the smaller time array
+      //     while(el.length !== arrLength) {
+      //       dateExtent.forEach(function(date, i) {
+      //         el.forEach(function(d, j) {
+      //           if(el[j] !== date[i]) {
+      //             el.push(date[i]);
+      //           }
+      //         });
+      //       });
+      //     }
+      //   }
+      // }
+    });
+  return data;
+  }
+
+  var areaChart = {
+    options: {
+      bindto: '#area-chart',
+      size: {
+        height: 500
+      },
+      legend: {
+        position: 'right'
+      },
+      tooltip: {
+        grouped: true 
+      },
+      data: {
+        type: 'area-step'
+      },
+      axis: {
+        x: {
+          padding: {left: 0, right: 0},
+          label: {
+            text: 'Horas',
+            position: 'outer-center'
+          },
+          tick: {
+            fit: true
+            // culling: {
+              // max: 12 // the number of tick texts will be adjusted to less than this value
+            // },
+            // format: function(d, i) {
+            //    var d = d < 10 ? '0' + d : d;
+            //    return d + ':00';
+            // }
+          }
+        },
+        y: {
+          //padding: {top: 1, bottom: 1},
+          //min: 0,
+          label: {
+            text: 'Artigos',
+            position: 'outer-middle'
+          },
+          tick: {}
+        }
+      },
+      grid: {
+        x: {
+          show: false
+        },
+        y: {
+          show: true
+        }
+      },
+      color: function(d) {
+        return d3.scale.category20c(d);
+      }
+    }
+  }  
 
 
   function getTotalsAndDraw() {
@@ -2021,7 +2315,8 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         };
         $scope.loading = true;
         Resources.get($scope.paramsObj).$promise.then(function(data) {
-          if(data.length !== 0) {    
+          if(data.length !== 0) {
+            keywords.push(keyword);
             newData = {};
             newData.keyword = keyword;
             newData.counts = data;
@@ -2048,22 +2343,12 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         });
       }
       function pushData(data) {
-        //keywords.push(data[0]);
+        $scope.loading = false;
+        incomingData.push(data);
         //if(keywords.length === $scope.keywords.selected.length) {
-          $scope.loading = false;
-          incomingData.push(data);
           $scope.chartData = incomingData;          
         //}
       }
-/*      function pushKeywords(keywordObj) {
-        keywords.push(keywordObj);
-        if(keywords.length === $scope.keywords.selected.length) {
-          $scope.loading = false;
-          incomingData[0].keywords = keywords;
-          $scope.chartData = incomingData;
-        }
-      }*/
-      
     });
   }
 

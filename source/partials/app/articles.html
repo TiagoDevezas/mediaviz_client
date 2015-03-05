@@ -19,9 +19,10 @@
 	<article class="{{ item.source_type }}" ng-repeat="item in chronicleItems | filter: sourceFilter">
 		<div class="article-content">
 			<p class="article-pub-date">{{ item.pub_date | date:'yyyy-MM-dd HH:mm' }}</p>
-			<h2 class="article-title"><a href="{{ item.url }}">{{ item.title }}</a></h1>
-			<p class="article-url"><a href="{{ item.url }}">{{ item.url }}</a></p>
 			<p class="article-source">{{ item.source }} </p>
+			<h2 class="article-title"><a href="{{ item.url }}">{{ item.title }}</a></h1>
+			<p ng-bind-html="item.summary"></p>
+			<p class="article-url"><a href="{{ item.url }}">{{ item.url }}</a></p>
 		</div>
 		<div class="article-shares-chart" id="index-{{$index}}">
 		</div>
