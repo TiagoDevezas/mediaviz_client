@@ -739,6 +739,13 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
     return obj[0];
   }
 
+  function getSourceObjByName(array, name) {
+    var obj = array.filter(function(el) {
+      return el.name === name;
+    });
+    return obj[0];
+  }
+
   $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
     var keyword = $location.search()['keyword'] || undefined;
     var sources = $location.search()['sources'] || undefined;
@@ -896,6 +903,24 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
   var columns = [
   [],[]
   ];
+
+  function getItemData(datum) {
+    var dateFormat = d3.time.format("%Y-%m-%d");
+    var unformattedDate = datum.x;
+    var formattedDate = dateFormat(unformattedDate);
+    var sourceObj = getSourceObjByName($scope.selectedSources.selected, datum.name);
+    var query = $scope.keyword.selected
+    displayItems(formattedDate, query, sourceObj);
+  }
+
+  function displayItems(date1, query, source) {
+    if(source.group) {
+      $location.path('/articles').search({q: query, since: date1, until: date1, type: source.type });
+    } else {
+      $location.path('/articles').search({q: query, since: date1, until: date1, source: source.name });     
+    }
+    $scope.$apply();
+  }
 
   function getTotalsAndDraw() {
     $scope.selectedSources.selected.forEach(function(el, index) {
@@ -1055,7 +1080,7 @@ var barChart = {
       },
       data: {
         type: 'bar',
-        names: ''
+        names: '',
       },
       bar: {
         width: {
@@ -1100,55 +1125,55 @@ var barChart = {
         },
         data: {
           type: 'area',
-        //onclick: function (d, i) { getItemData(d) }
-      },
-      point: {
-        r: 1.5
-      },
-      subchart: {
-        show: true
-      },
-      transition: {
-        duration: 0
-      },
-      axis: {
-        x: {
-          padding: {left: 0, right: 0},
-          label: {
-            text: 'Horas',
-            position: 'outer-center'
+          onclick: function (d, i) { console.log(d); getItemData(d) }
+        },
+        point: {
+          r: 1.5
+        },
+        subchart: {
+          show: true
+        },
+        transition: {
+          duration: 0
+        },
+        axis: {
+          x: {
+            padding: {left: 0, right: 0},
+            label: {
+              text: 'Horas',
+              position: 'outer-center'
+            },
+            tick: {
+              fit: true
+              // format: function(d, i) {
+              //    var d = d < 10 ? '0' + d : d;
+              //    return d + ':00';
+              // }
+            }
           },
-          tick: {
-            fit: true
-            // format: function(d, i) {
-            //    var d = d < 10 ? '0' + d : d;
-            //    return d + ':00';
-            // }
+          y: {
+            //padding: {top: 1, bottom: 1},
+            //min: 0,
+            label: {
+              text: 'Artigos',
+              position: 'outer-middle'
+            },
+            tick: {}
           }
         },
-        y: {
-          //padding: {top: 1, bottom: 1},
-          //min: 0,
-          label: {
-            text: 'Artigos',
-            position: 'outer-middle'
+        grid: {
+          x: {
+            show: false
           },
-          tick: {}
-        }
-      },
-      grid: {
-        x: {
-          show: false
+          y: {
+            show: true
+          }
         },
-        y: {
-          show: true
+        color: function(d) {
+          return d3.scale.category20c(d);
         }
-      },
-      color: function(d) {
-        return d3.scale.category20c(d);
       }
     }
-  }
 
 
 });

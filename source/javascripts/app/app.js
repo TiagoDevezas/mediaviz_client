@@ -10,7 +10,8 @@ var mediavizApp = angular.module('mediavizApp', [
 
 	'mediavizControllers',
 	'mediavizServices',
-	'mediavizDirectives'
+	'mediavizDirectives',
+	'mediavizFilters'
 ]);
 
 mediavizApp.run(function($rootScope, $location, $window) {

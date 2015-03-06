@@ -21,7 +21,10 @@
 			<p class="article-pub-date">{{ item.pub_date | date:'yyyy-MM-dd HH:mm' }}</p>
 			<p class="article-source">{{ item.source }} </p>
 			<h2 class="article-title"><a href="{{ item.url }}">{{ item.title }}</a></h1>
-			<p ng-bind-html="item.summary"></p>
+			<p ng-show="item.summary.length > 10">
+				<span ng-bind-html="item.summary | words:30"></span>
+			</p>
+			<p ng-hide="item.summary.length > 10"><em>Sem sumário</em></p>
 			<p class="article-url"><a href="{{ item.url }}">{{ item.url }}</a></p>
 		</div>
 		<div class="article-shares-chart" id="index-{{$index}}">
