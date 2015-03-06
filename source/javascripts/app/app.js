@@ -71,9 +71,10 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			controller: 'ArticlesCtrl',
 			reloadOnSearch: false
 		}).
-		when('/d3test', {
-			templateUrl: 'partials/app/d3test.html',
-			controller: 'D3Ctrl'
+		when('/photofinish', {
+			templateUrl: 'partials/app/photofinish.html',
+			controller: 'PhotoFinishCtrl',
+			reloadOnSearch: false
 		}).
 		otherwise({
 			redirectTo: '/'

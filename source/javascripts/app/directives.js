@@ -27,6 +27,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
       scope.$watch(data, function(newVal, oldVal) {
         data = newVal;
         if(data.length) {
+          d3.select('#viz').html('');
           drawChart(data);          
         } else {
           console.log('No data');
@@ -127,7 +128,10 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
           return 'translate(' + 0 + ',' + yScale(d.name) + ')'
         })
         .on('mouseover', highlight)
-        .on('mouseout', unHighlight);
+        .on('mouseout', unHighlight)
+        .on('click', function(d) {
+          scope.$emit('CircleData', d);
+        })
 
         groups.each(function(d, i) {
           d3.select(this)

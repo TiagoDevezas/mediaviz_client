@@ -1544,6 +1544,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $rout
     $scope.limit = $location.search()['limit'] || 50;
     $scope.sourceName = $location.search()['source'];
     $scope.sourceType = $location.search()['type'];
+    $scope.sortOrder = $location.search()['sort'];
 
     //if($scope.query) {
       getData();
@@ -1566,7 +1567,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $rout
 
   function getData() {
     $scope.loading = true;
-    Resources.get({resource: 'items', q: $scope.query, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType, source: $scope.sourceName}).$promise.then(function(dataObj) {
+    Resources.get({resource: 'items', q: $scope.query, since: $scope.since, until: $scope.until, limit: $scope.limit, type: $scope.sourceType, source: $scope.sourceName, sort: $scope.sortOrder}).$promise.then(function(dataObj) {
       $scope.loading = false;
       $scope.chronicleItems = dataObj;
 
@@ -2380,18 +2381,139 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
 
 });
 
-mediavizControllers.controller('D3Ctrl', function($scope, $location, Resources) {
+mediavizControllers.controller('PhotoFinishCtrl', function($scope, $location, Resources, Page) {
+
+  Page.setTitle('PhotoFinish');
+
+  $scope.$on('CircleData', function(e, data) {
+    var dateFormat = d3.time.format("%Y-%m-%d");
+    var unformattedDate = new Date(data.first_date);
+    var formattedDate = dateFormat(unformattedDate);
+    var query = $scope.keyword.selected;
+    var source = data.source;
+    displayItems(formattedDate, query, source);
+  });
+
+  function displayItems(date1, query, source) {
+    $location.path('/articles').search({q: query, source: source, sort: 'asc' });
+    $scope.$apply();
+  }
+
   $scope.jsonData = [];
-  $scope.query = $location.search()['q'];
-  $scope.since = $location.search()['since'];
-  $scope.until = $location.search()['until'];
+  //$scope.since = $location.search()['since'];
+  //$scope.until = $location.search()['until'];
   $scope.loading = false;
 
-  getData();
+  $scope.keyword = [];
+  $scope.keyword.selected = "";
+
+  $scope.optionsForDateSelect = [
+    {name: 'Tudo'},
+    {name: 'Último dia'},
+    {name: 'Últimos 7 dias'},
+    {name: 'Últimos 30 dias'},
+    {name: 'Intervalo Personalizado'}
+  ];
+
+  $scope.dateOptions = [];
+  $scope.dateOptions.selected = '';
+
+  $scope.today = moment().format('YYYY-MM-DD');
+  $scope.yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
+  $scope.oneWeekAgo = moment().subtract(7, 'day').format('YYYY-MM-DD');
+  $scope.oneMonthAgo = moment().subtract(30, 'day').format('YYYY-MM-DD');
+
+  $scope.pickadayOpen = false;
+  $scope.dateSince = '';
+  $scope.dateUntil = '';
+
+
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var keyword = $location.search()['q'] || undefined;
+    var sinceParams = $location.search()['since'] || undefined;
+    var untilParams = $location.search()['until'] || undefined;
+    if(sinceParams) {
+      $location.search(angular.extend($location.search(), {since: sinceParams.toString()}));
+      $scope.since = sinceParams;
+      if($scope.since == $scope.yesterday) {
+        $scope.dateOptions.selected = $scope.optionsForDateSelect[1];
+      } else if($scope.since == $scope.oneWeekAgo) {
+        $scope.dateOptions.selected = $scope.optionsForDateSelect[2];
+      } else if($scope.since == $scope.oneMonthAgo) {
+        $scope.dateOptions.selected = $scope.optionsForDateSelect[3];
+      } else if ($scope.since == undefined) {
+        $scope.dateOptions.selected = $scope.optionsForDateSelect[4];      
+      }
+    }
+    if(untilParams) {
+      $location.search(angular.extend($location.search(), {until: untilParams.toString()}));
+      $scope.until = untilParams;
+      //getData();
+    }
+    if(keyword) {
+      $scope.keyword.selected = keyword;
+      getData();
+    }
+  }, true);
+
+  $scope.setDateInterval = function() {
+    $scope.since = $scope.dateSince;
+    $scope.until = $scope.dateUntil;
+    $scope.pickadayOpen = false; 
+  }
+
+  $scope.setSelectedOption = function(option) {
+    //$scope.dateOptions.selected = option;
+    if(option.name === $scope.optionsForDateSelect[4].name) {
+      $scope.pickadayOpen = !$scope.pickadayOpen;
+    } else {
+      if(option.name  === $scope.optionsForDateSelect[0].name) {
+        $scope.since = undefined;
+        $scope.until = undefined;
+        $location.search('since', null);
+        $location.search('until', null);
+      }
+      if(option.name  === $scope.optionsForDateSelect[1].name) {
+        $scope.since = $scope.yesterday;
+        $scope.until = $scope.today;
+      }
+      if(option.name  === $scope.optionsForDateSelect[2].name) {
+        $scope.since = $scope.oneWeekAgo;
+        $scope.until = $scope.today;
+      }
+      if(option.name  === $scope.optionsForDateSelect[3].name) {
+        $scope.until = $scope.today;
+        $scope.since = $scope.oneMonthAgo;
+      }
+
+      $scope.pickadayOpen = false;
+
+      //$scope.loadedSources = [];
+      //getTotalsAndDraw();     
+    }
+  }
+
+  $scope.$watch('since', function(newVal, oldVal) {
+    if(newVal && newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {since: newVal.toString()}));
+      //getData();  
+    }
+  }, true);
+
+  $scope.$watch('until', function(newVal, oldVal) {
+    if(newVal && newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {until: newVal.toString()}));
+      //getData();  
+    }
+  }, true);
+
+  $scope.redrawChart = function() {
+    $location.search(angular.extend($location.search(), {q: $scope.keyword.selected}));
+  }
 
   function getData() {
     $scope.loading = true;
-    Resources.get({resource: 'pf', q: $scope.query, since: $scope.since, until: $scope.until}).$promise.then(function(data) {
+    Resources.get({resource: 'pf', q: $scope.keyword.selected, since: $scope.since, until: $scope.until}).$promise.then(function(data) {
       $scope.jsonData = data;
       $scope.loading = false;
     });

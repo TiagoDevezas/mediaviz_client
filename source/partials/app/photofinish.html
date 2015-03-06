@@ -1,0 +1,29 @@
+<div id="photo-finish">
+	<h2>PhotoFinish</h2>
+
+	<div class="keyword-select">
+		Introduzir palavra a pesquisar</p>
+		<form ng-submit="redrawChart()">
+			<input type="text" placeholder="Introduzir palavra-chave" ng-model="keyword.selected">
+		</form>
+	</div>
+
+    <div class="search-tools">
+        <ul>
+            <li ng-repeat="option in optionsForDateSelect"><a href="" ng-click="setSelectedOption(option)" ng-class="{'selected':dateOptions.selected === option, 'bordered':option.name === optionsForDateSelect[4].name}">{{ option.name }}</a></li>
+        </ul>
+    </div>
+
+<!--    <select ng-change="selectAction()" ng-model="dateOptions.selected" ng-options="option.name for option in optionsForDateSelect">
+        
+    </select> -->
+
+    <div class="pickadate-selector" ng-show="pickadayOpen">
+        <div class="pickadate-input" pickadate ng-model="dateSince" max-date="today"></div>
+        <div class="pickadate-input" pickadate ng-model="dateUntil" max-date="today"></div>
+        <button ng-click="setDateInterval()">Submeter</button>
+    </div>
+
+	<loading-flash>A carregar...</loading-flash>
+	<div id="viz" photo-finish chart-data="jsonData"></div>	
+</div>
