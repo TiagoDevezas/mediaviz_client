@@ -233,11 +233,20 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
 
         groups.each(function(d, i) {
           d3.select(this)
-          .append('circle')
-          .attr('class', 'source')
-          .attr('r', 5)
-          .style('fill', function(d, i) { return colorScale(d.name); })
-          .style('opacity', .85);
+            .append('circle')
+            .attr('class', 'source')
+            .attr('r', 5)
+            .style('fill', function(d, i) { return colorScale(d.name); })
+            .style('opacity', .85);
+
+          // d3.select(this)
+          //   .append('line')
+          //   .attr('x1', function(d) { return xScale(d.date); })
+          //   .attr('y1', height)
+          //   .attr('x2', function(d) { return xScale(d.date); })
+          //   .attr('y2', 0)
+          //   .style('fill', 'none')
+          //   .style('stroke', '#000')
         });
 
         var circles = d3.selectAll('circle.source');

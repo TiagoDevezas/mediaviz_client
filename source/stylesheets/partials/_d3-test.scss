@@ -45,6 +45,13 @@ text {
   /*fill: #E1F5C4;*/
 }
 
+line.source-guide {
+  fill: none;
+  stroke: #222;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;  
+}
+
 line.finish {
   fill: none;
   stroke: #FF4E50;
