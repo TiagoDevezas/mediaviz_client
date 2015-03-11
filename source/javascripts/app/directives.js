@@ -130,7 +130,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         xScale = d3.time.scale.utc().domain(dateExtent.reverse()).range([margin.left / 2, width - margin.right])
           .nice(d3.time.day);
 
-        x2Scale = d3.scale.linear().domain(timeDiffExtent.reverse()).rangeRound([margin.left / 2, width - margin.right]);
+        x2Scale = d3.scale.linear().domain(timeDiffExtent.reverse()).range([margin.left + ((width - margin.right) - xScale(firstDate)), width - margin.right]);
         //yScale = d3.scale.linear().domain([0, maxCount + 1]).range([height, 0]);
 
         yScale = d3.scale.ordinal().domain(sources).rangeRoundBands([height, 0], 0, 0);
@@ -157,7 +157,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
               return d;
             }
           })
-          .ticks(15)
+          //.ticks(15)
           .orient('bottom');
 
         yAxis = d3.svg.axis()
@@ -231,23 +231,23 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
           scope.$emit('CircleData', d);
         });
 
-        groups.each(function(d, i) {
-          d3.select(this)
+        // groups
+        //   .append('line')
+        //   .attr('x1', function(d) { return xScale(d.date); })
+        //   .attr('y1', height)
+        //   .attr('x2', function(d) { return xScale(d.date); })
+        //   .attr('y2', 0)
+        //   .style('fill', 'none')
+        //   .style('stroke', '#000');
+
+        groups
             .append('circle')
             .attr('class', 'source')
             .attr('r', 5)
             .style('fill', function(d, i) { return colorScale(d.name); })
             .style('opacity', .85);
-
-          // d3.select(this)
-          //   .append('line')
-          //   .attr('x1', function(d) { return xScale(d.date); })
-          //   .attr('y1', height)
-          //   .attr('x2', function(d) { return xScale(d.date); })
-          //   .attr('y2', 0)
-          //   .style('fill', 'none')
-          //   .style('stroke', '#000')
-        });
+            
+        
 
         var circles = d3.selectAll('circle.source');
 
@@ -318,10 +318,24 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
           d3.select(this).select('text.label')
             .classed('highlight', true);
           parentEl.appendChild(this);
+          if(d3.select('line.guide').empty() && d.date !== firstDate) {
+            svg
+              .append('line')
+              .attr('class', 'guide')
+              .attr('x1', function() { return xScale(d.date); })
+              .attr('y1', 0)
+              .attr('x2', function() { return xScale(d.date); })
+              .attr('y2', height)
+              .style('fill', 'none')
+              .style('stroke', '#000');
+          }
         }
 
         function unHighlight() {
           tip.hide();
+          if(!d3.select('line.guide').empty()) {
+            d3.select('line.guide').remove();
+          }
           d3.select(this).select('circle.source')
           .classed('highlight', false)
           d3.select(this).select('text.label')
