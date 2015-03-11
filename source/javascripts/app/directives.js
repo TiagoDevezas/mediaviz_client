@@ -18,6 +18,30 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
 
       var d3 = $window.d3;
 
+      var localized = d3.locale({
+        "decimal": ",",
+        "thousands": ".",
+        "grouping": [3],
+        "currency": ["€", ""],
+        "dateTime": "%d/%m/%Y %H:%M:%S",
+        "date": "%d/%m/%Y",
+        "time": "%H:%M:%S",
+        "periods": ["AM", "PM"],
+        "days": ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
+        "shortDays": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+        "months": ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+        "shortMonths": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+      });
+
+      var tickFormat = localized.timeFormat.multi([
+        ["%H:%M", function(d) { return d.getMinutes(); }],
+        ["%H:%M", function(d) { return d.getHours(); }],
+        ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
+        ["%b %d", function(d) { return d.getDate() != 1; }],
+        ["%B", function(d) { return d.getMonth(); }],
+        ["%Y", function() { return true; }]
+      ]);
+
       //var svg = d3.select('svg');
 
       //var scopedData = $parse(attrs.chartData);
@@ -28,6 +52,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         data = newVal;
         if(data.length) {
           d3.select('#viz').html('');
+          d3.select('.d3-tip').remove();
           drawChart(data);          
         } else {
           console.log('No data');
@@ -37,12 +62,16 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
       function drawChart(data) {
         var margin = {top: 50, right: 50, bottom: 50, left: 100 };
         var width = 960 - margin.left - margin.right;
-        var height = 500 - margin.top - margin.bottom;
+        var height = 600 - margin.top - margin.bottom;
 
         // format data
-        var dateFormat = d3.time.format("%H:%M:%S");
+        var dateFormat = localized.timeFormat("%H:%M:%S");
 
-        data.splice(15, data.length);
+        var monthNameFormat = localized.timeFormat("%e %B %Y");
+
+        var dateTimeFormat = localized.timeFormat("%e de %B de %Y" + " às %X");
+
+        //data.splice(15, data.length);
 
         var data = d3.shuffle(data);
 
@@ -56,19 +85,52 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
           return el.date;
         });
 
+        var firstDate = dateExtent[0];
+
+        data.forEach(function(el) {
+          el.timeDiff = differenceInHours(el.date);
+        });
+
+        //var duration = moment(dateExtent[0]).diff(moment(dateExtent[0]), 'hours');
+
+        function differenceInHours(dateObj) {
+          var diff = moment(dateObj).diff(moment(firstDate), 'hours');
+          return diff;
+        }
+
+        var timeDiffExtent = d3.extent(data, function(el) {
+          return el.timeDiff;
+        });
+
         var maxCount = d3.max(data, function(el) {
           return el.count;
         });
 
         var sources = data.map(function(el) {
-          return el.name
+          return el.name;
         });
+
+        var topAxisValues = d3.time.days(dateExtent[0], dateExtent[1], 1);
+
+        var uniqueDays = d3.set(data.map(function(el) {
+          return monthNameFormat(el.date);
+        })).values();
+
+        uniqueDays = uniqueDays.map(function(el) {
+          return monthNameFormat.parse(el);
+        });
+
+        console.log(uniqueDays);
+
+        //console.log(topAxisValues);
 
         sources.push('');
 
         // Create scales
         xScale = d3.time.scale.utc().domain(dateExtent.reverse()).range([margin.left / 2, width - margin.right])
-          .nice(d3.time.hour);
+          .nice(d3.time.day);
+
+        x2Scale = d3.scale.linear().domain(timeDiffExtent.reverse()).rangeRound([margin.left / 2, width - margin.right]);
         //yScale = d3.scale.linear().domain([0, maxCount + 1]).range([height, 0]);
 
         yScale = d3.scale.ordinal().domain(sources).rangeRoundBands([height, 0], 0, 0);
@@ -80,14 +142,42 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         // Create x and y axis
         xAxis = d3.svg.axis()
         .scale(xScale)
-        //.tickFormat(dateFormat)
-        .orient('bottom');
+        //.tickValues(uniqueDays)
+        //.ticks(d3.time.days, 1)
+        .tickFormat(localized.timeFormat("%e de %b"))
+        .orient('top');
+
+        xAxis2 = d3.svg.axis()
+          .scale(x2Scale)
+          //.tickValues(topAxisValues)
+          .tickFormat(function(d) {
+            if((+d) !== 0) {
+              return "+" + d + " horas";              
+            } else {
+              return d;
+            }
+          })
+          .ticks(15)
+          .orient('bottom');
 
         yAxis = d3.svg.axis()
         .scale(yScale)
         .orient('left')
         .tickValues(sources)
         .tickSize(-width);
+
+        var tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function(d) {
+            return "<p style='text-decoration: underline;'><strong>" + d.source + "</strong></p>" +
+            "<p><strong>Primeira notícia publicada em:</strong> <span style='color:red'>" + dateTimeFormat(new Date(d.first_date)) + "</span></p>" +
+            "<p><strong>Notícias publicadas:</strong> <span style='color:red'>" + d.count + "</span>";
+          });
+
+        var div = d3.select("body").append("div")   
+          .attr("class", "tooltip")               
+          .style("opacity", 0);
 
         var svg = d3.select('#viz')
         .append('svg')
@@ -98,8 +188,13 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
 
         svg.append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(' + 0 + ',' + height + ')')
+        .attr('transform', 'translate(' + 0 + ',' + 0 + ')')
         .call(xAxis);
+
+        svg.append('g')
+        .attr('class', 'x2 axis')
+        .attr('transform', 'translate(' + +(0 - ((width - margin.right) - xScale(firstDate))) + ',' + height + ')')
+        .call(xAxis2);
 
 
         svg.append('g')
@@ -108,6 +203,8 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         .call(yAxis)
         .selectAll('text')
         .attr('y', - yScale.rangeBand() / 2);
+
+        svg.call(tip);
 
         var finishLine = svg.append('line')
               .attr('class', 'finish')
@@ -130,8 +227,9 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         .on('mouseover', highlight)
         .on('mouseout', unHighlight)
         .on('click', function(d) {
+          d3.select('.d3-tip').remove();
           scope.$emit('CircleData', d);
-        })
+        });
 
         groups.each(function(d, i) {
           d3.select(this)
@@ -164,44 +262,57 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         .each('end', drawLabels);
 
         function drawLabels() {
-          var parentEl = this.parentElement;
-          d3.select(parentEl)
-          .append('text')
-          .attr('class', 'label')
-          .text(function(d) { return d.name; })
-          .attr('text-anchor', 'middle')
-          .attr('transform', function(d, i) {
-            return 'translate(' + 0 + ',' + (-rScale(d.count) - 5) + ')'
-          })
-          .classed('highlight winner', function(d) {
-            if(d.date === d3.min(dateExtent)) {
-              return true;
-            }
-          });
-          d3.select(this)
-          .classed('highlight winner', function(d) {
-            if(d.date === d3.min(dateExtent)) {
-              return true;
-            }
-          });
+          var d = this.__data__;
+          if (d.date === d3.min(dateExtent)) {
+            var mouseOverEvent = document.createEvent('Event');
+            mouseOverEvent.initEvent('mouseover', true, true);
+            this.parentElement.dispatchEvent(mouseOverEvent);
+            //d3.select(this.parentElement).each(highlight);
+            //tip.show(d);
+          }
+          // var parentEl = this.parentElement;
+          // d3.select(parentEl)
+          // .append('text')
+          // .attr('class', 'label')
+          // .text(function(d) { return d.name; })
+          // .attr('text-anchor', 'middle')
+          // .attr('transform', function(d, i) {
+          //   return 'translate(' + 0 + ',' + (-rScale(d.count) - 5) + ')'
+          // })
+          // .classed('highlight winner', function(d) {
+          //   if(d.date === d3.min(dateExtent)) {
+          //     return true;
+          //   }
+          // });
+          // d3.select(this.parentElement)
+          // .classed('highlight winner', function(d) {
+          //   console.log(this.parentElement, d);
+          //   if(d.date === d3.min(dateExtent)) {
+          //     tip.show();
+          //     return true;
+          //   }
+          // });
           drawFinishLine();
         }
 
         function drawFinishLine() {
-            finishLine
-              .style('opacity', 1);
+          finishLine
+            .style('opacity', 1);
         }
 
         function highlight() {
+          var d = this.__data__;
+          tip.show(d);
           var parentEl = this.parentElement;
           d3.select(this).select('circle.source')
-          .classed('highlight', true);
+            .classed('highlight', true);
           d3.select(this).select('text.label')
-          .classed('highlight', true);
+            .classed('highlight', true);
           parentEl.appendChild(this);
         }
 
         function unHighlight() {
+          tip.hide();
           d3.select(this).select('circle.source')
           .classed('highlight', false)
           d3.select(this).select('text.label')
