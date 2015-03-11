@@ -5,6 +5,7 @@
 //= require angular-sanitize/angular-sanitize.min
 //= require d3/d3.min
 //= require c3/c3.min
+//= require d3/colorbrewer
 //= require angular-ui-select/dist/select.min
 //= require moment/min/moment.min
 //= require angular-pickadate/src/angular-pickadate

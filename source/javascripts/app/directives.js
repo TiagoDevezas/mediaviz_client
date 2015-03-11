@@ -137,7 +137,11 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
 
         rScale = d3.scale.linear().domain([0, maxCount]).range([5, 10]);
 
-        colorScale = d3.scale.category20();
+        var colorScale = d3.scale.quantize()
+          .range(colorbrewer.PuBuGn[9])
+          .domain([0, maxCount]);
+
+        //colorScale = d3.scale.category20();
 
         // Create x and y axis
         xAxis = d3.svg.axis()
@@ -244,7 +248,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
             .append('circle')
             .attr('class', 'source')
             .attr('r', 5)
-            .style('fill', function(d, i) { return colorScale(d.name); })
+            .style('fill', function(d, i) { return colorScale(d.count); })
             .style('opacity', .85);
             
         
@@ -315,8 +319,14 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
           var parentEl = this.parentElement;
           d3.select(this).select('circle.source')
             .classed('highlight', true);
-          d3.select(this).select('text.label')
-            .classed('highlight', true);
+          // d3.select(this).select('text.label')
+          //   .classed('highlight', true);
+          if(d.date == firstDate) {
+            d3.select(this).select('circle.source')
+              .classed('highlight', false)
+              .style('stroke', 'red')
+              .style('stroke-width', '2px')
+          }
           parentEl.appendChild(this);
           if(d3.select('line.guide').empty() && d.date !== firstDate) {
             svg
