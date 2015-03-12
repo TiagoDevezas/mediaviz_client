@@ -141,7 +141,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         //   .range(colorbrewer.PuBuGn[9])
         //   .domain([0, maxCount]);
 
-        colorScale = d3.scale.category20();
+        // colorScale = d3.scale.category20();
 
         // Create x and y axis
         xAxis = d3.svg.axis()
@@ -248,7 +248,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
             .append('circle')
             .attr('class', 'source')
             .attr('r', 5)
-            .style('fill', function(d, i) { return colorScale(d.name); })
+            .style('fill', '#c7e9b4')
             .style('opacity', .85);
             
         
