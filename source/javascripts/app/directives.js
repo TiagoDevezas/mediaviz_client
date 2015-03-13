@@ -2,6 +2,30 @@
 
 var mediavizDirectives = angular.module('mediavizDirectives', []);
 
+var localized = d3.locale({
+  "decimal": ",",
+  "thousands": ".",
+  "grouping": [3],
+  "currency": ["€", ""],
+  "dateTime": "%d/%m/%Y %H:%M:%S",
+  "date": "%d/%m/%Y",
+  "time": "%H:%M:%S",
+  "periods": ["AM", "PM"],
+  "days": ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
+  "shortDays": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+  "months": ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+  "shortMonths": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+});
+
+var tickFormat = localized.timeFormat.multi([
+  ["%H:%M", function(d) { return d.getMinutes(); }],
+  ["%H:%M", function(d) { return d.getHours(); }],
+  ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
+  ["%b %d", function(d) { return d.getDate() != 1; }],
+  ["%B", function(d) { return d.getMonth(); }],
+  ["%Y", function() { return true; }]
+]);
+
 mediavizDirectives.directive('loadingFlash', function() {
 	return {
 		restrict: 'AE',
@@ -17,30 +41,6 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
     link: function(scope, elem, attrs) {
 
       var d3 = $window.d3;
-
-      var localized = d3.locale({
-        "decimal": ",",
-        "thousands": ".",
-        "grouping": [3],
-        "currency": ["€", ""],
-        "dateTime": "%d/%m/%Y %H:%M:%S",
-        "date": "%d/%m/%Y",
-        "time": "%H:%M:%S",
-        "periods": ["AM", "PM"],
-        "days": ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
-        "shortDays": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
-        "months": ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
-        "shortMonths": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
-      });
-
-      var tickFormat = localized.timeFormat.multi([
-        ["%H:%M", function(d) { return d.getMinutes(); }],
-        ["%H:%M", function(d) { return d.getHours(); }],
-        ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
-        ["%b %d", function(d) { return d.getDate() != 1; }],
-        ["%B", function(d) { return d.getMonth(); }],
-        ["%Y", function() { return true; }]
-      ]);
 
       //var svg = d3.select('svg');
 
@@ -120,7 +120,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
           return monthNameFormat.parse(el);
         });
 
-        console.log(uniqueDays);
+        //console.log(uniqueDays);
 
         //console.log(topAxisValues);
 
@@ -589,13 +589,13 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
       // Watcher
 
-      scope.$watch('chartData', function(newVal, oldVal) {
+      scope.$watchCollection('chartData', function(newVal, oldVal) {
         var data = newVal;
         if(data.length) {
           //console.log(data);
           scope.render(data);
         }
-      }, true);
+      });
 
       // Set parent SVG dimensions
       var margin = {top: 25, right: 100, bottom: 25, left: 50 };
@@ -626,6 +626,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
       var xAxis = d3.svg.axis()
         .scale(xScale)
+        .tickFormat(localized.timeFormat("%e de %b"))
         .orient('bottom');
 
       var yAxis = d3.svg.axis()
@@ -647,6 +648,8 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         var keywords = data;
 
+        var keywordObjLength = 0;
+
         // var stack = d3.layout.stack()
         //   .values(function(d) { return d.counts; })
         //   //.x(function(d) { return new Date(Date.parse(d.time)); })
@@ -656,66 +659,92 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         //console.log(stacked);
 
-        keywords.forEach(function(d) {
-          var y0 = 0;
-          d.counts.forEach(function(count) {
-            count.time = new Date(Date.parse(count.time));
-            count.y0 = y0;
-            count.y1 = y0 += count.articles;
-            count.keyword = d.keyword;
-          });
-          // d.counts = d.counts.map(function(el) {
-          //   return ({time: el.time, y0: y0, y1: y0 += +el.articles})
-          // });
-          d.total = d.counts[d.counts.length -1].y1;
-        })
+        keywords.forEach(function(d, index) {
+          if(d.counts.length >= keywordObjLength) {
+            keywordObjLength = d.counts.length;
+          } else if(d.counts.length < keywordObjLength) {
+            // console.log('Object length is smaller', d.counts.length);
+            while(d.counts.length !== keywordObjLength) {
+              console.log('looping');
+              d.counts.push({time: new Date(), articles: 0});
+            }
+          }
+          d.values = d.counts.map(function(p, i) {
+            return { x: Date.parse(p.time), y: p.articles, y0: 0, keyword: d.keyword}
+          }); 
+        });
+
+        var stack = d3.layout.stack()
+          .values(function(d) { return d.values; })
+          .offset("zero");
+
+        var layers = stack(keywords);
+
+        //console.log(layers);
+
+
+        // keywords.forEach(function(d) {
+        //   var y0 = 0;
+        //   d.counts.forEach(function(count) {
+        //     count.time = new Date(Date.parse(count.time));
+        //     count.y0 = y0;
+        //     count.y1 = y0 += count.articles;
+        //     count.keyword = d.keyword;
+        //   });
+        //   // d.counts = d.counts.map(function(el) {
+        //   //   return ({time: el.time, y0: y0, y1: y0 += +el.articles})
+        //   // });
+        //   d.total = d.counts[d.counts.length -1].y1;
+        // })
         
         var allDates = [];
 
-        keywords.forEach(function(obj) {
-          obj.counts.forEach(function(count) {
+        layers.forEach(function(obj) {
+          obj.values.forEach(function(v) {
             //allDates.push(new Date(Date.parse(count.time)));
-            allDates.push(count.time);
+            allDates.push(v.x);
           });
         });
 
         var dateExtent = d3.extent(allDates);
 
-        // var maxCount = d3.max(stacked, function(d) {
-        //   return d3.max(d.counts, function(d) {
-        //     return d.y0 + d.y;
-        //   });
-        // });
+        var maxCount = d3.max(layers, function(d) {
+          return d3.max(d.values, function(v) {
+            return v.y0 + v.y;
+          });
+        });
 
-        var maxCount = d3.max(keywords, function(d) { return d.total; })
-        // var dateExtent = d3.extend(keywords.forEach(function(keyword.counts) {
-        //   return new Date(Date.parse(keyword.counts.time))
-        // }));
+        console.log(dateExtent, maxCount);
 
-        // var nest = d3.nest()
-        //   .key(function(d) { return d.time; })
-        //   .entries(incomingData);
+        // var maxCount = d3.max(keywords, function(d) { return d.total; })
+        // // var dateExtent = d3.extend(keywords.forEach(function(keyword.counts) {
+        // //   return new Date(Date.parse(keyword.counts.time))
+        // // }));
 
-        // incomingData.forEach(function(obj) {
-        //   dates.push(obj.time);
-        // });
+        // // var nest = d3.nest()
+        // //   .key(function(d) { return d.time; })
+        // //   .entries(incomingData);
 
-        // nest.forEach(function(d, i) {
-        //   var y0 = 0;
-        //   d.counts = d.values.map(function(el) {
-        //     return ({keyword: el.keyword, time: el.time, y0: y0, y1: y0 += el.articles});
-        //   });
-        // });
+        // // incomingData.forEach(function(obj) {
+        // //   dates.push(obj.time);
+        // // });
 
-        // var articleMax = d3.max(incomingData, function(obj){
-        //   return obj.articles;
-        // });
+        // // nest.forEach(function(d, i) {
+        // //   var y0 = 0;
+        // //   d.counts = d.values.map(function(el) {
+        // //     return ({keyword: el.keyword, time: el.time, y0: y0, y1: y0 += el.articles});
+        // //   });
+        // // });
+
+        // // var articleMax = d3.max(incomingData, function(obj){
+        // //   return obj.articles;
+        // // });
 
 
         xScale
           .domain(dateExtent);
 
-        yScale.domain([0, maxCount]);
+        yScale.domain([0, 40]);
 
         svg.select('.x.axis')
           .call(xAxis);
@@ -723,29 +752,50 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         svg.select('.y.axis')
           .call(yAxis);
 
-        var allCounts = [];
+        // var area = d3.svg.area()
+        //   .interpolate('step')
+        //   .x(function(d) { return xScale(d.x); })
+        //   .y0(function(d) { return yScale(d.y0); })
+        //   .y1(function(d) { return yScale(d.y0 + d.y); });
 
-        keywords.forEach(function(kw) {
-          kw.counts.forEach(function(el) {
-            allCounts.push(el);
-          });
-        });
+        // svg.selectAll(".layer")
+        // .data(layers)
+        // .enter().append("path")
+        // .attr("class", "layer")
+        // .attr("d", function(d) { return area(d.values); })
+        // .style("fill", function(d, i) { return colorScale(i); });
 
-        var layers = svg.selectAll('g.layer')
-          .data(allCounts)
+        // var allCounts = [];
+
+        // keywords.forEach(function(kw) {
+        //   kw.counts.forEach(function(el) {
+        //     allCounts.push(el);
+        //   });
+        // });
+
+        var gLayers = svg.selectAll('g.layer')
+          .data(layers)
           .enter().append('g')
           .attr('class', 'layer')
           //.attr("transform", function(d) { return "translate(" + xScale(d.time) + ",0)"; });
           //.attr("transform", function(d) { return "translate(" + xScale(d.time) + ",0)"; });
 
-        layers
-            .append('rect')
-            //.attr('x', function(d) { return xScale(new Date(Date.parse(d.time))); })
-            .attr('x', function(d) { return xScale(d.time); })
-            .attr('width', 5)
-            .attr('y', function(d) { return yScale(d.y1); })
-            .attr('height', function(d) { return yScale(d.y0) - yScale(d.y1); })
-            .attr('fill', function(d) { return colorScale(d.keyword); });
+        gLayers.selectAll('rect')
+          .data(function(d, i) { return d.values; })
+          .enter().append('rect')
+          .attr('x', function(d) { return xScale(d.x); })
+          .attr('width', 5)
+          .attr('y', function(d) { return yScale(d.y); })
+          .attr('height', function(d) { return yScale(d.y0) - yScale(d.y); })
+          .style('fill', function(d) { return colorScale(d.keyword); })
+        // gLayers
+        //     .append('rect')
+        //     //.attr('x', function(d) { return xScale(new Date(Date.parse(d.time))); })
+        //     .attr('x', function(d,i) { console.log(d, d.counts, d.counts[i]); return xScale(d.counts[i].x); })
+        //     .attr('width', 5)
+        //     .attr('y', function(d, i) { return yScale(d.counts[i].y); })
+        //     .attr('height', function(d, i) { return yScale(d.counts[i].y0) - yScale(d.counts[i].y); })
+            //.attr('fill', function(d) { return colorScale(d.keyword); });
 
 /*        bandsEnter.each(function(d, i) {
           d3.select(this)

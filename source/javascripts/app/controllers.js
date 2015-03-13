@@ -2105,7 +2105,8 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
   $scope.setDataFormat = function(dataFormat) {
     if(dataFormat !== $scope.dataFormat) {
       $scope.dataFormat = dataFormat;
-      getTotalsAndDrawChart();
+      //getTotalsAndDrawChart();
+      getTotalsAndDraw();
     }
   }
 
@@ -2123,7 +2124,8 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
     setLocation({keywords: $scope.keywords.selected.toString()});
     if(!$scope.keywords.selected.length) {
       $scope.keywords.selected.push('no keyword');
-      getTotalsAndDrawChart();
+      // getTotalsAndDrawChart();
+      getTotalsAndDraw();
     }
     //if(chart) { chart.unload({ids: keyword}); }
   }
@@ -2142,7 +2144,8 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         if(keywords) {
           $scope.keywords.selected = keywords.split(',');
         }
-        getTotalsAndDrawChart();
+        getTotalsAndDraw();
+        // getTotalsAndDrawChart();
       }, 500);
     }
   }, true);
