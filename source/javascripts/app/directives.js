@@ -581,70 +581,82 @@ mediavizDirectives.directive('stacksChart2', function($window) {
   return {
     restrict: 'AE',
     template: '',
-    scope: {
-      chartData: '='
-    },
+    // scope: {
+    //   chartData: '='
+    // },
     link: function(scope, elem, attrs) {
       var d3 = $window.d3;
 
       // Watcher
 
-      scope.$watchCollection('chartData', function(newVal, oldVal) {
-        var data = newVal;
-        if(data.length) {
-          //console.log(data);
-          scope.render(data);
+      var data = attrs.chartData;
+
+      scope.$watch(data, function(newVal, oldVal) {
+        var incomingData = newVal;
+        if(incomingData.length) {
+          d3.select('#viz').html('');
+          //console.log(incomingData);
+          scope.render(incomingData);
+        } else {
+          d3.select('#viz').html('');
         }
       });
 
-      // Set parent SVG dimensions
-      var margin = {top: 25, right: 100, bottom: 25, left: 50 };
-      var width = 960 - margin.left - margin.right;
-      var height = 500 - margin.top - margin.bottom;
-
-      // Create parent SVG
-
-      var svg = d3.select(elem[0])
-        .append('svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.left)
-        .append('g')
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-      // Create scales
-
-      var xScale = d3.time.scale()
-        .range([0, width]);
-
-      var yScale = d3.scale.linear()
-        .rangeRound([height, 0]);
-
-
-      var colorScale = d3.scale.category20();
-
-      // Create axes
-
-      var xAxis = d3.svg.axis()
-        .scale(xScale)
-        .tickFormat(localized.timeFormat("%e de %b"))
-        .orient('bottom');
-
-      var yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient('left');
-
-      // Generate axes
-
-      svg.append('g')
-          .attr('class', 'x axis')
-          .attr('transform', 'translate(' + 0 + ',' + height + ')');
-
-      svg.append('g')
-          .attr('class', 'y axis');
-
-      //renderGraph(dummyData);
-
       scope.render = function(data) {
+
+        // Set parent SVG dimensions
+        var margin = {top: 25, right: 100, bottom: 25, left: 50 };
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+
+        // Create parent SVG
+
+        var svg = d3.select(elem[0])
+          .append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.left)
+          .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+        // Create scales
+
+        var xScale = d3.time.scale()
+          .range([0, width]);
+
+        var yScale = d3.scale.linear()
+          .range([height, 0]);
+
+        var allKeywords = data.map(function(d) { return d.keyword; });
+
+        var colorScale = d3.scale.ordinal()
+          .range(colorbrewer.Set3[12])
+          .domain(allKeywords);
+
+
+        // var colorScale = d3.scale.category20();
+
+        // Create axes
+
+        var xAxis = d3.svg.axis()
+          .scale(xScale)
+          .tickFormat(localized.timeFormat("%e de %b"))
+          .orient('bottom');
+
+        var yAxis = d3.svg.axis()
+          .scale(yScale)
+          .orient('left');
+
+        // Generate axes
+
+        svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(' + 0 + ',' + height + ')');
+
+        svg.append('g')
+            .attr('class', 'y axis');
+
+        //renderGraph(dummyData);
+
 
         var keywords = data;
 
@@ -659,28 +671,83 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         //console.log(stacked);
 
-        keywords.forEach(function(d, index) {
-          if(d.counts.length >= keywordObjLength) {
-            keywordObjLength = d.counts.length;
-          } else if(d.counts.length < keywordObjLength) {
-            // console.log('Object length is smaller', d.counts.length);
-            while(d.counts.length !== keywordObjLength) {
-              console.log('looping');
-              d.counts.push({time: new Date(), articles: 0});
-            }
-          }
-          d.values = d.counts.map(function(p, i) {
-            return { x: Date.parse(p.time), y: p.articles, y0: 0, keyword: d.keyword}
-          }); 
+        var allDates = [];
+
+        keywords.forEach(function(keyword) {
+          keyword.counts.forEach(function(el) {
+            allDates.push(el.time);
+          });
         });
 
+        allDates = d3.set(allDates).values();
+
+        // allDates = d3.set(allDates).values();
+
+        // console.log(allDates, allDates.length, keywords);
+
+        keywords.forEach(function(keyword) {
+          var datesArray = keyword.counts.map(function(c) {
+            return c.time;
+          });
+          allDates.forEach(function(dateString) {
+            if(datesArray.indexOf(dateString) > -1) {
+              return;
+            } else {
+              keyword.counts.push({time: dateString, articles: 0})
+            }
+          });
+        });
+
+        keywords.forEach(function(keyword) {
+          keyword.counts.sort(function(a, b) {
+            if(Date.parse(a.time) > Date.parse(b.time)) {
+              return 1;
+            }
+            if(Date.parse(a.time) < Date.parse(b.time)) {
+              return -1;
+            }
+            return 0;
+          });
+          keyword.values = keyword.counts.map(function(p, i) {
+            return { x: Date.parse(p.time), y: p.articles, y0: 0, keyword: keyword.keyword}
+          }); 
+        })
+
+        // keywords.forEach(function(keyword, i) {
+        //   keyword.counts.forEach(function(obj) {
+        //     allDates.forEach(function(dateString) {
+        //       if(Date.parse(obj.time) === dateString)
+        //     })
+        //     // if (d3.set(allDates).has(Date.parse(obj.time))) {
+        //     //   console.log('Has time');
+        //     // } else {
+        //     //   console.log('Hasn\'t time');
+        //     // }
+        //   });
+        // });
+
+        // keywords.forEach(function(d, index) {
+        //   if(d.counts.length >= keywordObjLength) {
+        //     keywordObjLength = d.counts.length;
+        //   } else if(d.counts.length < keywordObjLength) {
+        //     // console.log('Object length is smaller', d.counts.length);
+        //     while(d.counts.length !== keywordObjLength) {
+        //       console.log('looping');
+        //       d.counts.push({time: new Date(), articles: 0});
+        //     }
+        //   }
+          // d.values = d.counts.map(function(p, i) {
+          //   return { x: Date.parse(p.time), y: p.articles, y0: 0, keyword: d.keyword}
+          // }); 
+        // });
+
         var stack = d3.layout.stack()
-          .values(function(d) { return d.values; })
-          .offset("zero");
+          .offset("zero")
+          .values(function(d) { return d.values; });
 
         var layers = stack(keywords);
 
-        //console.log(layers);
+        console.log(layers);
 
 
         // keywords.forEach(function(d) {
@@ -742,9 +809,10 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
 
         xScale
-          .domain(dateExtent);
+          .domain(dateExtent)
+          .nice(d3.time.day, 2);
 
-        yScale.domain([0, 40]);
+        yScale.domain([0, maxCount]);
 
         svg.select('.x.axis')
           .call(xAxis);
@@ -763,7 +831,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         // .enter().append("path")
         // .attr("class", "layer")
         // .attr("d", function(d) { return area(d.values); })
-        // .style("fill", function(d, i) { return colorScale(i); });
+        // .style("fill", function(d) { return colorScale(d.keyword); });
 
         // var allCounts = [];
 
@@ -784,9 +852,9 @@ mediavizDirectives.directive('stacksChart2', function($window) {
           .data(function(d, i) { return d.values; })
           .enter().append('rect')
           .attr('x', function(d) { return xScale(d.x); })
-          .attr('width', 5)
-          .attr('y', function(d) { return yScale(d.y); })
-          .attr('height', function(d) { return yScale(d.y0) - yScale(d.y); })
+          .attr('width', function() { return width / layers[0].values.length})
+          .attr('y', function(d) { return yScale(d.y0) - (height - (yScale(d.y))); })
+          .attr('height', function(d) { return height - (yScale(d.y)); })
           .style('fill', function(d) { return colorScale(d.keyword); })
         // gLayers
         //     .append('rect')

@@ -2374,9 +2374,9 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
       function pushData(data) {
         $scope.loading = false;
         incomingData.push(data);
-        //if(keywords.length === $scope.keywords.selected.length) {
+        if(keywords.length === $scope.keywords.selected.length) {
           $scope.chartData = incomingData;          
-        //}
+        }
       }
     });
   }
