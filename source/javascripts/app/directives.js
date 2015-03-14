@@ -606,7 +606,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         // Set parent SVG dimensions
         var margin = {top: 25, right: 100, bottom: 25, left: 50 };
-        var width = 960 - margin.left - margin.right;
+        var width = 1024 - margin.left - margin.right;
         var height = 500 - margin.top - margin.bottom;
 
         // Create parent SVG
@@ -855,7 +855,27 @@ mediavizDirectives.directive('stacksChart2', function($window) {
           .attr('width', function() { return width / layers[0].values.length})
           .attr('y', function(d) { return yScale(d.y0) - (height - (yScale(d.y))); })
           .attr('height', function(d) { return height - (yScale(d.y)); })
-          .style('fill', function(d) { return colorScale(d.keyword); })
+          .style('fill', function(d) { return colorScale(d.keyword); });
+
+
+        var legend = svg.selectAll(".legend")
+              .data(colorScale.domain().slice().reverse())
+            .enter().append("g")
+              .attr("class", "legend")
+              .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+          legend.append("rect")
+              .attr("x", width + margin.right - 20)
+              .attr("width", 18)
+              .attr("height", 18)
+              .style("fill", colorScale);
+
+          legend.append("text")
+              .attr("x", width + margin.right - 26)
+              .attr("y", 9)
+              .attr("dy", ".35em")
+              .style("text-anchor", "end")
+              .text(function(d) { return d; });
         // gLayers
         //     .append('rect')
         //     //.attr('x', function(d) { return xScale(new Date(Date.parse(d.time))); })
