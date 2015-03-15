@@ -773,7 +773,12 @@ mediavizDirectives.directive('stacksChart2', function($window) {
           });
         });
 
+        allDates.push(moment(allDates[allDates.length-1]).add(1, 'days'));
+
+        // allDates.push(moment(allDates[-1]).add(1, 'days'));
+
         var dateExtent = d3.extent(allDates);
+
 
         var maxCount = d3.max(layers, function(d) {
           return d3.max(d.values, function(v) {
@@ -809,8 +814,8 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
 
         xScale
-          .domain(dateExtent)
-          .nice(d3.time.day, 2);
+          .domain(dateExtent);
+          // .nice(d3.time.day, 2);
 
         yScale.domain([0, maxCount]);
 
