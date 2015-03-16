@@ -880,11 +880,10 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         function highlightAndShowTip(d) {
           tip.show(d);
-          var thisData = this.__data__;
           d3.selectAll('rect.bar')
             .style('fill', function(datum) {
               if(d.x === datum.x && d.y0 === datum.y0) {
-                return 'red';
+                return d3.hsl(colorScale(datum.keyword)).darker(1.5);
               } else {
                 return colorScale(datum.keyword);
               }
@@ -893,7 +892,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               if(d.x === datum.x && d.y0 === datum.y0) {
                 return 1;
               } else {
-                return 0.3;
+                return 0.15;
               }
             });
         }
