@@ -2146,7 +2146,7 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
         }
         getTotalsAndDraw();
         // getTotalsAndDrawChart();
-      }, 100);
+      }, 500);
     }
   }, true);
 
@@ -2226,6 +2226,12 @@ mediavizControllers.controller('PhotoFinishCtrl', function($scope, $location, Re
     var query = $scope.keyword.selected;
     var source = data.source;
     displayItems(formattedDate, query, source);
+  });
+
+  $scope.$on('$routeChangeStart', function() {
+    if(!d3.select('.d3-tip').empty()) {
+      d3.select('.d3-tip').remove();
+    }
   });
 
   function displayItems(date1, query, source) {

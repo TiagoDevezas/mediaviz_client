@@ -52,7 +52,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         data = newVal;
         if(data.length) {
           d3.select('#viz').html('');
-          d3.select('.d3-tip').remove();
+          // d3.select('.d3-tip').remove();
           drawChart(data);          
         } else {
           console.log('No data');
@@ -231,7 +231,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         .on('mouseover', highlight)
         .on('mouseout', unHighlight)
         .on('click', function(d) {
-          d3.select('.d3-tip').remove();
+          tip.hide;
           scope.$emit('CircleData', d);
         });
 
@@ -609,6 +609,8 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         var width = 1024 - margin.left - margin.right;
         var height = 500 - margin.top - margin.bottom;
 
+        var dateTimeFormat = localized.timeFormat("%e de %B de %Y");
+
         // Create parent SVG
 
         var svg = d3.select(elem[0])
@@ -819,11 +821,22 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         yScale.domain([0, maxCount]);
 
+        var tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function(d) {
+            return "<p style='text-decoration: underline;'><strong>" + d.keyword + "</strong></p>" +
+            "<p><strong>Data:</strong> <span style='color:red'>" + dateTimeFormat(new Date(d.x)) + "</span></p>" +
+            "<p><strong>Notícias:</strong> <span style='color:red'>" + d.y + "</span>";
+          });
+
         svg.select('.x.axis')
           .call(xAxis);
 
         svg.select('.y.axis')
           .call(yAxis);
+
+        svg.call(tip);
 
         // var area = d3.svg.area()
         //   .interpolate('step')
@@ -856,11 +869,44 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         gLayers.selectAll('rect')
           .data(function(d, i) { return d.values; })
           .enter().append('rect')
+          .attr('class', 'bar')
           .attr('x', function(d) { return xScale(d.x); })
           .attr('width', function() { return width / layers[0].values.length})
           .attr('y', function(d) { return yScale(d.y0) - (height - (yScale(d.y))); })
           .attr('height', function(d) { return height - (yScale(d.y)); })
-          .style('fill', function(d) { return colorScale(d.keyword); });
+          .style('fill', function(d) { return colorScale(d.keyword); })
+          .on('mouseover', function(d, i) { highlightAndShowTip(d); })
+          .on('mouseout', function(d, i) { unHighlightAndHideTip(d); });
+
+        function highlightAndShowTip(d) {
+          tip.show(d);
+          var thisData = this.__data__;
+          d3.selectAll('rect.bar')
+            .style('fill', function(datum) {
+              if(d.x === datum.x && d.y0 === datum.y0) {
+                return 'red';
+              } else {
+                return colorScale(datum.keyword);
+              }
+            })
+            .style('opacity', function(datum) {
+              if(d.x === datum.x && d.y0 === datum.y0) {
+                return 1;
+              } else {
+                return 0.3;
+              }
+            });
+        }
+
+        function unHighlightAndHideTip(d) {
+          tip.hide();
+          d3.selectAll('rect.bar')
+            .style('opacity', 1);
+          d3.selectAll('rect.bar')
+            .style('fill', function(datum) {
+              return colorScale(datum.keyword);
+            });
+        }
 
 
         var legend = svg.selectAll(".legend")
@@ -870,6 +916,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
               .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
           legend.append("rect")
+              .attr('class', 'legend')
               .attr("x", width + margin.right - 20)
               .attr("width", 18)
               .attr("height", 18)
