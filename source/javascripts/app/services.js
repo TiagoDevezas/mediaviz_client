@@ -24,10 +24,10 @@ mediavizServices.factory('SourceList', ['$http',
 					var sources = response.map(function(el) {
 						return { 'name': el.name, 'type': el.type, 'acronym': el.acronym };
 					});
+					sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
 					sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
 					sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
 					sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
-					sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
 					var sourceArray = sources;
 					myCallback(sources);				
 				});

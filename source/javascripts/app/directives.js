@@ -611,6 +611,8 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         var dateTimeFormat = localized.timeFormat("%e de %B de %Y");
 
+        var percentFormat = d3.format(".0%");
+
         // Create parent SVG
 
         var svg = d3.select(elem[0])
@@ -646,6 +648,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         var yAxis = d3.svg.axis()
           .scale(yScale)
+          .tickFormat(percentFormat)
           .orient('left');
 
         // Generate axes
@@ -661,6 +664,8 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
 
         var keywords = data;
+
+        console.log(keywords);
 
         var keywordObjLength = 0;
 
@@ -711,7 +716,9 @@ mediavizDirectives.directive('stacksChart2', function($window) {
             return 0;
           });
           keyword.values = keyword.counts.map(function(p, i) {
-            return { x: Date.parse(p.time), y: p.articles, y0: 0, keyword: keyword.keyword}
+            var yValue = p.articles !== 0 ? (p.articles/p.total_articles_for_day) : 0;
+            var maxValue = p.total_articles_for_day !== 0 ? (p.total_articles_for_day/p.total_articles_for_day) : 0;
+            return { x: Date.parse(p.time), y: yValue, y0: 0, keyword: keyword.keyword, dayCount: maxValue, count: p.articles, countForDay: p.total_articles_for_day}
           }); 
         })
 
@@ -749,7 +756,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         var layers = stack(keywords);
 
-        console.log(layers);
+        // console.log(layers);
 
 
         // keywords.forEach(function(d) {
@@ -784,11 +791,11 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         var maxCount = d3.max(layers, function(d) {
           return d3.max(d.values, function(v) {
-            return v.y0 + v.y;
+            return v.dayCount;
           });
         });
 
-        console.log(dateExtent, maxCount);
+        // console.log(dateExtent, maxCount);
 
         // var maxCount = d3.max(keywords, function(d) { return d.total; })
         // // var dateExtent = d3.extend(keywords.forEach(function(keyword.counts) {
@@ -827,7 +834,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
           .html(function(d) {
             return "<p style='text-decoration: underline;'><strong>" + d.keyword + "</strong></p>" +
             "<p><strong>Data:</strong> <span style='color:red'>" + dateTimeFormat(new Date(d.x)) + "</span></p>" +
-            "<p><strong>Notícias:</strong> <span style='color:red'>" + d.y + "</span>";
+            "<p><strong>Notícias:</strong> <span style='color:red'>" + d.count + " de " + d.countForDay + " (" + percentFormat(d.y) + ")" + "</span>";
           });
 
         svg.select('.x.axis')

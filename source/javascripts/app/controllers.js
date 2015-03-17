@@ -2127,6 +2127,7 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
       // getTotalsAndDrawChart();
       getTotalsAndDraw();
     }
+    // getTotalsAndDraw();
     //if(chart) { chart.unload({ids: keyword}); }
   }
 
