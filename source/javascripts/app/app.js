@@ -51,9 +51,9 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			controller: 'CompareCtrl',
 			reloadOnSearch: false
 		}).
-		when('/social', {
-			templateUrl: 'partials/app/social.html',
-			controller: 'SocialCtrl',
+		when('/coverage', {
+			templateUrl: 'partials/app/coverage.html',
+			controller: 'CoverageCtrl',
 			reloadOnSearch: false
 		}).
 		when('/chronicle', {

@@ -421,12 +421,12 @@ var timeChart = {
 
 });
 
-mediavizControllers.controller('SocialCtrl', function($scope, Page, Resources, Chart, DataFormatter, $location, $timeout) {
+mediavizControllers.controller('CoverageCtrl', function($scope, Page, Resources, Chart, DataFormatter, $location, $timeout) {
 
   // Multiple keywords, one source; time series for articles and shares
 
 
-  Page.setTitle('Social');
+  Page.setTitle('Cobertura');
 
   var chart;
 
