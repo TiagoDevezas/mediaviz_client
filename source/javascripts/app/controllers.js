@@ -1198,8 +1198,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
   $scope.sourceType = 'national';
 
-  $scope.chartType = 'line';
-
   $scope.since = '' || $routeParams.since;
   $scope.until;
 
@@ -1217,6 +1215,19 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   ['charlie hebdo', 'terrorismo'],
   ['austeridade', 'desemprego']
   ];
+
+  $scope.chartTypes = [
+    {type: 'line', name: 'Linhas'},
+    {type: 'spline', name: 'Linhas 2'},
+    {type: 'area', name: 'Área'},
+    {type: 'area-spline', name: 'Área 2'},
+    {type: 'bar', name: 'Barras'},
+    {type: 'donut', name: 'Donut'}
+  ];
+
+  $scope.chartType = [];
+
+  $scope.chartType.selected = $scope.chartTypes[0];
 
   $scope.keywords = {};
   $scope.keywords.selected = [];
@@ -1307,10 +1318,10 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   }, true);
 
   $scope.setChartType = function(chartType) {
-    if(chartType != $scope.chartType) {
-      $scope.chartType = chartType;
-      if(chart) chart.transform(chartType);
-    }
+    // if(chartType != $scope.chartType.selected) {
+      $scope.chartType.selected = chartType;
+      if(chart) chart.transform(chartType.type);
+    // }
   }
 
   $scope.redrawChart = function() {
@@ -1443,7 +1454,7 @@ var keywordChart = {
       grouped: false 
     },
     data: {
-      type: $scope.chartType,
+      type: $scope.chartType.selected.type,
       onclick: function (d, i) { getItemData(d) }
     },
     point: {
