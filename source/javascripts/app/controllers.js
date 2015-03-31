@@ -442,6 +442,8 @@ mediavizControllers.controller('CoverageCtrl', function($scope, Page, Resources,
 
   $scope.selectedNetwork = 'articlesCount';
 
+  $scope.defaultChartType = {type: 'area', name: 'Área'};
+
   $scope.setSocialNetwork = function(socialNetwork) {
     if($scope.selectedNetwork !== socialNetwork) {
       $scope.selectedNetwork = socialNetwork;
@@ -449,6 +451,14 @@ mediavizControllers.controller('CoverageCtrl', function($scope, Page, Resources,
       if(chart) { chart.flush(); }
       getTotalsAndDraw();
     }
+  }
+
+  $scope.setChartType = function(chartType) {
+    // console.log('triggered', chartType);
+    // if(chartType != $scope.chartType.selected) {
+      $scope.defaultChartType = chartType;
+      if(chart) chart.transform(chartType.type);
+    // }
   }
 
   $scope.removeFromChart = function(keyword) {
@@ -578,7 +588,7 @@ var timeChart = {
       grouped: false 
     },
     data: {
-      type: 'area',
+      type: $scope.defaultChartType.type,
       onclick: function (d, i) { getItemData(d) }
     },
     point: {
@@ -650,6 +660,8 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
   $scope.selectDisabled = true;
 
   $scope.dataFormat = 'absolute';
+
+  $scope.defaultChartType = {type: 'area', name: 'Área'};
 
   $scope.by = $routeParams.by || 'day';
   $scope.since = $routeParams.since;
@@ -724,6 +736,14 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
       $scope.showSearchToolsNav = false;
     }
     $scope.redrawChart();
+  }
+
+  $scope.setChartType = function(chartType) {
+    // console.log('triggered', chartType);
+    // if(chartType != $scope.chartType.selected) {
+      $scope.defaultChartType = chartType;
+      if(chart) chart.transform(chartType.type);
+    // }
   }
 
   $scope.$watch('keyword.selected', function(newVal, oldVal) {
@@ -1124,7 +1144,7 @@ var barChart = {
           grouped: false 
         },
         data: {
-          type: 'area',
+          type: $scope.defaultChartType.type,
           onclick: function (d, i) { console.log(d); getItemData(d) }
         },
         point: {
@@ -1216,18 +1236,20 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   ['austeridade', 'desemprego']
   ];
 
-  $scope.chartTypes = [
-    {type: 'line', name: 'Linhas'},
-    {type: 'spline', name: 'Linhas 2'},
-    {type: 'area', name: 'Área'},
-    {type: 'area-spline', name: 'Área 2'},
-    {type: 'bar', name: 'Barras'},
-    {type: 'donut', name: 'Donut'}
-  ];
+  // $scope.chartTypes = [
+  //   {type: 'line', name: 'Linhas'},
+  //   {type: 'spline', name: 'Linhas 2'},
+  //   {type: 'area', name: 'Área'},
+  //   {type: 'area-spline', name: 'Área 2'},
+  //   {type: 'bar', name: 'Barras'},
+  //   {type: 'donut', name: 'Donut'}
+  // ];
 
-  $scope.chartType = [];
+  $scope.defaultChartType = {type: 'line', name: 'Linhas'};
 
-  $scope.chartType.selected = $scope.chartTypes[0];
+  // $scope.chartType = {
+  //   selected: {type: 'line', name: 'Linhas'}
+  // };
 
   $scope.keywords = {};
   $scope.keywords.selected = [];
@@ -1318,8 +1340,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   }, true);
 
   $scope.setChartType = function(chartType) {
+    // console.log('triggered', chartType);
     // if(chartType != $scope.chartType.selected) {
-      $scope.chartType.selected = chartType;
+      $scope.defaultChartType = chartType;
       if(chart) chart.transform(chartType.type);
     // }
   }
@@ -1454,7 +1477,7 @@ var keywordChart = {
       grouped: false 
     },
     data: {
-      type: $scope.chartType.selected.type,
+      type: $scope.defaultChartType.type,
       onclick: function (d, i) { getItemData(d) }
     },
     point: {

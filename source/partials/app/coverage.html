@@ -25,12 +25,17 @@
 		<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
 		<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
 	</ul> -->
-	<ul>
+	<ul style="display: inline-block;">
 		<li><a href="" ng-click="setSocialNetwork('articlesCount')" ng-class="{'selected':selectedNetwork === 'articlesCount'}">Artigos</a></li>	| 
 		<li><a href="" ng-click="setSocialNetwork('twitter_facebook')" ng-class="{'selected':selectedNetwork === 'twitter_facebook'}">Twitter + Facebook</a></li>
 		<li><a href="" ng-click="setSocialNetwork('twitter')" ng-class="{'selected':selectedNetwork === 'twitter'}">Twitter</a></li>
 		<li><a href="" ng-click="setSocialNetwork('facebook')" ng-class="{'selected':selectedNetwork === 'facebook'}">Facebook</a></li>
 	</ul>
+  <div style="float: right;">
+    <label for="chart-type-select" style="float:left;">Tipo de gráfico &nbsp;&nbsp;</label>
+    <select-chart-type></select-chart-type>
+    <!-- <select id="chart-type-select" ng-model="chartType.selected" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(chartType.selected)" style="float: left;"></select> -->
+  </div>
 </div>
 
 

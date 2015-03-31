@@ -22,7 +22,7 @@
 	</div>
 
 	<div class="search-tools">
-		<ul>
+		<ul style="display: inline-block;">
 			<li><a href="" ng-click="displayBy('hour')" ng-class="{'selected':by === 'hour'}">24 Horas</a></li>
 			<li><a href="" ng-click="displayBy('week')" ng-class="{'selected':by === 'week'}">Semana</a></li>
 			<li><a href="" ng-click="displayBy('day')" ng-class="{'selected':by === 'day'}">Dia</a></li>
@@ -32,6 +32,11 @@
 			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
 			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
 		</ul>
+		<div style="float: right;">
+			<label for="chart-type-select" style="float:left;">Tipo de gráfico &nbsp;&nbsp;</label>
+			<select-chart-type></select-chart-type>
+			<!-- <select id="chart-type-select" ng-model="chartType.selected" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(chartType.selected)" style="float: left;"></select> -->
+		</div>
 	</div>
 	<div class="search-tools" ng-show="showSearchToolsNav">
 		<ul>

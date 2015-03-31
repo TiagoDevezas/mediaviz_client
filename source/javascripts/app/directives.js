@@ -34,6 +34,33 @@ mediavizDirectives.directive('loadingFlash', function() {
 	}
 });
 
+mediavizDirectives.directive('selectChartType', function($filter) {
+  return {
+    restrict: 'AE',
+    replace: true,
+    link: function(scope, elem, attrs) {
+      scope.chartTypes = [
+        {type: 'line', name: 'Linhas'},
+        {type: 'spline', name: 'Linhas 2'},
+        {type: 'area', name: 'Área'},
+        {type: 'area-spline', name: 'Área 2'},
+        {type: 'bar', name: 'Barras'},
+        {type: 'donut', name: 'Donut'}
+      ];
+      var defaultChartName = scope.defaultChartType.name;
+      var foundInTypesArray = $filter('filter')(scope.chartTypes, {name: defaultChartName}, true);
+      scope.defaultChartType = foundInTypesArray[0];
+      // scope.defaultChartType = scope.chartTypes[0];
+      // scope.chartType.selected = scope.chartTypes[0];
+      // scope.setChartType = function(chartType) {
+      //   scope.chartType.selected = chartType;
+      //   if(chart) chart.transform(chartType.type);
+      // }
+    },
+    template: '<select id="chart-type-select" ng-model="defaultChartType" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(defaultChartType)" style="float: left;"></select>'
+  };
+});
+
 mediavizDirectives.directive('photoFinish', function($window, $parse) {
   return {
     restrict: 'AE',

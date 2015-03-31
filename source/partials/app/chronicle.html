@@ -37,10 +37,11 @@
 			<li><a href="" ng-click="setSourceType('blogs')" ng-class="{'selected':sourceType === 'blogs'}">Blogs</a></li>
 			<li><a href="" ng-click="setSourceType('all')" ng-class="{'selected':sourceType === 'all'}">Todas</a></li>
 		</ul>
-		<form style="float: right;">
+		<div style="float: right;">
 			<label for="chart-type-select" style="float:left;">Tipo de gráfico &nbsp;&nbsp;</label>
-			<select id="chart-type-select" ng-model="chartType.selected" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(chartType.selected)" style="float: left;"></select>
-		</form>
+			<select-chart-type></select-chart-type>
+			<!-- <select id="chart-type-select" ng-model="chartType.selected" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(chartType.selected)" style="float: left;"></select> -->
+		</div>
 <!-- 		<ul style="float: right;">
 			<li><a href="" ng-click="setChartType('line')" ng-class="{'selected':chartType === 'line'}">Linhas</a></li>
 			<li><a href="" ng-click="setChartType('spline')" ng-class="{'selected':chartType === 'spline'}">Linhas 2</a></li>
