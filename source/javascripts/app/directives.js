@@ -154,10 +154,10 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         sources.push('');
 
         // Create scales
-        xScale = d3.time.scale.utc().domain(dateExtent.reverse()).range([margin.left / 2, width - margin.right])
+        xScale = d3.time.scale.utc().domain(dateExtent).range([margin.left / 2, width - margin.right])
           //.nice(d3.time.day);
 
-        x2Scale = d3.scale.linear().domain(timeDiffExtent.reverse()).range([margin.left / 2, width - margin.right]);
+        x2Scale = d3.scale.linear().domain(timeDiffExtent).range([margin.left / 2, width - margin.right]);
         //yScale = d3.scale.linear().domain([0, maxCount + 1]).range([height, 0]);
 
         yScale = d3.scale.ordinal().domain(sources).rangeRoundBands([height, 0], 0, 0);
@@ -219,12 +219,12 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
 
         svg.append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(' + +(0 - ((width - margin.right) - xScale(firstDate))) + ',' + 0 + ')')
+        .attr('transform', 'translate(' +(xScale(firstDate) - margin.left / 2) + ',' + 0 + ')')
         .call(xAxis);
 
         svg.append('g')
         .attr('class', 'x2 axis')
-        .attr('transform', 'translate(' +(0 - ((width - margin.right) - xScale(firstDate))) + ',' + height + ')')
+        .attr('transform', 'translate(' +(xScale(firstDate) - margin.left / 2) + ',' + height + ')')
         .call(xAxis2);
 
 
@@ -275,6 +275,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
             .append('circle')
             .attr('class', 'source')
             .attr('r', 5)
+            .attr('transform', 'translate(' + width + ',' + 0 + ')')
             .style('fill', '#c7e9b4')
             .style('opacity', .85);
             
@@ -288,7 +289,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         .ease('cubic out-in')
         //.delay(function(d, i) { return 100 * i})
         .attr('transform', function(d) { 
-          return 'translate(' + xScale(d.date) + ',' + yScale(d.name) + ')';
+          return 'translate(' + -(width-xScale(d.date)) + ',' + yScale(d.name) + ')';
         });
 
         // var t1 = t0.transition()

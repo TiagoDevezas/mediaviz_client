@@ -1141,7 +1141,7 @@ var barChart = {
           position: 'right'
         },
         tooltip: {
-          grouped: false 
+          grouped: true 
         },
         data: {
           type: $scope.defaultChartType.type,
@@ -1172,13 +1172,25 @@ var barChart = {
             }
           },
           y: {
-            //padding: {top: 1, bottom: 1},
-            //min: 0,
+            min: 0,
+            padding: {top: 0, bottom: 0},
             label: {
               text: 'Artigos',
               position: 'outer-middle'
             },
             tick: {}
+          }
+        },
+        tooltip: {
+          format: {
+            value: function(value, ratio, id) {
+              if($scope.dataFormat === 'relative') {
+                return value + '% de todos os artigos publicados nesta data';
+              }
+              if($scope.dataFormat === 'absolute') {
+                return value;
+              }
+            }
           }
         },
         grid: {

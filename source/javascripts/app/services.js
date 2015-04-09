@@ -2,9 +2,11 @@
 
 var mediavizServices = angular.module('mediavizServices', ['ngResource']);
 
-var baseUrl = 'http://mediaviz.fe.up.pt/panorama/api/';
+var baseUrl3 = 'http://mediaviz.fe.up.pt/panorama/api/';
 
 var baseUrl2 = 'panorama/api/';
+
+var baseUrl = 'http://irlab.fe.up.pt/p/mediaviz/panorama/api/';
 
 mediavizServices.factory('Page', function($rootScope) {
 	var title = 'MediaViz';
