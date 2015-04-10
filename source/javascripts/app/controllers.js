@@ -1556,9 +1556,12 @@ var keywordChart = {
           show: true
         }
       },
-      color: function(d) {
-        return d3.scale.category20c(d);
+      color: {
+        pattern: colorbrewer.Set1[9]
       }
+/*      color: function(d) {
+        return d3.scale.category20(d);
+      }*/
     }
   }
 

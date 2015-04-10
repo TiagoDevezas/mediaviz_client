@@ -62,6 +62,6 @@
 		}
 	}
 	#keyword-chart {
-		@include span-columns(12);
+		@include fill-parent;
 	}
 }
