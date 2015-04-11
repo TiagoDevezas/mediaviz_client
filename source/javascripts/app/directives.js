@@ -87,9 +87,10 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
       });
 
       function drawChart(data) {
+        console.log(data);
         var margin = {top: 50, right: 50, bottom: 50, left: 100 };
-        var width = 960 - margin.left - margin.right;
-        var height = 600 - margin.top - margin.bottom;
+        var width = parseInt(d3.select(elem[0]).style('width')) - margin.left - margin.right;
+        var height = ((data.length + 2) * 15);
 
         // format data
         var dateFormat = localized.timeFormat("%H:%M:%S");
@@ -634,7 +635,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
 
         // Set parent SVG dimensions
         var margin = {top: 25, right: 100, bottom: 25, left: 50 };
-        var width = 1024 - margin.left - margin.right;
+        var width = parseInt(d3.select(elem[0]).style('width')) - margin.left - margin.right;
         var height = 500 - margin.top - margin.bottom;
 
         var dateTimeFormat = localized.timeFormat("%e de %B de %Y");
@@ -661,7 +662,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         var allKeywords = data.map(function(d) { return d.keyword; });
 
         var colorScale = d3.scale.ordinal()
-          .range(colorbrewer.Set3[12])
+          .range(colorbrewer.Set1[9])
           .domain(allKeywords);
 
 

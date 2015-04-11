@@ -7,6 +7,9 @@
 		border: 1px solid $medium-gray;
 		margin-bottom: 1em;
 	}
+	.search-tools {
+		@include span-columns(12);
+	}
 	.chart-tools {
 		ul.mode-tools {
 			margin-top: 0.5em;
@@ -62,6 +65,6 @@
 		}
 	}
 	#keyword-chart {
-		@include fill-parent;
+		@include span-columns(12);
 	}
 }
