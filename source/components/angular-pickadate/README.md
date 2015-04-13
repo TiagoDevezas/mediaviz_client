@@ -23,9 +23,27 @@ angular.module('myApp', ['pickadate']);
 <div pickadate ng-model="date"></div>
 ```
 
+If the element is an `<input>`, it will display the datepicker as a modal. Otherwise, it will be rendered inline.
+
 Pickadate is fluid, so it will take the width of the parent container.
 
 ### Pickadate options
+
+#### format
+
+You can specify the date format using the `format` attribute. Supported formats must have the year, month and day parts, and the separator must be `-` or `/`.
+
+```html
+<div pickadate ng-model="date" format="dd/mm/yyyy"></div>
+```
+
+Format string can be composed of the following elements:
+
+* `'yyyy;`: 4 digit representation of year (e.g. AD 1 => 0001, AD 2010 => 2010)
+* `'mm'` or `'MM'`: Month in year, padded (01-12)
+* `'dd'`: Day in month, padded (01-31)
+
+Every option that receives a date as the input (e.g. min-date, max-date, disabled-dates, etc) should be entered using the same format.
 
 #### min-date, max-date
 
@@ -88,9 +106,17 @@ The calendar will have between 4 and 6 rows if this attribute is present. By def
 <div pickadate no-extra-rows></div>
 ```
 
-### I18n
+#### multiple
 
-Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [http://code.angularjs.org/1.2.0-rc.2/i18n/](http://code.angularjs.org/1.2.0-rc.2/i18n/).
+The calendar will support selecting multiple dates. NgModel will be set as an array of date strings
+
+```html
+<div pickadate multiple></div>
+```
+
+### I18n & Icons
+
+Pickadate uses angular `$locale` module for the date translations. If you want to have the calendar in any other language, please include the corresponding AngularJS i18n files. You can get them here: [https://code.angularjs.org/1.3.0/i18n/](https://code.angularjs.org/1.3.0/i18n/).
 
 For the remaining translations you can configure the `pickadateI18nProvider`.
 
@@ -99,15 +125,13 @@ angular.module('testApp', ['pickadate'])
 
     .config(function(pickadateI18nProvider) {
         pickadateI18nProvider.translations = {
-            prev: 'ant',
-            next: 'sig'
+            prev: '<i class="icon-chevron-left"></i> ant',
+            next: 'sig <i class="icon-chevron-right"></i>'
         }
     });
 ```
 
-### Future development
-
-Currently `pickadate` only works as an inline datepicker, but would like it to make it work in any text input as an overlay like the `jquery-ui` one. Will be happy to merge your pull requests.
+The translations can contain custom html code, useful to include custom icons in the calendar controls.
 
 ## License
 

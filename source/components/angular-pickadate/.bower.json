@@ -1,11 +1,42 @@
 {
   "name": "angular-pickadate",
+  "version": "1.0.0",
   "homepage": "https://github.com/restorando/angular-pickadate",
-  "_release": "0d3fb56440",
+  "authors": [
+    "Gabriel Schammah <gschammah@gmail.com>"
+  ],
+  "description": "A simple and fluid inline datepicker for AngularJS with no extra dependencies",
+  "keywords": [
+    "datepicker",
+    "angular",
+    "angularjs",
+    "pickadate",
+    "date"
+  ],
+  "main": [
+    "src/angular-pickadate.js",
+    "src/angular-pickadate.css"
+  ],
+  "dependencies": {
+    "angular": "1.x"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "example",
+    "package.json",
+    "gulpfile.js",
+    "karma.conf.js",
+    "LICENSE"
+  ],
+  "_release": "1.0.0",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "0d3fb56440c526ae5db96f531f0c18c0c589e83b"
+    "type": "version",
+    "tag": "1.0.0",
+    "commit": "e89022cfb5ab7abbb26139b05a62f9147fd8f247"
   },
   "_source": "git://github.com/restorando/angular-pickadate.git",
   "_target": "*",

@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.9.3 - 2014-12-08T17:27:37.932Z
+ * Version: 0.9.9 - 2015-02-18T03:49:07.281Z
  * License: MIT
  */
 
@@ -40,6 +40,10 @@
   display:none;
 }
 
+.select-locked > .ui-select-match-close{
+    display:none;
+}
+
 /* Selectize theme */
 
 /* Helper class to show styles when focus */
@@ -76,6 +80,20 @@
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 
+.ui-select-bootstrap .ui-select-toggle {
+  position: relative;
+
+  /* Instead of center because of .btn */
+  text-align: left;
+}
+
+.ui-select-bootstrap .ui-select-toggle > .caret {
+  position: absolute;
+  height: 10px;
+  top: 50%;
+  right: 10px;
+  margin-top: -2px;
+}
 
 /* Fix Bootstrap dropdown position when inside a input-group */
 .input-group > .ui-select-bootstrap.dropdown {
@@ -87,11 +105,6 @@
   border-radius: 4px; /* FIXME hardcoded value :-/ */
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
-}
-
-.ui-select-bootstrap > .ui-select-match {
-  /* Instead of center because of .btn */
-  text-align: left;
 }
 
 .ui-select-bootstrap > .ui-select-match > .caret {
