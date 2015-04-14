@@ -65,7 +65,7 @@ activate :deploy do |deploy|
   deploy.method   = :sftp
   deploy.host     = 'mediaviz.fe.up.pt'
   deploy.port     = 22
-  deploy.path     = '/home/tiagodevezas/Projects/public_html/dashboard/v2'
+  deploy.path     = '/home/tiagodevezas/Projects/public_html/dashboard/v2/'
   deploy.build_before = true
   # Optional Settings
   deploy.user     = 'tiagodevezas' # no default
