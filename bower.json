@@ -24,6 +24,7 @@
     "angular-ui-select": "~0.9.0",
     "angular-pickadate": "*",
     "select2": "~3.5.2",
-    "svg-loaders": "~1.0.2"
+    "svg-loaders": "~1.0.2",
+    "angular-material": "master"
   }
 }
