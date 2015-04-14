@@ -1,0 +1,57 @@
+<md-sidenav md-component-id="left" class="md-sidenav-left md-whiteframe-z2" md-is-locked-open="$mdMedia('gt-sm')">
+	<md-toolbar class="md-theme-indigo">
+		<h1 class="md-toolbar-tools">
+			<a href="#/" ng-click="toggleMenu()">MediaViz</a>
+		</h1>
+	</md-toolbar>
+
+	<md-content role="navigation">
+		<md-list>
+			<md-subheader class="md-no-sticky">Ferramentas</md-subheader>
+
+			<md-divider></md-divider>
+			<md-list-item class="md-1-line" ng-click="goTo('/chronicle')">
+			<div class="md-list-item-text">
+				<p>Crónica</p>
+			</div>
+			</md-list-item>
+
+			<md-divider></md-divider>
+			<md-list-item class="md-1-line" ng-click="goTo('/flow')">
+			<div class="md-list-item-text">
+				<p>Fluxo</p>
+			</div>
+			</md-list-item>
+
+			<md-divider></md-divider>
+			<md-list-item class="md-1-line" ng-click="goTo('/compare')">
+			<div class="md-list-item-text">
+				<p>Comparador</p>
+			</div>
+			</md-list-item>
+
+			<md-divider></md-divider>
+			<md-list-item class="md-1-line" ng-click="goTo('/coverage')">
+			<div class="md-list-item-text">
+				<p>Cobertura</p>
+			</div>
+			</md-list-item>
+
+			<md-divider></md-divider>
+			<md-list-item class="md-1-line" ng-click="goTo('/photofinish')">
+			<div class="md-list-item-text">
+				<p>PhotoFinish</p>
+			</div>
+			</md-list-item>
+
+			<md-divider></md-divider>
+			<md-list-item class="md-1-line" ng-click="goTo('/stacks')">
+			<div class="md-list-item-text">
+				<p>Stacks</p>
+			</div>
+			</md-list-item>
+
+		</md-list>
+	</md-content>
+
+</md-sidenav>

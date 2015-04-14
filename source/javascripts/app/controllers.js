@@ -2,7 +2,16 @@
 
 var mediavizControllers = angular.module('mediavizControllers', []);
 
-mediavizControllers.controller('RootCtrl', function($scope, SourceList) {
+mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $location, SourceList) {
+
+  $scope.toggleMenu = function() {
+    $mdSidenav('left').toggle();
+  }
+
+  $scope.goTo = function(url) {
+    $location.path(url);
+    $mdSidenav('left').toggle();
+  }
 
   $scope.sourceList = [];
   $scope.sourceListOriginal = [];
@@ -1212,7 +1221,7 @@ var barChart = {
 
 mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Page, Resources, Chart, DataFormatter) {
 
-  Page.setTitle('Chronicle');
+  Page.setTitle('Crónica');
 
   var chart;
 
