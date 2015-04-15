@@ -1,8 +1,29 @@
-<div id="chronicle">
+<div id="chronicle" layout-padding layout="column">
 
-	<md-chips ng-model="keywords.selected" placeholder="Introduzir termos">
-	</md-chips>
+	<div layout="row">
+		<div offset-gt-sm="20" flex-gt-sm="60">
+		<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>
+		</div>
+	</div>
+<!-- 	<div layout="row">
+    <md-select placeholder="Escolher conjunto fontes" ng-model="sourceType">
+	    <md-option value="national">Jornais nacionais</md-option>
+	    <md-option value="international">Jornais internacionais</md-option>
+	    <md-option value="blogs">Blogues</md-option>
+  	</md-select>
+    <md-select placeholder="Escolher conjunto fontes" ng-model="sourceType">
+	    <md-option value="national">Jornais nacionais</md-option>
+	    <md-option value="international">Jornais internacionais</md-option>
+	    <md-option value="blogs">Blogues</md-option>
+  	</md-select>
+	</div> -->
+	<md-card layout="column" class="md-padding">
+		<loading-flash>A carregar...</loading-flash>
 
+		<div id="keyword-chart"></div>
+	<md-card>
+
+	
 <!-- 	<div class="search-form">
 		<div class="keyword-select">
 			<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-remove="removeKeyword($item, $model)" tagging-tokens="ENTER|TAB">
@@ -14,7 +35,7 @@
 		  <button class="clear-chart" ng-click="clearChart()">Limpar gráfico</button>		
 		</div> -->
 
-		<div class="field-select">
+<!-- 		<div class="field-select">
 			<span><strong>Campos a pesquisar: </strong></span>
 			<label>Título ou sumário</label>
 			<input type="radio" value="title_summary" ng-model="searchFields" ng-change="redrawChart()">
@@ -41,22 +62,7 @@
 		<div style="float: right;">
 			<label for="chart-type-select" style="float:left;">Tipo de gráfico &nbsp;&nbsp;</label>
 			<select-chart-type></select-chart-type>
-			<!-- <select id="chart-type-select" ng-model="chartType.selected" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(chartType.selected)" style="float: left;"></select> -->
 		</div>
-<!-- 		<ul style="float: right;">
-			<li><a href="" ng-click="setChartType('line')" ng-class="{'selected':chartType === 'line'}">Linhas</a></li>
-			<li><a href="" ng-click="setChartType('spline')" ng-class="{'selected':chartType === 'spline'}">Linhas 2</a></li>
-			<li><a href="" ng-click="setChartType('area')" ng-class="{'selected':chartType === 'area'}">Área</a></li>
-			<li><a href="" ng-click="setChartType('area-spline')" ng-class="{'selected':chartType === 'area-spline'}">Área 2</a></li>
-			<li><a href="" ng-click="setChartType('bar')" ng-class="{'selected':chartType === 'bar'}">Barras</a></li>
-			<li><a href="" ng-click="setChartType('donut')" ng-class="{'selected':chartType === 'donut'}">Donut</a></li>
-		</ul> -->
-	</div>
-
-
-	<loading-flash>A carregar...</loading-flash>
-
-	<div id="keyword-chart" style="margin-top: 1em;">
-	</div>
+	</div> -->
 
 </div>

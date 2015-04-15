@@ -1,0 +1,24 @@
+ul.sidenav {
+	padding: 0;
+	margin: 0;
+	li {
+		border-top: 1px solid rgba(0, 0, 0, 0.12);
+		margin: 0;
+	}
+}
+
+a.md-button {
+	border-radius: 0;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  line-height: 50px;
+  margin: 0;
+  max-height: 50px;
+  overflow: hidden;
+  padding: 0px 16px;
+  text-align: left;
+  text-decoration: none;
+  white-space: normal;
+  width: 100%;
+}

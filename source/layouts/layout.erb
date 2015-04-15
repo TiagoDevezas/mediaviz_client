@@ -21,9 +21,7 @@
     <%# partial 'partials/header' %>
     <div layout="column" role="main" flex>
       <%= partial 'partials/main_toolbar' %>
-      <md-content layout-padding>
-        <div ng-view></div>
-      </md-content>
+      <md-content ng-view layout-padding></md-content>
     </div>
     <%= partial 'partials/analytics' %>
   </body>
