@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.8.3-master-554716f
+ * v0.9.0-rc1-master-ea185ea
  */
 goog.provide('ng.material.components.tabs');
 goog.require('ng.material.components.icon');
@@ -170,19 +170,8 @@ ng.material.components.tabs = angular.module('material.components.tabs', [
       scope.deselect = scope.deselect || angular.noop;
       scope.select = scope.select || angular.noop;
 
-
       scope.$watch('active', function (active) { if (active) ctrl.select(data.getIndex()); });
       scope.$watch('disabled', function () { ctrl.refreshIndex(); });
-      scope.$watch(getTemplate, function (template, oldTemplate) {
-        if (template === oldTemplate) return;
-        data.template = template;
-        ctrl.updateInkBarStyles();
-      });
-      scope.$watch(getLabel, function (label, oldLabel) {
-        if (label === oldLabel) return;
-        data.label = label;
-        ctrl.updateInkBarStyles();
-      });
       scope.$on('$destroy', function () { ctrl.removeTab(data); });
 
       function getLabel () {
@@ -190,8 +179,11 @@ ng.material.components.tabs = angular.module('material.components.tabs', [
       }
 
       function getTemplate () {
-        var content = element.find('md-tab-template');
-        return content.length ? content.html() : attr.label ? element.html() : null;
+        var content = element.find('md-tab-template'),
+            template = content.length ? content.html() : attr.label ? element.html() : null;
+        if (content.length) content.remove();
+        else element.empty();
+        return template;
       }
     }
   }
@@ -524,7 +516,7 @@ ng.material.components.tabs = angular.module('material.components.tabs', [
     }
 
     function fixOffset (value) {
-      if (!elements.tabs.length) return;
+      if (!elements.tabs.length || !shouldPaginate()) return 0;
       var lastTab = elements.tabs[elements.tabs.length - 1],
           totalWidth = lastTab.offsetLeft + lastTab.offsetWidth;
       value = Math.max(0, value);
@@ -724,7 +716,7 @@ ng.material.components.tabs = angular.module('material.components.tabs', [
                   md-label-template="tab.label"></md-tab-item>\
               <md-ink-bar ng-hide="noInkBar"></md-ink-bar>\
             </md-pagination-wrapper>\
-            <div class="md-visually-hidden">\
+            <div class="md-visually-hidden md-dummy-wrapper">\
               <md-dummy-tab\
                   tabindex="-1"\
                   id="tab-item-{{tab.id}}"\
