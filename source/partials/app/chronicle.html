@@ -1,17 +1,18 @@
 <div id="chronicle">
 
-	<h3>Crónica</h3>
+	<md-chips ng-model="keywords.selected" placeholder="Introduzir termos">
+	</md-chips>
 
-	<div class="search-form">
+<!-- 	<div class="search-form">
 		<div class="keyword-select">
-			<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
+			<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-remove="removeKeyword($item, $model)" tagging-tokens="ENTER|TAB">
 		    <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
 		    <ui-select-choices repeat="keyword in keywords.selected">
 		      {{ keyword }}
 		    </ui-select-choices>
 		  </ui-select>
 		  <button class="clear-chart" ng-click="clearChart()">Limpar gráfico</button>		
-		</div>
+		</div> -->
 
 		<div class="field-select">
 			<span><strong>Campos a pesquisar: </strong></span>

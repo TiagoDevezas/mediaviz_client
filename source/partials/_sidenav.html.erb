@@ -6,52 +6,26 @@
 	</md-toolbar>
 
 	<md-content role="navigation">
-		<md-list>
-			<md-subheader class="md-no-sticky">Ferramentas</md-subheader>
-
-			<md-divider></md-divider>
-			<md-list-item class="md-1-line" ng-click="toggleMenu()">
-			<div class="md-list-item-text">
-				<p><a href="#/chronicle">Crónica</a></p>
-			</div>
-			</md-list-item>
-
-			<md-divider></md-divider>
-			<md-list-item class="md-1-line" ng-click="toggleMenu()">
-			<div class="md-list-item-text">
-				<p><a href="#/flow">Fluxo</a></p>
-			</div>
-			</md-list-item>
-
-			<md-divider></md-divider>
-			<md-list-item class="md-1-line" ng-click="toggleMenu()">
-			<div class="md-list-item-text">
-				<p><a href="#/compare">Comparador</a></p>
-			</div>
-			</md-list-item>
-
-			<md-divider></md-divider>
-			<md-list-item class="md-1-line" ng-click="toggleMenu()">
-			<div class="md-list-item-text">
-				<p><a href="#/coverage">Cobertura</a></p>
-			</div>
-			</md-list-item>
-
-			<md-divider></md-divider>
-			<md-list-item class="md-1-line" ng-click="toggleMenu()">
-			<div class="md-list-item-text">
-				<p><a href="#/photofinish">PhotoFinish</a></p>
-			</div>
-			</md-list-item>
-
-			<md-divider></md-divider>
-			<md-list-item class="md-1-line" ng-click="toggleMenu()">
-			<div class="md-list-item-text">
-				<p><a href="#/stacks">Stacks</a></p>
-			</div>
-			</md-list-item>
-
-		</md-list>
+		<ul class="sidenav">
+			<li>
+				<md-button ng-href="#/chronicle">Crónica</md-button>
+			</li>
+			<li>
+				<md-button ng-href="#/flow">Fluxo</md-button>
+			</li>
+			<li>
+				<md-button ng-href="#/compare">Comparador</md-button>
+			</li>
+			<li>
+				<md-button ng-href="#/coverage">Cobertura</md-button>
+			</li>
+			<li>
+				<md-button ng-href="#/photofinish">PhotoFinish</md-button>
+			</li>
+			<li>
+				<md-button ng-href="#/stacks">Stacks</md-button>
+			</li>
+		</ul>
 	</md-content>
 
 </md-sidenav>

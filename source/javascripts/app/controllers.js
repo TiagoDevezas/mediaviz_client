@@ -1402,6 +1402,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   }
 
   $scope.addKeyword = function(item){
+    console.log($scope.keywords.selected);
     $scope.keywords.selected.push(item);
   }
 
