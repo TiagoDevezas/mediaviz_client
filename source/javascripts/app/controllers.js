@@ -1402,7 +1402,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   }
 
   $scope.addKeyword = function(item){
-    console.log($scope.keywords.selected);
     $scope.keywords.selected.push(item);
   }
 
@@ -1529,7 +1528,7 @@ var keywordChart = {
         },
         y: {
           min: 0,
-          padding: {top: 0, bottom: 0},
+          padding: {bottom: 0},
           label: {
             text: '',
             position: 'outer-middle'
