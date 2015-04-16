@@ -1515,10 +1515,10 @@ var keywordChart = {
       x: {
           padding: {left: 0, right: 0},
           max: new Date(),
-          label: {
-            text: 'Dias',
-            position: 'outer-center'
-          },
+          // label: {
+          //   text: 'Dias',
+          //   position: 'outer-center'
+          // },
           type: 'timeseries',
           tick: {
             culling: {

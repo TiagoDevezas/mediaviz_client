@@ -9,7 +9,9 @@
 @import "../components/angular-ui-select/dist/select";
 @import "../components/angular-pickadate/src/angular-pickadate";
 
+@import "partials/_variables.scss";
 @import "partials/_sidenav.scss";
+@import "partials/_charts.scss";
 
 body {
 	background-color: #EDECEC;
