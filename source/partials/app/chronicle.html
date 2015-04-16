@@ -1,7 +1,7 @@
 <div id="chronicle" layout-padding layout="column">
 
-	<div layout="row">
-		<div offset-gt-sm="20" flex-gt-sm="60">
+	<div flex layout="row">
+		<div offset-gt-md="20" flex-gt-md="60" style="background-color: #FFF;">
 		<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>
 		</div>
 	</div>
@@ -19,7 +19,7 @@
 	</div> -->
 	<md-card layout="column" class="md-padding">
 		<loading-flash>A carregar...</loading-flash>
-
+		<h3>Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
 		<div id="keyword-chart"></div>
 	<md-card>
 

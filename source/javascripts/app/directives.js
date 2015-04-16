@@ -30,7 +30,7 @@ mediavizDirectives.directive('loadingFlash', function() {
 	return {
 		restrict: 'AE',
 		transclude: true,
-		template: '<div class="flash-notice" ng-show="loading" style="background-color: #2980B9;"><p><img src="images/svg-loaders/oval.svg" width="50" /><p><span ng-transclude style="color: #fff;"></span></div>'
+		template: '<div layout="row" ng-show="loading" layout-align="space-around"><md-progress-circular md-mode="indeterminate"></md-progress-circular></div>'
 	}
 });
 
