@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 goog.provide('ng.material.core');
 
@@ -559,33 +559,96 @@ angular.module('material.core')
       }
 
       var wrapperEl = angular.element('<div>');
+      disableTarget.addClass('md-overflow-wrapper-shown');
       wrapperEl.append(disableTarget.children());
       disableTarget.append(wrapperEl);
 
+      var restoreStyle = disableTarget.attr('style');
       var computedStyle = $window.getComputedStyle(disableTarget[0]);
+      var disableRect = disableTarget[0].getBoundingClientRect();
 
-      var scrollBarsShowing = !Util.floatingScrollbars() &&
-          scrollEl.scrollHeight > scrollEl.offsetHeight;
+      var widthOffset = disableRect.left + parseFloat(computedStyle.paddingLeft, 10) - parseFloat(computedStyle.marginLeft, 10);
 
-      if (scrollBarsShowing) {
-        var restoreOverflowY = disableTarget.css('overflow-y');
-        disableTarget.css('overflow-y', 'scroll');
-      }
+
+
+      computeScrollbars(computedStyle);
+
+      wrapperEl.attr('layout-margin', disableTarget.attr('layout-margin'));
 
       wrapperEl.css({
         overflow: 'hidden',
         position: 'fixed',
-        width: '100%',
+        display: computedStyle.display,
+        '-webkit-align-items': computedStyle.webkitAlignItems,
+        '-ms-flex-align': computedStyle.msFlexAlign,
+        alignItems: computedStyle.alignItems,
+        '-webkit-justify-content': computedStyle.webkitJustifyContent,
+        '-ms-flex-pack': computedStyle.msFlexPack,
+        justifyContent: computedStyle.justifyContent,
+        '-webkit-flex': computedStyle.webkitFlex,
+        '-ms-flex': computedStyle.msFlex,
+        flex: computedStyle.flex,
         'padding-top': computedStyle.paddingTop,
-        top: (-1 * heightOffset) + 'px'
+        'margin-top': '0px',
+        'margin-left': computedStyle.marginLeft,
+        top: (-1 * heightOffset) + 'px',
+        left: widthOffset + 'px',
+        width: '100%'
       });
+
+
+      computeSize();
+
+      angular.element($window).on('resize', computeSize);
+
+      function computeSize() {
+        if (restoreStyle) {
+          disableTarget.attr('style', restoreStyle);
+        } else {
+          disableTarget[0].removeAttribute('style');
+        }
+        wrapperEl.css('position', 'static');
+        var computedStyle = $window.getComputedStyle(disableTarget[0]);
+        computeScrollbars(computedStyle);
+        var innerWidth = parseFloat(computedStyle.width, 10);
+        if (computedStyle.boxSizing == 'border-box') {
+          innerWidth -= parseFloat(computedStyle.paddingLeft, 10);
+          innerWidth -= parseFloat(computedStyle.paddingRight, 10);
+        }
+        wrapperEl.css({
+          'max-width': innerWidth + 'px'
+        });
+        wrapperEl.css('position', 'fixed');
+      }
+
+      function computeScrollbars(computedStyle) {
+        var scrollBarsShowing = !Util.floatingScrollbars() &&
+            scrollEl.scrollHeight > scrollEl.offsetHeight;
+
+        if (scrollBarsShowing) {
+          disableTarget.css('overflow-y', 'scroll');
+        }
+
+        var innerHeight = parseFloat(computedStyle.height, 10);
+        if (computedStyle.boxSizing == 'border-box') {
+          innerHeight -= parseFloat(computedStyle.paddingTop, 10);
+          innerHeight -= parseFloat(computedStyle.paddingBottom, 10);
+        }
+
+        if (scrollEl.scrollHeight > scrollEl.offsetHeight) {
+          wrapperEl.css('min-height', '100%');
+        } else {
+          wrapperEl.css('max-height', innerHeight + 'px');
+          wrapperEl.css('height', '100%');
+        }
+        disableTarget.css('height', innerHeight);
+      }
 
       return function restoreScroll() {
         disableTarget.append(wrapperEl.children());
         wrapperEl.remove();
-        if (scrollBarsShowing) {
-          disableTarget.css('overflow-y', restoreOverflowY || false);
-        }
+        angular.element($window).off('resize', computeSize);
+        disableTarget.attr('style', restoreStyle);
         if (useDocElement) {
           $document[0].documentElement.scrollTop = restoreOffset;
         } else {
@@ -2040,6 +2103,9 @@ function InterimElementProvider() {
               if (!(options.parent || {}).length) {
                 options.parent = $rootElement.find('body');
                 if (!options.parent.length) options.parent = $rootElement;
+                if (options.parent[0].nodeName == '#comment') {
+                  options.parent = $document.find('body');
+                }
               }
 
               if (options.themable) $mdTheming(element);
@@ -2253,6 +2319,7 @@ function InkRippleService($window, $timeout) {
     attachButtonBehavior: attachButtonBehavior,
     attachCheckboxBehavior: attachCheckboxBehavior,
     attachTabBehavior: attachTabBehavior,
+    attachListControlBehavior: attachListControlBehavior,
     attach: attach
   };
 
@@ -2274,6 +2341,15 @@ function InkRippleService($window, $timeout) {
   }
 
   function attachTabBehavior(scope, element, options) {
+    return attach(scope, element, angular.extend({
+      center: false,
+      dimBackground: true,
+      outline: false,
+      rippleSize: 'full'
+    }, options));
+  }
+
+  function attachListControlBehavior(scope, element, options) {
     return attach(scope, element, angular.extend({
       center: false,
       dimBackground: true,

@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 goog.provide('ng.material.components.select');
 goog.require('ng.material.components.backdrop');
@@ -147,6 +147,8 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
 
     element.empty().append(labelEl);
 
+    attr.tabindex = attr.tabindex || '0';
+
     $mdTheming(element);
 
     return function postLink(scope, element, attr, ctrls) {
@@ -250,17 +252,17 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
         }
         isDisabled = disabled;
         if (disabled) {
-          element.attr('tabindex', -1);
+          element.attr({'tabindex': -1, 'aria-disabled': 'true'});
           element.off('click', openSelect);
           element.off('keydown', handleKeypress);
         } else {
-          element.attr('tabindex', 0);
+          element.attr({'tabindex': attr.tabindex, 'aria-disabled':'false'});
           element.on('click', openSelect);
           element.on('keydown', handleKeypress);
         }
       });
       if (!attr.disabled && !attr.ngDisabled) {
-        element.attr('tabindex', 0);
+        element.attr({'tabindex': attr.tabindex, 'aria-disabled':'false'});
         element.on('click', openSelect);
         element.on('keydown', handleKeypress);
       }
@@ -268,7 +270,6 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
       element.attr({
         'role': 'combobox',
         'id': 'select_' + $mdUtil.nextUid(),
-        'aria-haspopup': true,
         'aria-expanded': 'false',
         'aria-labelledby': labelEl.attr('id')
       });
@@ -455,7 +456,7 @@ function SelectMenuDirective($parse, $mdUtil, $mdTheming) {
         optNodes = $element.find('md-option');
         optText = new Array(optNodes.length);
         angular.forEach(optNodes, function(el, i) {
-          optText[i] = el.textContent;
+          optText[i] = el.textContent.trim();
         });
       }
       for (var i = 0; i < optText.length; ++i) {
@@ -588,7 +589,8 @@ function OptionDirective($mdInkRipple, $mdUtil) {
   function compile(element, attr) {
     // Manual transclusion to avoid the extra inner <span> that ng-transclude generates
     element.append( angular.element('<div class="md-text">').append(element.contents()) );
-    if (attr.tabindex === undefined) element.attr('tabindex', 0);
+
+    element.attr('tabindex', attr.tabindex || '0');
     return postLink;
   }
 
@@ -716,7 +718,11 @@ function SelectProvider($$interimElementProvider) {
       });
 
       opts.resizeFn = function() {
-        animateSelect(scope, element, opts);
+        $$rAF(function() {
+          $$rAF(function() {
+            animateSelect(scope, element, opts);
+          });
+        });
       };
 
       angular.element($window).on('resize', opts.resizeFn);
@@ -771,7 +777,6 @@ function SelectProvider($$interimElementProvider) {
 
       function configureAria() {
         opts.selectEl.attr('aria-labelledby', opts.target.attr('id'));
-        opts.target.attr('aria-owns', opts.selectEl.attr('id'));
         opts.target.attr('aria-expanded', 'true');
       }
 
@@ -883,10 +888,10 @@ function SelectProvider($$interimElementProvider) {
         element.removeClass('md-active');
         opts.parent[0].removeChild(element[0]); // use browser to avoid $destroy event
         opts.backdrop && opts.backdrop.remove();
-        if (opts.restoreFocus) opts.target.focus();
         if (opts.disableParentScroll) {
           opts.restoreScroll();
         }
+        if (opts.restoreFocus) opts.target.focus();
       });
     }
 

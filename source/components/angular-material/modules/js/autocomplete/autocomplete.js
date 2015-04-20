@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -137,7 +137,7 @@
       registerSelectedItemWatcher(selectedItemChange);
       $scope.$watch('selectedItem', handleSelectedItemChange);
       $scope.$watch('$mdAutocompleteCtrl.hidden', function (hidden, oldHidden) {
-        if (hidden && !oldHidden) positionDropdown();
+        if (!hidden && oldHidden) positionDropdown();
       });
       angular.element($window).on('resize', positionDropdown);
     }
@@ -503,6 +503,7 @@
                 aria-expanded="{{!$mdAutocompleteCtrl.hidden}}"/>\
             <button\
                 type="button"\
+                tabindex="-1"\
                 ng-if="$mdAutocompleteCtrl.scope.searchText && !isDisabled"\
                 ng-click="$mdAutocompleteCtrl.clear()">\
               <md-icon md-svg-icon="cancel"></md-icon>\

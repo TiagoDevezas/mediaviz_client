@@ -2,14 +2,14 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
-angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","material.core.gestures","material.core.theming.palette","material.core.theming","material.components.autocomplete","material.components.backdrop","material.components.bottomSheet","material.components.button","material.components.card","material.components.checkbox","material.components.chips","material.components.content","material.components.dialog","material.components.divider","material.components.gridList","material.components.icon","material.components.input","material.components.list","material.components.progressCircular","material.components.progressLinear","material.components.radioButton","material.components.select","material.components.sidenav","material.components.slider","material.components.sticky","material.components.subheader","material.components.swipe","material.components.switch","material.components.tabs","material.components.textField","material.components.toast","material.components.toolbar","material.components.tooltip","material.components.whiteframe"]);
+angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","material.core.gestures","material.core.theming.palette","material.core.theming","material.components.autocomplete","material.components.backdrop","material.components.button","material.components.checkbox","material.components.bottomSheet","material.components.card","material.components.chips","material.components.content","material.components.dialog","material.components.divider","material.components.gridList","material.components.icon","material.components.input","material.components.list","material.components.progressCircular","material.components.progressLinear","material.components.radioButton","material.components.select","material.components.sidenav","material.components.slider","material.components.sticky","material.components.subheader","material.components.swipe","material.components.switch","material.components.tabs","material.components.toolbar","material.components.toast","material.components.tooltip","material.components.whiteframe"]);
 /*!
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -72,7 +72,7 @@ function rAFDecorator( $delegate ) {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -141,7 +141,7 @@ MdConstantFactory.$inject = ["$$rAF", "$sniffer"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function(){
 
@@ -378,7 +378,7 @@ MdConstantFactory.$inject = ["$$rAF", "$sniffer"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function(){
 
@@ -517,7 +517,7 @@ mdMediaFactory.$inject = ["$mdConstant", "$rootScope", "$window"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -587,33 +587,96 @@ angular.module('material.core')
       }
 
       var wrapperEl = angular.element('<div>');
+      disableTarget.addClass('md-overflow-wrapper-shown');
       wrapperEl.append(disableTarget.children());
       disableTarget.append(wrapperEl);
 
+      var restoreStyle = disableTarget.attr('style');
       var computedStyle = $window.getComputedStyle(disableTarget[0]);
+      var disableRect = disableTarget[0].getBoundingClientRect();
 
-      var scrollBarsShowing = !Util.floatingScrollbars() &&
-          scrollEl.scrollHeight > scrollEl.offsetHeight;
+      var widthOffset = disableRect.left + parseFloat(computedStyle.paddingLeft, 10) - parseFloat(computedStyle.marginLeft, 10);
 
-      if (scrollBarsShowing) {
-        var restoreOverflowY = disableTarget.css('overflow-y');
-        disableTarget.css('overflow-y', 'scroll');
-      }
+
+
+      computeScrollbars(computedStyle);
+
+      wrapperEl.attr('layout-margin', disableTarget.attr('layout-margin'));
 
       wrapperEl.css({
         overflow: 'hidden',
         position: 'fixed',
-        width: '100%',
+        display: computedStyle.display,
+        '-webkit-align-items': computedStyle.webkitAlignItems,
+        '-ms-flex-align': computedStyle.msFlexAlign,
+        alignItems: computedStyle.alignItems,
+        '-webkit-justify-content': computedStyle.webkitJustifyContent,
+        '-ms-flex-pack': computedStyle.msFlexPack,
+        justifyContent: computedStyle.justifyContent,
+        '-webkit-flex': computedStyle.webkitFlex,
+        '-ms-flex': computedStyle.msFlex,
+        flex: computedStyle.flex,
         'padding-top': computedStyle.paddingTop,
-        top: (-1 * heightOffset) + 'px'
+        'margin-top': '0px',
+        'margin-left': computedStyle.marginLeft,
+        top: (-1 * heightOffset) + 'px',
+        left: widthOffset + 'px',
+        width: '100%'
       });
+
+
+      computeSize();
+
+      angular.element($window).on('resize', computeSize);
+
+      function computeSize() {
+        if (restoreStyle) {
+          disableTarget.attr('style', restoreStyle);
+        } else {
+          disableTarget[0].removeAttribute('style');
+        }
+        wrapperEl.css('position', 'static');
+        var computedStyle = $window.getComputedStyle(disableTarget[0]);
+        computeScrollbars(computedStyle);
+        var innerWidth = parseFloat(computedStyle.width, 10);
+        if (computedStyle.boxSizing == 'border-box') {
+          innerWidth -= parseFloat(computedStyle.paddingLeft, 10);
+          innerWidth -= parseFloat(computedStyle.paddingRight, 10);
+        }
+        wrapperEl.css({
+          'max-width': innerWidth + 'px'
+        });
+        wrapperEl.css('position', 'fixed');
+      }
+
+      function computeScrollbars(computedStyle) {
+        var scrollBarsShowing = !Util.floatingScrollbars() &&
+            scrollEl.scrollHeight > scrollEl.offsetHeight;
+
+        if (scrollBarsShowing) {
+          disableTarget.css('overflow-y', 'scroll');
+        }
+
+        var innerHeight = parseFloat(computedStyle.height, 10);
+        if (computedStyle.boxSizing == 'border-box') {
+          innerHeight -= parseFloat(computedStyle.paddingTop, 10);
+          innerHeight -= parseFloat(computedStyle.paddingBottom, 10);
+        }
+
+        if (scrollEl.scrollHeight > scrollEl.offsetHeight) {
+          wrapperEl.css('min-height', '100%');
+        } else {
+          wrapperEl.css('max-height', innerHeight + 'px');
+          wrapperEl.css('height', '100%');
+        }
+        disableTarget.css('height', innerHeight);
+      }
 
       return function restoreScroll() {
         disableTarget.append(wrapperEl.children());
         wrapperEl.remove();
-        if (scrollBarsShowing) {
-          disableTarget.css('overflow-y', restoreOverflowY || false);
-        }
+        angular.element($window).off('resize', computeSize);
+        disableTarget.attr('style', restoreStyle);
         if (useDocElement) {
           $document[0].documentElement.scrollTop = restoreOffset;
         } else {
@@ -870,7 +933,7 @@ angular.element.prototype.blur = angular.element.prototype.blur || function() {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -960,7 +1023,7 @@ AriaService.$inject = ["$$rAF", "$log", "$window"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -1105,7 +1168,7 @@ mdCompilerService.$inject = ["$q", "$http", "$injector", "$compile", "$controlle
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function (jQuery) {
   'use strict';
@@ -1717,7 +1780,140 @@ mdCompilerService.$inject = ["$q", "$http", "$injector", "$compile", "$controlle
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
+ */
+(function() {
+  'use strict';
+
+  /**
+   * @ngdoc module
+   * @name material.core.componentRegistry
+   *
+   * @description
+   * A component instance registration service.
+   * Note: currently this as a private service in the SideNav component.
+   */
+  angular.module('material.core')
+    .factory('$mdComponentRegistry', ComponentRegistry);
+
+  /*
+   * @private
+   * @ngdoc factory
+   * @name ComponentRegistry
+   * @module material.core.componentRegistry
+   *
+   */
+  function ComponentRegistry($log, $q) {
+
+    var self;
+    var instances = [ ];
+    var pendings = { };
+
+    return self = {
+      /**
+       * Used to print an error when an instance for a handle isn't found.
+       */
+      notFoundError: function(handle) {
+        $log.error('No instance found for handle', handle);
+      },
+      /**
+       * Return all registered instances as an array.
+       */
+      getInstances: function() {
+        return instances;
+      },
+
+      /**
+       * Get a registered instance.
+       * @param handle the String handle to look up for a registered instance.
+       */
+      get: function(handle) {
+        if ( !isValidID(handle) ) return null;
+
+        var i, j, instance;
+        for(i = 0, j = instances.length; i < j; i++) {
+          instance = instances[i];
+          if(instance.$$mdHandle === handle) {
+            return instance;
+          }
+        }
+        return null;
+      },
+
+      /**
+       * Register an instance.
+       * @param instance the instance to register
+       * @param handle the handle to identify the instance under.
+       */
+      register: function(instance, handle) {
+        if ( !handle ) return angular.noop;
+
+        instance.$$mdHandle = handle;
+        instances.push(instance);
+        resolveWhen();
+
+        return deregister;
+
+        /**
+         * Remove registration for an instance
+         */
+        function deregister() {
+          var index = instances.indexOf(instance);
+          if (index !== -1) {
+            instances.splice(index, 1);
+          }
+        }
+
+        /**
+         * Resolve any pending promises for this instance
+         */
+        function resolveWhen() {
+          var dfd = pendings[handle];
+          if ( dfd ) {
+            dfd.resolve( instance );
+            delete pendings[handle];
+          }
+        }
+      },
+
+      /**
+       * Async accessor to registered component instance
+       * If not available then a promise is created to notify
+       * all listeners when the instance is registered.
+       */
+      when : function(handle) {
+        if ( isValidID(handle) ) {
+          var deferred = $q.defer();
+          var instance = self.get(handle);
+
+          if ( instance )  {
+            deferred.resolve( instance );
+          } else {
+            pendings[handle] = deferred;
+          }
+
+          return deferred.promise;
+        }
+        return $q.reject("Invalid `md-component-id` value.");
+      }
+
+    };
+
+    function isValidID(handle){
+      return handle && (handle !== "");
+    }
+
+  }
+  ComponentRegistry.$inject = ["$log", "$q"];
+
+
+})();
+
+/*!
+ * Angular Material Design
+ * https://github.com/angular/material
+ * @license MIT
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -2092,6 +2288,9 @@ function InterimElementProvider() {
               if (!(options.parent || {}).length) {
                 options.parent = $rootElement.find('body');
                 if (!options.parent.length) options.parent = $rootElement;
+                if (options.parent[0].nodeName == '#comment') {
+                  options.parent = $document.find('body');
+                }
               }
 
               if (options.themable) $mdTheming(element);
@@ -2152,140 +2351,7 @@ function InterimElementProvider() {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
- */
-(function() {
-  'use strict';
-
-  /**
-   * @ngdoc module
-   * @name material.core.componentRegistry
-   *
-   * @description
-   * A component instance registration service.
-   * Note: currently this as a private service in the SideNav component.
-   */
-  angular.module('material.core')
-    .factory('$mdComponentRegistry', ComponentRegistry);
-
-  /*
-   * @private
-   * @ngdoc factory
-   * @name ComponentRegistry
-   * @module material.core.componentRegistry
-   *
-   */
-  function ComponentRegistry($log, $q) {
-
-    var self;
-    var instances = [ ];
-    var pendings = { };
-
-    return self = {
-      /**
-       * Used to print an error when an instance for a handle isn't found.
-       */
-      notFoundError: function(handle) {
-        $log.error('No instance found for handle', handle);
-      },
-      /**
-       * Return all registered instances as an array.
-       */
-      getInstances: function() {
-        return instances;
-      },
-
-      /**
-       * Get a registered instance.
-       * @param handle the String handle to look up for a registered instance.
-       */
-      get: function(handle) {
-        if ( !isValidID(handle) ) return null;
-
-        var i, j, instance;
-        for(i = 0, j = instances.length; i < j; i++) {
-          instance = instances[i];
-          if(instance.$$mdHandle === handle) {
-            return instance;
-          }
-        }
-        return null;
-      },
-
-      /**
-       * Register an instance.
-       * @param instance the instance to register
-       * @param handle the handle to identify the instance under.
-       */
-      register: function(instance, handle) {
-        if ( !handle ) return angular.noop;
-
-        instance.$$mdHandle = handle;
-        instances.push(instance);
-        resolveWhen();
-
-        return deregister;
-
-        /**
-         * Remove registration for an instance
-         */
-        function deregister() {
-          var index = instances.indexOf(instance);
-          if (index !== -1) {
-            instances.splice(index, 1);
-          }
-        }
-
-        /**
-         * Resolve any pending promises for this instance
-         */
-        function resolveWhen() {
-          var dfd = pendings[handle];
-          if ( dfd ) {
-            dfd.resolve( instance );
-            delete pendings[handle];
-          }
-        }
-      },
-
-      /**
-       * Async accessor to registered component instance
-       * If not available then a promise is created to notify
-       * all listeners when the instance is registered.
-       */
-      when : function(handle) {
-        if ( isValidID(handle) ) {
-          var deferred = $q.defer();
-          var instance = self.get(handle);
-
-          if ( instance )  {
-            deferred.resolve( instance );
-          } else {
-            pendings[handle] = deferred;
-          }
-
-          return deferred.promise;
-        }
-        return $q.reject("Invalid `md-component-id` value.");
-      }
-
-    };
-
-    function isValidID(handle){
-      return handle && (handle !== "");
-    }
-
-  }
-  ComponentRegistry.$inject = ["$log", "$q"];
-
-
-})();
-
-/*!
- * Angular Material Design
- * https://github.com/angular/material
- * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -2317,6 +2383,7 @@ function InkRippleService($window, $timeout) {
     attachButtonBehavior: attachButtonBehavior,
     attachCheckboxBehavior: attachCheckboxBehavior,
     attachTabBehavior: attachTabBehavior,
+    attachListControlBehavior: attachListControlBehavior,
     attach: attach
   };
 
@@ -2338,6 +2405,15 @@ function InkRippleService($window, $timeout) {
   }
 
   function attachTabBehavior(scope, element, options) {
+    return attach(scope, element, angular.extend({
+      center: false,
+      dimBackground: true,
+      outline: false,
+      rippleSize: 'full'
+    }, options));
+  }
+
+  function attachListControlBehavior(scope, element, options) {
     return attach(scope, element, angular.extend({
       center: false,
       dimBackground: true,
@@ -2709,7 +2785,7 @@ function attrNoDirective() {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -3081,7 +3157,7 @@ angular.module('material.core.theming.palette', [])
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -3719,7 +3795,7 @@ function rgba(rgbArray, opacity) {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -3740,7 +3816,7 @@ function rgba(rgbArray, opacity) {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -3779,7 +3855,296 @@ BackdropDirective.$inject = ["$mdTheming"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
+ */
+(function() {
+'use strict';
+
+/**
+ * @ngdoc module
+ * @name material.components.button
+ * @description
+ *
+ * Button
+ */
+angular.module('material.components.button', [
+  'material.core'
+])
+  .directive('mdButton', MdButtonDirective);
+
+/**
+ * @ngdoc directive
+ * @name mdButton
+ * @module material.components.button
+ *
+ * @restrict E
+ *
+ * @description
+ * `<md-button>` is a button directive with optional ink ripples (default enabled).
+ *
+ * If you supply a `href` or `ng-href` attribute, it will become an `<a>` element. Otherwise, it will
+ * become a `<button>` element.
+ *
+ * As per the [material design spec](http://www.google.com/design/spec/style/color.html#color-ui-color-application)
+ * the FAB button is in the accent color by default. The primary color palette may be used with
+ * the `md-primary` class.
+ *
+ * @param {boolean=} md-no-ink If present, disable ripple ink effects.
+ * @param {expression=} ng-disabled En/Disable based on the expression
+ * @param {string=} md-ripple-size Overrides the default ripple size logic. Options: `full`, `partial`, `auto`
+ * @param {string=} aria-label Adds alternative text to button for accessibility, useful for icon buttons.
+ * If no default text is found, a warning will be logged.
+ *
+ * @usage
+ * <hljs lang="html">
+ *  <md-button>
+ *    Flat Button
+ *  </md-button>
+ *  <md-button href="http://google.com">
+ *    Flat link
+ *  </md-button>
+ *  <md-button class="md-raised">
+ *    Raised Button
+ *  </md-button>
+ *  <md-button ng-disabled="true">
+ *    Disabled Button
+ *  </md-button>
+ *  <md-button class="md-fab" aria-label="FAB">
+ *    <md-icon md-svg-src="your/icon.svg"></md-icon>
+ *  </md-button>
+ *  <md-button class="md-fab md-mini" aria-label="Mini FAB">
+ *    <md-icon md-svg-src="your/icon.svg"></md-icon>
+ *  </md-button>
+ * </hljs>
+ */
+function MdButtonDirective($mdInkRipple, $mdTheming, $mdAria, $timeout) {
+
+  return {
+    restrict: 'EA',
+    replace: true,
+    transclude: true,
+    template: getTemplate,
+    link: postLink
+  };
+
+  function isAnchor(attr) {
+    return angular.isDefined(attr.href) || angular.isDefined(attr.ngHref) || angular.isDefined(attr.uiSref);
+  }
+  
+  function getTemplate(element, attr) {
+    return isAnchor(attr) ?
+           '<a class="md-button" ng-transclude></a>' :
+           '<button class="md-button" ng-transclude></button>';
+  }
+
+  function postLink(scope, element, attr) {
+    var node = element[0];
+    $mdTheming(element);
+    $mdInkRipple.attachButtonBehavior(scope, element);
+
+    var elementHasText = node.textContent.trim();
+    if (!elementHasText) {
+      $mdAria.expect(element, 'aria-label');
+    }
+
+    // For anchor elements, we have to set tabindex manually when the 
+    // element is disabled
+    if (isAnchor(attr) && angular.isDefined(attr.ngDisabled) ) {
+      scope.$watch(attr.ngDisabled, function(isDisabled) {
+        element.attr('tabindex', isDisabled ? -1 : 0);
+      });
+    }
+
+    // restrict focus styles to the keyboard
+    scope.mouseActive = false;
+    element.on('mousedown', function() {
+        scope.mouseActive = true;
+        $timeout(function(){
+          scope.mouseActive = false;
+        }, 100);
+      })
+      .on('focus', function() {
+        if(scope.mouseActive === false) { element.addClass('md-focused'); }
+      })
+      .on('blur', function() { element.removeClass('md-focused'); });
+  }
+
+}
+MdButtonDirective.$inject = ["$mdInkRipple", "$mdTheming", "$mdAria", "$timeout"];
+})();
+
+/*!
+ * Angular Material Design
+ * https://github.com/angular/material
+ * @license MIT
+ * v0.9.0-rc1-master-aff50d5
+ */
+(function() {
+'use strict';
+
+/**
+ * @ngdoc module
+ * @name material.components.checkbox
+ * @description Checkbox module!
+ */
+angular
+  .module('material.components.checkbox', ['material.core'])
+  .directive('mdCheckbox', MdCheckboxDirective);
+
+/**
+ * @ngdoc directive
+ * @name mdCheckbox
+ * @module material.components.checkbox
+ * @restrict E
+ *
+ * @description
+ * The checkbox directive is used like the normal [angular checkbox](https://docs.angularjs.org/api/ng/input/input%5Bcheckbox%5D).
+ *
+ * As per the [material design spec](http://www.google.com/design/spec/style/color.html#color-ui-color-application)
+ * the checkbox is in the accent color by default. The primary color palette may be used with
+ * the `md-primary` class.
+ *
+ * @param {string} ng-model Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {expression=} ng-true-value The value to which the expression should be set when selected.
+ * @param {expression=} ng-false-value The value to which the expression should be set when not selected.
+ * @param {string=} ng-change Angular expression to be executed when input changes due to user interaction with the input element.
+ * @param {boolean=} md-no-ink Use of attribute indicates use of ripple ink effects
+ * @param {string=} aria-label Adds label to checkbox for accessibility.
+ * Defaults to checkbox's text. If no default text is found, a warning will be logged.
+ *
+ * @usage
+ * <hljs lang="html">
+ * <md-checkbox ng-model="isChecked" aria-label="Finished?">
+ *   Finished ?
+ * </md-checkbox>
+ *
+ * <md-checkbox md-no-ink ng-model="hasInk" aria-label="No Ink Effects">
+ *   No Ink Effects
+ * </md-checkbox>
+ *
+ * <md-checkbox ng-disabled="true" ng-model="isDisabled" aria-label="Disabled">
+ *   Disabled
+ * </md-checkbox>
+ *
+ * </hljs>
+ *
+ */
+function MdCheckboxDirective(inputDirective, $mdInkRipple, $mdAria, $mdConstant, $mdTheming, $mdUtil, $timeout) {
+  inputDirective = inputDirective[0];
+  var CHECKED_CSS = 'md-checked';
+
+  return {
+    restrict: 'E',
+    transclude: true,
+    require: '?ngModel',
+    template: 
+      '<div class="md-container" md-ink-ripple md-ink-ripple-checkbox>' +
+        '<div class="md-icon"></div>' +
+      '</div>' +
+      '<div ng-transclude class="md-label"></div>',
+    compile: compile
+  };
+
+  // **********************************************************
+  // Private Methods
+  // **********************************************************
+
+  function compile (tElement, tAttrs) {
+
+    tAttrs.type = 'checkbox';
+    tAttrs.tabindex = tAttrs.tabindex || '0';
+    tElement.attr('role', tAttrs.type);
+
+    return function postLink(scope, element, attr, ngModelCtrl) {
+      ngModelCtrl = ngModelCtrl || $mdUtil.fakeNgModel();
+      $mdTheming(element);
+
+      if (attr.ngChecked) {
+        scope.$watch(
+            scope.$eval.bind(scope, attr.ngChecked),
+            ngModelCtrl.$setViewValue.bind(ngModelCtrl)
+        );
+      }
+      $$watchExpr('ngDisabled', 'tabindex', {
+        true: '-1',
+        false: attr.tabindex
+      });
+      $mdAria.expectWithText(element, 'aria-label');
+
+      // Reuse the original input[type=checkbox] directive from Angular core.
+      // This is a bit hacky as we need our own event listener and own render
+      // function.
+      inputDirective.link.pre(scope, {
+        on: angular.noop,
+        0: {}
+      }, attr, [ngModelCtrl]);
+
+      scope.mouseActive = false;
+      element.on('click', listener)
+        .on('keypress', keypressHandler)
+        .on('mousedown', function() {
+          scope.mouseActive = true;
+          $timeout(function(){
+            scope.mouseActive = false;
+          }, 100);
+        })
+        .on('focus', function() {
+          if(scope.mouseActive === false) { element.addClass('md-focused'); }
+        })
+        .on('blur', function() { element.removeClass('md-focused'); });
+
+      ngModelCtrl.$render = render;
+
+      function $$watchExpr(expr, htmlAttr, valueOpts) {
+        if (attr[expr]) {
+          scope.$watch(attr[expr], function(val) {
+            if (valueOpts[val]) {
+              element.attr(htmlAttr, valueOpts[val]);
+            }
+          });
+        }
+      }
+
+      function keypressHandler(ev) {
+        var keyCode = ev.which || ev.keyCode;
+        if (keyCode === $mdConstant.KEY_CODE.SPACE || keyCode === $mdConstant.KEY_CODE.ENTER) {
+          ev.preventDefault();
+          if (!element.hasClass('md-focused')) { element.addClass('md-focused'); }
+          listener(ev);
+        }
+      }
+      function listener(ev) {
+        if (element[0].hasAttribute('disabled')) return;
+
+        scope.$apply(function() {
+          // Toggle the checkbox value...
+          var viewValue = attr.ngChecked ? attr.checked : !ngModelCtrl.$viewValue;
+
+          ngModelCtrl.$setViewValue( viewValue, ev && ev.type);
+          ngModelCtrl.$render();
+        });
+      }
+
+      function render() {
+        if(ngModelCtrl.$viewValue) {
+          element.addClass(CHECKED_CSS);
+        } else {
+          element.removeClass(CHECKED_CSS);
+        }
+      }
+    };
+  }
+}
+MdCheckboxDirective.$inject = ["inputDirective", "$mdInkRipple", "$mdAria", "$mdConstant", "$mdTheming", "$mdUtil", "$timeout"];
+
+})();
+
+/*!
+ * Angular Material Design
+ * https://github.com/angular/material
+ * @license MIT
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -4047,129 +4412,7 @@ MdBottomSheetProvider.$inject = ["$$interimElementProvider"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
- */
-(function() {
-'use strict';
-
-/**
- * @ngdoc module
- * @name material.components.button
- * @description
- *
- * Button
- */
-angular.module('material.components.button', [
-  'material.core'
-])
-  .directive('mdButton', MdButtonDirective);
-
-/**
- * @ngdoc directive
- * @name mdButton
- * @module material.components.button
- *
- * @restrict E
- *
- * @description
- * `<md-button>` is a button directive with optional ink ripples (default enabled).
- *
- * If you supply a `href` or `ng-href` attribute, it will become an `<a>` element. Otherwise, it will
- * become a `<button>` element.
- *
- * As per the [material design spec](http://www.google.com/design/spec/style/color.html#color-ui-color-application)
- * the FAB button is in the accent color by default. The primary color palette may be used with
- * the `md-primary` class.
- *
- * @param {boolean=} md-no-ink If present, disable ripple ink effects.
- * @param {expression=} ng-disabled En/Disable based on the expression
- * @param {string=} md-ripple-size Overrides the default ripple size logic. Options: `full`, `partial`, `auto`
- * @param {string=} aria-label Adds alternative text to button for accessibility, useful for icon buttons.
- * If no default text is found, a warning will be logged.
- *
- * @usage
- * <hljs lang="html">
- *  <md-button>
- *    Flat Button
- *  </md-button>
- *  <md-button href="http://google.com">
- *    Flat link
- *  </md-button>
- *  <md-button class="md-raised">
- *    Raised Button
- *  </md-button>
- *  <md-button ng-disabled="true">
- *    Disabled Button
- *  </md-button>
- *  <md-button class="md-fab" aria-label="FAB">
- *    <md-icon md-svg-src="your/icon.svg"></md-icon>
- *  </md-button>
- *  <md-button class="md-fab md-mini" aria-label="Mini FAB">
- *    <md-icon md-svg-src="your/icon.svg"></md-icon>
- *  </md-button>
- * </hljs>
- */
-function MdButtonDirective($mdInkRipple, $mdTheming, $mdAria, $timeout) {
-
-  return {
-    restrict: 'EA',
-    replace: true,
-    transclude: true,
-    template: getTemplate,
-    link: postLink
-  };
-
-  function isAnchor(attr) {
-    return angular.isDefined(attr.href) || angular.isDefined(attr.ngHref) || angular.isDefined(attr.uiSref);
-  }
-  
-  function getTemplate(element, attr) {
-    return isAnchor(attr) ?
-           '<a class="md-button" ng-transclude></a>' :
-           '<button class="md-button" ng-transclude></button>';
-  }
-
-  function postLink(scope, element, attr) {
-    var node = element[0];
-    $mdTheming(element);
-    $mdInkRipple.attachButtonBehavior(scope, element);
-
-    var elementHasText = node.textContent.trim();
-    if (!elementHasText) {
-      $mdAria.expect(element, 'aria-label');
-    }
-
-    // For anchor elements, we have to set tabindex manually when the 
-    // element is disabled
-    if (isAnchor(attr) && angular.isDefined(attr.ngDisabled) ) {
-      scope.$watch(attr.ngDisabled, function(isDisabled) {
-        element.attr('tabindex', isDisabled ? -1 : 0);
-      });
-    }
-
-    // restrict focus styles to the keyboard
-    scope.mouseActive = false;
-    element.on('mousedown', function() {
-        scope.mouseActive = true;
-        $timeout(function(){
-          scope.mouseActive = false;
-        }, 100);
-      })
-      .on('focus', function() {
-        if(scope.mouseActive === false) { element.addClass('md-focused'); }
-      })
-      .on('blur', function() { element.removeClass('md-focused'); });
-  }
-
-}
-MdButtonDirective.$inject = ["$mdInkRipple", "$mdTheming", "$mdAria", "$timeout"];
-})();
-
-/*!
- * Angular Material Design
- * https://github.com/angular/material
- * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -4235,174 +4478,7 @@ mdCardDirective.$inject = ["$mdTheming"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
- */
-(function() {
-'use strict';
-
-/**
- * @ngdoc module
- * @name material.components.checkbox
- * @description Checkbox module!
- */
-angular
-  .module('material.components.checkbox', ['material.core'])
-  .directive('mdCheckbox', MdCheckboxDirective);
-
-/**
- * @ngdoc directive
- * @name mdCheckbox
- * @module material.components.checkbox
- * @restrict E
- *
- * @description
- * The checkbox directive is used like the normal [angular checkbox](https://docs.angularjs.org/api/ng/input/input%5Bcheckbox%5D).
- *
- * As per the [material design spec](http://www.google.com/design/spec/style/color.html#color-ui-color-application)
- * the checkbox is in the accent color by default. The primary color palette may be used with
- * the `md-primary` class.
- *
- * @param {string} ng-model Assignable angular expression to data-bind to.
- * @param {string=} name Property name of the form under which the control is published.
- * @param {expression=} ng-true-value The value to which the expression should be set when selected.
- * @param {expression=} ng-false-value The value to which the expression should be set when not selected.
- * @param {string=} ng-change Angular expression to be executed when input changes due to user interaction with the input element.
- * @param {boolean=} md-no-ink Use of attribute indicates use of ripple ink effects
- * @param {string=} aria-label Adds label to checkbox for accessibility.
- * Defaults to checkbox's text. If no default text is found, a warning will be logged.
- *
- * @usage
- * <hljs lang="html">
- * <md-checkbox ng-model="isChecked" aria-label="Finished?">
- *   Finished ?
- * </md-checkbox>
- *
- * <md-checkbox md-no-ink ng-model="hasInk" aria-label="No Ink Effects">
- *   No Ink Effects
- * </md-checkbox>
- *
- * <md-checkbox ng-disabled="true" ng-model="isDisabled" aria-label="Disabled">
- *   Disabled
- * </md-checkbox>
- *
- * </hljs>
- *
- */
-function MdCheckboxDirective(inputDirective, $mdInkRipple, $mdAria, $mdConstant, $mdTheming, $mdUtil, $timeout) {
-  inputDirective = inputDirective[0];
-  var CHECKED_CSS = 'md-checked';
-
-  return {
-    restrict: 'E',
-    transclude: true,
-    require: '?ngModel',
-    template: 
-      '<div class="md-container" md-ink-ripple md-ink-ripple-checkbox>' +
-        '<div class="md-icon"></div>' +
-      '</div>' +
-      '<div ng-transclude class="md-label"></div>',
-    compile: compile
-  };
-
-  // **********************************************************
-  // Private Methods
-  // **********************************************************
-
-  function compile (tElement, tAttrs) {
-
-    tAttrs.type = 'checkbox';
-    tAttrs.tabindex = tAttrs.tabindex || '0';
-    tElement.attr('role', tAttrs.type);
-
-    return function postLink(scope, element, attr, ngModelCtrl) {
-      ngModelCtrl = ngModelCtrl || $mdUtil.fakeNgModel();
-      $mdTheming(element);
-
-      if (attr.ngChecked) {
-        scope.$watch(
-            scope.$eval.bind(scope, attr.ngChecked),
-            ngModelCtrl.$setViewValue.bind(ngModelCtrl)
-        );
-      }
-      $$watchExpr('ngDisabled', 'tabindex', {
-        true: '-1',
-        false: attr.tabindex
-      });
-      $mdAria.expectWithText(element, 'aria-label');
-
-      // Reuse the original input[type=checkbox] directive from Angular core.
-      // This is a bit hacky as we need our own event listener and own render
-      // function.
-      inputDirective.link.pre(scope, {
-        on: angular.noop,
-        0: {}
-      }, attr, [ngModelCtrl]);
-
-      scope.mouseActive = false;
-      element.on('click', listener)
-        .on('keypress', keypressHandler)
-        .on('mousedown', function() {
-          scope.mouseActive = true;
-          $timeout(function(){
-            scope.mouseActive = false;
-          }, 100);
-        })
-        .on('focus', function() {
-          if(scope.mouseActive === false) { element.addClass('md-focused'); }
-        })
-        .on('blur', function() { element.removeClass('md-focused'); });
-
-      ngModelCtrl.$render = render;
-
-      function $$watchExpr(expr, htmlAttr, valueOpts) {
-        if (attr[expr]) {
-          scope.$watch(attr[expr], function(val) {
-            if (valueOpts[val]) {
-              element.attr(htmlAttr, valueOpts[val]);
-            }
-          });
-        }
-      }
-
-      function keypressHandler(ev) {
-        var keyCode = ev.which || ev.keyCode;
-        if (keyCode === $mdConstant.KEY_CODE.SPACE || keyCode === $mdConstant.KEY_CODE.ENTER) {
-          ev.preventDefault();
-          if (!element.hasClass('md-focused')) { element.addClass('md-focused'); }
-          listener(ev);
-        }
-      }
-      function listener(ev) {
-        if (element[0].hasAttribute('disabled')) return;
-
-        scope.$apply(function() {
-          // Toggle the checkbox value...
-          var viewValue = attr.ngChecked ? attr.checked : !ngModelCtrl.$viewValue;
-
-          ngModelCtrl.$setViewValue( viewValue, ev && ev.type);
-          ngModelCtrl.$render();
-        });
-      }
-
-      function render() {
-        if(ngModelCtrl.$viewValue) {
-          element.addClass(CHECKED_CSS);
-        } else {
-          element.removeClass(CHECKED_CSS);
-        }
-      }
-    };
-  }
-}
-MdCheckboxDirective.$inject = ["inputDirective", "$mdInkRipple", "$mdAria", "$mdConstant", "$mdTheming", "$mdUtil", "$timeout"];
-
-})();
-
-/*!
- * Angular Material Design
- * https://github.com/angular/material
- * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -4423,7 +4499,7 @@ MdCheckboxDirective.$inject = ["inputDirective", "$mdInkRipple", "$mdAria", "$md
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -4508,7 +4584,7 @@ function iosScrollFix(node) {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -5178,7 +5254,7 @@ MdDialogProvider.$inject = ["$$interimElementProvider"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -5224,7 +5300,7 @@ MdDividerDirective.$inject = ["$mdTheming"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -6002,7 +6078,7 @@ function GridTileCaptionDirective() {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -6115,7 +6191,7 @@ mdIconDirective.$inject = ["$mdIcon", "$mdTheming", "$mdAria"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
   'use strict';
@@ -6589,7 +6665,7 @@ mdIconDirective.$inject = ["$mdIcon", "$mdTheming", "$mdAria"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 
@@ -6705,6 +6781,8 @@ function labelDirective() {
  *
  * @param {number=} md-maxlength The maximum number of characters allowed in this input. If this is specified, a character counter will be shown underneath the input.<br/><br/>
  * The purpose of **`md-maxlength`** is exactly to show the max length counter text. If you don't want the counter text and only need "plain" validation, you can use the "simple" `ng-maxlength` or maxlength attributes.
+ * @param {string=} aria-label Aria-label is required when no label is present.  A warning message will be logged in the console if not present.
+ * @param {string=} placeholder An alternative approach to using aria-label when the label is not present.  The placeholder text is copied to the aria-label attribute.
  *
  * @usage
  * <hljs lang="html">
@@ -6719,7 +6797,7 @@ function labelDirective() {
  *   <md-input-container>
  *     <label>Last Name</label>
  *     <input name="lastName" ng-model="lastName" required md-maxlength="10" minlength="4">
- *     <div ng-messages="userForm.lastName.$error" ng-show="userForm.bio.$dirty">
+ *     <div ng-messages="userForm.lastName.$error" ng-show="userForm.lastName.$dirty">
  *       <div ng-message="required">This is required!</div>
  *       <div ng-message="md-maxlength">That's too long!</div>
  *       <div ng-message="minlength">That's too short!</div>
@@ -6733,6 +6811,12 @@ function labelDirective() {
  *       <div ng-message="md-maxlength">That's too long!</div>
  *     </div>
  *   </md-input-container>
+ *   <md-input-container>
+ *     <input aria-label='title' ng-model='title'>
+ *   </md-input-container>
+ *   <md-input-container>
+ *     <input placeholder='title' ng-model='title'>
+ *   </md-input-container>
  * </form>
  * </hljs>
  *
@@ -6740,7 +6824,7 @@ function labelDirective() {
  *
  */
 
-function inputTextareaDirective($mdUtil, $window) {
+function inputTextareaDirective($mdUtil, $window, $mdAria) {
   return {
     restrict: 'E',
     require: ['^?mdInputContainer', '?ngModel'],
@@ -6758,6 +6842,10 @@ function inputTextareaDirective($mdUtil, $window) {
       throw new Error("<md-input-container> can only have *one* <input> or <textarea> child element!");
     }
     containerCtrl.input = element;
+
+    if(!containerCtrl.label) {
+      $mdAria.expect(element, 'aria-label', element.attr('placeholder'));
+    }
 
     element.addClass('md-input');
     if (!element.attr('id')) {
@@ -6857,7 +6945,7 @@ function inputTextareaDirective($mdUtil, $window) {
     }
   }
 }
-inputTextareaDirective.$inject = ["$mdUtil", "$window"];
+inputTextareaDirective.$inject = ["$mdUtil", "$window", "$mdAria"];
 
 function mdMaxlengthDirective($animate) {
   return {
@@ -6937,7 +7025,7 @@ function placeholderDirective() {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -6951,6 +7039,7 @@ function placeholderDirective() {
 angular.module('material.components.list', [
   'material.core'
 ])
+  .controller('MdListController', MdListController)
   .directive('mdList', mdListDirective)
   .directive('mdListItem', mdListItemDirective);
 
@@ -6988,7 +7077,6 @@ function mdListDirective($mdTheming) {
   };
 }
 mdListDirective.$inject = ["$mdTheming"];
-
 /**
  * @ngdoc directive
  * @name mdListItem
@@ -7009,10 +7097,11 @@ mdListDirective.$inject = ["$mdTheming"];
  * </hljs>
  *
  */
-function mdListItemDirective($mdAria) {
+function mdListItemDirective($mdAria, $mdConstant, $timeout) {
   var proxiedTypes = ['md-checkbox', 'md-switch'];
   return {
     restrict: 'E',
+    controller: 'MdListController',
     compile: function(tEl, tAttrs) {
       // Check for proxy controls (no ng-click on parent, and a control inside)
       var secondaryItem = tEl[0].querySelector('.md-secondary');
@@ -7062,7 +7151,7 @@ function mdListItemDirective($mdAria) {
           container.append(tEl.contents());
           tEl.addClass('md-proxy-focus');
         } else {
-          container = angular.element('<button tabindex="0" class="md-no-style"><div class="md-list-item-inner"></div></button>');
+          container = angular.element('<md-button class="md-no-style"><div class="md-list-item-inner"></div></md-button>');
           container[0].setAttribute('ng-click', tEl[0].getAttribute('ng-click'));
           tEl[0].removeAttribute('ng-click');
           container.children().eq(0).append(tEl.contents());
@@ -7073,12 +7162,19 @@ function mdListItemDirective($mdAria) {
 
         if (secondaryItem && secondaryItem.hasAttribute('ng-click')) {
           $mdAria.expect(secondaryItem, 'aria-label');
+          var buttonWrapper = angular.element('<md-button class="md-secondary-container md-icon-button">');
+          buttonWrapper.attr('ng-click', secondaryItem.getAttribute('ng-click'));
+          secondaryItem.removeAttribute('ng-click');
+          secondaryItem.setAttribute('tabindex', '-1');
+          secondaryItem.classList.remove('md-secondary');
+          buttonWrapper.append(secondaryItem);
+          secondaryItem = buttonWrapper[0];
         }
 
         // Check for a secondary item and move it outside
         if ( secondaryItem && (
-          secondaryItem.hasAttribute('ng-click') || 
-            ( tAttrs.ngClick && 
+          secondaryItem.hasAttribute('ng-click') ||
+            ( tAttrs.ngClick &&
              isProxiedElement(secondaryItem) )
         )) {
           tEl.addClass('md-with-secondary');
@@ -7092,7 +7188,7 @@ function mdListItemDirective($mdAria) {
 
       return postLink;
 
-      function postLink($scope, $element, $attr) {
+      function postLink($scope, $element, $attr, ctrl) {
 
         var proxies = [];
 
@@ -7102,18 +7198,27 @@ function mdListItemDirective($mdAria) {
         if ($element.hasClass('md-proxy-focus') && proxies.length) {
           angular.forEach(proxies, function(proxy) {
             proxy = angular.element(proxy);
-            proxy.on('focus', function() {
-              $element.addClass('md-focused');
-              proxy.on('blur', function() {
+
+            $scope.mouseActive = false;
+            proxy.on('mousedown', function() {
+              $scope.mouseActive = true;
+              $timeout(function(){
+                $scope.mouseActive = false;
+              }, 100);
+            })
+            .on('focus', function() {
+              if ($scope.mouseActive === false) { $element.addClass('md-focused'); }
+              proxy.on('blur', function proxyOnBlur() {
                 $element.removeClass('md-focused');
-                proxy.off('blur');
+                proxy.off('blur', proxyOnBlur);
               });
             });
           });
         }
 
         function computeProxies() {
-          if (!$element.children()[0].hasAttribute('ng-click')) {
+          var children = $element.children();
+          if (children.length && !children[0].hasAttribute('ng-click')) {
             angular.forEach(proxiedTypes, function(type) {
               angular.forEach($element[0].firstElementChild.querySelectorAll(type), function(child) {
                 proxies.push(child);
@@ -7122,17 +7227,21 @@ function mdListItemDirective($mdAria) {
           }
         }
         function computeClickable() {
-          if (proxies.length || $element[0].firstElementChild.hasAttribute('ng-click')) { 
+          if (proxies.length || $element[0].firstElementChild.hasAttribute('ng-click')) {
             $element.addClass('md-clickable');
+
+            ctrl.attachRipple($scope, angular.element($element[0].querySelector('.md-no-style')));
           }
         }
 
         if (!$element[0].firstElementChild.hasAttribute('ng-click') && !proxies.length) {
           $element[0].firstElementChild.addEventListener('keypress', function(e) {
-            if (e.keyCode == 13 || e.keyCode == 32) {
-              $element[0].firstElementChild.click();
-              e.preventDefault();
-              e.stopPropagation();
+            if (e.target.nodeName != 'INPUT') {
+              if (e.keyCode == $mdConstant.KEY_CODE.SPACE) {
+                $element[0].firstElementChild.click();
+                e.preventDefault();
+                e.stopPropagation();
+              }
             }
           });
         }
@@ -7146,7 +7255,6 @@ function mdListItemDirective($mdAria) {
               angular.forEach(proxies, function(proxy) {
                 if (e.target !== proxy && !proxy.contains(e.target)) {
                   angular.element(proxy).triggerHandler('click');
-                  proxy.focus();
                 }
               });
             }
@@ -7156,14 +7264,32 @@ function mdListItemDirective($mdAria) {
     }
   };
 }
-mdListItemDirective.$inject = ["$mdAria"];
+mdListItemDirective.$inject = ["$mdAria", "$mdConstant", "$timeout"];
+
+/*
+ * @private
+ * @ngdoc controller
+ * @name MdListController
+ * @module material.components.list
+ *
+ */
+function MdListController($scope, $element, $mdInkRipple) {
+  var ctrl = this;
+  ctrl.attachRipple = attachRipple;
+
+  function attachRipple (scope, element) {
+    var options = {};
+    $mdInkRipple.attachListControlBehavior(scope, element, options);
+  }
+}
+MdListController.$inject = ["$scope", "$element", "$mdInkRipple"];
 })();
 
 /*!
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -7273,7 +7399,7 @@ MdProgressCircularDirective.$inject = ["$mdConstant", "$mdTheming"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -7402,7 +7528,7 @@ var transforms = (function() {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -7717,7 +7843,7 @@ mdRadioButtonDirective.$inject = ["$mdAria", "$mdUtil", "$mdTheming"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -7859,6 +7985,8 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
 
     element.empty().append(labelEl);
 
+    attr.tabindex = attr.tabindex || '0';
+
     $mdTheming(element);
 
     return function postLink(scope, element, attr, ctrls) {
@@ -7962,17 +8090,17 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
         }
         isDisabled = disabled;
         if (disabled) {
-          element.attr('tabindex', -1);
+          element.attr({'tabindex': -1, 'aria-disabled': 'true'});
           element.off('click', openSelect);
           element.off('keydown', handleKeypress);
         } else {
-          element.attr('tabindex', 0);
+          element.attr({'tabindex': attr.tabindex, 'aria-disabled':'false'});
           element.on('click', openSelect);
           element.on('keydown', handleKeypress);
         }
       });
       if (!attr.disabled && !attr.ngDisabled) {
-        element.attr('tabindex', 0);
+        element.attr({'tabindex': attr.tabindex, 'aria-disabled':'false'});
         element.on('click', openSelect);
         element.on('keydown', handleKeypress);
       }
@@ -7980,7 +8108,6 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $interpolate, $compile,
       element.attr({
         'role': 'combobox',
         'id': 'select_' + $mdUtil.nextUid(),
-        'aria-haspopup': true,
         'aria-expanded': 'false',
         'aria-labelledby': labelEl.attr('id')
       });
@@ -8167,7 +8294,7 @@ function SelectMenuDirective($parse, $mdUtil, $mdTheming) {
         optNodes = $element.find('md-option');
         optText = new Array(optNodes.length);
         angular.forEach(optNodes, function(el, i) {
-          optText[i] = el.textContent;
+          optText[i] = el.textContent.trim();
         });
       }
       for (var i = 0; i < optText.length; ++i) {
@@ -8300,7 +8427,8 @@ function OptionDirective($mdInkRipple, $mdUtil) {
   function compile(element, attr) {
     // Manual transclusion to avoid the extra inner <span> that ng-transclude generates
     element.append( angular.element('<div class="md-text">').append(element.contents()) );
-    if (attr.tabindex === undefined) element.attr('tabindex', 0);
+
+    element.attr('tabindex', attr.tabindex || '0');
     return postLink;
   }
 
@@ -8428,7 +8556,11 @@ function SelectProvider($$interimElementProvider) {
       });
 
       opts.resizeFn = function() {
-        animateSelect(scope, element, opts);
+        $$rAF(function() {
+          $$rAF(function() {
+            animateSelect(scope, element, opts);
+          });
+        });
       };
 
       angular.element($window).on('resize', opts.resizeFn);
@@ -8483,7 +8615,6 @@ function SelectProvider($$interimElementProvider) {
 
       function configureAria() {
         opts.selectEl.attr('aria-labelledby', opts.target.attr('id'));
-        opts.target.attr('aria-owns', opts.selectEl.attr('id'));
         opts.target.attr('aria-expanded', 'true');
       }
 
@@ -8595,10 +8726,10 @@ function SelectProvider($$interimElementProvider) {
         element.removeClass('md-active');
         opts.parent[0].removeChild(element[0]); // use browser to avoid $destroy event
         opts.backdrop && opts.backdrop.remove();
-        if (opts.restoreFocus) opts.target.focus();
         if (opts.disableParentScroll) {
           opts.restoreScroll();
         }
+        if (opts.restoreFocus) opts.target.focus();
       });
     }
 
@@ -8764,7 +8895,7 @@ function nodesToArray(nodes) {
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -9191,7 +9322,7 @@ SidenavController.$inject = ["$scope", "$element", "$attrs", "$mdComponentRegist
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
   'use strict';
@@ -9594,7 +9725,7 @@ SliderDirective.$inject = ["$$rAF", "$window", "$mdAria", "$mdUtil", "$mdConstan
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -9906,7 +10037,7 @@ MdSticky.$inject = ["$document", "$mdConstant", "$compile", "$$rAF", "$mdUtil"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -9999,7 +10130,7 @@ MdSubheaderDirective.$inject = ["$mdSticky", "$compile", "$mdTheming"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -10077,7 +10208,7 @@ var module = angular.module('material.components.swipe',[]);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -10246,7 +10377,7 @@ MdSwitch.$inject = ["mdCheckboxDirective", "$mdTheming", "$mdUtil", "$document",
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -10285,151 +10416,166 @@ angular.module('material.components.tabs', [
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
 
 /**
  * @ngdoc module
- * @name material.components.textField
- * @description
- * Form
+ * @name material.components.toolbar
  */
-angular.module('material.components.textField', [
-  'material.core'
+angular.module('material.components.toolbar', [
+  'material.core',
+  'material.components.content'
 ])
-  .directive('mdInputGroup', mdInputGroupDirective)
-  .directive('mdInput', mdInputDirective)
-  .directive('mdTextFloat', mdTextFloatDirective);
+  .directive('mdToolbar', mdToolbarDirective);
 
+/**
+ * @ngdoc directive
+ * @name mdToolbar
+ * @module material.components.toolbar
+ * @restrict E
+ * @description
+ * `md-toolbar` is used to place a toolbar in your app.
+ *
+ * Toolbars are usually used above a content area to display the title of the
+ * current page, and show relevant action buttons for that page.
+ *
+ * You can change the height of the toolbar by adding either the
+ * `md-medium-tall` or `md-tall` class to the toolbar.
+ *
+ * @usage
+ * <hljs lang="html">
+ * <div layout="column" layout-fill>
+ *   <md-toolbar>
+ *
+ *     <div class="md-toolbar-tools">
+ *       <span>My App's Title</span>
+ *
+ *       <!-- fill up the space between left and right area -->
+ *       <span flex></span>
+ *
+ *       <md-button>
+ *         Right Bar Button
+ *       </md-button>
+ *     </div>
+ *
+ *   </md-toolbar>
+ *   <md-content>
+ *     Hello!
+ *   </md-content>
+ * </div>
+ * </hljs>
+ *
+ * @param {boolean=} md-scroll-shrink Whether the header should shrink away as
+ * the user scrolls down, and reveal itself as the user scrolls up.
+ * Note: for scrollShrink to work, the toolbar must be a sibling of a
+ * `md-content` element, placed before it. See the scroll shrink demo.
+ *
+ *
+ * @param {number=} md-shrink-speed-factor How much to change the speed of the toolbar's
+ * shrinking by. For example, if 0.25 is given then the toolbar will shrink
+ * at one fourth the rate at which the user scrolls down. Default 0.5.
+ */
+function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming) {
 
-function mdTextFloatDirective($mdTheming, $mdUtil, $parse, $log) {
   return {
     restrict: 'E',
-    replace: true,
-    scope : {
-      fid : '@?mdFid',
-      label : '@?',
-      value : '=ngModel'
-    },
-    compile : function(element, attr) {
+    controller: angular.noop,
+    link: function(scope, element, attr) {
+      $mdTheming(element);
 
-      $log.warn('<md-text-float> is deprecated. Please use `<md-input-container>` and `<input>`.' + 
-                'More information at http://material.angularjs.org/#/api/material.components.input/directive/mdInputContainer');
-
-      if ( angular.isUndefined(attr.mdFid) ) {
-        attr.mdFid = $mdUtil.nextUid();
+      if (angular.isDefined(attr.mdScrollShrink)) {
+        setupScrollShrink();
       }
 
-      return {
-        pre : function(scope, element, attrs) {
-          var disabledParsed = $parse(attrs.ngDisabled);
-          scope.isDisabled = function() {
-            return disabledParsed(scope.$parent);
-          };
+      function setupScrollShrink() {
+        // Current "y" position of scroll
+        var y = 0;
+        // Store the last scroll top position
+        var prevScrollTop = 0;
 
-          scope.inputType = attrs.type || "text";
-        },
-        post: $mdTheming
-      };
-    },
-    template:
-    '<md-input-group tabindex="-1">' +
-    ' <label for="{{fid}}" >{{label}}</label>' +
-    ' <md-input id="{{fid}}" ng-disabled="isDisabled()" ng-model="value" type="{{inputType}}"></md-input>' +
-    '</md-input-group>'
-  };
-}
-mdTextFloatDirective.$inject = ["$mdTheming", "$mdUtil", "$parse", "$log"];
+        var shrinkSpeedFactor = attr.mdShrinkSpeedFactor || 0.5;
 
-function mdInputGroupDirective($log) {
-  return {
-    restrict: 'CE',
-    controller: ['$element', function($element) {
+        var toolbarHeight;
+        var contentElement;
 
-      $log.warn('<md-input-group> is deprecated. Please use `<md-input-container>` and `<input>`.' + 
-                'More information at http://material.angularjs.org/#/api/material.components.input/directive/mdInputContainer');
-      this.setFocused = function(isFocused) {
-        $element.toggleClass('md-input-focused', !!isFocused);
-      };
-      this.setHasValue = function(hasValue) {
-        $element.toggleClass('md-input-has-value', hasValue );
-      };
-    }]
-  };
+        var debouncedContentScroll = $$rAF.throttle(onContentScroll);
+        var debouncedUpdateHeight = $mdUtil.debounce(updateToolbarHeight, 5 * 1000);
 
-}
-mdInputGroupDirective.$inject = ["$log"];
+        // Wait for $mdContentLoaded event from mdContent directive.
+        // If the mdContent element is a sibling of our toolbar, hook it up
+        // to scroll events.
+        scope.$on('$mdContentLoaded', onMdContentLoad);
 
-function mdInputDirective($mdUtil, $log) {
-  return {
-    restrict: 'E',
-    replace: true,
-    template: '<input >',
-    require: ['^?mdInputGroup', '?ngModel'],
-    link: function(scope, element, attr, ctrls) {
-      if ( !ctrls[0] ) return;
+        function onMdContentLoad($event, newContentEl) {
+          // Toolbar and content must be siblings
+          if (element.parent()[0] === newContentEl.parent()[0]) {
+            // unhook old content event listener if exists
+            if (contentElement) {
+              contentElement.off('scroll', debouncedContentScroll);
+            }
 
-      $log.warn('<md-input> is deprecated. Please use `<md-input-container>` and `<input>`.' + 
-                'More information at http://material.angularjs.org/#/api/material.components.input/directive/mdInputContainer');
+            newContentEl.on('scroll', debouncedContentScroll);
+            newContentEl.attr('scroll-shrink', 'true');
 
-      var inputGroupCtrl = ctrls[0];
-      var ngModelCtrl = ctrls[1];
+            contentElement = newContentEl;
+            $$rAF(updateToolbarHeight);
+          }
+        }
 
-      scope.$watch(scope.isDisabled, function(isDisabled) {
-        element.attr('aria-disabled', !!isDisabled);
-        element.attr('tabindex', !!isDisabled);
-      });
-      element.attr('type', attr.type || element.parent().attr('type') || "text");
+        function updateToolbarHeight() {
+          toolbarHeight = element.prop('offsetHeight');
+          // Add a negative margin-top the size of the toolbar to the content el.
+          // The content will start transformed down the toolbarHeight amount,
+          // so everything looks normal.
+          //
+          // As the user scrolls down, the content will be transformed up slowly
+          // to put the content underneath where the toolbar was.
+          contentElement.css(
+            'margin-top',
+            (-toolbarHeight * shrinkSpeedFactor) + 'px'
+          );
+          onContentScroll();
+        }
 
-      // When the input value changes, check if it "has" a value, and
-      // set the appropriate class on the input group
-      if (ngModelCtrl) {
-        //Add a $formatter so we don't use up the render function
-        ngModelCtrl.$formatters.push(function(value) {
-          inputGroupCtrl.setHasValue( isNotEmpty(value) );
-          return value;
-        });
+        function onContentScroll(e) {
+          var scrollTop = e ? e.target.scrollTop : prevScrollTop;
+
+          debouncedUpdateHeight();
+
+          y = Math.min(
+            toolbarHeight / shrinkSpeedFactor,
+            Math.max(0, y + scrollTop - prevScrollTop)
+          );
+
+          element.css(
+            $mdConstant.CSS.TRANSFORM,
+            'translate3d(0,' + (-y * shrinkSpeedFactor) + 'px,0)'
+          );
+          contentElement.css(
+            $mdConstant.CSS.TRANSFORM,
+            'translate3d(0,' + ((toolbarHeight - y) * shrinkSpeedFactor) + 'px,0)'
+          );
+
+          prevScrollTop = scrollTop;
+        }
+
       }
 
-      element
-        .on('input', function() {
-          inputGroupCtrl.setHasValue( isNotEmpty() );
-        })
-        .on('focus', function(e) {
-          // When the input focuses, add the focused class to the group
-          inputGroupCtrl.setFocused(true);
-        })
-        .on('blur', function(e) {
-          // When the input blurs, remove the focused class from the group
-          inputGroupCtrl.setFocused(false);
-          inputGroupCtrl.setHasValue( isNotEmpty() );
-        });
-
-      scope.$on('$destroy', function() {
-        inputGroupCtrl.setFocused(false);
-        inputGroupCtrl.setHasValue(false);
-      });
-
-
-      function isNotEmpty(value) {
-        value = angular.isUndefined(value) ? element.val() : value;
-        return (angular.isDefined(value) && (value!==null) &&
-               (value.toString().trim() !== ""));
-      }
     }
   };
-}
-mdInputDirective.$inject = ["$mdUtil", "$log"];
 
+}
+mdToolbarDirective.$inject = ["$$rAF", "$mdConstant", "$mdUtil", "$mdTheming"];
 })();
 
 /*!
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -10695,166 +10841,7 @@ MdToastProvider.$inject = ["$$interimElementProvider"];
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
- */
-(function() {
-'use strict';
-
-/**
- * @ngdoc module
- * @name material.components.toolbar
- */
-angular.module('material.components.toolbar', [
-  'material.core',
-  'material.components.content'
-])
-  .directive('mdToolbar', mdToolbarDirective);
-
-/**
- * @ngdoc directive
- * @name mdToolbar
- * @module material.components.toolbar
- * @restrict E
- * @description
- * `md-toolbar` is used to place a toolbar in your app.
- *
- * Toolbars are usually used above a content area to display the title of the
- * current page, and show relevant action buttons for that page.
- *
- * You can change the height of the toolbar by adding either the
- * `md-medium-tall` or `md-tall` class to the toolbar.
- *
- * @usage
- * <hljs lang="html">
- * <div layout="column" layout-fill>
- *   <md-toolbar>
- *
- *     <div class="md-toolbar-tools">
- *       <span>My App's Title</span>
- *
- *       <!-- fill up the space between left and right area -->
- *       <span flex></span>
- *
- *       <md-button>
- *         Right Bar Button
- *       </md-button>
- *     </div>
- *
- *   </md-toolbar>
- *   <md-content>
- *     Hello!
- *   </md-content>
- * </div>
- * </hljs>
- *
- * @param {boolean=} md-scroll-shrink Whether the header should shrink away as
- * the user scrolls down, and reveal itself as the user scrolls up.
- * Note: for scrollShrink to work, the toolbar must be a sibling of a
- * `md-content` element, placed before it. See the scroll shrink demo.
- *
- *
- * @param {number=} md-shrink-speed-factor How much to change the speed of the toolbar's
- * shrinking by. For example, if 0.25 is given then the toolbar will shrink
- * at one fourth the rate at which the user scrolls down. Default 0.5.
- */
-function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming) {
-
-  return {
-    restrict: 'E',
-    controller: angular.noop,
-    link: function(scope, element, attr) {
-      $mdTheming(element);
-
-      if (angular.isDefined(attr.mdScrollShrink)) {
-        setupScrollShrink();
-      }
-
-      function setupScrollShrink() {
-        // Current "y" position of scroll
-        var y = 0;
-        // Store the last scroll top position
-        var prevScrollTop = 0;
-
-        var shrinkSpeedFactor = attr.mdShrinkSpeedFactor || 0.5;
-
-        var toolbarHeight;
-        var contentElement;
-
-        var debouncedContentScroll = $$rAF.throttle(onContentScroll);
-        var debouncedUpdateHeight = $mdUtil.debounce(updateToolbarHeight, 5 * 1000);
-
-        // Wait for $mdContentLoaded event from mdContent directive.
-        // If the mdContent element is a sibling of our toolbar, hook it up
-        // to scroll events.
-        scope.$on('$mdContentLoaded', onMdContentLoad);
-
-        function onMdContentLoad($event, newContentEl) {
-          // Toolbar and content must be siblings
-          if (element.parent()[0] === newContentEl.parent()[0]) {
-            // unhook old content event listener if exists
-            if (contentElement) {
-              contentElement.off('scroll', debouncedContentScroll);
-            }
-
-            newContentEl.on('scroll', debouncedContentScroll);
-            newContentEl.attr('scroll-shrink', 'true');
-
-            contentElement = newContentEl;
-            $$rAF(updateToolbarHeight);
-          }
-        }
-
-        function updateToolbarHeight() {
-          toolbarHeight = element.prop('offsetHeight');
-          // Add a negative margin-top the size of the toolbar to the content el.
-          // The content will start transformed down the toolbarHeight amount,
-          // so everything looks normal.
-          //
-          // As the user scrolls down, the content will be transformed up slowly
-          // to put the content underneath where the toolbar was.
-          contentElement.css(
-            'margin-top',
-            (-toolbarHeight * shrinkSpeedFactor) + 'px'
-          );
-          onContentScroll();
-        }
-
-        function onContentScroll(e) {
-          var scrollTop = e ? e.target.scrollTop : prevScrollTop;
-
-          debouncedUpdateHeight();
-
-          y = Math.min(
-            toolbarHeight / shrinkSpeedFactor,
-            Math.max(0, y + scrollTop - prevScrollTop)
-          );
-
-          element.css(
-            $mdConstant.CSS.TRANSFORM,
-            'translate3d(0,' + (-y * shrinkSpeedFactor) + 'px,0)'
-          );
-          contentElement.css(
-            $mdConstant.CSS.TRANSFORM,
-            'translate3d(0,' + ((toolbarHeight - y) * shrinkSpeedFactor) + 'px,0)'
-          );
-
-          prevScrollTop = scrollTop;
-        }
-
-      }
-
-    }
-  };
-
-}
-mdToolbarDirective.$inject = ["$$rAF", "$mdConstant", "$mdUtil", "$mdTheming"];
-})();
-
-/*!
- * Angular Material Design
- * https://github.com/angular/material
- * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -11085,7 +11072,7 @@ MdTooltipDirective.$inject = ["$timeout", "$window", "$$rAF", "$document", "$mdU
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function() {
 'use strict';
@@ -11101,7 +11088,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11221,7 +11208,7 @@ angular.module('material.components.whiteframe', []);
       registerSelectedItemWatcher(selectedItemChange);
       $scope.$watch('selectedItem', handleSelectedItemChange);
       $scope.$watch('$mdAutocompleteCtrl.hidden', function (hidden, oldHidden) {
-        if (hidden && !oldHidden) positionDropdown();
+        if (!hidden && oldHidden) positionDropdown();
       });
       angular.element($window).on('resize', positionDropdown);
     }
@@ -11481,7 +11468,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11593,6 +11580,7 @@ angular.module('material.components.whiteframe', []);
                 aria-expanded="{{!$mdAutocompleteCtrl.hidden}}"/>\
             <button\
                 type="button"\
+                tabindex="-1"\
                 ng-if="$mdAutocompleteCtrl.scope.searchText && !isDisabled"\
                 ng-click="$mdAutocompleteCtrl.clear()">\
               <md-icon md-svg-icon="cancel"></md-icon>\
@@ -11643,7 +11631,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11683,7 +11671,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11733,7 +11721,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11767,7 +11755,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11829,7 +11817,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11878,6 +11866,7 @@ angular.module('material.components.whiteframe', []);
       // Child elements aren't available until after a $timeout tick as they are hidden by an
       // `ng-if`. see http://goo.gl/zIWfuw
       $timeout(function() {
+        element.attr({ tabindex: -1, ariaHidden: true });
         element.find('button').attr('tabindex', '-1');
       });
     }
@@ -11889,7 +11878,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11921,7 +11910,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -11940,7 +11929,10 @@ angular.module('material.components.whiteframe', []);
    * @param $element
    * @constructor
    */
-  function MdChipsCtrl ($scope, $mdConstant, $log, $element) {
+  function MdChipsCtrl ($scope, $mdConstant, $log, $element, $timeout) {
+    /** @type {$timeout} **/
+    this.$timeout = $timeout;
+
     /** @type {Object} */
     this.$mdConstant = $mdConstant;
 
@@ -11997,7 +11989,7 @@ angular.module('material.components.whiteframe', []);
      */
     this.useMdOnAppend = false;
   }
-  MdChipsCtrl.$inject = ["$scope", "$mdConstant", "$log", "$element"];
+  MdChipsCtrl.$inject = ["$scope", "$mdConstant", "$log", "$element", "$timeout"];
 
   /**
    * Handles the keydown event on the input element: <enter> appends the
@@ -12006,22 +11998,50 @@ angular.module('material.components.whiteframe', []);
    * @param event
    */
   MdChipsCtrl.prototype.inputKeydown = function(event) {
-    var chipBuffer;
+    var chipBuffer = this.getChipBuffer();
     switch (event.keyCode) {
       case this.$mdConstant.KEY_CODE.ENTER:
-        chipBuffer = this.getChipBuffer();
-        if (chipBuffer) {
-          event.preventDefault();
-          this.appendChip(chipBuffer);
-          this.resetChipBuffer();
-        }
+        if (this.$scope.requireMatch || !chipBuffer) break;
+        event.preventDefault();
+        this.appendChip(chipBuffer);
+        this.resetChipBuffer();
         break;
       case this.$mdConstant.KEY_CODE.BACKSPACE:
-        if (!event.target.selectionStart) {
-          event.preventDefault();
-          if (this.items.length) this.removeChip(this.items.length - 1);
-          event.target.focus();
-        }
+        if (chipBuffer) break;
+        event.stopPropagation();
+        if (this.items.length) this.selectAndFocusChipSafe(this.items.length - 1);
+        break;
+    }
+  };
+
+  /**
+   * Handles the keydown event on the chip elements: backspace removes the selected chip, arrow
+   * keys switch which chips is active
+   * @param event
+   */
+  MdChipsCtrl.prototype.chipKeydown = function (event) {
+    if (this.getChipBuffer()) return;
+    switch (event.keyCode) {
+      case this.$mdConstant.KEY_CODE.BACKSPACE:
+      case this.$mdConstant.KEY_CODE.DELETE:
+        if (this.selectedChip < 0) return;
+        event.preventDefault();
+        this.removeAndSelectAdjacentChip(this.selectedChip);
+        break;
+      case this.$mdConstant.KEY_CODE.LEFT_ARROW:
+        event.preventDefault();
+        if (this.selectedChip < 0) this.selectedChip = this.items.length;
+        if (this.items.length) this.selectAndFocusChipSafe(this.selectedChip - 1);
+        break;
+      case this.$mdConstant.KEY_CODE.RIGHT_ARROW:
+        event.preventDefault();
+        this.selectAndFocusChipSafe(this.selectedChip + 1);
+        break;
+      case this.$mdConstant.KEY_CODE.ESCAPE:
+      case this.$mdConstant.KEY_CODE.TAB:
+        if (this.selectedChip < 0) return;
+        event.preventDefault();
+        this.onFocus();
         break;
     }
   };
@@ -12045,7 +12065,7 @@ angular.module('material.components.whiteframe', []);
   MdChipsCtrl.prototype.removeAndSelectAdjacentChip = function(index) {
     var selIndex = this.getAdjacentChipIndex(index);
     this.removeChip(index);
-    this.selectAndFocusChip(selIndex);
+    this.$timeout(function () { this.selectAndFocusChipSafe(selIndex); }.bind(this));
   };
 
   /**
@@ -12132,12 +12152,21 @@ angular.module('material.components.whiteframe', []);
     this.items.splice(index, 1);
   };
 
+  MdChipsCtrl.prototype.removeChipAndFocusInput = function (index) {
+    this.removeChip(index);
+    this.onFocus();
+  };
   /**
    * Selects the chip at `index`,
    * @param index
    */
-  MdChipsCtrl.prototype.selectChipSafe = function(index) {
-    if (!this.items.length) return this.selectChip(-1);
+  MdChipsCtrl.prototype.selectAndFocusChipSafe = function(index) {
+    if (!this.items.length) {
+      this.selectChip(-1);
+      this.onFocus();
+      return;
+    }
+    if (index === this.items.length) return this.onFocus();
     index = Math.max(index, 0);
     index = Math.min(index, this.items.length - 1);
     this.selectChip(index);
@@ -12192,6 +12221,7 @@ angular.module('material.components.whiteframe', []);
   MdChipsCtrl.prototype.onFocus = function () {
     var input = this.$element[0].querySelectorAll('input')[0];
     input && input.focus();
+    this.resetSelectedChip();
   };
 
   /**
@@ -12211,11 +12241,10 @@ angular.module('material.components.whiteframe', []);
     // Bind to keydown and focus events of input
     var scope = this.$scope;
     var ctrl = this;
-    inputElement.on('keydown', function(event) {
-      scope.$apply(function() {
-        ctrl.inputKeydown(event);
-      });
-    });
+    inputElement
+        .attr({ tabindex: 0 })
+        .on('keydown', function(event) { scope.$apply(function() { ctrl.inputKeydown(event); }); })
+        .on('focus', function () { ctrl.selectedChip = -1; });
   };
 
   MdChipsCtrl.prototype.configureAutocomplete = function(ctrl) {
@@ -12232,7 +12261,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -12329,13 +12358,14 @@ angular.module('material.components.whiteframe', []);
   var MD_CHIPS_TEMPLATE = '\
       <md-chips-wrap\
           ng-if="!$mdChipsCtrl.readonly || $mdChipsCtrl.items.length > 0"\
-          ng-focus="$mdChipsCtrl.onFocus()"\
-          tabindex="0"\
+          ng-keydown="$mdChipsCtrl.chipKeydown($event)"\
           class="md-chips">\
         <md-chip ng-repeat="$chip in $mdChipsCtrl.items"\
             index="{{$index}}"\
-            ng-class="{selected: $mdChipsCtrl.selectedChip == $index}">\
+            ng-class="{\'md-focused\': $mdChipsCtrl.selectedChip == $index}">\
           <div class="md-chip-content"\
+              tabindex="-1"\
+              aria-hidden="true"\
               ng-click="!$mdChipsCtrl.readonly && $mdChipsCtrl.selectChip($index)"\
               md-chip-transclude="$mdChipsCtrl.chipContentsTemplate"></div>\
           <div class="md-chip-remove-container"\
@@ -12349,6 +12379,7 @@ angular.module('material.components.whiteframe', []);
 
   var CHIP_INPUT_TEMPLATE = '\
         <input\
+            tabindex="0"\
             placeholder="{{$mdChipsCtrl.getPlaceholder()}}"\
             aria-label="{{$mdChipsCtrl.getPlaceholder()}}"\
             ng-model="$mdChipsCtrl.chipBuffer"\
@@ -12362,7 +12393,8 @@ angular.module('material.components.whiteframe', []);
       <button\
           class="md-chip-remove"\
           ng-if="!$mdChipsCtrl.readonly"\
-          ng-click="$mdChipsCtrl.removeChip($$replacedScope.$index)"\
+          ng-click="$mdChipsCtrl.removeChipAndFocusInput($$replacedScope.$index)"\
+          aria-hidden="true"\
           tabindex="-1">\
         <md-icon md-svg-icon="close"></md-icon>\
         <span class="md-visually-hidden">\
@@ -12381,7 +12413,6 @@ angular.module('material.components.whiteframe', []);
         // element propagates to the link function via the attrs argument,
         // where various contained-elements can be consumed.
         attrs['$mdUserTemplate'] = element.clone();
-        attrs['tabindex'] = '-1';
         return MD_CHIPS_TEMPLATE;
       },
       require: ['mdChips'],
@@ -12396,7 +12427,8 @@ angular.module('material.components.whiteframe', []);
         secondaryPlaceholder: '@',
         mdOnAppend: '&',
         deleteHint: '@',
-        deleteButtonLabel: '@'
+        deleteButtonLabel: '@',
+        requireMatch: '=?mdRequireMatch'
       }
     };
 
@@ -12452,12 +12484,23 @@ angular.module('material.components.whiteframe', []);
        * Configures controller and transcludes.
        */
       return function postLink(scope, element, attrs, controllers) {
+
+        //-- give optional properties with no value a boolean true by default
+        angular.forEach(scope.$$isolateBindings, function (binding, key) {
+          if (binding.optional && angular.isUndefined(scope[key])) {
+            scope[key] = attr.hasOwnProperty(attr.$normalize(binding.attrName));
+          }
+        });
+
         $mdTheming(element);
-        element.attr('tabindex', '-1');
         var mdChipsCtrl = controllers[0];
         mdChipsCtrl.chipContentsTemplate = chipContentsTemplate;
         mdChipsCtrl.chipRemoveTemplate   = chipRemoveTemplate;
         mdChipsCtrl.chipInputTemplate    = chipInputTemplate;
+
+        element
+            .attr({ ariaHidden: true, tabindex: -1 })
+            .on('focus', function () { mdChipsCtrl.onFocus(); });
 
         if (attr.ngModel) {
           mdChipsCtrl.configureNgModel(element.controller('ngModel'));
@@ -12492,7 +12535,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -12531,7 +12574,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -12586,6 +12629,7 @@ angular.module('material.components.whiteframe', []);
   var MD_CONTACT_CHIPS_TEMPLATE = '\
       <md-chips class="md-contact-chips"\
           ng-model="$mdContactChipsCtrl.contacts"\
+          md-require-match="$mdContactChipsCtrl.requireMatch"\
           md-autocomplete-snap>\
           <md-autocomplete\
               md-menu-class="md-contact-chips-suggestions"\
@@ -12645,12 +12689,21 @@ angular.module('material.components.whiteframe', []);
         contactImage: '@mdContactImage',
         contactEmail: '@mdContactEmail',
         filterSelected: '=',
-        contacts: '=ngModel'
+        contacts: '=ngModel',
+        requireMatch: '=?mdRequireMatch'
       }
     };
 
     function compile(element, attr) {
       return function postLink(scope, element, attrs, controllers) {
+
+        //-- give optional properties with no value a boolean true by default
+        angular.forEach(scope.$$isolateBindings, function (binding, key) {
+          if (binding.optional && angular.isUndefined(scope[key])) {
+            scope[key] = attr.hasOwnProperty(attr.$normalize(binding.attrName));
+          }
+        });
+
         $mdTheming(element);
         element.attr('tabindex', '-1');
       };
@@ -12663,7 +12716,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -12692,7 +12745,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -12721,7 +12774,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 /**
  * @ngdoc directive
@@ -12736,6 +12789,9 @@ angular.module('material.components.whiteframe', []);
  * If the `label` attribute is not specified, then an optional `<md-tab-label>` tag can be used to specify more
  * complex tab header markup. If neither the **label** nor the **md-tab-label** are specified, then the nested
  * markup of the `<md-tab>` is used as the tab header markup.
+ *
+ * Please note that if you use `<md-tab-label>`, your content **MUST** be wrapped in the `<md-tab-body>` tag.  This
+ * is to define a clear separation between the tab content and the tab label.
  *
  * If a tab **label** has been identified, then any **non-**`<md-tab-label>` markup
  * will be considered tab content and will be transcluded to the internal `<div class="md-tabs-content">` container.
@@ -12761,12 +12817,14 @@ angular.module('material.components.whiteframe', []);
  *   <md-tab-label>
  *     <h3>My Tab content</h3>
  *   </md-tab-label>
- *   <p>
- *     Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,
- *     totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae
- *     dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit,
- *     sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
- *   </p>
+ *   <md-tab-body>
+ *     <p>
+ *       Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,
+ *       totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae
+ *       dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit,
+ *       sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+ *     </p>
+ *   </md-tab-body>
  * </md-tab>
  * </hljs>
  *
@@ -12812,14 +12870,25 @@ angular.module('material.components.whiteframe', []);
       scope.$on('$destroy', function () { ctrl.removeTab(data); });
 
       function getLabel () {
-        return attr.label || (element.find('md-tab-label')[0] || element[0]).innerHTML;
+        var label = attr.label || (element.find('md-tab-label')[0] || element[0]).innerHTML;
+        return getLabelAttribute() || getLabelElement() || getElementContents();
+        function getLabelAttribute () { return attr.label; }
+        function getLabelElement () {
+          var label = element.find('md-tab-label');
+          if (label.length) return label.remove().html();
+        }
+        function getElementContents () {
+          var html = element.html();
+          element.empty();
+          return html;
+        }
       }
 
       function getTemplate () {
-        var content = element.find('md-tab-template'),
+        var content = element.find('md-tab-body'),
             template = content.length ? content.html() : attr.label ? element.html() : null;
         if (content.length) content.remove();
-        else element.empty();
+        else if (attr.label) element.empty();
         return template;
       }
     }
@@ -12830,7 +12899,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -12850,7 +12919,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -12876,7 +12945,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -13220,7 +13289,7 @@ angular.module('material.components.whiteframe', []);
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 /**
  * @ngdoc directive
@@ -13297,9 +13366,9 @@ angular.module('material.components.whiteframe', []);
  *       {{tab.title}}
  *       <img src="img/removeTab.png" ng-click="removeTab(tab)" class="delete">
  *     </md-tab-label>
- *     <md-tab-template>
+ *     <md-tab-body>
  *       {{tab.content}}
- *     </md-tab-template>
+ *     </md-tab-body>
  *   </md-tab>
  * </md-tabs>
  * </hljs>
@@ -13360,15 +13429,15 @@ angular.module('material.components.whiteframe', []);
                   tabindex="-1"\
                   class="md-tab"\
                   style="max-width: {{ tabWidth ? tabWidth + \'px\' : \'none\' }}"\
-                  role="tab"\
-                  aria-selected="{{tab.isActive()}}"\
-                  aria-disabled="{{tab.scope.disabled}}"\
-                  aria-controls="tab-content-{{tab.id}}"\
                   ng-repeat="tab in $mdTabsCtrl.tabs"\
+                  role="tab"\
+                  aria-controls="tab-content-{{tab.id}}"\
+                  aria-selected="{{tab.isActive()}}"\
+                  aria-disabled="{{tab.scope.disabled || \'false\'}}"\
                   ng-click="$mdTabsCtrl.select(tab.getIndex())"\
                   ng-class="{\
                       \'md-active\':    tab.isActive(),\
-                      \'md-focus\':     tab.hasFocus(),\
+                      \'md-focused\':   tab.hasFocus(),\
                       \'md-disabled\':  tab.scope.disabled\
                   }"\
                   ng-disabled="tab.scope.disabled"\
@@ -13384,7 +13453,7 @@ angular.module('material.components.whiteframe', []);
                   role="tab"\
                   aria-controls="tab-content-{{tab.id}}"\
                   aria-selected="{{tab.isActive()}}"\
-                  aria-disabled="{{tab.scope.disabled}}"\
+                  aria-disabled="{{tab.scope.disabled || \'false\'}}"\
                   ng-focus="$mdTabsCtrl.hasFocus = true"\
                   ng-blur="$mdTabsCtrl.hasFocus = false"\
                   ng-repeat="tab in $mdTabsCtrl.tabs"\
@@ -13431,5 +13500,5 @@ angular.module('material.components.whiteframe', []);
   MdTabs.$inject = ["$mdTheming"];
 })();
 (function(){ 
- angular.module("material.core").constant("$MD_THEME_CSS", "/* mixin definition ; sets LTR and RTL within the same style call */md-autocomplete.md-THEME_NAME-theme {  background: '{{background-50}}'; }  md-autocomplete.md-THEME_NAME-theme button md-icon path {    fill: '{{background-600}}'; }  md-autocomplete.md-THEME_NAME-theme button:after {    background: '{{background-600-0.3}}'; }.md-autocomplete-suggestions.md-THEME_NAME-theme {  background: '{{background-50}}'; }  .md-autocomplete-suggestions.md-THEME_NAME-theme li {    border-top: 1px solid '{{background-300}}';    color: '{{background-900}}'; }    .md-autocomplete-suggestions.md-THEME_NAME-theme li .highlight {      color: '{{background-600}}'; }    .md-autocomplete-suggestions.md-THEME_NAME-theme li:hover, .md-autocomplete-suggestions.md-THEME_NAME-theme li.selected {      background: '{{background-200}}'; }md-backdrop.md-opaque.md-THEME_NAME-theme {  background-color: '{{foreground-4-0.5}}'; }md-bottom-sheet.md-THEME_NAME-theme {  background-color: '{{background-50}}';  border-top-color: '{{background-300}}'; }  md-bottom-sheet.md-THEME_NAME-theme.md-list md-item {    color: '{{foreground-1}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    background-color: '{{background-50}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    color: '{{foreground-1}}'; }a.md-button.md-THEME_NAME-theme, .md-button.md-THEME_NAME-theme {  border-radius: 3px; }  a.md-button.md-THEME_NAME-theme:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme:not([disabled]).md-focused {    background-color: '{{background-500-0.2}}'; }  a.md-button.md-THEME_NAME-theme.md-fab, .md-button.md-THEME_NAME-theme.md-fab {    border-radius: 50%;    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-fab md-icon, .md-button.md-THEME_NAME-theme.md-fab md-icon {      color: '{{accent-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused {      background-color: '{{accent-A700}}'; }  a.md-button.md-THEME_NAME-theme.md-primary, .md-button.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }    a.md-button.md-THEME_NAME-theme.md-primary.md-raised, a.md-button.md-THEME_NAME-theme.md-primary.md-fab, .md-button.md-THEME_NAME-theme.md-primary.md-raised, .md-button.md-THEME_NAME-theme.md-primary.md-fab {      color: '{{primary-contrast}}';      background-color: '{{primary-color}}'; }      a.md-button.md-THEME_NAME-theme.md-primary.md-raised md-icon, a.md-button.md-THEME_NAME-theme.md-primary.md-fab md-icon, .md-button.md-THEME_NAME-theme.md-primary.md-raised md-icon, .md-button.md-THEME_NAME-theme.md-primary.md-fab md-icon {        color: '{{primary-contrast}}'; }      a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused {        background-color: '{{primary-600}}'; }  a.md-button.md-THEME_NAME-theme.md-fab, .md-button.md-THEME_NAME-theme.md-fab {    border-radius: 50%;    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused {      background-color: '{{accent-A700}}'; }  a.md-button.md-THEME_NAME-theme.md-raised, .md-button.md-THEME_NAME-theme.md-raised {    color: '{{background-contrast}}';    background-color: '{{background-50}}'; }    a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused {      background-color: '{{background-200}}'; }  a.md-button.md-THEME_NAME-theme.md-warn, .md-button.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }    a.md-button.md-THEME_NAME-theme.md-warn.md-raised, a.md-button.md-THEME_NAME-theme.md-warn.md-fab, .md-button.md-THEME_NAME-theme.md-warn.md-raised, .md-button.md-THEME_NAME-theme.md-warn.md-fab {      color: '{{warn-contrast}}';      background-color: '{{warn-color}}'; }      a.md-button.md-THEME_NAME-theme.md-warn.md-raised md-icon, a.md-button.md-THEME_NAME-theme.md-warn.md-fab md-icon, .md-button.md-THEME_NAME-theme.md-warn.md-raised md-icon, .md-button.md-THEME_NAME-theme.md-warn.md-fab md-icon {        color: '{{warn-contrast}}'; }      a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused {        background-color: '{{warn-700}}'; }  a.md-button.md-THEME_NAME-theme.md-accent, .md-button.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }    a.md-button.md-THEME_NAME-theme.md-accent.md-raised, a.md-button.md-THEME_NAME-theme.md-accent.md-fab, .md-button.md-THEME_NAME-theme.md-accent.md-raised, .md-button.md-THEME_NAME-theme.md-accent.md-fab {      color: '{{accent-contrast}}';      background-color: '{{accent-color}}'; }      a.md-button.md-THEME_NAME-theme.md-accent.md-raised md-icon, a.md-button.md-THEME_NAME-theme.md-accent.md-fab md-icon, .md-button.md-THEME_NAME-theme.md-accent.md-raised md-icon, .md-button.md-THEME_NAME-theme.md-accent.md-fab md-icon {        color: '{{accent-contrast}}'; }      a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused {        background-color: '{{accent-700}}'; }  a.md-button.md-THEME_NAME-theme[disabled], a.md-button.md-THEME_NAME-theme.md-raised[disabled], a.md-button.md-THEME_NAME-theme.md-fab[disabled], .md-button.md-THEME_NAME-theme[disabled], .md-button.md-THEME_NAME-theme.md-raised[disabled], .md-button.md-THEME_NAME-theme.md-fab[disabled] {    color: '{{foreground-2}}';    cursor: not-allowed; }  a.md-button.md-THEME_NAME-theme.md-raised[disabled], a.md-button.md-THEME_NAME-theme.md-fab[disabled], .md-button.md-THEME_NAME-theme.md-raised[disabled], .md-button.md-THEME_NAME-theme.md-fab[disabled] {    background-color: '{{foreground-4}}'; }  a.md-button.md-THEME_NAME-theme[disabled], .md-button.md-THEME_NAME-theme[disabled] {    background-color: 'transparent'; }md-card.md-THEME_NAME-theme {  background-color: '{{background-color}}';  border-radius: 2px; }  md-card.md-THEME_NAME-theme .md-card-image {    border-radius: 2px 2px 0 0; }md-checkbox.md-THEME_NAME-theme .md-ripple {  color: '{{accent-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked.md-focused .md-container:before {  background-color: '{{accent-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon {  background-color: '{{accent-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ripple {  color: '{{primary-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon {  background-color: '{{primary-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked.md-focused .md-container:before {  background-color: '{{primary-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ripple {  color: '{{warn-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon {  background-color: '{{warn-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked.md-focused:not([disabled]) .md-container:before {  background-color: '{{warn-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-icon {  border-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon {  background-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-label {  color: '{{foreground-3}}'; }md-chips.md-THEME_NAME-theme {  background: '{{background-50}}'; }  md-chips.md-THEME_NAME-theme .md-chip {    background: '{{background-300}}';    color: '{{background-800}}'; }  md-chips.md-THEME_NAME-theme md-chip-remove .md-button md-icon path {    fill: '{{background-500}}'; }.md-contact-suggestion span.md-contact-email {  color: '{{background-400}}'; }md-content.md-THEME_NAME-theme {  background-color: '{{background-color}}'; }md-dialog.md-THEME_NAME-theme {  border-radius: 4px;  background-color: '{{background-color}}'; }  md-dialog.md-THEME_NAME-theme.md-content-overflow .md-actions {    border-top-color: '{{foreground-4}}'; }md-divider.md-THEME_NAME-theme {  border-top-color: '{{foreground-4}}'; }md-icon.md-THEME_NAME-theme {  color: '{{foreground-2}}'; }  md-icon.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  md-icon.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  md-icon.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-input-container.md-THEME_NAME-theme .md-input {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}';  text-shadow: '{{foreground-shadow}}'; }  md-input-container.md-THEME_NAME-theme .md-input::-webkit-input-placeholder, md-input-container.md-THEME_NAME-theme .md-input::-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-ms-input-placeholder {    color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme > md-icon {  color: '{{foreground-1}}'; }md-input-container.md-THEME_NAME-theme label, md-input-container.md-THEME_NAME-theme .md-placeholder {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme div[ng-messages] {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-has-value label {  color: '{{foreground-2}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused .md-input {  border-color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused label {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused md-icon {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent .md-input {  border-color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid.md-input-focused label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid data-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid x-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid [ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [data-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [x-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid .md-char-counter {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme .md-input[disabled], [disabled] md-input-container.md-THEME_NAME-theme .md-input {  border-bottom-color: transparent;  color: '{{foreground-3}}';  background-image: linear-gradient(to right, '{{foreground-4}}' 0%, '{{foreground-4}}' 33%, transparent 0%);  background-image: -ms-linear-gradient(left, transparent 0%, '{{foreground-4}}' 100%); }md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h3, md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h4, md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h3, md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h4 {  color: '{{foreground-1}}'; }md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text p, md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text p {  color: '{{foreground-2}}'; }md-list.md-THEME_NAME-theme .md-proxy-focus.md-focused div.md-no-style, md-list.md-THEME_NAME-theme .md-no-style:focus {  background-color: '{{background-100}}'; }md-list.md-THEME_NAME-theme md-list-item > md-icon {  color: '{{foreground-2}}'; }  md-list.md-THEME_NAME-theme md-list-item > md-icon.md-highlight {    color: '{{primary-color}}'; }    md-list.md-THEME_NAME-theme md-list-item > md-icon.md-highlight.md-accent {      color: '{{accent-color}}'; }md-list.md-THEME_NAME-theme md-list-item button {  background-color: '{{background-color}}'; }md-progress-circular.md-THEME_NAME-theme {  background-color: transparent; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-gap {    border-top-color: '{{primary-color}}';    border-bottom-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-top-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-right-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle {    border-left-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-gap {    border-top-color: '{{warn-color}}';    border-bottom-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-top-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-right-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle {    border-left-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-gap {    border-top-color: '{{accent-color}}';    border-bottom-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-top-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-right-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle {    border-left-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme .md-container {  background-color: '{{primary-100}}'; }md-progress-linear.md-THEME_NAME-theme .md-bar {  background-color: '{{primary-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-container {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-bar {  background-color: '{{warn-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-container {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-bar {  background-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-bar1 {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-dashed:before {  background: radial-gradient('{{warn-100}}' 0%, '{{warn-100}}' 16%, transparent 42%); }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-bar1 {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-dashed:before {  background: radial-gradient('{{accent-100}}' 0%, '{{accent-100}}' 16%, transparent 42%); }md-radio-button.md-THEME_NAME-theme .md-off {  border-color: '{{foreground-2}}'; }md-radio-button.md-THEME_NAME-theme .md-on {  background-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-off {  border-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme .md-container .md-ripple {  color: '{{accent-600}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-on, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-on {  background-color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off {  border-color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple {  color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple {  color: '{{primary-600}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-on, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-on {  background-color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off {  border-color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple {  color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple {  color: '{{warn-600}}'; }md-radio-group.md-THEME_NAME-theme[disabled], md-radio-button.md-THEME_NAME-theme[disabled] {  color: '{{foreground-3}}'; }  md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-off, md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-off {    border-color: '{{foreground-3}}'; }  md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-on, md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-on {    border-color: '{{foreground-3}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked .md-container:before {  background-color: '{{accent-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked:not([disabled]).md-primary .md-container:before {  background-color: '{{primary-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-primary .md-container:before {  background-color: '{{warn-color-0.26}}'; }md-select.md-THEME_NAME-theme.ng-invalid.ng-dirty .md-select-label {  color: '{{warn-500}}' !important;  border-bottom-color: '{{warn-500}}' !important; }md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-label {  border-bottom-color: '{{primary-color}}';  color: '{{ foreground-1 }}'; }  md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-label.md-placeholder {    color: '{{ foreground-1 }}'; }md-select.md-THEME_NAME-theme:not([disabled]):focus.md-accent .md-select-label {  border-bottom-color: '{{accent-color}}'; }md-select.md-THEME_NAME-theme:not([disabled]):focus.md-warn .md-select-label {  border-bottom-color: '{{warn-color}}'; }md-select.md-THEME_NAME-theme[disabled] .md-select-label {  color: '{{foreground-3}}'; }  md-select.md-THEME_NAME-theme[disabled] .md-select-label.md-placeholder {    color: '{{foreground-3}}'; }md-select.md-THEME_NAME-theme .md-select-label {  border-bottom-color: '{{foreground-4}}'; }  md-select.md-THEME_NAME-theme .md-select-label.md-placeholder {    color: '{{foreground-2}}'; }md-select-menu.md-THEME_NAME-theme md-optgroup {  color: '{{foreground-2}}'; }  md-select-menu.md-THEME_NAME-theme md-optgroup md-option {    color: '{{foreground-1}}'; }md-select-menu.md-THEME_NAME-theme md-option[selected] {  color: '{{primary-500}}'; }  md-select-menu.md-THEME_NAME-theme md-option[selected]:focus {    color: '{{primary-600}}'; }  md-select-menu.md-THEME_NAME-theme md-option[selected].md-accent {    color: '{{accent-500}}'; }    md-select-menu.md-THEME_NAME-theme md-option[selected].md-accent:focus {      color: '{{accent-600}}'; }md-select-menu.md-THEME_NAME-theme md-option:focus:not([selected]) {  background: '{{background-200}}'; }md-sidenav.md-THEME_NAME-theme {  background-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme .md-track {  background-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme .md-track-ticks {  background-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-focus-thumb {  background-color: '{{foreground-2}}'; }md-slider.md-THEME_NAME-theme .md-focus-ring {  border-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-disabled-thumb {  border-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme.md-min .md-thumb:after {  background-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme .md-track.md-track-fill {  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb:after {  border-color: '{{accent-color}}';  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-sign {  background-color: '{{accent-color}}'; }  md-slider.md-THEME_NAME-theme .md-sign:after {    border-top-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb-text {  color: '{{accent-contrast}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-track.md-track-fill {  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb:after {  border-color: '{{warn-color}}';  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-sign {  background-color: '{{warn-color}}'; }  md-slider.md-THEME_NAME-theme.md-warn .md-sign:after {    border-top-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb-text {  color: '{{warn-contrast}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-track.md-track-fill {  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb:after {  border-color: '{{primary-color}}';  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-sign {  background-color: '{{primary-color}}'; }  md-slider.md-THEME_NAME-theme.md-primary .md-sign:after {    border-top-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb-text {  color: '{{primary-contrast}}'; }md-slider.md-THEME_NAME-theme[disabled] .md-thumb:after {  border-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme[disabled]:not(.md-min) .md-thumb:after {  background-color: '{{foreground-3}}'; }.md-subheader.md-THEME_NAME-theme {  color: '{{ foreground-2-0.23 }}';  background-color: '{{background-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme .md-thumb {  background-color: '{{background-50}}'; }md-switch.md-THEME_NAME-theme .md-bar {  background-color: '{{background-500}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-thumb {  background-color: '{{accent-color}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-bar {  background-color: '{{accent-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-focused .md-thumb:before {  background-color: '{{accent-color-0.26}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-thumb {  background-color: '{{primary-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-bar {  background-color: '{{primary-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary.md-focused .md-thumb:before {  background-color: '{{primary-color-0.26}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-thumb {  background-color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-bar {  background-color: '{{warn-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn.md-focused .md-thumb:before {  background-color: '{{warn-color-0.26}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-thumb {  background-color: '{{background-400}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-bar {  background-color: '{{foreground-4}}'; }md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: transparent;  border-color: '{{foreground-4}}'; }md-tabs.md-THEME_NAME-theme .md-paginator md-icon {  color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme md-ink-bar {  color: '{{accent-color}}';  background: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme .md-tab {  color: '{{foreground-2}}'; }  md-tabs.md-THEME_NAME-theme .md-tab[disabled] {    color: '{{foreground-3}}'; }  md-tabs.md-THEME_NAME-theme .md-tab.md-active, md-tabs.md-THEME_NAME-theme .md-tab.md-focus {    color: '{{primary-color}}'; }  md-tabs.md-THEME_NAME-theme .md-tab.md-focus {    background: '{{primary-color-0.1}}'; }  md-tabs.md-THEME_NAME-theme .md-tab .md-ripple-container {    color: '{{accent-100}}'; }md-tabs.md-THEME_NAME-theme.md-accent md-tabs-wrapper {  background-color: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme.md-accent md-tab-item:not([disabled]) {  color: '{{accent-100}}'; }  md-tabs.md-THEME_NAME-theme.md-accent md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-accent md-tab-item:not([disabled]).md-focus {    color: '{{accent-contrast}}'; }  md-tabs.md-THEME_NAME-theme.md-accent md-tab-item:not([disabled]).md-focus {    background: '{{accent-contrast-0.1}}'; }md-tabs.md-THEME_NAME-theme.md-accent md-ink-bar {  color: '{{primary-600-1}}';  background: '{{primary-600-1}}'; }md-tabs.md-THEME_NAME-theme.md-primary md-tabs-wrapper {  background-color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme.md-primary md-tab-item:not([disabled]) {  color: '{{primary-100}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-primary md-tab-item:not([disabled]).md-focus {    color: '{{primary-contrast}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab-item:not([disabled]).md-focus {    background: '{{primary-contrast-0.1}}'; }md-tabs.md-THEME_NAME-theme.md-warn md-tabs-wrapper {  background-color: '{{warn-color}}'; }md-tabs.md-THEME_NAME-theme.md-warn md-tab-item:not([disabled]) {  color: '{{warn-100}}'; }  md-tabs.md-THEME_NAME-theme.md-warn md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-warn md-tab-item:not([disabled]).md-focus {    color: '{{warn-contrast}}'; }  md-tabs.md-THEME_NAME-theme.md-warn md-tab-item:not([disabled]).md-focus {    background: '{{warn-contrast-0.1}}'; }md-toolbar > md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: '{{primary-color}}'; }md-toolbar > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]) {  color: '{{primary-100}}'; }  md-toolbar > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-active, md-toolbar > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focus {    color: '{{primary-contrast}}'; }  md-toolbar > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focus {    background: '{{primary-contrast-0.1}}'; }md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: '{{accent-color}}'; }md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]) {  color: '{{accent-100}}'; }  md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-active, md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focus {    color: '{{accent-contrast}}'; }  md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focus {    background: '{{accent-contrast-0.1}}'; }md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-ink-bar {  color: '{{primary-600-1}}';  background: '{{primary-600-1}}'; }md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: '{{warn-color}}'; }md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]) {  color: '{{warn-100}}'; }  md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-active, md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focus {    color: '{{warn-contrast}}'; }  md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focus {    background: '{{warn-contrast-0.1}}'; }md-input-group.md-THEME_NAME-theme input, md-input-group.md-THEME_NAME-theme textarea {  text-shadow: '{{foreground-shadow}}'; }  md-input-group.md-THEME_NAME-theme input::-webkit-input-placeholder, md-input-group.md-THEME_NAME-theme input::-moz-placeholder, md-input-group.md-THEME_NAME-theme input:-moz-placeholder, md-input-group.md-THEME_NAME-theme input:-ms-input-placeholder, md-input-group.md-THEME_NAME-theme textarea::-webkit-input-placeholder, md-input-group.md-THEME_NAME-theme textarea::-moz-placeholder, md-input-group.md-THEME_NAME-theme textarea:-moz-placeholder, md-input-group.md-THEME_NAME-theme textarea:-ms-input-placeholder {    color: '{{foreground-3}}'; }md-input-group.md-THEME_NAME-theme label {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-group.md-THEME_NAME-theme input, md-input-group.md-THEME_NAME-theme textarea {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused input, md-input-group.md-THEME_NAME-theme.md-input-focused textarea {  border-color: '{{primary-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused label {  color: '{{primary-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent input, md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent textarea {  border-color: '{{accent-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-group.md-THEME_NAME-theme.md-input-has-value:not(.md-input-focused) label {  color: '{{foreground-2}}'; }md-input-group.md-THEME_NAME-theme .md-input[disabled] {  border-bottom-color: '{{foreground-4}}';  color: '{{foreground-3}}'; }md-toast.md-THEME_NAME-theme {  background-color: #323232;  color: '{{background-50}}'; }  md-toast.md-THEME_NAME-theme .md-button {    color: '{{background-50}}'; }    md-toast.md-THEME_NAME-theme .md-button.md-highlight {      color: '{{primary-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-accent {        color: '{{accent-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-warn {        color: '{{warn-A200}}'; }md-toolbar.md-THEME_NAME-theme {  background-color: '{{primary-color}}';  color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme .md-button {    color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme.md-accent {    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }  md-toolbar.md-THEME_NAME-theme.md-warn {    background-color: '{{warn-color}}';    color: '{{warn-contrast}}'; }md-tooltip.md-THEME_NAME-theme {  color: '{{background-A100}}'; }  md-tooltip.md-THEME_NAME-theme .md-background {    background-color: '{{foreground-2}}'; }"); 
+ angular.module("material.core").constant("$MD_THEME_CSS", "/* mixin definition ; sets LTR and RTL within the same style call */md-autocomplete.md-THEME_NAME-theme {  background: '{{background-50}}'; }  md-autocomplete.md-THEME_NAME-theme button md-icon path {    fill: '{{background-600}}'; }  md-autocomplete.md-THEME_NAME-theme button:after {    background: '{{background-600-0.3}}'; }.md-autocomplete-suggestions.md-THEME_NAME-theme {  background: '{{background-50}}'; }  .md-autocomplete-suggestions.md-THEME_NAME-theme li {    border-top: 1px solid '{{background-300}}';    color: '{{background-900}}'; }    .md-autocomplete-suggestions.md-THEME_NAME-theme li .highlight {      color: '{{background-600}}'; }    .md-autocomplete-suggestions.md-THEME_NAME-theme li:hover, .md-autocomplete-suggestions.md-THEME_NAME-theme li.selected {      background: '{{background-200}}'; }md-backdrop.md-opaque.md-THEME_NAME-theme {  background-color: '{{foreground-4-0.5}}'; }a.md-button.md-THEME_NAME-theme, .md-button.md-THEME_NAME-theme {  border-radius: 3px; }  a.md-button.md-THEME_NAME-theme:not([disabled]):hover, .md-button.md-THEME_NAME-theme:not([disabled]):hover {    background-color: '{{background-500-0.2}}'; }  a.md-button.md-THEME_NAME-theme:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme:not([disabled]).md-focused {    background-color: '{{background-500-0.2}}'; }  a.md-button.md-THEME_NAME-theme:not([disabled]).md-icon-button:hover, .md-button.md-THEME_NAME-theme:not([disabled]).md-icon-button:hover {    background-color: transparent; }  a.md-button.md-THEME_NAME-theme.md-fab, .md-button.md-THEME_NAME-theme.md-fab {    border-radius: 50%;    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-fab md-icon, .md-button.md-THEME_NAME-theme.md-fab md-icon {      color: '{{accent-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover {      background-color: '{{accent-color}}'; }    a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused {      background-color: '{{accent-A700}}'; }  a.md-button.md-THEME_NAME-theme.md-primary, .md-button.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }    a.md-button.md-THEME_NAME-theme.md-primary.md-raised, a.md-button.md-THEME_NAME-theme.md-primary.md-fab, .md-button.md-THEME_NAME-theme.md-primary.md-raised, .md-button.md-THEME_NAME-theme.md-primary.md-fab {      color: '{{primary-contrast}}';      background-color: '{{primary-color}}'; }      a.md-button.md-THEME_NAME-theme.md-primary.md-raised md-icon, a.md-button.md-THEME_NAME-theme.md-primary.md-fab md-icon, .md-button.md-THEME_NAME-theme.md-primary.md-raised md-icon, .md-button.md-THEME_NAME-theme.md-primary.md-fab md-icon {        color: '{{primary-contrast}}'; }      a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]):hover {        background-color: '{{primary-color}}'; }      a.md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-primary.md-raised:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-primary.md-fab:not([disabled]).md-focused {        background-color: '{{primary-600}}'; }  a.md-button.md-THEME_NAME-theme.md-fab, .md-button.md-THEME_NAME-theme.md-fab {    border-radius: 50%;    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }    a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]):hover {      background-color: '{{accent-color}}'; }    a.md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-fab:not([disabled]).md-focused {      background-color: '{{accent-A700}}'; }  a.md-button.md-THEME_NAME-theme.md-raised, .md-button.md-THEME_NAME-theme.md-raised {    color: '{{background-contrast}}';    background-color: '{{background-50}}'; }    a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-raised:not([disabled]):hover {      background-color: '{{background-50}}'; }    a.md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-raised:not([disabled]).md-focused {      background-color: '{{background-200}}'; }  a.md-button.md-THEME_NAME-theme.md-warn, .md-button.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }    a.md-button.md-THEME_NAME-theme.md-warn.md-raised, a.md-button.md-THEME_NAME-theme.md-warn.md-fab, .md-button.md-THEME_NAME-theme.md-warn.md-raised, .md-button.md-THEME_NAME-theme.md-warn.md-fab {      color: '{{warn-contrast}}';      background-color: '{{warn-color}}'; }      a.md-button.md-THEME_NAME-theme.md-warn.md-raised md-icon, a.md-button.md-THEME_NAME-theme.md-warn.md-fab md-icon, .md-button.md-THEME_NAME-theme.md-warn.md-raised md-icon, .md-button.md-THEME_NAME-theme.md-warn.md-fab md-icon {        color: '{{warn-contrast}}'; }      a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]):hover {        background-color: '{{warn-color}}'; }      a.md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-warn.md-raised:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-warn.md-fab:not([disabled]).md-focused {        background-color: '{{warn-700}}'; }  a.md-button.md-THEME_NAME-theme.md-accent, .md-button.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }    a.md-button.md-THEME_NAME-theme.md-accent.md-raised, a.md-button.md-THEME_NAME-theme.md-accent.md-fab, .md-button.md-THEME_NAME-theme.md-accent.md-raised, .md-button.md-THEME_NAME-theme.md-accent.md-fab {      color: '{{accent-contrast}}';      background-color: '{{accent-color}}'; }      a.md-button.md-THEME_NAME-theme.md-accent.md-raised md-icon, a.md-button.md-THEME_NAME-theme.md-accent.md-fab md-icon, .md-button.md-THEME_NAME-theme.md-accent.md-raised md-icon, .md-button.md-THEME_NAME-theme.md-accent.md-fab md-icon {        color: '{{accent-contrast}}'; }      a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]):hover, .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]):hover {        background-color: '{{accent-color}}'; }      a.md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused, a.md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-accent.md-raised:not([disabled]).md-focused, .md-button.md-THEME_NAME-theme.md-accent.md-fab:not([disabled]).md-focused {        background-color: '{{accent-700}}'; }  a.md-button.md-THEME_NAME-theme[disabled], a.md-button.md-THEME_NAME-theme.md-raised[disabled], a.md-button.md-THEME_NAME-theme.md-fab[disabled], .md-button.md-THEME_NAME-theme[disabled], .md-button.md-THEME_NAME-theme.md-raised[disabled], .md-button.md-THEME_NAME-theme.md-fab[disabled] {    color: '{{foreground-2}}';    cursor: not-allowed; }    a.md-button.md-THEME_NAME-theme[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-raised[disabled] md-icon, a.md-button.md-THEME_NAME-theme.md-fab[disabled] md-icon, .md-button.md-THEME_NAME-theme[disabled] md-icon, .md-button.md-THEME_NAME-theme.md-raised[disabled] md-icon, .md-button.md-THEME_NAME-theme.md-fab[disabled] md-icon {      color: '{{foreground-2}}'; }  a.md-button.md-THEME_NAME-theme.md-raised[disabled], a.md-button.md-THEME_NAME-theme.md-fab[disabled], .md-button.md-THEME_NAME-theme.md-raised[disabled], .md-button.md-THEME_NAME-theme.md-fab[disabled] {    background-color: '{{foreground-4}}'; }  a.md-button.md-THEME_NAME-theme[disabled], .md-button.md-THEME_NAME-theme[disabled] {    background-color: 'transparent'; }md-checkbox.md-THEME_NAME-theme .md-ripple {  color: '{{accent-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme.md-checked.md-focused .md-container:before {  background-color: '{{accent-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon {  background-color: '{{accent-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-ripple {  color: '{{primary-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ripple {  color: '{{background-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon {  background-color: '{{primary-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked.md-focused .md-container:before {  background-color: '{{primary-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-ripple {  color: '{{warn-600}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn .md-icon {  border-color: '{{foreground-2}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon {  background-color: '{{warn-color-0.87}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked.md-focused:not([disabled]) .md-container:before {  background-color: '{{warn-color-0.26}}'; }md-checkbox.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-icon:after {  border-color: '{{background-200}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-icon {  border-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled].md-checked .md-icon {  background-color: '{{foreground-3}}'; }md-checkbox.md-THEME_NAME-theme[disabled] .md-label {  color: '{{foreground-3}}'; }md-bottom-sheet.md-THEME_NAME-theme {  background-color: '{{background-50}}';  border-top-color: '{{background-300}}'; }  md-bottom-sheet.md-THEME_NAME-theme.md-list md-item {    color: '{{foreground-1}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    background-color: '{{background-50}}'; }  md-bottom-sheet.md-THEME_NAME-theme .md-subheader {    color: '{{foreground-1}}'; }md-card.md-THEME_NAME-theme {  background-color: '{{background-color}}';  border-radius: 2px; }  md-card.md-THEME_NAME-theme .md-card-image {    border-radius: 2px 2px 0 0; }md-chips.md-THEME_NAME-theme {  background: '{{background-50}}'; }  md-chips.md-THEME_NAME-theme .md-chip {    background: '{{background-300}}';    color: '{{background-800}}'; }    md-chips.md-THEME_NAME-theme .md-chip.md-focused {      background: '{{primary-color}}';      color: '{{primary-contrast}}'; }      md-chips.md-THEME_NAME-theme .md-chip.md-focused md-icon {        color: '{{primary-contrast}}'; }  md-chips.md-THEME_NAME-theme md-chip-remove .md-button md-icon path {    fill: '{{background-500}}'; }.md-contact-suggestion span.md-contact-email {  color: '{{background-400}}'; }md-content.md-THEME_NAME-theme {  background-color: '{{background-color}}'; }md-dialog.md-THEME_NAME-theme {  border-radius: 4px;  background-color: '{{background-color}}'; }  md-dialog.md-THEME_NAME-theme.md-content-overflow .md-actions {    border-top-color: '{{foreground-4}}'; }md-divider.md-THEME_NAME-theme {  border-top-color: '{{foreground-4}}'; }md-icon.md-THEME_NAME-theme {  color: '{{foreground-2}}'; }  md-icon.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  md-icon.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  md-icon.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-input-container.md-THEME_NAME-theme .md-input {  color: '{{foreground-1}}';  border-color: '{{foreground-4}}';  text-shadow: '{{foreground-shadow}}'; }  md-input-container.md-THEME_NAME-theme .md-input::-webkit-input-placeholder, md-input-container.md-THEME_NAME-theme .md-input::-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-moz-placeholder, md-input-container.md-THEME_NAME-theme .md-input:-ms-input-placeholder {    color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme > md-icon {  color: '{{foreground-1}}'; }md-input-container.md-THEME_NAME-theme label, md-input-container.md-THEME_NAME-theme .md-placeholder {  text-shadow: '{{foreground-shadow}}';  color: '{{foreground-3}}'; }md-input-container.md-THEME_NAME-theme ng-messages, md-input-container.md-THEME_NAME-theme [ng-message], md-input-container.md-THEME_NAME-theme [data-ng-message], md-input-container.md-THEME_NAME-theme [x-ng-message] {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-has-value label {  color: '{{foreground-2}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused .md-input {  border-color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused label {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused md-icon {  color: '{{primary-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent .md-input {  border-color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-accent label {  color: '{{accent-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme:not(.md-input-invalid).md-input-focused.md-warn label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid .md-input {  border-color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid.md-input-focused label {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme.md-input-invalid ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid data-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid x-ng-message, md-input-container.md-THEME_NAME-theme.md-input-invalid [ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [data-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid [x-ng-message], md-input-container.md-THEME_NAME-theme.md-input-invalid .md-char-counter {  color: '{{warn-500}}'; }md-input-container.md-THEME_NAME-theme .md-input[disabled], [disabled] md-input-container.md-THEME_NAME-theme .md-input {  border-bottom-color: transparent;  color: '{{foreground-3}}';  background-image: linear-gradient(to right, '{{foreground-4}}' 0%, '{{foreground-4}}' 33%, transparent 0%);  background-image: -ms-linear-gradient(left, transparent 0%, '{{foreground-4}}' 100%); }md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h3, md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text h4, md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h3, md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text h4 {  color: '{{foreground-1}}'; }md-list.md-THEME_NAME-theme md-list-item.md-2-line .md-list-item-text p, md-list.md-THEME_NAME-theme md-list-item.md-3-line .md-list-item-text p {  color: '{{foreground-2}}'; }md-list.md-THEME_NAME-theme .md-proxy-focus.md-focused div.md-no-style {  background-color: '{{background-100}}'; }md-list.md-THEME_NAME-theme md-list-item > md-icon {  color: '{{foreground-2}}'; }  md-list.md-THEME_NAME-theme md-list-item > md-icon.md-highlight {    color: '{{primary-color}}'; }    md-list.md-THEME_NAME-theme md-list-item > md-icon.md-highlight.md-accent {      color: '{{accent-color}}'; }md-list.md-THEME_NAME-theme md-list-item button {  background-color: '{{background-color}}'; }  md-list.md-THEME_NAME-theme md-list-item button.md-button:not([disabled]):hover {    background-color: '{{background-color}}'; }md-progress-circular.md-THEME_NAME-theme {  background-color: transparent; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-gap {    border-top-color: '{{primary-color}}';    border-bottom-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-top-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-right .md-half-circle {    border-right-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme .md-inner .md-left .md-half-circle {    border-left-color: '{{primary-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-gap {    border-top-color: '{{warn-color}}';    border-bottom-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-top-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-right .md-half-circle {    border-right-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-warn .md-inner .md-left .md-half-circle {    border-left-color: '{{warn-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-gap {    border-top-color: '{{accent-color}}';    border-bottom-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle, md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-top-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-right .md-half-circle {    border-right-color: '{{accent-color}}'; }  md-progress-circular.md-THEME_NAME-theme.md-accent .md-inner .md-left .md-half-circle {    border-left-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme .md-container {  background-color: '{{primary-100}}'; }md-progress-linear.md-THEME_NAME-theme .md-bar {  background-color: '{{primary-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-container {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-warn .md-bar {  background-color: '{{warn-color}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-container {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme.md-accent .md-bar {  background-color: '{{accent-color}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-bar1 {  background-color: '{{warn-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-warn .md-dashed:before {  background: radial-gradient('{{warn-100}}' 0%, '{{warn-100}}' 16%, transparent 42%); }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-bar1 {  background-color: '{{accent-100}}'; }md-progress-linear.md-THEME_NAME-theme[md-mode=buffer].md-accent .md-dashed:before {  background: radial-gradient('{{accent-100}}' 0%, '{{accent-100}}' 16%, transparent 42%); }md-radio-button.md-THEME_NAME-theme .md-off {  border-color: '{{foreground-2}}'; }md-radio-button.md-THEME_NAME-theme .md-on {  background-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-off {  border-color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme.md-checked .md-ink-ripple {  color: '{{accent-color-0.87}}'; }md-radio-button.md-THEME_NAME-theme .md-container .md-ripple {  color: '{{accent-600}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-on, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-on, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-on {  background-color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-off {  border-color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary.md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary.md-checked .md-ink-ripple {  color: '{{primary-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-primary .md-container .md-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-primary .md-container .md-ripple {  color: '{{primary-600}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-on, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-on, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-on {  background-color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-off, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-off {  border-color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn.md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-checked .md-ink-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn.md-checked .md-ink-ripple {  color: '{{warn-color-0.87}}'; }md-radio-group.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple, md-radio-group.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]) .md-warn .md-container .md-ripple, md-radio-button.md-THEME_NAME-theme:not([disabled]).md-warn .md-container .md-ripple {  color: '{{warn-600}}'; }md-radio-group.md-THEME_NAME-theme[disabled], md-radio-button.md-THEME_NAME-theme[disabled] {  color: '{{foreground-3}}'; }  md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-off, md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-off {    border-color: '{{foreground-3}}'; }  md-radio-group.md-THEME_NAME-theme[disabled] .md-container .md-on, md-radio-button.md-THEME_NAME-theme[disabled] .md-container .md-on {    border-color: '{{foreground-3}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked .md-container:before {  background-color: '{{accent-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked:not([disabled]).md-primary .md-container:before {  background-color: '{{primary-color-0.26}}'; }md-radio-group.md-THEME_NAME-theme.md-focused:not(:empty) .md-checked.md-primary .md-container:before {  background-color: '{{warn-color-0.26}}'; }md-select.md-THEME_NAME-theme.ng-invalid.ng-dirty .md-select-label {  color: '{{warn-500}}' !important;  border-bottom-color: '{{warn-500}}' !important; }md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-label {  border-bottom-color: '{{primary-color}}';  color: '{{ foreground-1 }}'; }  md-select.md-THEME_NAME-theme:not([disabled]):focus .md-select-label.md-placeholder {    color: '{{ foreground-1 }}'; }md-select.md-THEME_NAME-theme:not([disabled]):focus.md-accent .md-select-label {  border-bottom-color: '{{accent-color}}'; }md-select.md-THEME_NAME-theme:not([disabled]):focus.md-warn .md-select-label {  border-bottom-color: '{{warn-color}}'; }md-select.md-THEME_NAME-theme[disabled] .md-select-label {  color: '{{foreground-3}}'; }  md-select.md-THEME_NAME-theme[disabled] .md-select-label.md-placeholder {    color: '{{foreground-3}}'; }md-select.md-THEME_NAME-theme .md-select-label {  border-bottom-color: '{{foreground-4}}'; }  md-select.md-THEME_NAME-theme .md-select-label.md-placeholder {    color: '{{foreground-2}}'; }md-select-menu.md-THEME_NAME-theme md-optgroup {  color: '{{foreground-2}}'; }  md-select-menu.md-THEME_NAME-theme md-optgroup md-option {    color: '{{foreground-1}}'; }md-select-menu.md-THEME_NAME-theme md-option[selected] {  color: '{{primary-500}}'; }  md-select-menu.md-THEME_NAME-theme md-option[selected]:focus {    color: '{{primary-600}}'; }  md-select-menu.md-THEME_NAME-theme md-option[selected].md-accent {    color: '{{accent-500}}'; }    md-select-menu.md-THEME_NAME-theme md-option[selected].md-accent:focus {      color: '{{accent-600}}'; }md-select-menu.md-THEME_NAME-theme md-option:focus:not([selected]) {  background: '{{background-200}}'; }md-sidenav.md-THEME_NAME-theme {  background-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme .md-track {  background-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme .md-track-ticks {  background-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-focus-thumb {  background-color: '{{foreground-2}}'; }md-slider.md-THEME_NAME-theme .md-focus-ring {  border-color: '{{foreground-4}}'; }md-slider.md-THEME_NAME-theme .md-disabled-thumb {  border-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme.md-min .md-thumb:after {  background-color: '{{background-color}}'; }md-slider.md-THEME_NAME-theme .md-track.md-track-fill {  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb:after {  border-color: '{{accent-color}}';  background-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-sign {  background-color: '{{accent-color}}'; }  md-slider.md-THEME_NAME-theme .md-sign:after {    border-top-color: '{{accent-color}}'; }md-slider.md-THEME_NAME-theme .md-thumb-text {  color: '{{accent-contrast}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-track.md-track-fill {  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb:after {  border-color: '{{warn-color}}';  background-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-sign {  background-color: '{{warn-color}}'; }  md-slider.md-THEME_NAME-theme.md-warn .md-sign:after {    border-top-color: '{{warn-color}}'; }md-slider.md-THEME_NAME-theme.md-warn .md-thumb-text {  color: '{{warn-contrast}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-track.md-track-fill {  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb:after {  border-color: '{{primary-color}}';  background-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-sign {  background-color: '{{primary-color}}'; }  md-slider.md-THEME_NAME-theme.md-primary .md-sign:after {    border-top-color: '{{primary-color}}'; }md-slider.md-THEME_NAME-theme.md-primary .md-thumb-text {  color: '{{primary-contrast}}'; }md-slider.md-THEME_NAME-theme[disabled] .md-thumb:after {  border-color: '{{foreground-3}}'; }md-slider.md-THEME_NAME-theme[disabled]:not(.md-min) .md-thumb:after {  background-color: '{{foreground-3}}'; }.md-subheader.md-THEME_NAME-theme {  color: '{{ foreground-2-0.23 }}';  background-color: '{{background-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-primary {    color: '{{primary-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-accent {    color: '{{accent-color}}'; }  .md-subheader.md-THEME_NAME-theme.md-warn {    color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme .md-thumb {  background-color: '{{background-50}}'; }md-switch.md-THEME_NAME-theme .md-bar {  background-color: '{{background-500}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-thumb {  background-color: '{{accent-color}}'; }md-switch.md-THEME_NAME-theme.md-checked .md-bar {  background-color: '{{accent-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-focused .md-thumb:before {  background-color: '{{accent-color-0.26}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-thumb {  background-color: '{{primary-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary .md-bar {  background-color: '{{primary-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-primary.md-focused .md-thumb:before {  background-color: '{{primary-color-0.26}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-thumb {  background-color: '{{warn-color}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn .md-bar {  background-color: '{{warn-color-0.5}}'; }md-switch.md-THEME_NAME-theme.md-checked.md-warn.md-focused .md-thumb:before {  background-color: '{{warn-color-0.26}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-thumb {  background-color: '{{background-400}}'; }md-switch.md-THEME_NAME-theme[disabled] .md-bar {  background-color: '{{foreground-4}}'; }md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: transparent;  border-color: '{{foreground-4}}'; }md-tabs.md-THEME_NAME-theme .md-paginator md-icon {  color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme md-ink-bar {  color: '{{accent-color}}';  background: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme .md-tab {  color: '{{foreground-2}}'; }  md-tabs.md-THEME_NAME-theme .md-tab[disabled] {    color: '{{foreground-3}}'; }  md-tabs.md-THEME_NAME-theme .md-tab.md-active, md-tabs.md-THEME_NAME-theme .md-tab.md-focused {    color: '{{primary-color}}'; }  md-tabs.md-THEME_NAME-theme .md-tab.md-focused {    background: '{{primary-color-0.1}}'; }  md-tabs.md-THEME_NAME-theme .md-tab .md-ripple-container {    color: '{{accent-100}}'; }md-tabs.md-THEME_NAME-theme.md-accent md-tabs-wrapper {  background-color: '{{accent-color}}'; }md-tabs.md-THEME_NAME-theme.md-accent md-tab-item:not([disabled]) {  color: '{{accent-100}}'; }  md-tabs.md-THEME_NAME-theme.md-accent md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-accent md-tab-item:not([disabled]).md-focused {    color: '{{accent-contrast}}'; }  md-tabs.md-THEME_NAME-theme.md-accent md-tab-item:not([disabled]).md-focused {    background: '{{accent-contrast-0.1}}'; }md-tabs.md-THEME_NAME-theme.md-accent md-ink-bar {  color: '{{primary-600-1}}';  background: '{{primary-600-1}}'; }md-tabs.md-THEME_NAME-theme.md-primary md-tabs-wrapper {  background-color: '{{primary-color}}'; }md-tabs.md-THEME_NAME-theme.md-primary md-tab-item:not([disabled]) {  color: '{{primary-100}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-primary md-tab-item:not([disabled]).md-focused {    color: '{{primary-contrast}}'; }  md-tabs.md-THEME_NAME-theme.md-primary md-tab-item:not([disabled]).md-focused {    background: '{{primary-contrast-0.1}}'; }md-tabs.md-THEME_NAME-theme.md-warn md-tabs-wrapper {  background-color: '{{warn-color}}'; }md-tabs.md-THEME_NAME-theme.md-warn md-tab-item:not([disabled]) {  color: '{{warn-100}}'; }  md-tabs.md-THEME_NAME-theme.md-warn md-tab-item:not([disabled]).md-active, md-tabs.md-THEME_NAME-theme.md-warn md-tab-item:not([disabled]).md-focused {    color: '{{warn-contrast}}'; }  md-tabs.md-THEME_NAME-theme.md-warn md-tab-item:not([disabled]).md-focused {    background: '{{warn-contrast-0.1}}'; }md-toolbar > md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: '{{primary-color}}'; }md-toolbar > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]) {  color: '{{primary-100}}'; }  md-toolbar > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-active, md-toolbar > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focused {    color: '{{primary-contrast}}'; }  md-toolbar > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focused {    background: '{{primary-contrast-0.1}}'; }md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: '{{accent-color}}'; }md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]) {  color: '{{accent-100}}'; }  md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-active, md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focused {    color: '{{accent-contrast}}'; }  md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focused {    background: '{{accent-contrast-0.1}}'; }md-toolbar.md-accent > md-tabs.md-THEME_NAME-theme md-ink-bar {  color: '{{primary-600-1}}';  background: '{{primary-600-1}}'; }md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tabs-wrapper {  background-color: '{{warn-color}}'; }md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]) {  color: '{{warn-100}}'; }  md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-active, md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focused {    color: '{{warn-contrast}}'; }  md-toolbar.md-warn > md-tabs.md-THEME_NAME-theme md-tab-item:not([disabled]).md-focused {    background: '{{warn-contrast-0.1}}'; }md-toolbar.md-THEME_NAME-theme {  background-color: '{{primary-color}}';  color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme .md-button {    color: '{{primary-contrast}}'; }  md-toolbar.md-THEME_NAME-theme.md-accent {    background-color: '{{accent-color}}';    color: '{{accent-contrast}}'; }  md-toolbar.md-THEME_NAME-theme.md-warn {    background-color: '{{warn-color}}';    color: '{{warn-contrast}}'; }md-toast.md-THEME_NAME-theme {  background-color: #323232;  color: '{{background-50}}'; }  md-toast.md-THEME_NAME-theme .md-button {    color: '{{background-50}}'; }    md-toast.md-THEME_NAME-theme .md-button.md-highlight {      color: '{{primary-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-accent {        color: '{{accent-A200}}'; }      md-toast.md-THEME_NAME-theme .md-button.md-highlight.md-warn {        color: '{{warn-A200}}'; }md-tooltip.md-THEME_NAME-theme {  color: '{{background-A100}}'; }  md-tooltip.md-THEME_NAME-theme .md-background {    background-color: '{{foreground-2}}'; }"); 
 })();

@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-ea185ea
+ * v0.9.0-rc1-master-aff50d5
  */
 (function () {
   'use strict';
@@ -122,6 +122,7 @@
       // Child elements aren't available until after a $timeout tick as they are hidden by an
       // `ng-if`. see http://goo.gl/zIWfuw
       $timeout(function() {
+        element.attr({ tabindex: -1, ariaHidden: true });
         element.find('button').attr('tabindex', '-1');
       });
     }
@@ -172,7 +173,10 @@
    * @param $element
    * @constructor
    */
-  function MdChipsCtrl ($scope, $mdConstant, $log, $element) {
+  function MdChipsCtrl ($scope, $mdConstant, $log, $element, $timeout) {
+    /** @type {$timeout} **/
+    this.$timeout = $timeout;
+
     /** @type {Object} */
     this.$mdConstant = $mdConstant;
 
@@ -229,7 +233,7 @@
      */
     this.useMdOnAppend = false;
   }
-  MdChipsCtrl.$inject = ["$scope", "$mdConstant", "$log", "$element"];
+  MdChipsCtrl.$inject = ["$scope", "$mdConstant", "$log", "$element", "$timeout"];
 
   /**
    * Handles the keydown event on the input element: <enter> appends the
@@ -238,22 +242,50 @@
    * @param event
    */
   MdChipsCtrl.prototype.inputKeydown = function(event) {
-    var chipBuffer;
+    var chipBuffer = this.getChipBuffer();
     switch (event.keyCode) {
       case this.$mdConstant.KEY_CODE.ENTER:
-        chipBuffer = this.getChipBuffer();
-        if (chipBuffer) {
-          event.preventDefault();
-          this.appendChip(chipBuffer);
-          this.resetChipBuffer();
-        }
+        if (this.$scope.requireMatch || !chipBuffer) break;
+        event.preventDefault();
+        this.appendChip(chipBuffer);
+        this.resetChipBuffer();
         break;
       case this.$mdConstant.KEY_CODE.BACKSPACE:
-        if (!event.target.selectionStart) {
-          event.preventDefault();
-          if (this.items.length) this.removeChip(this.items.length - 1);
-          event.target.focus();
-        }
+        if (chipBuffer) break;
+        event.stopPropagation();
+        if (this.items.length) this.selectAndFocusChipSafe(this.items.length - 1);
+        break;
+    }
+  };
+
+  /**
+   * Handles the keydown event on the chip elements: backspace removes the selected chip, arrow
+   * keys switch which chips is active
+   * @param event
+   */
+  MdChipsCtrl.prototype.chipKeydown = function (event) {
+    if (this.getChipBuffer()) return;
+    switch (event.keyCode) {
+      case this.$mdConstant.KEY_CODE.BACKSPACE:
+      case this.$mdConstant.KEY_CODE.DELETE:
+        if (this.selectedChip < 0) return;
+        event.preventDefault();
+        this.removeAndSelectAdjacentChip(this.selectedChip);
+        break;
+      case this.$mdConstant.KEY_CODE.LEFT_ARROW:
+        event.preventDefault();
+        if (this.selectedChip < 0) this.selectedChip = this.items.length;
+        if (this.items.length) this.selectAndFocusChipSafe(this.selectedChip - 1);
+        break;
+      case this.$mdConstant.KEY_CODE.RIGHT_ARROW:
+        event.preventDefault();
+        this.selectAndFocusChipSafe(this.selectedChip + 1);
+        break;
+      case this.$mdConstant.KEY_CODE.ESCAPE:
+      case this.$mdConstant.KEY_CODE.TAB:
+        if (this.selectedChip < 0) return;
+        event.preventDefault();
+        this.onFocus();
         break;
     }
   };
@@ -277,7 +309,7 @@
   MdChipsCtrl.prototype.removeAndSelectAdjacentChip = function(index) {
     var selIndex = this.getAdjacentChipIndex(index);
     this.removeChip(index);
-    this.selectAndFocusChip(selIndex);
+    this.$timeout(function () { this.selectAndFocusChipSafe(selIndex); }.bind(this));
   };
 
   /**
@@ -364,12 +396,21 @@
     this.items.splice(index, 1);
   };
 
+  MdChipsCtrl.prototype.removeChipAndFocusInput = function (index) {
+    this.removeChip(index);
+    this.onFocus();
+  };
   /**
    * Selects the chip at `index`,
    * @param index
    */
-  MdChipsCtrl.prototype.selectChipSafe = function(index) {
-    if (!this.items.length) return this.selectChip(-1);
+  MdChipsCtrl.prototype.selectAndFocusChipSafe = function(index) {
+    if (!this.items.length) {
+      this.selectChip(-1);
+      this.onFocus();
+      return;
+    }
+    if (index === this.items.length) return this.onFocus();
     index = Math.max(index, 0);
     index = Math.min(index, this.items.length - 1);
     this.selectChip(index);
@@ -424,6 +465,7 @@
   MdChipsCtrl.prototype.onFocus = function () {
     var input = this.$element[0].querySelectorAll('input')[0];
     input && input.focus();
+    this.resetSelectedChip();
   };
 
   /**
@@ -443,11 +485,10 @@
     // Bind to keydown and focus events of input
     var scope = this.$scope;
     var ctrl = this;
-    inputElement.on('keydown', function(event) {
-      scope.$apply(function() {
-        ctrl.inputKeydown(event);
-      });
-    });
+    inputElement
+        .attr({ tabindex: 0 })
+        .on('keydown', function(event) { scope.$apply(function() { ctrl.inputKeydown(event); }); })
+        .on('focus', function () { ctrl.selectedChip = -1; });
   };
 
   MdChipsCtrl.prototype.configureAutocomplete = function(ctrl) {
@@ -555,13 +596,14 @@
   var MD_CHIPS_TEMPLATE = '\
       <md-chips-wrap\
           ng-if="!$mdChipsCtrl.readonly || $mdChipsCtrl.items.length > 0"\
-          ng-focus="$mdChipsCtrl.onFocus()"\
-          tabindex="0"\
+          ng-keydown="$mdChipsCtrl.chipKeydown($event)"\
           class="md-chips">\
         <md-chip ng-repeat="$chip in $mdChipsCtrl.items"\
             index="{{$index}}"\
-            ng-class="{selected: $mdChipsCtrl.selectedChip == $index}">\
+            ng-class="{\'md-focused\': $mdChipsCtrl.selectedChip == $index}">\
           <div class="md-chip-content"\
+              tabindex="-1"\
+              aria-hidden="true"\
               ng-click="!$mdChipsCtrl.readonly && $mdChipsCtrl.selectChip($index)"\
               md-chip-transclude="$mdChipsCtrl.chipContentsTemplate"></div>\
           <div class="md-chip-remove-container"\
@@ -575,6 +617,7 @@
 
   var CHIP_INPUT_TEMPLATE = '\
         <input\
+            tabindex="0"\
             placeholder="{{$mdChipsCtrl.getPlaceholder()}}"\
             aria-label="{{$mdChipsCtrl.getPlaceholder()}}"\
             ng-model="$mdChipsCtrl.chipBuffer"\
@@ -588,7 +631,8 @@
       <button\
           class="md-chip-remove"\
           ng-if="!$mdChipsCtrl.readonly"\
-          ng-click="$mdChipsCtrl.removeChip($$replacedScope.$index)"\
+          ng-click="$mdChipsCtrl.removeChipAndFocusInput($$replacedScope.$index)"\
+          aria-hidden="true"\
           tabindex="-1">\
         <md-icon md-svg-icon="close"></md-icon>\
         <span class="md-visually-hidden">\
@@ -607,7 +651,6 @@
         // element propagates to the link function via the attrs argument,
         // where various contained-elements can be consumed.
         attrs['$mdUserTemplate'] = element.clone();
-        attrs['tabindex'] = '-1';
         return MD_CHIPS_TEMPLATE;
       },
       require: ['mdChips'],
@@ -622,7 +665,8 @@
         secondaryPlaceholder: '@',
         mdOnAppend: '&',
         deleteHint: '@',
-        deleteButtonLabel: '@'
+        deleteButtonLabel: '@',
+        requireMatch: '=?mdRequireMatch'
       }
     };
 
@@ -678,12 +722,23 @@
        * Configures controller and transcludes.
        */
       return function postLink(scope, element, attrs, controllers) {
+
+        //-- give optional properties with no value a boolean true by default
+        angular.forEach(scope.$$isolateBindings, function (binding, key) {
+          if (binding.optional && angular.isUndefined(scope[key])) {
+            scope[key] = attr.hasOwnProperty(attr.$normalize(binding.attrName));
+          }
+        });
+
         $mdTheming(element);
-        element.attr('tabindex', '-1');
         var mdChipsCtrl = controllers[0];
         mdChipsCtrl.chipContentsTemplate = chipContentsTemplate;
         mdChipsCtrl.chipRemoveTemplate   = chipRemoveTemplate;
         mdChipsCtrl.chipInputTemplate    = chipInputTemplate;
+
+        element
+            .attr({ ariaHidden: true, tabindex: -1 })
+            .on('focus', function () { mdChipsCtrl.onFocus(); });
 
         if (attr.ngModel) {
           mdChipsCtrl.configureNgModel(element.controller('ngModel'));
@@ -800,6 +855,7 @@
   var MD_CONTACT_CHIPS_TEMPLATE = '\
       <md-chips class="md-contact-chips"\
           ng-model="$mdContactChipsCtrl.contacts"\
+          md-require-match="$mdContactChipsCtrl.requireMatch"\
           md-autocomplete-snap>\
           <md-autocomplete\
               md-menu-class="md-contact-chips-suggestions"\
@@ -859,12 +915,21 @@
         contactImage: '@mdContactImage',
         contactEmail: '@mdContactEmail',
         filterSelected: '=',
-        contacts: '=ngModel'
+        contacts: '=ngModel',
+        requireMatch: '=?mdRequireMatch'
       }
     };
 
     function compile(element, attr) {
       return function postLink(scope, element, attrs, controllers) {
+
+        //-- give optional properties with no value a boolean true by default
+        angular.forEach(scope.$$isolateBindings, function (binding, key) {
+          if (binding.optional && angular.isUndefined(scope[key])) {
+            scope[key] = attr.hasOwnProperty(attr.$normalize(binding.attrName));
+          }
+        });
+
         $mdTheming(element);
         element.attr('tabindex', '-1');
       };
