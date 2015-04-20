@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-aff50d5
+ * v0.9.0-rc1-master-1b789fe
  */
 (function() {
 'use strict';
@@ -48,9 +48,10 @@ angular.module('material.components.tabs', [
       restrict: 'A',
       link: link,
       scope: { template: '=mdLabelTemplate' },
-      require: '^mdTabs'
+      require: '^?mdTabs'
     };
     function link (scope, element, attr, ctrl) {
+      if (!ctrl) return;
       var index = scope.$parent.$index;
       scope.$watch('template', function (html) {
         element.html(html);
@@ -146,7 +147,7 @@ angular.module('material.components.tabs', [
 
   function MdTab () {
     return {
-      require: '^mdTabs',
+      require: '^?mdTabs',
       terminal: true,
       scope: {
         label:    '@',
@@ -159,6 +160,7 @@ angular.module('material.components.tabs', [
     };
 
     function postLink (scope, element, attr, ctrl) {
+      if (!ctrl) return;
       var tabs = element.parent()[0].getElementsByTagName('md-tab'),
           index = Array.prototype.indexOf.call(tabs, element[0]),
           data = ctrl.insertTab({
@@ -210,8 +212,9 @@ angular.module('material.components.tabs', [
       .directive('mdTabItem', MdTabItem);
 
   function MdTabItem () {
-    return { require: '^mdTabs', link: link };
+    return { require: '^?mdTabs', link: link };
     function link (scope, element, attr, ctrl) {
+      if (!ctrl) return;
       ctrl.attachRipple(scope, element);
     }
   }
@@ -245,9 +248,10 @@ angular.module('material.components.tabs', [
 
   function MdTabsController ($scope, $element, $window, $timeout, $mdConstant, $mdInkRipple,
                              $mdUtil, $animate) {
-    var ctrl = this,
-        locked = false,
-        elements = getElements();
+    var ctrl     = this,
+        locked   = false,
+        elements = getElements(),
+        queue    = [];
 
     ctrl.scope = $scope;
     ctrl.parent = $scope.$parent;
@@ -255,7 +259,7 @@ angular.module('material.components.tabs', [
     ctrl.lastSelectedIndex = null;
     ctrl.focusIndex = 0;
     ctrl.offsetLeft = 0;
-    ctrl.hasContent = true;
+    ctrl.hasContent = false;
     ctrl.hasFocus = false;
     ctrl.lastClick = false;
 
@@ -283,9 +287,14 @@ angular.module('material.components.tabs', [
       $scope.$watch('selectedIndex', handleSelectedIndexChange);
       $scope.$watch('$mdTabsCtrl.focusIndex', handleFocusIndexChange);
       $scope.$watch('$mdTabsCtrl.offsetLeft', handleOffsetChange);
+      $scope.$watch('$mdTabsCtrl.hasContent', handleHasContent);
       angular.element($window).on('resize', function () { $scope.$apply(handleWindowResize); });
       $timeout(updateInkBarStyles, 0, false);
       $timeout(updateHeightFromContent, 0, false);
+    }
+
+    function handleHasContent (hasContent) {
+      $element[hasContent ? 'removeClass' : 'hasClass']('md-no-tab-content');
     }
 
     function getElements () {
@@ -369,6 +378,11 @@ angular.module('material.components.tabs', [
       ctrl.offsetLeft = fixOffset(ctrl.offsetLeft);
     }
 
+    function processQueue () {
+      queue.forEach(function (func) { $timeout(func); });
+      queue = [];
+    }
+
     function insertTab (tabData, index) {
       var proto = {
             getIndex: function () { return ctrl.tabs.indexOf(tab); },
@@ -379,16 +393,22 @@ angular.module('material.components.tabs', [
             id:       $mdUtil.nextUid()
           },
           tab = angular.extend(proto, tabData);
-      if (!tabData.template) {
-        ctrl.hasContent = false;
-        $element.addClass('md-no-tab-content');
-      }
       if (angular.isDefined(index)) {
         ctrl.tabs.splice(index, 0, tab);
       } else {
         ctrl.tabs.push(tab);
       }
+      processQueue();
+      updateHasContent();
       return tab;
+    }
+
+    function updateHasContent () {
+      var hasContent = false;
+      angular.forEach(ctrl.tabs, function (tab) {
+        if (tab.template) hasContent = true;
+      });
+      ctrl.hasContent = hasContent;
     }
 
     function removeTab (tabData) {
@@ -440,8 +460,9 @@ angular.module('material.components.tabs', [
 
     function updateHeightFromContent () {
       if (!$scope.dynamicHeight) return $element.css('height', '');
+      if (!ctrl.tabs.length) return queue.push(updateHeightFromContent);
       var tabContent    = elements.contents[$scope.selectedIndex],
-          contentHeight = tabContent.offsetHeight,
+          contentHeight = tabContent ? tabContent.offsetHeight : 0,
           tabsHeight    = elements.wrapper.offsetHeight,
           newHeight     = contentHeight + tabsHeight,
           currentHeight = $element.prop('clientHeight');
@@ -460,7 +481,7 @@ angular.module('material.components.tabs', [
     }
 
     function updateInkBarStyles () {
-      if (!ctrl.tabs.length) return;
+      if (!ctrl.tabs.length) return queue.push(updateInkBarStyles);
       //-- if the element is not visible, we will not be able to calculate sizes until it is
       //-- we should treat that as a resize event rather than just updating the ink bar
       if (!$element.prop('offsetParent')) return handleResizeWhenVisible();
