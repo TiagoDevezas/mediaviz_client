@@ -84,6 +84,39 @@ mediavizServices.factory('DataFormatter', function() {
 			} else {
 				return [];
 			}
+		},
+		countOnly: function (data, keyword, value) {
+			if(data.length > 0) {
+				var columns = [];
+				var keywordValues = [data[0]['' + value + '']];
+				// angular.forEach(data, function(d) {
+				// 	keywordValues.push(d['' + value + '']);
+				// });
+				keywordValues.unshift(keyword);
+				columns.push(keywordValues);
+				return columns;
+			} else {
+				return [];
+			}
+		},
+		sumValue: function(data, keyword, value, xLabel) {
+			if(data.length > 0) {
+				var sum = 0;
+				var columns = [];
+				var xValueCol = [];
+				xValueCol.push('x')
+				xValueCol.push(xLabel);
+				columns.push(xValueCol);
+				var sumValues = [keyword];
+				angular.forEach(data, function(d) {
+					sum = sum + +d['' + value + ''];
+				});
+				sumValues.push(sum);
+				columns.push(sumValues);
+				return columns;
+			} else {
+				return [];
+			}
 		}
 	}
 });

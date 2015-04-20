@@ -1387,13 +1387,13 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     if(chart) { chart.unload(); }
   }
 
-  $scope.setDataFormat = function(dataFormat){
+  $scope.setDataFormat = function(dataFormat) {
     if ($scope.dataFormat !== dataFormat) {
       $scope.dataFormat = dataFormat;
     }
   }
 
-  $scope.setSourceType = function(sourceType){
+  $scope.setSourceType = function(sourceType) {
     if ($scope.sourceType !== sourceType) {
       $scope.sourceType = sourceType;
       //$scope.loadedKeywords = [];
@@ -1401,8 +1401,33 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     }
   }
 
-  $scope.addKeyword = function(item){
+  $scope.addKeyword = function(item) {
     $scope.keywords.selected.push(item);
+  }
+
+  // $scope.data = {columns: [['data', 91.4]]};
+
+  // $scope.type = 'donut';
+
+  $scope.options = {
+    tooltip: {
+      format: {
+        value: function(value, ratio, id) {
+          return value;
+        }
+      }
+    }
+  }
+
+  $scope.twitterChartOpts = {
+    data: {
+      x: 'x'
+    },
+    axis: {
+      x: {
+        type: 'category' // this needed to load string x value
+      }
+    }
   }
 
 
@@ -1435,6 +1460,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
             $scope.loadedKeywords.push(keyword);
             if($scope.dataFormat === 'absolute') {
               formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
+              $scope.data = DataFormatter.countOnly(dataObj, keyword, 'total_query_articles');
+              $scope.shareData = DataFormatter.sumValue(dataObj, keyword, 'twitter_shares', 'Partilhas no Twitter');
               keywordChart.options.axis.y.label.text = 'Número de artigos';
             }
             if($scope.dataFormat === 'relative') {

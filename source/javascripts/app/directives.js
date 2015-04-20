@@ -26,6 +26,47 @@ var tickFormat = localized.timeFormat.multi([
   ["%Y", function() { return true; }]
 ]);
 
+mediavizDirectives.directive('c3Chart', function() {
+  return {
+    restrict: 'AE',
+    scope: {
+      dataset: '=',
+      options: '='
+    },
+    link: function(scope, element, attrs) {
+      scope.options = scope.options ? scope.options : {};
+      scope.options.data = scope.options.data ? scope.options.data : {};
+      scope.options.color = {pattern: colorbrewer.Set1[9]};
+      scope.chart = null;
+
+      // Add the c3 class to element for css styling
+      angular.element(element).attr('class', 'c3');
+
+
+      // watcher
+      scope.$watch('dataset', function(newVal, oldVal) {
+        if(newVal && !scope.chart) {
+          scope.addIdentifier();
+          scope.options.data.columns = scope.dataset;
+          scope.options.data.type = attrs.type;
+          scope.chart = c3.generate(scope.options);
+        }
+        if(newVal && scope.chart) {
+          scope.chart.load({columns: newVal});
+        }
+
+      });
+
+      // Add unique id to chart
+      scope.addIdentifier = function() {
+        scope.dataAttributeChartID = 'chartid' + Math.floor(Math.random() * 1000000001);
+        angular.element(element).attr('id', scope.dataAttributeChartID);
+        scope.options.bindto = '#' + scope.dataAttributeChartID;
+      };
+    }
+  }
+})
+
 mediavizDirectives.directive('loadingFlash', function() {
 	return {
 		restrict: 'AE',
