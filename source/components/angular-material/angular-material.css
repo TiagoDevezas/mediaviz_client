@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc1-master-1b789fe
+ * v0.9.0-rc1-master-55fa76a
  */
 /* mixin definition ; sets LTR and RTL within the same style call */
 html, body {
@@ -3298,7 +3298,7 @@ md-checkbox {
   display: block;
   font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;
   font-size: 1.3rem;
-  padding: 0 0.8rem 0.8rem 0.8rem;
+  padding: 0 0 0.8rem 0;
   vertical-align: middle;
   cursor: text; }
   .md-chips:after {
@@ -5626,7 +5626,7 @@ md-select {
     border-bottom: 2px solid; }
   md-select:not([disabled]):focus .md-select-label {
     border-bottom: 2px solid;
-    padding-bottom: 7px; }
+    padding-bottom: 9px; }
 
 .md-select-label {
   display: -webkit-flex;
@@ -5635,8 +5635,8 @@ md-select {
   -webkit-align-items: center;
       -ms-flex-align: center;
           align-items: center;
-  padding-top: 9px;
-  padding-bottom: 8px;
+  padding-top: 7px;
+  padding-bottom: 10px;
   border-bottom: 1px solid;
   font-size: 1.6rem;
   line-height: 0.8em;

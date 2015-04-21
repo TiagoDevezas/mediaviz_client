@@ -1,4 +1,4 @@
-<md-sidenav md-component-id="left" class="md-sidenav-left md-whiteframe-z2" md-is-locked-open="$mdMedia('gt-md')">
+<md-sidenav md-component-id="left" class="md-sidenav-left md-whiteframe-z2">
 	<md-toolbar class="md-theme-indigo">
 		<h1 class="md-toolbar-tools">
 			<a href="#/" ng-click="toggleMenu()">MediaViz</a>
@@ -8,22 +8,22 @@
 	<md-content role="navigation">
 		<ul class="sidenav">
 			<li>
-				<md-button ng-href="#/chronicle">Crónica</md-button>
+				<md-button ng-href="#/chronicle" ng-click="toggleMenu()">Crónica</md-button>
 			</li>
 			<li>
-				<md-button ng-href="#/flow">Fluxo</md-button>
+				<md-button ng-href="#/flow" ng-click="toggleMenu()">Fluxo</md-button>
 			</li>
 			<li>
-				<md-button ng-href="#/compare">Comparador</md-button>
+				<md-button ng-href="#/compare" ng-click="toggleMenu()">Comparador</md-button>
 			</li>
 			<li>
-				<md-button ng-href="#/coverage">Cobertura</md-button>
+				<md-button ng-href="#/coverage" ng-click="toggleMenu()">Cobertura</md-button>
 			</li>
 			<li>
-				<md-button ng-href="#/photofinish">PhotoFinish</md-button>
+				<md-button ng-href="#/photofinish" ng-click="toggleMenu()">PhotoFinish</md-button>
 			</li>
 			<li>
-				<md-button ng-href="#/stacks">Stacks</md-button>
+				<md-button ng-href="#/stacks" ng-click="toggleMenu()">Stacks</md-button>
 			</li>
 		</ul>
 	</md-content>
