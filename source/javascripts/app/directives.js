@@ -26,12 +26,13 @@ var tickFormat = localized.timeFormat.multi([
   ["%Y", function() { return true; }]
 ]);
 
-mediavizDirectives.directive('c3Chart', function() {
+mediavizDirectives.directive('c3Chart', function($location) {
   return {
     restrict: 'AE',
     scope: {
       dataset: '=',
-      options: '='
+      options: '=',
+      keywords: '='
     },
     link: function(scope, element, attrs) {
       scope.options = scope.options ? scope.options : {};
@@ -43,7 +44,7 @@ mediavizDirectives.directive('c3Chart', function() {
       angular.element(element).attr('class', 'c3');
 
 
-      // watcher
+      // dataset watcher
       scope.$watch('dataset', function(newVal, oldVal) {
         if(newVal && !scope.chart) {
           scope.addIdentifier();
@@ -51,10 +52,22 @@ mediavizDirectives.directive('c3Chart', function() {
           scope.options.data.type = attrs.type;
           scope.chart = c3.generate(scope.options);
         }
-        if(newVal && scope.chart) {
+        else if(scope.chart) {
           scope.chart.load({columns: newVal});
         }
 
+      });
+
+      scope.$watch(function() { return $location.search()['keywords'] }, function(newVal, oldVal) {
+        newVal = newVal.split(',');
+        oldVal = oldVal.split(',');
+        if(newVal.length) {
+          angular.forEach(oldVal, function(keyword) {
+            if(newVal.indexOf(keyword) === -1) {
+              scope.chart.unload({ids: keyword});
+            }
+          });
+        }
       });
 
       // Add unique id to chart
