@@ -31,8 +31,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
     restrict: 'AE',
     scope: {
       dataset: '=',
-      options: '=',
-      keywords: '='
+      options: '='
     },
     link: function(scope, element, attrs) {
       scope.options = scope.options ? scope.options : {};
@@ -59,14 +58,16 @@ mediavizDirectives.directive('c3Chart', function($location) {
       });
 
       scope.$watch(function() { return $location.search()['keywords'] }, function(newVal, oldVal) {
-        newVal = newVal.split(',');
-        oldVal = oldVal.split(',');
-        if(newVal.length) {
+        if(newVal) {
+          newVal = newVal.split(',');
+          oldVal = oldVal.split(',');
           angular.forEach(oldVal, function(keyword) {
             if(newVal.indexOf(keyword) === -1) {
               scope.chart.unload({ids: keyword});
             }
           });
+        } else {
+          scope.chart.unload();
         }
       });
 
