@@ -1340,7 +1340,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     angular.forEach(oldVal, function(keyword) {
       if(newVal.indexOf(keyword) === -1) {
         $scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(keyword), 1);
-        chart.unload({ids: keyword});
+        // chart.unload({ids: keyword});
       }
     });
     if(newVal.length > 0 && newVal !== '') {
@@ -1409,7 +1409,82 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
   // $scope.type = 'donut';
 
-  $scope.options = {
+  $scope.timeChartOpts = {
+    size: {
+      height: 500
+    },
+    legend: {
+      position: 'right'
+    },
+    // tooltip: {
+    //   grouped: false 
+    // },
+    data: {
+      onclick: function (d, i) { getItemData(d) }
+    },
+    point: {
+      r: 1.5
+    },
+    subchart: {
+      show: true
+    },
+    transition: {
+      duration: 0
+    },
+    axis: {
+      x: {
+          padding: {left: 0, right: 0},
+          max: new Date(),
+          type: 'timeseries',
+          tick: {
+            culling: {
+              max: 5 // the number of tick texts will be adjusted to less than this value
+            },
+            format: '%d %b'
+          }
+        },
+        y: {
+          min: 0,
+          padding: {bottom: 0},
+          // label: {
+          //   text: '',
+          //   position: 'outer-middle'
+          // },
+          // tick: {
+          //   format: function(d,i) {
+          //     if($scope.dataFormat === 'absolute') {
+          //       return d;
+          //     }
+          //     if($scope.dataFormat === 'relative') {
+          //       return d + '%';
+          //     }
+          //   }
+          // }
+        }
+      },
+      tooltip: {
+        // format: {
+        //   value: function(value, ratio, id) {
+        //     if($scope.dataFormat === 'relative') {
+        //       return value + '% de todos os artigos publicados nesta data';
+        //     }
+        //     if($scope.dataFormat === 'absolute') {
+        //       return value;
+        //     }
+        //   }
+        // }
+      },
+      grid: {
+        x: {
+          show: false
+        },
+        y: {
+          show: true
+        }
+      }
+  }
+
+  $scope.donutChartOpts = {
     tooltip: {
       format: {
         value: function(value, ratio, id) {
@@ -1417,7 +1492,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
         }
       }
     }
-  }
+  };
 
   $scope.twitterChartOpts = {
     data: {
@@ -1428,7 +1503,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
         type: 'category' // this needed to load string x value
       }
     }
-  }
+  };
 
 
   function createParamsObj(keyword) {
@@ -1459,36 +1534,39 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
             xsObj[countId] = timeId;
             $scope.loadedKeywords.push(keyword);
             if($scope.dataFormat === 'absolute') {
-              formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
-              $scope.data = DataFormatter.countOnly(dataObj, keyword, 'total_query_articles');
+              // formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
+              $scope.timeData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
+              $scope.donutData = DataFormatter.countOnly(dataObj, keyword, 'total_query_articles');
               $scope.shareData = DataFormatter.sumValue(dataObj, keyword, 'twitter_shares', 'Partilhas no Twitter');
               keywordChart.options.axis.y.label.text = 'Número de artigos';
+              $scope.xsObj = xsObj;
             }
-            if($scope.dataFormat === 'relative') {
-              formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type_by_day');
-              keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
-            }
-            if(!chart) {
-              keywordChart.options.data.xs = xsObj;
-              keywordChart.options.data.columns = formattedData;
-              chart = Chart.draw(keywordChart);
-            } else {
-              chart.load({
-                xs: xsObj,
-                columns: formattedData
-              });
-            }
-          } else {
-            //$scope.loading = false;
-            $timeout(function() {
-              chart.unload({ids: keyword});
-            }, 500)
-            //alert($scope.loadedKeywords);
-          }
-          if(chart) {
-            d3.select('.c3-axis-x-label')
-            .attr('transform', 'translate(0, -10)');
-          }
+            // if($scope.dataFormat === 'relative') {
+            //   formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type_by_day');
+            //   keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+            // }
+            // if(!chart) {
+            //   keywordChart.options.data.xs = xsObj;
+            //   keywordChart.options.data.columns = formattedData;
+            //   chart = Chart.draw(keywordChart);
+            // } else {
+            //   chart.load({
+            //     xs: xsObj,
+            //     columns: formattedData
+            //   });
+            // }
+          // } else {
+          //   //$scope.loading = false;
+          //   $timeout(function() {
+          //     chart.unload({ids: keyword});
+          //   }, 500)
+          //   //alert($scope.loadedKeywords);
+          // }
+          // if(chart) {
+          //   d3.select('.c3-axis-x-label')
+          //   .attr('transform', 'translate(0, -10)');
+          // }
+        }
         });
 }
 });

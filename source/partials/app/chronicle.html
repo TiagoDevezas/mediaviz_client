@@ -20,13 +20,14 @@
 	<md-card layout="column" class="md-padding">
 		<loading-flash>A carregar...</loading-flash>
 		<h3>Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-		<div id="keyword-chart"></div>
+		<div c3-chart dataset="timeData" type="line" options="timeChartOpts" xs="xsObj"></div>
+		<!-- <div id="keyword-chart"></div> -->
 	</md-card>
 
 	<div layout="column" layout-gt-md="row">
 		<md-card flex class="md-padding">
 			<h3>Distribuição dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-			<div c3-chart dataset="data" type="donut" options="options"></div>
+			<div c3-chart dataset="donutData" type="donut" options="donutChartOpts"></div>
 		</md-card>
 		<md-card flex class="md-padding">
 			<h3>Partilhas no Twitter dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>

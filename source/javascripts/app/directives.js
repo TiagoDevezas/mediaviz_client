@@ -31,11 +31,13 @@ mediavizDirectives.directive('c3Chart', function($location) {
     restrict: 'AE',
     scope: {
       dataset: '=',
-      options: '='
+      options: '=',
+      xs: '='
     },
     link: function(scope, element, attrs) {
       scope.options = scope.options ? scope.options : {};
       scope.options.data = scope.options.data ? scope.options.data : {};
+      scope.options.data.xs = scope.xs ? scope.xs : {};
       scope.options.color = {pattern: colorbrewer.Set1[9]};
       scope.chart = null;
 
@@ -49,13 +51,33 @@ mediavizDirectives.directive('c3Chart', function($location) {
           scope.addIdentifier();
           scope.options.data.columns = scope.dataset;
           scope.options.data.type = attrs.type;
-          scope.chart = c3.generate(scope.options);
+          if(!scope.xs)
+            scope.chart = c3.generate(scope.options);
+          else {
+            scope.options.data.xs = scope.xs
+            scope.chart = c3.generate(scope.options);
+          }
         }
         else if(scope.chart) {
-          scope.chart.load({columns: newVal});
+          if(scope.xs) {
+            scope.chart.load({xs: scope.xs, columns: newVal});
+          } else {
+            scope.chart.load({columns: newVal});
+          }
         }
 
       });
+
+      // xsObj watcher
+
+      // scope.$watch('xs', function(newVal, oldVal) {
+      //   if(newVal && scope.chart) {
+      //     scope.chart.load({xs: newVal})
+      //   }
+      // });
+
+      
+      // Keyword watcher
 
       scope.$watch(function() { return $location.search()['keywords'] }, function(newVal, oldVal) {
         if(newVal) {
