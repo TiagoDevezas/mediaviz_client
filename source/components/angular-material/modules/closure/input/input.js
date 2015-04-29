@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc2-master-bed14b9
+ * v0.9.0-rc3-master-294e066
  */
 goog.provide('ng.material.components.input');
 goog.require('ng.material.core');
@@ -13,7 +13,7 @@ goog.require('ng.material.core');
  * @name material.components.input
  */
 
-ng.material.components.input = angular.module('material.components.input', [
+angular.module('material.components.input', [
   'material.core'
 ])
   .directive('mdInputContainer', mdInputContainerDirective)
@@ -338,10 +338,11 @@ function mdMaxlengthDirective($animate) {
 }
 mdMaxlengthDirective.$inject = ["$animate"];
 
-function placeholderDirective() {
+function placeholderDirective($log) {
   return {
     restrict: 'A',
     require: '^^?mdInputContainer',
+    priority:200,
     link: postLink
   };
 
@@ -352,10 +353,19 @@ function placeholderDirective() {
     var placeholderText = attr.placeholder;
     element.removeAttr('placeholder');
 
-    var placeholder = '<div class="md-placeholder" ng-click="delegateClick()">' +
-                       placeholderText + '</div>';
-    inputContainer.element.append(placeholder);
+    if ( inputContainer.element.find('label').length == 0 ) {
+      var placeholder = '<label ng-click="delegateClick()">' + placeholderText + '</label>';
+
+      inputContainer.element.addClass('md-icon-float');
+      inputContainer.element.prepend(placeholder);
+    } else {
+      $log.warn("The placeholder='" + placeholderText + "' will be ignored since this md-input-container has a child label element.");
+    }
+
   }
 }
+placeholderDirective.$inject = ["$log"];
 
 })();
+
+ng.material.components.input = angular.module("material.components.input");

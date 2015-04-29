@@ -2,14 +2,11 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc2-master-bed14b9
+ * v0.9.0-rc3-master-294e066
  */
 goog.provide('ng.material.components.sidenav');
 goog.require('ng.material.components.backdrop');
 goog.require('ng.material.core');
-(function() {
-'use strict';
-
 /**
  * @ngdoc module
  * @name material.components.sidenav
@@ -17,7 +14,7 @@ goog.require('ng.material.core');
  * @description
  * A Sidenav QP component.
  */
-ng.material.components.sidenav = angular.module('material.components.sidenav', [
+angular.module('material.components.sidenav', [
     'material.core',
     'material.components.backdrop'
   ])
@@ -52,13 +49,13 @@ ng.material.components.sidenav = angular.module('material.components.sidenav', [
  *    });
  * // Async open the given sidenav
  * $mdSidenav(componentId)
- *    .open();
+ *    .open()
  *    .then(function(){
  *      $log.debug('opened');
  *    });
  * // Async close the given sidenav
  * $mdSidenav(componentId)
- *    .close();
+ *    .close()
  *    .then(function(){
  *      $log.debug('closed');
  *    });
@@ -424,6 +421,4 @@ function SidenavController($scope, $element, $attrs, $mdComponentRegistry, $q) {
 }
 SidenavController.$inject = ["$scope", "$element", "$attrs", "$mdComponentRegistry", "$q"];
 
-
-
-})();
+ng.material.components.sidenav = angular.module("material.components.sidenav");
