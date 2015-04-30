@@ -2,7 +2,7 @@
 
 var mediavizControllers = angular.module('mediavizControllers', []);
 
-mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $location, SourceList) {
+mediavizControllers.controller('RootCtrl', function($scope, $rootScope, $mdSidenav, $location, SourceList) {
 
   $scope.toggleMenu = function() {
     $mdSidenav('left').toggle();
@@ -22,6 +22,7 @@ mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $locatio
   if($scope.sourceList.length === 0) {
     SourceList.get(function(data) {
       $scope.sourceList = data;
+      $rootScope.sourceList = data;
       //$scope.sourceListOriginal = $scope.sourceList;
       //$scope.sourceListOriginal.splice(0, 3);
       //$scope.selectedSource = $scope.sourceList[0];
@@ -1235,6 +1236,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
   $scope.fields;
 
+  $scope.selectedSource = {};
+  $scope.selectedSource.selected = '';
+
   //$scope.chartCleared = false;
 
   $scope.sourceType = 'national';
@@ -1285,6 +1289,24 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
         return el;
       });
     }
+  }
+
+  $scope.sourceList = function() {
+    return $rootScope.sourceList;
+  }
+
+  $scope.querySearch = function(query) {
+    sources = $scope.sourceList();
+    var results = query ? sources.filter(createFilterFor(query)) : sources;
+    return results;
+  }
+
+  function createFilterFor(query) {
+    var lowercaseQuery = angular.lowercase(query);
+    return function filterFn(source) {
+      var sourceName = source.name.toLowerCase();
+      return sourceName.search(lowercaseQuery) !== -1;
+    };
   }
 
   function objectIsEmpty(obj) {
@@ -1409,9 +1431,34 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
   // $scope.type = 'donut';
 
+  $scope.twitterLineChartOpts = {
+    size: {
+      height: 300
+    },
+    point: {
+      r: 1.5
+    },
+    axis: {
+      x: {
+        padding: {left: 0, right: 0},
+        type: 'timeseries',
+        tick: {
+          culling: {
+            max: 5
+          },
+          format: '%d %b'
+        }
+      },
+      y: {
+        min: 0,
+        padding: {bottom: 0}
+      }
+    }
+  };
+
   $scope.timeChartOpts = {
     size: {
-      height: 500
+      height: 350
     },
     legend: {
       position: 'right'
@@ -1436,9 +1483,10 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
           padding: {left: 0, right: 0},
           max: new Date(),
           type: 'timeseries',
+          extent: [moment().subtract(3, 'months'), moment()],
           tick: {
             culling: {
-              max: 5 // the number of tick texts will be adjusted to less than this value
+              // max: 5 // the number of tick texts will be adjusted to less than this value
             },
             format: '%d %b'
           }
@@ -1482,7 +1530,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
           show: true
         }
       }
-  }
+  };
 
   $scope.donutChartOpts = {
     tooltip: {
@@ -1494,7 +1542,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     }
   };
 
-  $scope.twitterChartOpts = {
+  $scope.twitterBarChartOpts = {
     data: {
       x: 'x'
     },
@@ -1536,9 +1584,11 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
             if($scope.dataFormat === 'absolute') {
               // formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
               $scope.timeData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
+              $scope.twitterData = DataFormatter.inColumns(dataObj, keyword, 'time', 'twitter_shares');
+              console.log($scope.twitterData);
               $scope.donutData = DataFormatter.countOnly(dataObj, keyword, 'total_query_articles');
               $scope.shareData = DataFormatter.sumValue(dataObj, keyword, 'twitter_shares', 'Partilhas no Twitter');
-              keywordChart.options.axis.y.label.text = 'Número de artigos';
+              // keywordChart.options.axis.y.label.text = 'Número de artigos';
               $scope.xsObj = xsObj;
             }
             // if($scope.dataFormat === 'relative') {
@@ -1590,94 +1640,94 @@ function displayItems(date1, query, sourceType) {
   $scope.$apply();
 }
 
-var keywordChart = {
-  options: {
-    bindto: '#keyword-chart',
-    size: {
-      height: 500
-    },
-    legend: {
-      position: 'right'
-    },
-    tooltip: {
-      grouped: false 
-    },
-    data: {
-      type: $scope.defaultChartType.type,
-      onclick: function (d, i) { getItemData(d) }
-    },
-    point: {
-      r: 1.5
-    },
-    subchart: {
-      show: true
-    },
-    transition: {
-      duration: 0
-    },
-    axis: {
-      x: {
-          padding: {left: 0, right: 0},
-          max: new Date(),
-          // label: {
-          //   text: 'Dias',
-          //   position: 'outer-center'
-          // },
-          type: 'timeseries',
-          tick: {
-            culling: {
-              max: 5 // the number of tick texts will be adjusted to less than this value
-            },
-            format: '%d %b'
-          }
-        },
-        y: {
-          min: 0,
-          padding: {bottom: 0},
-          label: {
-            text: '',
-            position: 'outer-middle'
-          },
-          tick: {
-            format: function(d,i) {
-              if($scope.dataFormat === 'absolute') {
-                return d;
-              }
-              if($scope.dataFormat === 'relative') {
-                return d + '%';
-              }
-            }
-          }
-        }
-      },
-      tooltip: {
-        format: {
-          value: function(value, ratio, id) {
-            if($scope.dataFormat === 'relative') {
-              return value + '% de todos os artigos publicados nesta data';
-            }
-            if($scope.dataFormat === 'absolute') {
-              return value;
-            }
-          }
-        }
-      },
-      grid: {
-        x: {
-          show: false
-        },
-        y: {
-          show: true
-        }
-      },
-      color: {
-        pattern: colorbrewer.Set1[9]
-      }
-/*      color: function(d) {
-        return d3.scale.category20(d);
-      }*/
-    }
-  }
+// var keywordChart = {
+//   options: {
+//     bindto: '#keyword-chart',
+//     size: {
+//       height: 500
+//     },
+//     legend: {
+//       position: 'right'
+//     },
+//     tooltip: {
+//       grouped: false 
+//     },
+//     data: {
+//       type: $scope.defaultChartType.type,
+//       onclick: function (d, i) { getItemData(d) }
+//     },
+//     point: {
+//       r: 1.5
+//     },
+//     subchart: {
+//       show: true
+//     },
+//     transition: {
+//       duration: 0
+//     },
+//     axis: {
+//       x: {
+//           padding: {left: 0, right: 0},
+//           max: new Date(),
+//           // label: {
+//           //   text: 'Dias',
+//           //   position: 'outer-center'
+//           // },
+//           type: 'timeseries',
+//           tick: {
+//             culling: {
+//               max: 5 // the number of tick texts will be adjusted to less than this value
+//             },
+//             format: '%d %b'
+//           }
+//         },
+//         y: {
+//           min: 0,
+//           padding: {bottom: 0},
+//           label: {
+//             text: '',
+//             position: 'outer-middle'
+//           },
+//           tick: {
+//             format: function(d,i) {
+//               if($scope.dataFormat === 'absolute') {
+//                 return d;
+//               }
+//               if($scope.dataFormat === 'relative') {
+//                 return d + '%';
+//               }
+//             }
+//           }
+//         }
+//       },
+//       tooltip: {
+//         format: {
+//           value: function(value, ratio, id) {
+//             if($scope.dataFormat === 'relative') {
+//               return value + '% de todos os artigos publicados nesta data';
+//             }
+//             if($scope.dataFormat === 'absolute') {
+//               return value;
+//             }
+//           }
+//         }
+//       },
+//       grid: {
+//         x: {
+//           show: false
+//         },
+//         y: {
+//           show: true
+//         }
+//       },
+//       color: {
+//         pattern: colorbrewer.Set1[9]
+//       }
+// /*      color: function(d) {
+//         return d3.scale.category20(d);
+//       }*/
+//     }
+//   }
 
 });
 

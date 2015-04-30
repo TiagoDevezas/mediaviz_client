@@ -38,7 +38,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
       scope.options = scope.options ? scope.options : {};
       scope.options.data = scope.options.data ? scope.options.data : {};
       scope.options.data.xs = scope.xs ? scope.xs : {};
-      scope.options.color = {pattern: colorbrewer.Set1[9]};
+      scope.options.color = {pattern: colorbrewer.Dark2[8]};
       scope.chart = null;
 
       // Add the c3 class to element for css styling
@@ -60,8 +60,10 @@ mediavizDirectives.directive('c3Chart', function($location) {
         }
         else if(scope.chart) {
           if(scope.xs) {
+            scope.chart.flush();
             scope.chart.load({xs: scope.xs, columns: newVal});
           } else {
+            scope.chart.flush();
             scope.chart.load({columns: newVal});
           }
         }
