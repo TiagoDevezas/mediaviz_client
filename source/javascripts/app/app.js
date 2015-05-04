@@ -76,6 +76,11 @@ mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
 			controller: 'PhotoFinishCtrl',
 			reloadOnSearch: false
 		}).
+		when('/newsmap', {
+			templateUrl: 'partials/app/worldmap.html',
+			controller: 'WorldMapCtrl',
+			reloadOnSearch: false
+		}).
 		otherwise({
 			redirectTo: '/'
 		});

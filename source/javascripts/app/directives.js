@@ -61,6 +61,91 @@ mediavizDirectives.directive('selectChartType', function($filter) {
   };
 });
 
+mediavizDirectives.directive('worldMap', function() {
+  return {
+    restrict: 'AE',
+    scope: {
+      data: '='
+    },
+    link: function(scope, elem, attrs) {
+
+      // Data watcher
+
+      scope.$watch('data', function(incomingData) {
+        if(incomingData) {
+          updateMap(incomingData);
+        }
+      });
+
+      // Set up the map
+      var width = parseInt(d3.select(elem[0]).style("width")),
+        height = parseInt(d3.select(elem[0]).style("height"));
+
+      var svg = d3.select(elem[0]).append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+      var color = d3.scale.quantile()
+        .range(['rgb(255,255,204)','rgb(217,240,163)','rgb(173,221,142)','rgb(120,198,121)','rgb(49,163,84)','rgb(0,104,55)']);
+
+
+      d3.json('data/world.json', function(world) {
+        var paises = topojson.feature(world, world.objects.world);
+
+        var projection = d3.geo.mercator()
+        .translate([width /2, height / 1.6])
+        .scale(width / 2 / Math.PI);
+
+        var path = d3.geo.path()
+        .projection(projection);
+
+        var boundingBox = svg.append('g')
+          .attr('class', 'mundo');
+
+        var countries = boundingBox.selectAll('g')
+          .data(paises.features, function (d) { return d.properties.name})
+          .enter()
+          .append('g')
+          .attr('class', function (d) { return d.properties.name})
+          .append('path')
+          .attr('d', path)
+          .style('fill', 'lightgray')
+          .style('stroke', 'lightgray')
+          .style('stroke-width', '0.25px');
+      });
+
+      // Update function
+      function updateMap(data) {
+        var maxCount = d3.max(data, function(d) { return d.count })
+    
+        var color_domain = [0, maxCount/2];
+
+        console.log(data[0]);
+
+        color.domain(color_domain);
+
+        var countByAlpha3 = {};
+        var nameByAlpha3 = {};
+
+        data.forEach(function(d) {
+          countByAlpha3[d.alpha3] = +d.count;
+          nameByAlpha3[d.alpha3] = d.name;
+        });
+
+        console.log(data);
+
+        d3.selectAll('path')
+          .transition()
+          .duration(500)
+          .style('fill', function(d) {
+            return countByAlpha3[d.id] ? color(countByAlpha3[d.id]) : 'white'
+        });
+        
+      }
+    }
+  }
+});
+
 mediavizDirectives.directive('photoFinish', function($window, $parse) {
   return {
     restrict: 'AE',

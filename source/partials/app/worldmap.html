@@ -1,0 +1,29 @@
+<div id="news-map">
+	<h2>NewsMap</h2>
+
+	<div class="home-search-bar">
+		<ui-select ng-model="selectedSource.selected" on-select="loadSourceData($item)" style="min-width: 300px">
+		<ui-select-match placeholder="Escolher/pesquisar fontes...">{{$select.selected.name}}</ui-select-match>
+		<ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
+		{{ source.name }}
+		<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
+	</ui-select-choices>
+</ui-select>
+</div>
+
+<div class="search-tools">
+	<ul>
+		<li ng-repeat="option in optionsForDateSelect"><a href="" ng-click="setSelectedOption(option)" ng-class="{'selected':dateOptions.selected === option, 'bordered':option.name === optionsForDateSelect[4].name}">{{ option.name }}</a></li>
+	</ul>
+</div>
+
+<div class="pickadate-selector" ng-show="pickadayOpen">
+	<div class="pickadate-input" pickadate ng-model="dateSince" max-date="today"></div>
+	<div class="pickadate-input" pickadate ng-model="dateUntil" max-date="today"></div>
+	<button ng-click="setDateInterval()">Submeter</button>
+</div>
+
+<loading-flash>A carregar...</loading-flash>
+
+<div world-map data="mapData" style="height: 900px;"></div>
+</div>

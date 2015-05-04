@@ -2265,6 +2265,154 @@ mediavizControllers.controller('StacksCtrl', function($scope, $location, $timeou
 
 });
 
+mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $location, Resources, Page) {
+  Page.setTitle('NewsMap');
+
+  $scope.selectedSource = {};
+  $scope.selectedSource.selected = '';
+
+  $scope.optionsForDateSelect = [
+    {name: 'Tudo'},
+    {name: 'Último dia'},
+    {name: 'Últimos 7 dias'},
+    {name: 'Últimos 30 dias'},
+    {name: 'Intervalo Personalizado'}
+  ];
+
+  $scope.dateOptions = [];
+  $scope.dateOptions.selected = '';
+
+  $scope.today = moment().format('YYYY-MM-DD');
+  $scope.yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
+  $scope.oneWeekAgo = moment().subtract(7, 'day').format('YYYY-MM-DD');
+  $scope.oneMonthAgo = moment().subtract(30, 'day').format('YYYY-MM-DD');
+
+  $scope.pickadayOpen = false;
+  $scope.dateSince = '';
+  $scope.dateUntil = '';
+
+
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var source = $location.search()['source'] || undefined;
+    var sinceParams = $location.search()['since'] || undefined;
+    var untilParams = $location.search()['until'] || undefined;
+      if(sinceParams) {
+        $location.search(angular.extend($location.search(), {since: sinceParams.toString()}));
+        $scope.since = sinceParams;
+        if($scope.since == $scope.yesterday) {
+          $scope.dateOptions.selected = $scope.optionsForDateSelect[1];
+        } else if($scope.since == $scope.oneWeekAgo) {
+          $scope.dateOptions.selected = $scope.optionsForDateSelect[2];
+        } else if($scope.since == $scope.oneMonthAgo) {
+          $scope.dateOptions.selected = $scope.optionsForDateSelect[3];
+        } else if ($scope.since == undefined) {
+          $scope.dateOptions.selected = $scope.optionsForDateSelect[4];      
+        }
+      }
+      if(untilParams) {
+        $location.search(angular.extend($location.search(), {until: untilParams.toString()}));
+        $scope.until = untilParams;
+        //getData();
+      }
+      if(source) {
+        $timeout(function() {
+          source = getSourceObjByAcronym($scope.sourceList, source);
+          $scope.selectedSource.selected = source;
+          getMapData();
+        }, 500);
+      }
+  }, true);
+
+  function getSourceObjByAcronym(array, acronym) {
+    var obj = array.filter(function(el) {
+      return el.acronym === acronym;
+    });
+    return obj[0];
+  }
+
+  function setLocation(locationObj) {
+    $location.search(angular.extend($location.search(), locationObj));
+  }
+
+  $scope.loadSourceData = function(source) {
+    setLocation({source: source.acronym});
+  }
+
+  $scope.setDateInterval = function() {
+    $scope.since = $scope.dateSince;
+    $scope.until = $scope.dateUntil;
+    $scope.pickadayOpen = false; 
+  }
+
+  $scope.setSelectedOption = function(option) {
+    //$scope.dateOptions.selected = option;
+    if(option.name === $scope.optionsForDateSelect[4].name) {
+      $scope.pickadayOpen = !$scope.pickadayOpen;
+    } else {
+      if(option.name  === $scope.optionsForDateSelect[0].name) {
+        $scope.since = undefined;
+        $scope.until = undefined;
+        $location.search('since', null);
+        $location.search('until', null);
+      }
+      if(option.name  === $scope.optionsForDateSelect[1].name) {
+        $scope.since = $scope.yesterday;
+        $scope.until = $scope.today;
+      }
+      if(option.name  === $scope.optionsForDateSelect[2].name) {
+        $scope.since = $scope.oneWeekAgo;
+        $scope.until = $scope.today;
+      }
+      if(option.name  === $scope.optionsForDateSelect[3].name) {
+        $scope.until = $scope.today;
+        $scope.since = $scope.oneMonthAgo;
+      }
+
+      $scope.pickadayOpen = false;
+
+      //$scope.loadedSources = [];
+      //getTotalsAndDraw();     
+    }
+  }
+
+  $scope.$watch('since', function(newVal, oldVal) {
+    if(newVal && newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {since: newVal.toString()}));
+      //getData();  
+    }
+  }, true);
+
+  $scope.$watch('until', function(newVal, oldVal) {
+    if(newVal && newVal !== oldVal) {
+      $location.search(angular.extend($location.search(), {until: newVal.toString()}));
+      //getData();  
+    }
+  }, true);
+
+  function getMapData() {
+    $scope.loading = true;
+    var selectedSource = $scope.selectedSource.selected;
+    var aggregated = selectedSource.group;
+    if(!aggregated) {
+      $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, source: selectedSource.acronym, map: 'world'};
+    } else {
+      if (aggregated !== 'international') {
+        $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, type: selectedSource.type, map: 'world'};
+      } else {
+        $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, type: selectedSource.type, map: 'world', lang: 'en'};
+      }
+
+    }
+    Resources.get($scope.paramsObj).$promise.then(function(data) {
+      $scope.loading = false;
+      $scope.mapData = data;
+      // console.log($scope.mapData);
+    });
+  }
+
+
+});
+
 mediavizControllers.controller('PhotoFinishCtrl', function($scope, $location, Resources, Page) {
 
   Page.setTitle('PhotoFinish');
