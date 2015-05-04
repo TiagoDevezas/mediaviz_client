@@ -81,12 +81,46 @@ mediavizDirectives.directive('worldMap', function() {
       var width = parseInt(d3.select(elem[0]).style("width")),
         height = parseInt(d3.select(elem[0]).style("height"));
 
+      var tooltip = d3.select(elem[0]).append("div").attr("class", "tooltip hidden");
+
+
       var svg = d3.select(elem[0]).append('svg')
         .attr('width', width)
-        .attr('height', height);
+        .attr('height', height)
+        .style('background-color', '#9CB8CC')
+        .style('border', '1px solid #bbb')
+
+      var boundingBox;
 
       var color = d3.scale.quantile()
         .range(['rgb(255,255,204)','rgb(217,240,163)','rgb(173,221,142)','rgb(120,198,121)','rgb(49,163,84)','rgb(0,104,55)']);
+
+      var zoom = d3.behavior.zoom()
+            .scaleExtent([1, 8])
+            .on("zoom", move);
+
+      function move() {
+
+        var t = d3.event.translate;
+        var s = d3.event.scale;
+        zscale = s;
+        var h = height/4;
+
+
+        t[0] = Math.min(
+          (width/height)  * (s - 1), 
+          Math.max( width * (1 - s), t[0] )
+        );
+
+        t[1] = Math.min(
+          h * (s - 1) + h * s, 
+          Math.max(height  * (1 - s) - h * s, t[1])
+        );
+
+        zoom.translate(t);
+        boundingBox.attr("transform", "translate(" + t + ")scale(" + s + ")");
+
+      }
 
 
       d3.json('data/world.json', function(world) {
@@ -99,7 +133,9 @@ mediavizDirectives.directive('worldMap', function() {
         var path = d3.geo.path()
         .projection(projection);
 
-        var boundingBox = svg.append('g')
+        boundingBox = svg
+          .call(zoom)
+          .append('g')
           .attr('class', 'mundo');
 
         var countries = boundingBox.selectAll('g')
@@ -109,6 +145,7 @@ mediavizDirectives.directive('worldMap', function() {
           .attr('class', function (d) { return d.properties.name})
           .append('path')
           .attr('d', path)
+          .attr('class', 'country')
           .style('fill', 'lightgray')
           .style('stroke', 'lightgray')
           .style('stroke-width', '0.25px');
@@ -132,15 +169,35 @@ mediavizDirectives.directive('worldMap', function() {
           nameByAlpha3[d.alpha3] = d.name;
         });
 
-        console.log(data);
+        var countries = d3.selectAll('.country');
 
-        d3.selectAll('path')
+
+        countries
           .transition()
           .duration(500)
           .style('fill', function(d) {
             return countByAlpha3[d.id] ? color(countByAlpha3[d.id]) : 'white'
-        });
-        
+          });
+
+        //offsets for tooltips
+      var offsetL = elem[0].offsetLeft+20;
+      var offsetT = elem[0].offsetTop+10;
+
+
+      countries
+      .on("mousemove", function(d,i) {
+        var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
+
+        tooltip.classed("hidden", false)
+         .attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
+         .html(
+          nameByAlpha3[d.id] ? nameByAlpha3[d.id] + ": " + countByAlpha3[d.id] + " artigos" : "Sem dados"
+          )
+      })
+      .on("mouseout", function(d,i) {
+        tooltip.classed("hidden", true);
+      }); 
+
       }
     }
   }
