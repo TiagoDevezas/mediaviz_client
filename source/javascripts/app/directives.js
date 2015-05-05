@@ -86,14 +86,17 @@ mediavizDirectives.directive('worldMap', function() {
 
       var svg = d3.select(elem[0]).append('svg')
         .attr('width', width)
-        .attr('height', height)
-        .style('background-color', '#9CB8CC')
-        .style('border', '1px solid #bbb')
+        .attr('height', height);
+        // .style('background-color', '#9CB8CC')
+        // .style('border', '1px solid #bbb')
 
       var boundingBox;
 
+      var colorbrewerRamp = colorbrewer.GnBu[7];
+      colorbrewerRamp.shift();
+
       var color = d3.scale.quantile()
-        .range(['rgb(255,255,204)','rgb(217,240,163)','rgb(173,221,142)','rgb(120,198,121)','rgb(49,163,84)','rgb(0,104,55)']);
+        .range(colorbrewerRamp);
 
       var zoom = d3.behavior.zoom()
             .scaleExtent([1, 8])
@@ -155,9 +158,7 @@ mediavizDirectives.directive('worldMap', function() {
       function updateMap(data) {
         var maxCount = d3.max(data, function(d) { return d.count })
     
-        var color_domain = [0, maxCount/2];
-
-        console.log(data[0]);
+        var color_domain = [0, maxCount / 2];
 
         color.domain(color_domain);
 
