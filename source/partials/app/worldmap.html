@@ -23,7 +23,11 @@
 	<button ng-click="setDateInterval()">Submeter</button>
 </div>
 
+<select id="map-select" ng-model="selectedMap" ng-options="item.name for item in mapTypes" ng-change="getData()"></select>
+
 <loading-flash>A carregar...</loading-flash>
 
-<div world-map data="mapData" style="height: 800px;"></div>
+	<div world-map data="mapData" style="height: 800px;" ng-show="selectedMap.type === 'world'"></div>
+
+	<div pt-map data="mapData" style="height: 500px; width: 600px;" ng-show="selectedMap.type === 'portugal'"></div>
 </div>

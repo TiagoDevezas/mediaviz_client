@@ -2291,6 +2291,12 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
   $scope.dateSince = '';
   $scope.dateUntil = '';
 
+  $scope.mapTypes = [
+    {type: 'world', name: 'Mundo'},
+    {type: 'portugal', name: 'Portugal'}
+  ];
+
+  $scope.selectedMap = $scope.mapTypes[0];
 
   $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
     var source = $location.search()['source'] || undefined;
@@ -2389,20 +2395,20 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
     }
   }, true);
 
+  $scope.getData = function() {
+    getMapData();
+  }
+
   function getMapData() {
     $scope.loading = true;
     var selectedSource = $scope.selectedSource.selected;
     var aggregated = selectedSource.group;
     if(!aggregated) {
-      $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, source: selectedSource.acronym, map: 'world'};
+      $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, source: selectedSource.acronym};
     } else {
-      if (aggregated !== 'international') {
-        $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, type: selectedSource.type, map: 'world'};
-      } else {
-        $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, type: selectedSource.type, map: 'world', lang: 'en'};
-      }
-
+      $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, type: selectedSource.type};
     }
+    angular.extend($scope.paramsObj, {map: $scope.selectedMap.type});
     Resources.get($scope.paramsObj).$promise.then(function(data) {
       $scope.loading = false;
       $scope.mapData = data;
