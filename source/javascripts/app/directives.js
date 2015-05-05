@@ -174,7 +174,7 @@ mediavizDirectives.directive('worldMap', function() {
 
         countries
           .transition()
-          .duration(500)
+          .duration(1500)
           .style('fill', function(d) {
             return countByAlpha3[d.id] ? color(countByAlpha3[d.id]) : 'white'
           });
