@@ -150,7 +150,7 @@ mediavizDirectives.directive('worldMap', function() {
           .attr('d', path)
           .attr('class', 'country')
           .style('fill', 'lightgray')
-          .style('stroke', 'lightgray')
+          .style('stroke', '#111')
           .style('stroke-width', '0.25px');
       });
 
@@ -177,7 +177,7 @@ mediavizDirectives.directive('worldMap', function() {
           .transition()
           .duration(1500)
           .style('fill', function(d) {
-            return countByAlpha3[d.id] ? color(countByAlpha3[d.id]) : 'white'
+            return countByAlpha3[d.id] ? color(countByAlpha3[d.id]) : '#eee'
           });
 
         //offsets for tooltips
