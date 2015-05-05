@@ -245,7 +245,7 @@ mediavizDirectives.directive('ptMap', function() {
 
         var maxCount = d3.max(data, function(d) { return d.count });
     
-        var color_domain = [0, maxCount / 2];
+        var color_domain = [0, maxCount / 3];
 
         color.domain(color_domain);
 
