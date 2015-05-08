@@ -325,7 +325,7 @@ mediavizDirectives.directive('worldMap', function($window) {
       var boundingBox;
 
       var colorbrewerRamp = colorbrewer.GnBu[7];
-      colorbrewerRamp.shift();
+      // colorbrewerRamp.shift();
 
       var color = d3.scale.quantile()
         .range(colorbrewerRamp);
