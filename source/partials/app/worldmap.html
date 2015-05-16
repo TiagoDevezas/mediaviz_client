@@ -11,6 +11,13 @@
 </ui-select>
 </div>
 
+<div class="keyword-select">
+	<form ng-submit="redrawMap()" style="margin-top: 1em; width: 50%; display: inline-block;">
+		<input type="text" placeholder="Introduzir palavra-chave" ng-model="keyword.selected">
+	</form>
+	<button ng-click="removeKeyword()" style="">Limpar</button>
+</div>
+
 <div class="search-tools">
 	<ul>
 		<li ng-repeat="option in optionsForDateSelect"><a href="" ng-click="setSelectedOption(option)" ng-class="{'selected':dateOptions.selected === option, 'bordered':option.name === optionsForDateSelect[4].name}">{{ option.name }}</a></li>
@@ -23,7 +30,7 @@
 	<button ng-click="setDateInterval()">Submeter</button>
 </div>
 
-<select id="map-select" ng-model="selectedMap" ng-options="item.name for item in mapTypes" ng-change="getData()"></select>
+<select id="map-select" ng-model="selectedMap" ng-options="item.name for item in mapTypes" ng-change="changeMap()"></select>
 
 <loading-flash>A carregar...</loading-flash>
 
