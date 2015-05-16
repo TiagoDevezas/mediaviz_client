@@ -121,12 +121,12 @@ mediavizDirectives.directive('ptMap', function() {
 
 
         var cWidth = width / 2,
-        cHeight = height;     
+        cHeight = height;
 
 
         var b = path.bounds(portugal);
         var s = 0.95 / Math.max(
-          (b[1][0] - b[0][0]) / cWidth, 
+          (b[1][0] - b[0][0]) / cWidth,
           (b[1][1] - b[0][1]) / cHeight
           );
         b = d3.geo.bounds(portugal);
@@ -177,9 +177,9 @@ mediavizDirectives.directive('ptMap', function() {
 
         var madeira_bg = madeira_box.append('rect')
         .attr('class', 'madeira-bg')
-        .style('stroke', '#111')
+        // .style('stroke', '#111')
         .style('fill', 'none')
-        .style('stroke-width', '0.25px')
+        // .style('stroke-width', '0.25px')
         .attr('width', mWidth)
         .attr('height', mHeight);
 
@@ -219,8 +219,8 @@ mediavizDirectives.directive('ptMap', function() {
          var acores_bg = acores_box.append('rect')
          .attr('class', 'acores-bg')
          .style('fill', 'none')
-         .style('stroke', '#111')
-         .style('stroke-width', '0.25px')
+        //  .style('stroke', '#111')
+        //  .style('stroke-width', '0.25px')
          .attr('width', aWidth)
          .attr('height', aHeight);
 
@@ -244,7 +244,7 @@ mediavizDirectives.directive('ptMap', function() {
       function updateMap(data) {
 
         var maxCount = d3.max(data, function(d) { return d.count });
-    
+
         var color_domain = [0, maxCount / 3];
 
         color.domain(color_domain);
@@ -283,7 +283,7 @@ mediavizDirectives.directive('ptMap', function() {
         })
         .on("mouseout", function(d,i) {
           tooltip.classed("hidden", true);
-        }); 
+        });
 
       }
 
@@ -318,9 +318,9 @@ mediavizDirectives.directive('worldMap', function($window) {
 
       var svg = d3.select(elem[0]).append('svg')
         .attr('width', width)
-        .attr('height', height);
+        .attr('height', height)
         // .style('background-color', '#9CB8CC')
-        // .style('border', '1px solid #bbb')
+        .style('border', '1px solid #bbb')
 
       var boundingBox;
 
@@ -343,12 +343,12 @@ mediavizDirectives.directive('worldMap', function($window) {
 
 
         t[0] = Math.min(
-          (width/height)  * (s - 1), 
+          (width/height)  * (s - 1),
           Math.max( width * (1 - s), t[0] )
         );
 
         t[1] = Math.min(
-          h * (s - 1) + h * s, 
+          h * (s - 1) + h * s,
           Math.max(height  * (1 - s) - h * s, t[1])
         );
 
@@ -389,7 +389,7 @@ mediavizDirectives.directive('worldMap', function($window) {
       // Update function
       function updateMap(data) {
         var maxCount = d3.max(data, function(d) { return d.count })
-    
+
         var color_domain = [0, maxCount / 2];
 
         color.domain(color_domain);
@@ -429,7 +429,7 @@ mediavizDirectives.directive('worldMap', function($window) {
       })
       .on("mouseout", function(d,i) {
         tooltip.classed("hidden", true);
-      }); 
+      });
 
       }
     }
@@ -455,7 +455,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         if(data.length) {
           d3.select('#viz').html('');
           // d3.select('.d3-tip').remove();
-          drawChart(data);          
+          drawChart(data);
         } else {
           console.log('No data');
         }
@@ -559,7 +559,7 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
           //.tickValues(topAxisValues)
           .tickFormat(function(d) {
             if((+d) !== 0) {
-              return "+" + d + " horas";              
+              return "+" + d + " horas";
             } else {
               return d;
             }
@@ -582,8 +582,8 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
             "<p><strong>Notícias publicadas:</strong> <span style='color:red'>" + d.count + "</span>";
           });
 
-        var div = d3.select("body").append("div")   
-          .attr("class", "tooltip")               
+        var div = d3.select("body").append("div")
+          .attr("class", "tooltip")
           .style("opacity", 0);
 
         var svg = d3.select('#viz')
@@ -654,8 +654,8 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
             .attr('transform', 'translate(' + width + ',' + 0 + ')')
             .style('fill', '#c7e9b4')
             .style('opacity', .85);
-            
-        
+
+
 
         var circles = d3.selectAll('circle.source');
 
@@ -664,12 +664,12 @@ mediavizDirectives.directive('photoFinish', function($window, $parse) {
         .duration(2000)
         .ease('cubic out-in')
         //.delay(function(d, i) { return 100 * i})
-        .attr('transform', function(d) { 
+        .attr('transform', function(d) {
           return 'translate(' + -(width-xScale(d.date)) + ',' + yScale(d.name) + ')';
         });
 
         // var t1 = t0.transition()
-        // .attr('transform', function(d) { 
+        // .attr('transform', function(d) {
         //  return 'translate(' + xScale(d.date) + ',' + yScale(d.count) + ')';
         // });
 
@@ -776,7 +776,7 @@ mediavizDirectives.directive('stacksChart', function($window) {
         var data = newVal;
         if(data.length) {
           //svg.style('opacity', '1');
-          scope.render(data, mode);          
+          scope.render(data, mode);
         } else {
           console.log('No data');
           //svg.style('opacity', '0');
@@ -1123,7 +1123,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
             var yValue = p.articles !== 0 ? (p.articles/p.total_articles_for_day) : 0;
             var maxValue = p.total_articles_for_day !== 0 ? (p.total_articles_for_day/p.total_articles_for_day) : 0;
             return { x: Date.parse(p.time), y: yValue, y0: 0, keyword: keyword.keyword, dayCount: maxValue, count: p.articles, countForDay: p.total_articles_for_day}
-          }); 
+          });
         })
 
         // keywords.forEach(function(keyword, i) {
@@ -1151,7 +1151,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         //   }
           // d.values = d.counts.map(function(p, i) {
           //   return { x: Date.parse(p.time), y: p.articles, y0: 0, keyword: d.keyword}
-          // }); 
+          // });
         // });
 
         var stack = d3.layout.stack()
@@ -1176,7 +1176,7 @@ mediavizDirectives.directive('stacksChart2', function($window) {
         //   // });
         //   d.total = d.counts[d.counts.length -1].y1;
         // })
-        
+
         var allDates = [];
 
         layers.forEach(function(obj) {
