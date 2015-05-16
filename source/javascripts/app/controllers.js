@@ -2301,12 +2301,14 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
 
   // $scope.selectedMap = null;
 
-  function setDefaultMap() {
+  // function setDefaultMap() {
     // $scope.selectedMap = $scope.mapTypes[0];
-    $location.search(angular.extend($location.search(), {map: 'world'}));
-  }
+    if(!$location.search()['map']) {
+      $location.search(angular.extend($location.search(), {map: 'world'}));
+    }
+  // }
 
-  setDefaultMap();
+  // setDefaultMap();
 
 
 
