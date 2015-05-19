@@ -2299,15 +2299,19 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
     {type: 'portugal', name: 'Portugal'}
   ];
 
-  $scope.lang = 'pt';
+  // $scope.lang = 'pt';
 
   // $scope.selectedMap = null;
 
   // function setDefaultMap() {
     // $scope.selectedMap = $scope.mapTypes[0];
-    if(!$location.search()['map']) {
-      $location.search(angular.extend($location.search(), {map: 'world'}));
-    }
+  if(!$location.search()['map']) {
+    $location.search(angular.extend($location.search(), {map: 'world'}));
+  }
+
+  if(!$location.search()['lang']) {
+    $location.search(angular.extend($location.search(), {lang: 'pt'}));
+  }
   // }
 
   // setDefaultMap();
@@ -2320,7 +2324,7 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
     var keyword = $location.search()['keyword'] || undefined;
     var sinceParams = $location.search()['since'] || undefined;
     var untilParams = $location.search()['until'] || undefined;
-    var lang = $location.search()['lang'] || 'pt';
+    var lang = $location.search()['lang'] || undefined;
       if(lang) {
         $scope.lang = lang;
         $location.search(angular.extend($location.search(), {lang: lang.toString()}));
