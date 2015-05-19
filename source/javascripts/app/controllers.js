@@ -2299,6 +2299,8 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
     {type: 'portugal', name: 'Portugal'}
   ];
 
+  $scope.lang = 'pt';
+
   // $scope.selectedMap = null;
 
   // function setDefaultMap() {
@@ -2318,6 +2320,11 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
     var keyword = $location.search()['keyword'] || undefined;
     var sinceParams = $location.search()['since'] || undefined;
     var untilParams = $location.search()['until'] || undefined;
+    var lang = $location.search()['lang'] || 'pt';
+      if(lang) {
+        $scope.lang = lang;
+        $location.search(angular.extend($location.search(), {lang: lang.toString()}));
+      }
       if(mapType !== $scope.selectedMap) {
         $scope.selectedMap = $scope.mapTypes.filter(function(el) {
           return el['type'] == mapType;
@@ -2444,9 +2451,9 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
     var aggregated = selectedSource.group;
     var query = $scope.keyword.selected || undefined;
     if(!aggregated) {
-      $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, source: selectedSource.acronym, q: query};
+      $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, source: selectedSource.acronym, q: query, lang: $scope.lang};
     } else {
-      $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, type: selectedSource.type, q: query};
+      $scope.paramsObj = {resource: 'places', since: $scope.since, until: $scope.until, type: selectedSource.type, q: query, lang: $scope.lang};
     }
     angular.extend($scope.paramsObj, {map: $scope.selectedMap.type});
     Resources.get($scope.paramsObj).$promise.then(function(data) {
