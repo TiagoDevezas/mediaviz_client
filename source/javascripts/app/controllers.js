@@ -1818,7 +1818,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
   $scope.setDataFormat = function(dataFormat){
     if ($scope.dataFormat !== dataFormat) {
       $scope.dataFormat = dataFormat;
-      $scope.shareFormat = '';
+      // $scope.shareFormat = '';
       // $scope.loadedSources = [];
       // chart.unload();
       // getTotalsAndDraw();
@@ -1950,10 +1950,9 @@ function getTotalsAndDraw() {
         if($scope.dataFormat === 'absolute') {
           if($scope.shareFormat === '') {
             var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
-          }
-          else {
+          } else {
             var formattedData = getShareData($scope.shareFormat);
-            timeChart.options.axis.y.label.text = 'Partilhas';
+            timeChart.options.axis.y.label.text = 'Número de partilhas';
             //timeChart.options.data.type = 'bar';
             //timeChart.options.axis.x.padding = {left: 1, right: 1};
           }
@@ -1965,11 +1964,20 @@ function getTotalsAndDraw() {
         }
         if($scope.dataFormat === 'relative') {
           if(aggregated) {
-            var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');
+            if($scope.shareFormat === '') {
+              var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type');              
+            } else {
+              var formattedData = getShareData($scope.shareFormat);
+            }
           } else {
-            var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');
+            if($scope.shareFormat === '') {
+              var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_source');              
+            } else {
+              var formattedData = getShareData($scope.shareFormat);
+            }
           }
-          timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+          $scope.shareFormat === '' ? timeChart.options.axis.y.label.text = 'Percentagem do total de artigos' : timeChart.options.axis.y.label.text = 'Percentagem do total de partilhas'
+          // timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
           timeChart.options.data.groups = [];
           timeChart.options.axis.y.tick.format = function(d, i) {
             return d + '%';
@@ -2019,11 +2027,23 @@ function getTotalsAndDraw() {
           function getShareData(shareFormat) {
             var formattedData;
             if(shareFormat === 'all_shares') {
-              formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares');
+              if($scope.dataFormat === 'absolute') {  
+                formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares');
+              } else if($scope.dataFormat === 'relative'){
+                formattedData = DataFormatter.inColumns(data, keyword, 'time', 'total_shares_percent');                
+              }
             } else if(shareFormat === 'twitter_shares') {
-              formattedData = DataFormatter.inColumns(data, keyword, 'time', 'twitter_shares');
+              if($scope.dataFormat === 'absolute') {  
+                formattedData = DataFormatter.inColumns(data, keyword, 'time', 'twitter_shares');
+              } else if($scope.dataFormat === 'relative'){
+                formattedData = DataFormatter.inColumns(data, keyword, 'time', 'twitter_shares_percent');                
+              }
             } else if(shareFormat === 'facebook_shares') {
-              formattedData = DataFormatter.inColumns(data, keyword, 'time', 'facebook_shares');
+              if($scope.dataFormat === 'absolute') {  
+                formattedData = DataFormatter.inColumns(data, keyword, 'time', 'facebook_shares');
+              } else if($scope.dataFormat === 'relative'){
+                formattedData = DataFormatter.inColumns(data, keyword, 'time', 'facebook_shares_percent');                
+              }
             }
             return formattedData;
           }
