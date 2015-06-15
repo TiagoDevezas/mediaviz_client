@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc3-master-294e066
+ * v0.10.0-rc2-master-781a4bc
  */
 /* mixin definition ; sets LTR and RTL within the same style call */
 @-webkit-keyframes md-tab-content-hide {
@@ -25,7 +25,7 @@
     opacity: 0; } }
 
 md-tab-data {
-  position: relative;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -38,7 +38,10 @@ md-tabs {
   margin: 0;
   border-radius: 2px;
   overflow: hidden;
-  position: relative; }
+  position: relative;
+  -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+          flex-shrink: 0; }
   md-tabs.ng-animate {
     transition: height 0.5s cubic-bezier(0.35, 0, 0.25, 1); }
   md-tabs:not(.md-no-tab-content):not([md-dynamic-height]) {
@@ -67,6 +70,8 @@ md-tabs {
     border-style: solid; }
     md-tabs[md-border-bottom] md-tabs-wrapper .md-tab {
       padding-bottom: 11px; }
+  md-tabs[md-border-bottom]:not([md-dynamic-height]) md-tabs-content-wrapper {
+    top: 49px; }
 
 md-tabs-wrapper {
   display: block;
@@ -115,9 +120,9 @@ md-tabs-wrapper {
         -ms-flex-direction: row;
             flex-direction: row; }
     md-tabs-wrapper.md-stretch-tabs md-pagination-wrapper md-tab-item {
-      -webkit-flex: 1;
-          -ms-flex: 1;
-              flex: 1; }
+      -webkit-flex-grow: 1;
+          -ms-flex-positive: 1;
+              flex-grow: 1; }
 
 md-tabs-canvas {
   position: relative;
@@ -134,11 +139,19 @@ md-tabs-canvas {
     left: 0; }
   md-tabs-canvas.md-paginated {
     margin: 0 32px; }
+  md-tabs-canvas.md-center-tabs {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column; }
 
 md-pagination-wrapper {
   height: 48px;
   display: block;
-  transition: left 0.5s cubic-bezier(0.35, 0, 0.25, 1);
+  transition: -webkit-transform 0.5s cubic-bezier(0.35, 0, 0.25, 1);
+  transition: transform 0.5s cubic-bezier(0.35, 0, 0.25, 1);
   position: absolute;
   width: 999999px;
   left: 0;
@@ -149,11 +162,12 @@ md-pagination-wrapper {
     display: table;
     clear: both; }
   md-pagination-wrapper.md-center-tabs {
+    position: relative;
     width: initial;
-    float: left;
-    left: 50%;
-    -webkit-transform: translate3d(-50%, 0, 0);
-            transform: translate3d(-50%, 0, 0); }
+    -webkit-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    margin: 0 auto; }
 
 md-tabs-content-wrapper {
   display: block;
@@ -201,6 +215,9 @@ md-tab-content {
       transition: visibility 0s linear;
       transition-delay: 0.5s;
       visibility: hidden; }
+  md-tab-content > div.ng-leave {
+    -webkit-animation: 1s md-tab-content-hide;
+            animation: 1s md-tab-content-hide; }
 
 md-ink-bar {
   position: absolute;
@@ -214,17 +231,9 @@ md-ink-bar {
     transition: left 0.5s cubic-bezier(0.35, 0, 0.25, 1), right 0.225s cubic-bezier(0.35, 0, 0.25, 1); }
 
 md-tab {
-  padding: 12px 24px 14px;
   position: absolute;
   z-index: -1;
-  white-space: nowrap;
-  box-shadow: none;
-  border: none;
-  left: -9999px;
-  text-transform: uppercase;
-  font-size: 14px; }
-  md-tab:after {
-    content: attr(label); }
+  left: -9999px; }
 
 .md-tab {
   font-size: 14px;
@@ -237,7 +246,8 @@ md-tab {
   position: relative;
   text-transform: uppercase;
   float: left;
-  font-weight: 500; }
+  font-weight: 500;
+  box-sizing: border-box; }
   .md-tab.md-focused {
     box-shadow: none;
     outline: none; }

@@ -2,10 +2,11 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc3-master-294e066
+ * v0.10.0-rc2-master-781a4bc
  */
-(function () {
+(function( window, angular, undefined ){
 "use strict";
+
 /**
  * @ngdoc module
  * @name material.components.toast
@@ -184,7 +185,7 @@ function MdToastProvider($$interimElementProvider) {
     .addPreset('simple', {
       argOption: 'content',
       methods: ['content', 'action', 'highlightAction', 'theme', 'parent'],
-      options: /* @ngInject */ ["$mdToast", "$mdTheming", function($mdToast, $mdTheming) {
+      options: /* ngInject */ ["$mdToast", "$mdTheming", function($mdToast, $mdTheming) {
         var opts = {
           template: [
             '<md-toast md-theme="{{ toast.theme }}" ng-class="{\'md-capsule\': toast.capsule}">',
@@ -194,7 +195,7 @@ function MdToastProvider($$interimElementProvider) {
               '</md-button>',
             '</md-toast>'
           ].join(''),
-          controller: /* @ngInject */ ["$scope", function mdToastCtrl($scope) {
+          controller: /* ngInject */ ["$scope", function mdToastCtrl($scope) {
             var self = this;
             $scope.$watch(function() { return activeToastContent; }, function() {
               self.content = activeToastContent;
@@ -217,7 +218,7 @@ function MdToastProvider($$interimElementProvider) {
   toastDefaultOptions.$inject = ["$timeout", "$animate", "$mdToast", "$mdUtil"];
     return $mdToast;
 
-  /* @ngInject */
+  /* ngInject */
   function toastDefaultOptions($timeout, $animate, $mdToast, $mdUtil) {
     return {
       onShow: onShow,
@@ -261,4 +262,4 @@ function MdToastProvider($$interimElementProvider) {
 }
 MdToastProvider.$inject = ["$$interimElementProvider"];
 
-})();
+})(window, window.angular);

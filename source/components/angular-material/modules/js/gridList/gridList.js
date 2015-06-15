@@ -2,10 +2,11 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc3-master-294e066
+ * v0.10.0-rc2-master-781a4bc
  */
-(function () {
+(function( window, angular, undefined ){
 "use strict";
+
 /**
  * @ngdoc module
  * @name material.components.gridList
@@ -120,7 +121,7 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia) {
 
     var invalidateLayout = angular.bind(ctrl, ctrl.invalidateLayout),
         unwatchAttrs = watchMedia();
-    scope.$on('$destroy', unwatchMedia);
+      scope.$on('$destroy', unwatchMedia);
 
     /**
      * Watches for changes in media, invalidating layout as necessary.
@@ -136,6 +137,8 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia) {
     }
 
     function unwatchMedia() {
+      ctrl.layoutDelegate = angular.noop;
+
       unwatchAttrs();
       for (var mediaName in $mdConstant.MEDIA) {
         $mdMedia.getQuery($mdConstant.MEDIA[mediaName])
@@ -418,7 +421,7 @@ function GridListDirective($interpolate, $mdConstant, $mdGridLayout, $mdMedia) {
 }
 GridListDirective.$inject = ["$interpolate", "$mdConstant", "$mdGridLayout", "$mdMedia"];
 
-/* @ngInject */
+/* ngInject */
 function GridListController($timeout) {
   this.layoutInvalidated = false;
   this.tilesInvalidated = false;
@@ -452,7 +455,7 @@ GridListController.prototype = {
 };
 
 
-/* @ngInject */
+/* ngInject */
 function GridLayoutFactory($mdUtil) {
   var defaultAnimator = GridTileAnimator;
 
@@ -757,4 +760,4 @@ function GridTileCaptionDirective() {
   };
 }
 
-})();
+})(window, window.angular);

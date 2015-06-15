@@ -2,10 +2,11 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc3-master-294e066
+ * v0.10.0-rc2-master-781a4bc
  */
-(function () {
+(function( window, angular, undefined ){
 "use strict";
+
 /*
  * @ngdoc module
  * @name material.components.sticky
@@ -160,6 +161,9 @@ function MdSticky($document, $mdConstant, $compile, $$rAF, $mdUtil) {
       }
       item.height = item.element.prop('offsetHeight');
       item.clone.css('margin-left', item.left + 'px');
+      if ($mdUtil.floatingScrollbars()) {
+        item.clone.css('margin-right', '0');
+      }
     }
 
 
@@ -308,4 +312,4 @@ function MdSticky($document, $mdConstant, $compile, $$rAF, $mdUtil) {
 }
 MdSticky.$inject = ["$document", "$mdConstant", "$compile", "$$rAF", "$mdUtil"];
 
-})();
+})(window, window.angular);

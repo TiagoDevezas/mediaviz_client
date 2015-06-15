@@ -2,10 +2,11 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0-rc3-master-294e066
+ * v0.10.0-rc2-master-781a4bc
  */
-(function () {
+(function( window, angular, undefined ){
 "use strict";
+
 /**
  * @ngdoc module
  * @name material.components.toolbar
@@ -63,7 +64,7 @@ angular.module('material.components.toolbar', [
  * shrinking by. For example, if 0.25 is given then the toolbar will shrink
  * at one fourth the rate at which the user scrolls down. Default 0.5.
  */
-function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming) {
+function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming, $animate, $timeout) {
 
   return {
     restrict: 'E',
@@ -118,10 +119,10 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming) {
           //
           // As the user scrolls down, the content will be transformed up slowly
           // to put the content underneath where the toolbar was.
-          contentElement.css(
-            'margin-top',
-            (-toolbarHeight * shrinkSpeedFactor) + 'px'
-          );
+          var margin =  (-toolbarHeight * shrinkSpeedFactor) + 'px';
+          contentElement.css('margin-top', margin);
+          contentElement.css('margin-bottom', margin);
+
           onContentScroll();
         }
 
@@ -145,6 +146,16 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming) {
           );
 
           prevScrollTop = scrollTop;
+
+            if (element.hasClass('md-whiteframe-z1')) {
+              if (!y) {
+                $timeout(function () { $animate.removeClass(element, 'md-whiteframe-z1'); });
+              }
+            } else {
+              if (y) {
+                $timeout(function () { $animate.addClass(element, 'md-whiteframe-z1'); });
+              }
+            }
         }
 
       }
@@ -153,6 +164,6 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming) {
   };
 
 }
-mdToolbarDirective.$inject = ["$$rAF", "$mdConstant", "$mdUtil", "$mdTheming"];
+mdToolbarDirective.$inject = ["$$rAF", "$mdConstant", "$mdUtil", "$mdTheming", "$animate", "$timeout"];
 
-})();
+})(window, window.angular);
