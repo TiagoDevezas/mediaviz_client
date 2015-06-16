@@ -109,7 +109,7 @@ mediavizDirectives.directive('loadingFlash', function() {
 	return {
 		restrict: 'AE',
 		transclude: true,
-		template: '<div layout="row" ng-show="loading" layout-align="space-around"><md-progress-circular md-mode="indeterminate"></md-progress-circular></div>'
+		template: '<div ng-show="loading" layout="column" layout-margin><md-progress-linear md-mode="indeterminate"></md-progress-linear></div>'
 	}
 });
 

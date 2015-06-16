@@ -8,30 +8,30 @@ mediavizControllers.controller('RootCtrl', function($scope, $rootScope, $mdSiden
     $mdSidenav('left').toggle();
   }
 
-  $scope.goTo = function(url) {
-    $location.path(url);
-    $mdSidenav('left').toggle();
-  }
+  // $scope.goTo = function(url) {
+  //   $location.path(url);
+  //   $mdSidenav('left').toggle();
+  // }
 
-  $scope.sourceList = [];
-  $scope.sourceListOriginal = [];
-  $scope.selectedSources = {};
-  $scope.selectedSources.selected = [];
+  // $scope.sourceList = [];
+  // $scope.sourceListOriginal = [];
+  // $scope.selectedSources = {};
+  // $scope.selectedSources.selected = [];
 
 
-  if($scope.sourceList.length === 0) {
-    SourceList.get(function(data) {
-      $scope.sourceList = data;
-      $rootScope.sourceList = data;
-      //$scope.sourceListOriginal = $scope.sourceList;
-      //$scope.sourceListOriginal.splice(0, 3);
-      //$scope.selectedSource = $scope.sourceList[0];
-      $scope.selectedSources.selected.push($scope.sourceList[0]);
-      //getTotalsAndDraw();
-    });
-  } else {
-    $scope.selectedSources.selected.push($scope.sourceList[0]); 
-  }
+  // if($scope.sourceList.length === 0) {
+  //   SourceList.get(function(data) {
+  //     $scope.sourceList = data;
+  //     $rootScope.sourceList = data;
+  //     //$scope.sourceListOriginal = $scope.sourceList;
+  //     //$scope.sourceListOriginal.splice(0, 3);
+  //     //$scope.selectedSource = $scope.sourceList[0];
+  //     $scope.selectedSources.selected.push($scope.sourceList[0]);
+  //     //getTotalsAndDraw();
+  //   });
+  // } else {
+  //   $scope.selectedSources.selected.push($scope.sourceList[0]); 
+  // }
 
   $scope.groupSourcesByType = function(item) {
     if(item.type === 'national') {
@@ -1236,8 +1236,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
   $scope.fields;
 
-  $scope.selectedSource = {};
-  $scope.selectedSource.selected = '';
+  // $scope.selectedSource = {};
+  // $scope.selectedSource.selected = '';
 
   //$scope.chartCleared = false;
 
@@ -1548,7 +1548,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     },
     axis: {
       x: {
-        type: 'category' // this needed to load string x value
+        type: 'category' // this is needed to load string x value
+      }
+    },
+    tooltip: {
+      format: {
+        value: function(value, ratio, id) {
+          return value + ' (' + (+ratio * 100).toFixed(1) + ' %)';
+        }
       }
     }
   };
@@ -1585,9 +1592,10 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
               // formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
               $scope.timeData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
               $scope.twitterData = DataFormatter.inColumns(dataObj, keyword, 'time', 'twitter_shares');
-              console.log($scope.twitterData);
               $scope.donutData = DataFormatter.countOnly(dataObj, keyword, 'total_query_articles');
               $scope.shareData = DataFormatter.sumValue(dataObj, keyword, 'twitter_shares', 'Partilhas no Twitter');
+              $scope.totalShareCount = DataFormatter.sumValue(dataObj, keyword, 'total_shares', 'Partilhas no Twitter e Facebook');
+              $scope.totalArticles = DataFormatter.sumValue(dataObj, keyword, 'articles', 'Artigos');
               // keywordChart.options.axis.y.label.text = 'Número de artigos';
               $scope.xsObj = xsObj;
             }

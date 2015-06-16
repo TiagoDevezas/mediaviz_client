@@ -5,36 +5,42 @@
 			<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>
 		</div>
 	</div>
+
+	{{selectedSource.selected}}
+
+	<source-select></source-select>
 <!-- 	<div layout="row" layout-align="center center">
     <md-autocomplete md-min-length="0" md-selected-item="selectedSource.selected" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="source.name" md-autoselect="true" placeholder="Escolher fonte">
   		<span md-highlight-text="searchText" md-highlight-flags="">{{source.name}}</span>
 		</md-autocomplete>
 	</div> -->
-	<md-card layout="column" class="md-padding">
+	<md-card layout="column">
 		<loading-flash>A carregar...</loading-flash>
-		<h3>Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
 		<div c3-chart dataset="timeData" type="line" options="timeChartOpts" xs="xsObj"></div>
 		<!-- <div id="keyword-chart"></div> -->
+		<md-card-content>
+			<h3>Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
+		</md-card-content>
 	</md-card>
 
 	<div layout="column" layout-gt-md="row">
-		<md-card flex class="md-padding">
-			<h3>Distribuição dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-			<div c3-chart dataset="twitterData" type="line" options="twitterLineChartOpts" xs="xsObj"></div>
-			<!-- <div c3-chart dataset="donutData" type="donut" options="donutChartOpts"></div> -->
+		<md-card flex>
+			<div c3-chart dataset="totalArticles" type="donut" options="twitterBarChartOpts"></div>
+			<md-card-content>
+				<h3>Distribuição dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
+			</md-card-content>
 		</md-card>
-		<md-card flex class="md-padding">
+<!-- 		<md-card flex class="md-padding">
 			<h3>Partilhas no Twitter dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
 			<div c3-chart dataset="shareData" type="bar" options="twitterBarChartOpts"></div>
 		</md-card>
 				<md-card flex class="md-padding">
 			<h3>Distribuição dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
 			<div c3-chart dataset="twitterData" type="area" options="twitterLineChartOpts" xs="xsObj"></div>
-			<!-- <div c3-chart dataset="donutData" type="donut" options="donutChartOpts"></div> -->
 		</md-card>
-		<md-card flex class="md-padding">
+ -->		<md-card flex class="md-padding">
 			<h3>Partilhas no Twitter dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-			<div c3-chart dataset="shareData" type="donut" options="twitterBarChartOpts"></div>
+			<div c3-chart dataset="totalShareCount" type="donut" options="twitterBarChartOpts"></div>
 		</md-card>
 	</div>
 
