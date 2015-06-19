@@ -28,8 +28,11 @@ mediavizApp.run(function($rootScope, $location, $window) {
     });
 });
 
-mediavizApp.config(['$routeProvider', 'uiSelectConfig', '$locationProvider',
-	function($routeProvider, uiSelectConfig, $locationProvider) {
+mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$locationProvider',
+	function($mdThemingProvider, $routeProvider, uiSelectConfig, $locationProvider) {
+
+		$mdThemingProvider.theme('default')
+			.primaryPalette('teal');
 
 		$routeProvider.when('/', {
 			templateUrl: 'partials/app/home.html',

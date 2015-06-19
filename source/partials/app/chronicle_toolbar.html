@@ -1,0 +1,8 @@
+  <div class="md-toolbar-tools" style="font-size: 16px;">
+    <div layout="row" layout-align="space-around center">
+      <source-select class="md-padding"></source-select>
+      <md-select class="md-padding" placeholder="Dados" ng-model="selectedDataType">
+        <md-option ng-repeat="option in dataTypes" value="{{option.type}}">{{option.type}}</md-option>
+      </md-select>
+    </div>
+  </div>

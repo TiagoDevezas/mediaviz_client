@@ -1,30 +1,86 @@
 <div id="chronicle" layout-padding layout="column">
 
+<md-whiteframe layout="row" class="md-whiteframe-z1" layout-align="center center" flex style="background-color: #FFF;">
 	<div flex layout="row">
-		<div offset-gt-md="20" flex-gt-md="60" style="background-color: #FFF;">
-			<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>
+		<div flex="80">
+			<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>			
 		</div>
+		<div flex="20" layout="row" layout-align="center">
+			<md-button class="md-raised md-warn">Limpar</md-button>			
+		</div>
+
 	</div>
+<!-- 	<div flex="50" class="md-padding">
+		<div layout="row" layout-align="space-between center" flex>
+			<source-select></source-select>
+
+      <md-select placeholder="Dados" ng-model="selectedDataType">
+        <md-option ng-repeat="option in dataTypes" value="{{option.type}}">{{option.type}}</md-option>
+      </md-select>
+
+			
+
+		</div>
+	</div> -->
+</md-whiteframe>
+
+<!-- 	<div flex layout="row">
+
+	</div> -->
 
 	{{selectedSource.selected}}
 
-	<source-select></source-select>
+	
 <!-- 	<div layout="row" layout-align="center center">
     <md-autocomplete md-min-length="0" md-selected-item="selectedSource.selected" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="source.name" md-autoselect="true" placeholder="Escolher fonte">
   		<span md-highlight-text="searchText" md-highlight-flags="">{{source.name}}</span>
 		</md-autocomplete>
 	</div> -->
-	<md-card layout="column">
-		<loading-flash>A carregar...</loading-flash>
-		<div c3-chart dataset="timeData" type="line" options="timeChartOpts" xs="xsObj"></div>
-		<!-- <div id="keyword-chart"></div> -->
-		<md-card-content>
-			<h3>Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-		</md-card-content>
-	</md-card>
+
+	<md-content layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
+		<div flex="85" class="md-padding">
+			<loading-flash>A carregar...</loading-flash>
+			<div c3-chart dataset="timeData" type="line" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
+			<!-- <div id="keyword-chart"></div> -->
+				<h3>Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
+		</div>
+		<div flex="15" style="height: 550px; border-left: 1px solid #eee; margin: 0;">
+			<div layout="column">
+				<div layout="row" flex ng-repeat="item in snippetData | orderBy:'-count'" style="border-bottom: 1px solid #eee;" ng-show="item.show">
+					<div flex="5" style="background-color: {{setBgColor(item.index)}};"></div>
+					<div flex="95" style="text-align: center;">
+						<p>{{item.keyword}}</p>
+    				<p>{{item.count}} artigos</p>
+    				<div layout="row">
+      				<md-icon md-svg-src="images/icons/twitter.svg" style="color: #4099FF;"></md-icon>
+      				<md-icon md-svg-src="images/icons/facebook.svg" style="color: #3B5998;"></md-icon>
+    				</div>					
+					</div>
+
+				</div>
+			</div>
+<!-- 			<md-list style="padding: 0;">
+	      <md-list-item class="md-3-line" >
+	      	<div layout="row" flex>
+	      		<div style="background-color: {{setBgColor(item.index)}}; width: 5%;"></div>
+		        <div class="md-list-item-text">
+		          <h3>{{item.keyword}}</h3>
+	    				<h4>{{item.count}} artigos</h4>
+	    				<div layout="row">
+	      				<md-icon md-svg-src="images/icons/twitter.svg" style="color: #4099FF;"></md-icon>
+	      				<md-icon md-svg-src="images/icons/facebook.svg" style="color: #3B5998;"></md-icon>
+	    				</div>
+		        </div>
+	      	</div>
+
+	        <md-divider></md-divider>
+	      </md-list-item>
+	    </md-list> -->
+		</div>		
+	</md-content>
 
 	<div layout="column" layout-gt-md="row">
-		<md-card flex>
+		<md-card flex class="md-padding">
 			<div c3-chart dataset="totalArticles" type="donut" options="twitterBarChartOpts"></div>
 			<md-card-content>
 				<h3>Distribuição dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>

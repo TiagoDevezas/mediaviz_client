@@ -2,11 +2,21 @@
 
 var mediavizControllers = angular.module('mediavizControllers', []);
 
-mediavizControllers.controller('RootCtrl', function($scope, $rootScope, $mdSidenav, $location, SourceList) {
+mediavizControllers.controller('RootCtrl', function($scope, $rootScope, $mdSidenav, $location, SourceList, $mdMedia) {
 
   $scope.toggleMenu = function() {
     $mdSidenav('left').toggle();
   }
+
+  $scope.pageIs = function(url) {
+    if($location.path() === url) {
+      return 'isPage';
+    } else {
+      return 'isNotPage'
+    }
+  }
+
+
 
   // $scope.goTo = function(url) {
   //   $location.path(url);
@@ -1220,7 +1230,7 @@ var barChart = {
 
 });
 
-mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Page, Resources, Chart, DataFormatter) {
+mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Page, Resources, Chart, DataFormatter, $filter) {
 
   Page.setTitle('Crónica');
 
@@ -1247,6 +1257,15 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   $scope.until;
 
   $scope.dataFormat = 'absolute';
+
+  $scope.dataTypes = [
+    {type: 'Artigos'},
+    {type: 'Partilhas (Twitter)'},
+    {type: 'Partilhas (Facebook)'},
+    {type: 'Partilhas (Todas)'}
+  ];
+
+  $scope.selectedDataType = $scope.dataTypes[0].type;
 
   $scope.loadingQueue = [];
 
@@ -1291,26 +1310,36 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     }
   }
 
-  $scope.sourceList = function() {
-    return $rootScope.sourceList;
-  }
+  // $scope.sourceList = function() {
+  //   return $rootScope.sourceList;
+  // }
 
-  $scope.querySearch = function(query) {
-    sources = $scope.sourceList();
-    var results = query ? sources.filter(createFilterFor(query)) : sources;
-    return results;
-  }
+  // $scope.querySearch = function(query) {
+  //   sources = $scope.sourceList();
+  //   var results = query ? sources.filter(createFilterFor(query)) : sources;
+  //   return results;
+  // }
 
-  function createFilterFor(query) {
-    var lowercaseQuery = angular.lowercase(query);
-    return function filterFn(source) {
-      var sourceName = source.name.toLowerCase();
-      return sourceName.search(lowercaseQuery) !== -1;
-    };
-  }
+  // function createFilterFor(query) {
+  //   var lowercaseQuery = angular.lowercase(query);
+  //   return function filterFn(source) {
+  //     var sourceName = source.name.toLowerCase();
+  //     return sourceName.search(lowercaseQuery) !== -1;
+  //   };
+  // }
 
   function objectIsEmpty(obj) {
     return Object.keys(obj).length === 0; 
+  }
+
+  $scope.setBgColor = function(index) {
+    var colorScale = colorbrewer.Dark2[8];
+    var scaleLength = colorScale.length;
+    if(index <= scaleLength - 1) {
+      return colorScale[index];
+    } else {
+      return colorScale[index - scaleLength];
+    }
   }
 
   $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
@@ -1362,6 +1391,15 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     angular.forEach(oldVal, function(keyword) {
       if(newVal.indexOf(keyword) === -1) {
         $scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(keyword), 1);
+        var keywordSnippet = $filter('filter')($scope.snippetData, {keyword: keyword}, true);
+        if(keywordSnippet.length) {
+          var snippetIndex = $scope.snippetData.map(function(el) {
+            return el.keyword;
+          }).indexOf(keyword);
+          $scope.snippetData[snippetIndex].show = false;
+          // $scope.snippetData.splice(snippetIndex, 1);
+        }
+        
         // chart.unload({ids: keyword});
       }
     });
@@ -1458,10 +1496,10 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
   $scope.timeChartOpts = {
     size: {
-      height: 350
+      height: 450
     },
     legend: {
-      position: 'right'
+      position: 'bottom'
     },
     // tooltip: {
     //   grouped: false 
@@ -1569,6 +1607,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     }
   }
 
+  $scope.snippetData = [];
+
+  var firstIndex = 0;
 
   function getTotalsAndDraw() {
     angular.forEach($scope.keywords.selected, function(el, index) {
@@ -1588,6 +1629,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
             var formattedData;
             xsObj[countId] = timeId;
             $scope.loadedKeywords.push(keyword);
+            $scope.snippetData.push({keyword: keyword, count: dataObj[0]['total_query_articles'], show: true, index: firstIndex});
+            firstIndex++;
             if($scope.dataFormat === 'absolute') {
               // formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
               $scope.timeData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
