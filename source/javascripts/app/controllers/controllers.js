@@ -1399,6 +1399,14 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
           $scope.snippetData[snippetIndex].show = false;
           // $scope.snippetData.splice(snippetIndex, 1);
         }
+        var queryArticles = $filter('filter')($scope.queryArticles, {keyword: keyword}, true);
+        if(queryArticles.length) {
+          var queryIndex = $scope.queryArticles.map(function(el) {
+            return el.keyword;
+          }).indexOf(keyword);
+          $scope.queryArticles.splice(queryIndex, 1);
+        }
+
         
         // chart.unload({ids: keyword});
       }
@@ -1608,6 +1616,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   }
 
   $scope.snippetData = [];
+  $scope.queryArticles = [];
+  
 
   var firstIndex = 0;
 
@@ -1619,6 +1629,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
       var xsObj = {};
 
       var paramsObj = createParamsObj(keyword);
+      var queryArticlesResource = {resource: 'items', q: keyword, limit: 4, type: 'national'};
 
       if($scope.loadedKeywords.indexOf(keyword) === -1) {
         $scope.loadingQueue.push(keyword);
@@ -1668,6 +1679,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
           //   .attr('transform', 'translate(0, -10)');
           // }
         }
+        });
+        Resources.get(queryArticlesResource).$promise.then(function(response) {
+          $scope.queryArticles.push({keyword: keyword, articles: response})
         });
 }
 });

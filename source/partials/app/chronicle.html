@@ -10,39 +10,15 @@
 		</div>
 
 	</div>
-<!-- 	<div flex="50" class="md-padding">
-		<div layout="row" layout-align="space-between center" flex>
-			<source-select></source-select>
 
-      <md-select placeholder="Dados" ng-model="selectedDataType">
-        <md-option ng-repeat="option in dataTypes" value="{{option.type}}">{{option.type}}</md-option>
-      </md-select>
-
-			
-
-		</div>
-	</div> -->
 </md-whiteframe>
-
-<!-- 	<div flex layout="row">
-
-	</div> -->
-
-	{{selectedSource.selected}}
-
-	
-<!-- 	<div layout="row" layout-align="center center">
-    <md-autocomplete md-min-length="0" md-selected-item="selectedSource.selected" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="source.name" md-autoselect="true" placeholder="Escolher fonte">
-  		<span md-highlight-text="searchText" md-highlight-flags="">{{source.name}}</span>
-		</md-autocomplete>
-	</div> -->
 
 	<md-content layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
 		<div flex="85" class="md-padding">
 			<loading-flash>A carregar...</loading-flash>
+			<h2 class="md-title">Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h2>
 			<div c3-chart dataset="timeData" type="line" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
 			<!-- <div id="keyword-chart"></div> -->
-				<h3>Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
 		</div>
 		<div flex="15" style="height: 550px; border-left: 1px solid #eee; margin: 0;">
 			<div layout="column">
@@ -59,87 +35,62 @@
 
 				</div>
 			</div>
-<!-- 			<md-list style="padding: 0;">
-	      <md-list-item class="md-3-line" >
-	      	<div layout="row" flex>
-	      		<div style="background-color: {{setBgColor(item.index)}}; width: 5%;"></div>
-		        <div class="md-list-item-text">
-		          <h3>{{item.keyword}}</h3>
-	    				<h4>{{item.count}} artigos</h4>
-	    				<div layout="row">
-	      				<md-icon md-svg-src="images/icons/twitter.svg" style="color: #4099FF;"></md-icon>
-	      				<md-icon md-svg-src="images/icons/facebook.svg" style="color: #3B5998;"></md-icon>
-	    				</div>
-		        </div>
-	      	</div>
-
-	        <md-divider></md-divider>
-	      </md-list-item>
-	    </md-list> -->
 		</div>		
 	</md-content>
 
-	<div layout="column" layout-gt-md="row">
+	<div>
+  <md-content class="md-whiteframe-z1" style="margin: 20px 0 20px;">
+  	<h2 class="md-title" style="padding-left: 16px;">Últimos artigos</h2>
+    <md-tabs md-dynamic-height md-border-bottom>
+    	<md-tab ng-repeat="query in queryArticles" label="{{query.keyword}}">
+    		<md-content flex layout="row">
+    			<md-whiteframe class="md-padding" ng-repeat="article in query.articles" style="padding-bottom:0; padding-top: 0; border-right: 1px solid #eee;" flex={{100 / query.articles.length}}>
+    				<!-- <div flex layout="column" layout-align="space-between left"> -->
+  					<h3 class="md-subhead"><a href="{{ article.url }}">{{ article.title }}</a></h3>
+  					<p class="md-body-1" ng-show="article.summary.length > 10" style="margin: 0;">
+							<span ng-bind-html="article.summary | words:30"></span>
+						</p>
+  					<p class="md-caption">{{article.source}}, {{ article.pub_date | date:'yyyy-MM-dd HH:mm' }}</p>
+  					<!-- </div> -->
+    			</md-whiteframe>
+    		</md-content>
+
+    	</md-tab>
+      <!-- <md-tab label="one">
+        <md-content class="md-padding">
+          <h1 class="md-display-2">Tab One</h1>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue. Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec, feugiat ultricies mi.</p>
+        </md-content>
+      </md-tab>
+      <md-tab label="two">
+        <md-content class="md-padding">
+          <h1 class="md-display-2">Tab Two</h1>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue. Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec, feugiat ultricies mi. Aliquam erat volutpat. Nam placerat, tortor in ultrices porttitor, orci enim rutrum enim, vel tempor sapien arcu a tellus. Vivamus convallis sodales ante varius gravida. Curabitur a purus vel augue ultrices ultricies id a nisl. Nullam malesuada consequat diam, a facilisis tortor volutpat et. Sed urna dolor, aliquet vitae posuere vulputate, euismod ac lorem. Sed felis risus, pulvinar at interdum quis, vehicula sed odio. Phasellus in enim venenatis, iaculis tortor eu, bibendum ante. Donec ac tellus dictum neque volutpat blandit. Praesent efficitur faucibus risus, ac auctor purus porttitor vitae. Phasellus ornare dui nec orci posuere, nec luctus mauris semper.</p>
+          <p>Morbi viverra, ante vel aliquet tincidunt, leo dolor pharetra quam, at semper massa orci nec magna. Donec posuere nec sapien sed laoreet. Etiam cursus nunc in condimentum facilisis. Etiam in tempor tortor. Vivamus faucibus egestas enim, at convallis diam pulvinar vel. Cras ac orci eget nisi maximus cursus. Nunc urna libero, viverra sit amet nisl at, hendrerit tempor turpis. Maecenas facilisis convallis mi vel tempor. Nullam vitae nunc leo. Cras sed nisl consectetur, rhoncus sapien sit amet, tempus sapien.</p>
+          <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
+        </md-content>
+      </md-tab>
+      <md-tab label="three">
+        <md-content class="md-padding">
+          <h1 class="md-display-2">Tab Three</h1>
+          <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
+        </md-content>
+      </md-tab> -->
+    </md-tabs>
+  </md-content>
+</div>
+
+<!-- 	<div layout="column" layout-gt-md="row">
 		<md-card flex class="md-padding">
 			<div c3-chart dataset="totalArticles" type="donut" options="twitterBarChartOpts"></div>
 			<md-card-content>
 				<h3>Distribuição dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
 			</md-card-content>
 		</md-card>
-<!-- 		<md-card flex class="md-padding">
-			<h3>Partilhas no Twitter dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-			<div c3-chart dataset="shareData" type="bar" options="twitterBarChartOpts"></div>
-		</md-card>
-				<md-card flex class="md-padding">
-			<h3>Distribuição dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-			<div c3-chart dataset="twitterData" type="area" options="twitterLineChartOpts" xs="xsObj"></div>
-		</md-card>
- -->		<md-card flex class="md-padding">
+		<md-card flex class="md-padding">
 			<h3>Partilhas no Twitter dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
 			<div c3-chart dataset="totalShareCount" type="donut" options="twitterBarChartOpts"></div>
 		</md-card>
-	</div>
-
-	
-<!-- 	<div class="search-form">
-		<div class="keyword-select">
-			<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-remove="removeKeyword($item, $model)" tagging-tokens="ENTER|TAB">
-		    <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
-		    <ui-select-choices repeat="keyword in keywords.selected">
-		      {{ keyword }}
-		    </ui-select-choices>
-		  </ui-select>
-		  <button class="clear-chart" ng-click="clearChart()">Limpar gráfico</button>		
-		</div> -->
-
-<!-- 		<div class="field-select">
-			<span><strong>Campos a pesquisar: </strong></span>
-			<label>Título ou sumário</label>
-			<input type="radio" value="title_summary" ng-model="searchFields" ng-change="redrawChart()">
-
-			<label>Título</label>
-			<input type="radio" value="title" ng-model="searchFields" ng-change="redrawChart()">
-
-			<label>Sumário</label>
-			<input type="radio" value="summary" ng-model="searchFields" ng-change="redrawChart()">
-		</div>		
-	</div>
-
-
-	<div class="search-tools">
-		<ul style="float: left;">
-			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
-			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
-			<li class="menu-separator"> | </li>
-			<li><a href="" ng-click="setSourceType('national')" ng-class="{'selected':sourceType === 'national'}">Jornais Nacionais</a></li>
-			<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Jornais Internacionais</a></li>
-			<li><a href="" ng-click="setSourceType('blogs')" ng-class="{'selected':sourceType === 'blogs'}">Blogs</a></li>
-			<li><a href="" ng-click="setSourceType('all')" ng-class="{'selected':sourceType === 'all'}">Todas</a></li>
-		</ul>
-		<div style="float: right;">
-			<label for="chart-type-select" style="float:left;">Tipo de gráfico &nbsp;&nbsp;</label>
-			<select-chart-type></select-chart-type>
-		</div>
 	</div> -->
 
 </div>
