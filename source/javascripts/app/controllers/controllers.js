@@ -1246,8 +1246,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
   $scope.fields;
 
-  // $scope.selectedSource = {};
-  // $scope.selectedSource.selected = '';
+  $scope.defaultSource = "national";
 
   //$scope.chartCleared = false;
 
@@ -1428,14 +1427,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     }
   }, true);
 
-  $scope.setChartType = function(chartType) {
-    // console.log('triggered', chartType);
-    // if(chartType != $scope.chartType.selected) {
-      $scope.defaultChartType = chartType;
-      if(chart) chart.transform(chartType.type);
-    // }
-  }
-
   $scope.redrawChart = function() {
     if(chart) {
       if($scope.searchFields !== 'title_summary') {
@@ -1509,9 +1500,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     legend: {
       position: 'bottom'
     },
-    // tooltip: {
-    //   grouped: false 
-    // },
+    tooltip: {
+      grouped: true 
+    },
     data: {
       onclick: function (d, i) { getItemData(d) }
     },
@@ -1532,7 +1523,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
           extent: [moment().subtract(3, 'months'), moment()],
           tick: {
             culling: {
-              // max: 5 // the number of tick texts will be adjusted to less than this value
+              max: 5 // the number of tick texts will be adjusted to less than this value
             },
             format: '%d %b'
           }

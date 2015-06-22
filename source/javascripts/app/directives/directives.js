@@ -32,12 +32,14 @@ mediavizDirectives.directive('c3Chart', function($location) {
     scope: {
       dataset: '=',
       options: '=',
-      xs: '='
+      xs: '=',
+      type: '='
     },
     link: function(scope, element, attrs) {
       scope.options = scope.options ? scope.options : {};
       scope.options.data = scope.options.data ? scope.options.data : {};
       scope.options.data.xs = scope.xs ? scope.xs : {};
+      scope.options.data.type = scope.type;
       scope.options.color = {pattern: colorbrewer.Dark2[8]};
       scope.chart = null;
 
@@ -50,7 +52,6 @@ mediavizDirectives.directive('c3Chart', function($location) {
         if(newVal && !scope.chart) {
           scope.addIdentifier();
           scope.options.data.columns = scope.dataset;
-          scope.options.data.type = attrs.type;
           if(!scope.xs)
             scope.chart = c3.generate(scope.options);
           else {
@@ -95,6 +96,14 @@ mediavizDirectives.directive('c3Chart', function($location) {
         }
       });
 
+      // chart type watcher
+
+      scope.$watch('type', function(typeValue) {
+        if(scope.chart) {
+          scope.chart.transform(typeValue);
+        }
+      });
+
       // Add unique id to chart
       scope.addIdentifier = function() {
         scope.dataAttributeChartID = 'chartid' + Math.floor(Math.random() * 1000000001);
@@ -116,7 +125,6 @@ mediavizDirectives.directive('loadingFlash', function() {
 mediavizDirectives.directive('selectChartType', function($filter) {
   return {
     restrict: 'AE',
-    replace: true,
     link: function(scope, elem, attrs) {
       scope.chartTypes = [
         {type: 'line', name: 'Linhas'},
@@ -129,6 +137,11 @@ mediavizDirectives.directive('selectChartType', function($filter) {
       var defaultChartName = scope.defaultChartType.name;
       var foundInTypesArray = $filter('filter')(scope.chartTypes, {name: defaultChartName}, true);
       scope.defaultChartType = foundInTypesArray[0];
+
+      scope.setChartType = function(chartType) {
+        scope.defaultChartType = chartType;
+        // if(chart) chart.transform(chartType.type);
+      }
       // scope.defaultChartType = scope.chartTypes[0];
       // scope.chartType.selected = scope.chartTypes[0];
       // scope.setChartType = function(chartType) {
@@ -139,6 +152,7 @@ mediavizDirectives.directive('selectChartType', function($filter) {
     template: '<select id="chart-type-select" ng-model="defaultChartType" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(defaultChartType)" style="float: left;"></select>'
   };
 });
+
 
 mediavizDirectives.directive('photoFinish', function($window, $parse) {
   return {

@@ -8,7 +8,6 @@
 		<div flex="20" layout="row" layout-align="center">
 			<md-button class="md-raised md-warn">Limpar</md-button>			
 		</div>
-
 	</div>
 
 </md-whiteframe>
@@ -16,8 +15,12 @@
 	<md-content layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
 		<div flex="85" class="md-padding">
 			<loading-flash>A carregar...</loading-flash>
-			<h2 class="md-title">Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h2>
-			<div c3-chart dataset="timeData" type="line" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
+      <div flex layout="row" layout-align="start center">
+			 <h2 class="md-title">Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h2>
+       <span flex></span>
+       <select-chart-type></select-chart-type>
+      </div>
+			<div c3-chart dataset="timeData" type="defaultChartType.type" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
 			<!-- <div id="keyword-chart"></div> -->
 		</div>
 		<div flex="15" style="height: 550px; border-left: 1px solid #eee; margin: 0;">
