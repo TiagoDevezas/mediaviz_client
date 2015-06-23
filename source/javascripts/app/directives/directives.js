@@ -39,7 +39,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
       scope.options = scope.options ? scope.options : {};
       scope.options.data = scope.options.data ? scope.options.data : {};
       scope.options.data.xs = scope.xs ? scope.xs : {};
-      scope.options.data.type = scope.type;
+      scope.options.data.type = attrs.type;
       scope.options.color = {pattern: colorbrewer.Dark2[8]};
       scope.chart = null;
 
@@ -98,11 +98,11 @@ mediavizDirectives.directive('c3Chart', function($location) {
 
       // chart type watcher
 
-      scope.$watch('type', function(typeValue) {
-        if(scope.chart) {
-          scope.chart.transform(typeValue);
-        }
-      });
+      // scope.$watch('type', function(typeValue) {
+      //   if(scope.chart) {
+      //     scope.chart.transform(typeValue);
+      //   }
+      // });
 
       // Add unique id to chart
       scope.addIdentifier = function() {

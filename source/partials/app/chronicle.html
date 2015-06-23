@@ -12,7 +12,7 @@
 
 </md-whiteframe>
 
-	<md-content layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
+	<md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
 		<div flex="85" class="md-padding">
 			<loading-flash>A carregar...</loading-flash>
       <div flex layout="row" layout-align="start center">
@@ -20,7 +20,7 @@
        <span flex></span>
        <select-chart-type></select-chart-type>
       </div>
-			<div c3-chart dataset="timeData" type="defaultChartType.type" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
+			<div c3-chart dataset="timeData" type="line" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
 			<!-- <div id="keyword-chart"></div> -->
 		</div>
 		<div flex="15" style="height: 550px; border-left: 1px solid #eee; margin: 0;">
@@ -41,7 +41,7 @@
 		</div>		
 	</md-content>
 
-	<div>
+	<div ng-show="keywords.selected.length">
   <md-content class="md-whiteframe-z1" style="margin: 20px 0 20px;">
   	<h2 class="md-title" style="padding-left: 16px;">Últimos artigos</h2>
     <md-tabs md-dynamic-height md-border-bottom>
