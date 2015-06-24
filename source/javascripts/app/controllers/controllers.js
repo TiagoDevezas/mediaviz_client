@@ -1648,6 +1648,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
               firstIndex++;
               // keywordChart.options.axis.y.label.text = 'Número de artigos';
               $scope.xsObj = xsObj;
+              console.log($scope.timeData, $scope.xsObj);
             }
             // if($scope.dataFormat === 'relative') {
             //   formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type_by_day');
