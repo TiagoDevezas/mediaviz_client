@@ -1631,16 +1631,21 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
             var formattedData;
             xsObj[countId] = timeId;
             $scope.loadedKeywords.push(keyword);
-            $scope.snippetData.push({keyword: keyword, count: dataObj[0]['total_query_articles'], show: true, index: firstIndex});
-            firstIndex++;
             if($scope.dataFormat === 'absolute') {
               // formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
               $scope.timeData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
               $scope.twitterData = DataFormatter.inColumns(dataObj, keyword, 'time', 'twitter_shares');
               $scope.donutData = DataFormatter.countOnly(dataObj, keyword, 'total_query_articles');
-              $scope.shareData = DataFormatter.sumValue(dataObj, keyword, 'twitter_shares', 'Partilhas no Twitter');
+              $scope.twitterShareCount = DataFormatter.sumValue(dataObj, keyword, 'twitter_shares', 'Partilhas no Twitter');
+              $scope.facebookShareCount = DataFormatter.sumValue(dataObj, keyword, 'facebook_shares', 'Partilhas no Facebook')
               $scope.totalShareCount = DataFormatter.sumValue(dataObj, keyword, 'total_shares', 'Partilhas no Twitter e Facebook');
               $scope.totalArticles = DataFormatter.sumValue(dataObj, keyword, 'articles', 'Artigos');
+
+              var twitterShareCountOnly = $scope.twitterShareCount[1][1];
+              var facebookShareCountOnly = $scope.facebookShareCount[1][1];
+              
+              $scope.snippetData.push({keyword: keyword, count: dataObj[0]['total_query_articles'], twitter_shares: twitterShareCountOnly, facebook_shares: facebookShareCountOnly, show: true, index: firstIndex});
+              firstIndex++;
               // keywordChart.options.axis.y.label.text = 'Número de artigos';
               $scope.xsObj = xsObj;
             }

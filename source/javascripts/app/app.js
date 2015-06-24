@@ -43,6 +43,11 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$
 			templateUrl: 'partials/app/source.html',
 			controller: 'SourceCtrl'
 		}).
+		when('/sources', {
+			templateUrl: 'partials/app/sources.html',
+			controller: 'SourcesCtrl',
+			reloadOnSearch: false
+		}).
 		when('/about', {
 			templateUrl: 'partials/app/about.html',
 			controller: 'AboutCtrl'

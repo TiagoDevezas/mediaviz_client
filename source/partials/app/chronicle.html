@@ -31,8 +31,14 @@
 						<p>{{item.keyword}}</p>
     				<p>{{item.count}} artigos</p>
     				<div layout="row">
-      				<md-icon md-svg-src="images/icons/twitter.svg" style="color: #4099FF;"></md-icon>
-      				<md-icon md-svg-src="images/icons/facebook.svg" style="color: #3B5998;"></md-icon>
+              <div layout="row" flex>
+      				  <md-icon md-svg-src="images/icons/twitter.svg" style="color: #4099FF; margin: 0;"></md-icon>
+                <span>{{item.twitter_shares}}</span>
+              </div>
+              <div layout="row" flex>
+      				  <md-icon md-svg-src="images/icons/facebook.svg" style="color: #3B5998; margin: 0;"></md-icon>
+                <span>{{item.facebook_shares}}</span>
+              </div>
     				</div>					
 					</div>
 

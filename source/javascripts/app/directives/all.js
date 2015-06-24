@@ -32,8 +32,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
     scope: {
       dataset: '=',
       options: '=',
-      xs: '=',
-      type: '='
+      xs: '='
     },
     link: function(scope, element, attrs) {
       scope.options = scope.options ? scope.options : {};
@@ -98,11 +97,11 @@ mediavizDirectives.directive('c3Chart', function($location) {
 
       // chart type watcher
 
-      // scope.$watch('type', function(typeValue) {
-      //   if(scope.chart) {
-      //     scope.chart.transform(typeValue);
-      //   }
-      // });
+      scope.$watch('options.data.type', function(typeValue) {
+        if(scope.chart) {
+          scope.chart.transform(typeValue);
+        }
+      });
 
       // Add unique id to chart
       scope.addIdentifier = function() {
