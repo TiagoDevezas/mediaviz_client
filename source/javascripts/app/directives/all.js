@@ -54,6 +54,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
           if(!scope.xs)
             scope.chart = c3.generate(scope.options);
           else {
+            console.log(scope.xs);
             scope.options.data.xs = scope.xs
             scope.chart = c3.generate(scope.options);
           }
@@ -81,19 +82,22 @@ mediavizDirectives.directive('c3Chart', function($location) {
       
       // Keyword watcher
 
-      scope.$watch(function() { return $location.search()['keywords'] }, function(newVal, oldVal) {
-        if(newVal) {
-          newVal = newVal.split(',');
-          oldVal = oldVal.split(',');
-          angular.forEach(oldVal, function(keyword) {
-            if(newVal.indexOf(keyword) === -1) {
-              scope.chart.unload({ids: keyword});
-            }
-          });
-        } else if(scope.chart){
-          scope.chart.unload();
-        }
-      });
+      if(attrs.watchParams) {
+        scope.$watch(function() { return $location.search()[attrs.watchParams] }, function(newVal, oldVal) {
+          if(newVal) {
+            newVal = newVal.split(',');
+            oldVal = oldVal.split(',');
+            angular.forEach(oldVal, function(keyword) {
+              if(newVal.indexOf(keyword) === -1) {
+                scope.chart.unload({ids: keyword});
+              }
+            });
+          } else if(scope.chart){
+            scope.chart.unload();
+          }
+        });
+      }
+
 
       // chart type watcher
 

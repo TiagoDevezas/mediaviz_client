@@ -3,7 +3,7 @@ return {
     restrict: 'AE',
     scope: '=',
     template: 
-      '<md-chips ng-model="selectedSources" md-autocomplete-snap md-require-match>' +
+      '<md-chips ng-model="selectedSources.selected" md-autocomplete-snap md-require-match>' +
         '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="" placeholder="Escolher fonte">' +
           '<span md-highlight-text="searchText" md-highlight-flags="">{{source.name}}</span>' +
         '</md-autocomplete>' +
@@ -36,13 +36,11 @@ return {
         // scope.selectedSource = defaultSource[0];
       });*/
 
-      scope.selectedSources = [];
-
       // scope.addToSelectedSources = function(source) {
       //   scope.selectedSources.push(source);
       // }
-
-      scope.$watch('selectedSources', function(sources) {
+      
+      scope.$watch('selectedSources.selected', function(sources) {
         if(sources.length > 0) {
           sources = sources.map(function(el) { return el.name }).join(',');
           $location.search(angular.extend($location.search(), {sources: sources}));

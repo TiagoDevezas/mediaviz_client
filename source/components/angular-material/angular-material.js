@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.10.0-master-4a6cd56
+ * v0.10.0-master-05119a7
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -542,6 +542,8 @@ angular.module('material.core')
 
       // Annoying method to copy nodes to an array, thanks to IE
       nodesToArray: function (nodes) {
+        nodes = nodes || [ ];
+
         var results = [];
         for (var i = 0; i < nodes.length; ++i) {
           results.push(nodes.item(i));
@@ -10097,8 +10099,11 @@ function SelectProvider($$interimElementProvider) {
 
 
         function focusOption(direction) {
+          optionNodes = opts.selectEl[0].getElementsByTagName('md-option');
+
           var optionsArray = $mdUtil.nodesToArray(optionNodes);
           var index = optionsArray.indexOf(opts.focusedNode);
+
           if (index === -1) {
             // We lost the previously focused element, reset to first option
             index = 0;
@@ -10137,11 +10142,12 @@ function SelectProvider($$interimElementProvider) {
     }
 
     function onRemove(scope, element, opts) {
-      opts.isRemoved = true;
-      element.addClass('md-leave')
+      element
+        .addClass('md-leave')
         .removeClass('md-clickable');
-      opts.target.attr('aria-expanded', 'false');
 
+      opts.target.attr('aria-expanded', 'false');
+      opts.isRemoved = true;
 
       angular.element($window).off('resize', opts.resizeFn);
       angular.element($window).off('orientationchange', opts.resizefn);

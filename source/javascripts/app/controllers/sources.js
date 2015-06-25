@@ -2,24 +2,31 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
   Page.setTitle('Fontes');
 
-  $scope.selectedSources = [];
+  $scope.selectedSources = {};
+  $scope.selectedSources.selected = [];
   $scope.loadedSources = [];
+
+  $scope.$watch('selectedSources.selected', function(sources) {
+    if(sources.length > 0) {
+      getSourceData();
+    }
+  }, true);
 
   // Location watcher
 
-  $scope.$watch(function() { return $location.search() }, function(locationObj, oldVal) {
-  	if(locationObj) {
-	  	var sources = locationObj['sources'];
+/*  $scope.$watch(function() { return $location.search()['sources'] }, function(newVal, oldVal) {
+  	if(newVal) {
+	  	var sources = newVal;
 	  	if(sources) {
-	  		sources = sources.length === 1 ? sources : sources.split(',');
-	  		sources = d3.set(sources).values();
-	  		$scope.selectedSources = sources.map(function(el) { return { name: el } });
+	  		sources = sources.split(',');
+	  		$scope.selectedSources.selected = sources.map(function(el) { return { name: el } });
 	  		$scope.loadedSources = [];
 	  		getSourceData();
 	  	}
   	}
 
-  }, true);
+  }, true);*/
+
 
   function createParamsObj(source) {
   	if(source.name === 'Todas') {
@@ -32,7 +39,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   var params = {beginDate: '2015-01-01', endDate: '2015-05-31', timeFrame: 'DAY', q: 'portugal'}
 
   function getSourceData() {
-  	$scope.selectedSources.forEach(function(source) {
+  	$scope.selectedSources.selected.forEach(function(source) {
 			var sourceName = source.name;
   		var paramsObj = createParamsObj(source);
 			var idForX = 'timeFor' + sourceName;
@@ -41,6 +48,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   			SAPONews.get(paramsObj).then(function(data) {
   				$scope.loadedSources.push(sourceName);
   				xsObj[sourceName] = idForX;
+  				$scope.xsObj = xsObj;
   				var dateAndCounts = data.data.facet_counts.facet_ranges.pubdate.counts;
   				var dates = dateAndCounts.map(function(el) {
   					return moment(el[0]).toDate();
@@ -51,7 +59,6 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   				});
   				counts.unshift(sourceName);
   				var columns = [dates, counts];
-  				$scope.xsObj = xsObj;
   				$scope.sapoData = columns;
 				});
   		}
