@@ -8,7 +8,7 @@ mediavizDirectives.directive('sourceSelect', function(SourceList, $q, $filter) {
         '</md-autocomplete>',
     link: function(scope, elem, attrs) {
 
-      SourceList.get().then(function(data) {
+      SourceList.getDefaultList().then(function(data) {
         scope.listSources = data;
         var defaultSource = $filter('filter')(scope.listSources, {acronym: scope.defaultSource}, true);
         scope.selectedSource = defaultSource[0];

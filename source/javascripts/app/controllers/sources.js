@@ -1,45 +1,72 @@
-mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filter, Page, SAPONews) {
+mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filter, $routeParams, Page, SAPONews, SourceList) {
 
   Page.setTitle('Fontes');
 
-  $scope.selectedSources = {};
-  $scope.selectedSources.selected = [];
+  $scope.selectedSources = [];
   $scope.loadedSources = [];
 
-  $scope.$watch('selectedSources.selected', function(sources) {
-    if(sources.length > 0) {
-      getSourceData();
-    }
+  var startDate = $routeParams.since || '2015-01-01';
+  var endDate = moment().format("YYYY-MM-DD");
+  var timeFrame = $routeParams.by || 'DAY';
+
+  $scope.sourceList = SourceList.getSAPONewsList();
+
+  $scope.query = '';
+
+  $scope.clearChart = function() {
+  	$scope.selectedSources = [];
+  	$scope.loadedSources = [];
+  }
+
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+   	var sources = $location.search()['sources'] || undefined;
+   	var query = $location.search()['q'] || undefined;
+  	if(sources) {
+	    sources = sources.split(',');
+	    var newSourcesArray = [];
+	    sources.forEach(function(el) {
+	    	var sourceObj = $filter('filter')($scope.sourceList, {name: el}, true)[0];
+	      newSourcesArray.push(sourceObj);
+	    });
+	    $scope.selectedSources = newSourcesArray;
+	    getSourceData();
+  	} else {
+  		$location.search('sources', null);
+  	}
+  	if(query) {
+  		$scope.query = query;
+  		$scope.loadedSources = [];
+  		getSourceData();
+  	}
+  });
+
+  $scope.$watch('selectedSources', function(newVal, oldVal) {
+  	if(newVal) {
+  		var sources = newVal.map(function(el) { return el.name });
+  		$location.search(angular.extend($location.search(), { sources: sources.toString() }));
+  	}
   }, true);
 
-  // Location watcher
-
-/*  $scope.$watch(function() { return $location.search()['sources'] }, function(newVal, oldVal) {
-  	if(newVal) {
-	  	var sources = newVal;
-	  	if(sources) {
-	  		sources = sources.split(',');
-	  		$scope.selectedSources.selected = sources.map(function(el) { return { name: el } });
-	  		$scope.loadedSources = [];
-	  		getSourceData();
-	  	}
+  $scope.setQuery = function(query) {
+  	console.log(query);
+  	if(query) {
+  		$location.search(angular.extend($location.search(), { q: query }));
+  	} else {
+  		$location.search('q', null);
   	}
-
-  }, true);*/
+  }
 
 
   function createParamsObj(source) {
   	if(source.name === 'Todas') {
-  		return {beginDate: '2015-01-01', endDate: '2015-05-31', timeFrame: 'DAY', q: 'portugal', source: source.value};
+  		return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.query, source: source.value};
   	} else {
-			return {beginDate: '2015-01-01', endDate: '2015-05-31', timeFrame: 'DAY', q: 'portugal', source: source.name};
+			return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.query, source: source.name};
 		}
   }
 
-  var params = {beginDate: '2015-01-01', endDate: '2015-05-31', timeFrame: 'DAY', q: 'portugal'}
-
   function getSourceData() {
-  	$scope.selectedSources.selected.forEach(function(source) {
+  	$scope.selectedSources.forEach(function(source) {
 			var sourceName = source.name;
   		var paramsObj = createParamsObj(source);
 			var idForX = 'timeFor' + sourceName;
@@ -94,7 +121,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
             culling: {
               max: 5 // the number of tick texts will be adjusted to less than this value
             },
-            format: '%d %b'
+            format: '%d %b %Y'
           }
         },
         y: {

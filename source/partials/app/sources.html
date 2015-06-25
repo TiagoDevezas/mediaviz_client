@@ -1,11 +1,19 @@
 <div id="sources" layout-padding layout="column">
-  <md-whiteframe layout="row" class="md-whiteframe-z1" layout-align="center center" flex style="background-color: #FFF;">
+  <md-whiteframe class="md-whiteframe-z1" layout-padding flex style="background-color: #FFF;">
+    <div flex layout="row">
+      <form ng-submit="setQuery(query)">
+        <md-input-container>
+          <label>Palavra chave</label>
+          <input ng-model="query">
+        </md-input-container>
+      </form>
+    </div>
     <div flex layout="row">
       <div flex="80">
-        <source-select-chips sources="SAPO"></source-select-chips>
+        <source-select-chips source-list="sourceList" selected="selectedSources"></source-select-chips>
       </div>
-      <div flex="20" layout="row" layout-align="center">
-        <md-button class="md-raised md-warn">Limpar</md-button>     
+      <div flex="20" layout-align="center">
+        <md-button class="md-raised md-warn" ng-click="clearChart()">Limpar</md-button>     
       </div>
     </div>
   </md-whiteframe>

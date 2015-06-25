@@ -54,7 +54,6 @@ mediavizDirectives.directive('c3Chart', function($location) {
           if(!scope.xs)
             scope.chart = c3.generate(scope.options);
           else {
-            console.log(scope.xs);
             scope.options.data.xs = scope.xs
             scope.chart = c3.generate(scope.options);
           }

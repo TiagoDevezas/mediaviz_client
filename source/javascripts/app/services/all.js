@@ -16,38 +16,38 @@ mediavizServices.factory('Page', function($rootScope) {
 	}
 });
 
-mediavizServices.factory('SourceList', ['$http',
-	function($http) {
-		var callback = '?callback=JSON_CALLBACK';
-		var factory = {};
-		factory.get = function() {
-			return $http.jsonp(baseUrl + 'sources' + callback, {cache: true}).then(function(response) {
-				var sources = response.data.map(function(el) {
-					return { 'name': el.name, 'type': el.type, 'acronym': el.acronym };
-				});
-				sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
-				sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
-				sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
-				sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
-				return sources;
-			});
-		}
-		return factory;
-		// return {
-		// 	get: function() {
-		// 		return 
-		// 		.success(function(response) {
-		// 			var sources = response.map(function(el) {
-		// 				return { 'name': el.name, 'type': el.type, 'acronym': el.acronym };
-		// 			});
-		// 			sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
-		// 			sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
-		// 			sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
-		// 			sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
-		// 		});
-		// 	}
-		// };
-	}]);
+// mediavizServices.factory('SourceList', ['$http',
+// 	function($http) {
+// 		var callback = '?callback=JSON_CALLBACK';
+// 		var factory = {};
+// 		factory.get = function() {
+// 			return $http.jsonp(baseUrl + 'sources' + callback, {cache: true}).then(function(response) {
+// 				var sources = response.data.map(function(el) {
+// 					return { 'name': el.name, 'type': el.type, 'acronym': el.acronym };
+// 				});
+// 				sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
+// 				sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
+// 				sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
+// 				sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
+// 				return sources;
+// 			});
+// 		}
+// 		return factory;
+// 		// return {
+// 		// 	get: function() {
+// 		// 		return 
+// 		// 		.success(function(response) {
+// 		// 			var sources = response.map(function(el) {
+// 		// 				return { 'name': el.name, 'type': el.type, 'acronym': el.acronym };
+// 		// 			});
+// 		// 			sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
+// 		// 			sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
+// 		// 			sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
+// 		// 			sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
+// 		// 		});
+// 		// 	}
+// 		// };
+// 	}]);
 
 mediavizServices.factory('Resources', ['$resource', '$q',
 	function($resource, $q) {

@@ -1,9 +1,12 @@
-mediavizDirectives.directive('sourceSelectChips', function(SourceList, $q, $filter, $location) {
+mediavizDirectives.directive('sourceSelectChips', function(SourceList, SAPONewsSourceList, $q, $filter, $location) {
 return {
     restrict: 'AE',
-    scope: '=',
+    scope: {
+      sourceList: '=',
+      selected: '='
+    },
     template: 
-      '<md-chips ng-model="selectedSources.selected" md-autocomplete-snap md-require-match>' +
+      '<md-chips ng-model="selected" md-autocomplete-snap md-require-match>' +
         '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="" placeholder="Escolher fonte">' +
           '<span md-highlight-text="searchText" md-highlight-flags="">{{source.name}}</span>' +
         '</md-autocomplete>' +
@@ -15,30 +18,16 @@ return {
       '</md-chips>',
     link: function(scope, elem, attrs) {
 
-      var sourceList = null;
-      var sourceListArray = "A Bola,Agência Ecclesia,Agência financeira,Ambitur,Blitz,Caras,Computerworld,Correio da Manhã,Destak,Diário de Notícias,Diário Digital,Diário Economico,Diário IOL,Dinheiro Digital,Dinheiro Vivo,Euronews,Exame Informática,Expresso,Futebol 365,GameOver,iOnline,Jornal da Madeira,Jornal de Negócios,Jornal de Notícias,Jornal Diário,Jornal Digital,Jornal Record,Lusa,lusa25,maisfutebol,Meios & Publicidade,MetroNews,O Jogo,OJE - o Jornal Economico,Público,Publituris,Record OnLine,Relvado,Renascença,RTP,RTPl,Sábado,SAPO Desporto,SIC,Sol,SuperMotores,Tek,TSF,Visão,zerozero".split(',');
 
-      if(attrs.sources === "SAPO") {
-        sourceList = sourceListArray.map(function(el) {
-          return {name: el, value: el}
-        });
-        sourceList.unshift({name: 'Todas', value: sourceListArray.join(',')});
+
+/*      if(attrs.sources === "SAPO") {
+        sourceList = SAPONewsSourceList.get();
       } else {
         SourceList.get().then(function(data) {
           sourceList = data;
           var defaultSource = $filter('filter')(sourceList, {acronym: scope.defaultSource}, true);
         });
       }
-
-/*      SourceList.get().then(function(data) {
-        scope.listSources = data;
-        var defaultSource = $filter('filter')(scope.listSources, {acronym: scope.defaultSource}, true);
-        // scope.selectedSource = defaultSource[0];
-      });*/
-
-      // scope.addToSelectedSources = function(source) {
-      //   scope.selectedSources.push(source);
-      // }
       
       scope.$watch('selectedSources.selected', function(sources) {
         if(sources.length > 0) {
@@ -47,10 +36,10 @@ return {
         } else {
           $location.search('sources', null);
         }
-      }, true);
+      }, true);*/
 
       scope.querySearch = function(query) {
-        sources = sourceList;
+        sources = scope.sourceList;
         var results = query ? sources.filter( createFilterFor(query) ) : sources, deferred;
         deferred = $q.defer();
         deferred.resolve(results);
