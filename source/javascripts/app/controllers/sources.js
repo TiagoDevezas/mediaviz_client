@@ -12,6 +12,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 	  	var sources = locationObj['sources'];
 	  	if(sources) {
 	  		sources = sources.length === 1 ? sources : sources.split(',');
+	  		sources = d3.set(sources).values();
 	  		$scope.selectedSources = sources.map(function(el) { return { name: el } });
 	  		$scope.loadedSources = [];
 	  		getSourceData();
@@ -20,8 +21,12 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
   }, true);
 
-  function createParamsObj(sourceName) {
-		return {beginDate: '2015-01-01', endDate: '2015-05-31', timeFrame: 'DAY', q: 'portugal', source: sourceName};
+  function createParamsObj(source) {
+  	if(source.name === 'Todas') {
+  		return {beginDate: '2015-01-01', endDate: '2015-05-31', timeFrame: 'DAY', q: 'portugal', source: source.value};
+  	} else {
+			return {beginDate: '2015-01-01', endDate: '2015-05-31', timeFrame: 'DAY', q: 'portugal', source: source.name};
+		}
   }
 
   var params = {beginDate: '2015-01-01', endDate: '2015-05-31', timeFrame: 'DAY', q: 'portugal'}
@@ -29,7 +34,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   function getSourceData() {
   	$scope.selectedSources.forEach(function(source) {
 			var sourceName = source.name;
-  		var paramsObj = createParamsObj(sourceName);
+  		var paramsObj = createParamsObj(source);
 			var idForX = 'timeFor' + sourceName;
 			var xsObj = {};
   		if($scope.loadedSources.indexOf(sourceName) === -1) {

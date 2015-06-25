@@ -90,7 +90,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
               scope.chart.unload({ids: keyword});
             }
           });
-        } else {
+        } else if(scope.chart){
           scope.chart.unload();
         }
       });
