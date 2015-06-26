@@ -11,34 +11,43 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
   $scope.sourceList = SourceList.getSAPONewsList();
 
-  $scope.query = '';
+  $scope.keyword = {value: ''};
 
   $scope.clearChart = function() {
   	$scope.selectedSources = [];
   	$scope.loadedSources = [];
   }
 
-  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-   	var sources = $location.search()['sources'] || undefined;
-   	var query = $location.search()['q'] || undefined;
-  	if(sources) {
-	    sources = sources.split(',');
-	    var newSourcesArray = [];
-	    sources.forEach(function(el) {
-	    	var sourceObj = $filter('filter')($scope.sourceList, {name: el}, true)[0];
-	      newSourcesArray.push(sourceObj);
-	    });
-	    $scope.selectedSources = newSourcesArray;
-	    getSourceData();
-  	} else {
-  		$location.search('sources', null);
-  	}
-  	if(query) {
-  		$scope.query = query;
-  		$scope.loadedSources = [];
-  		getSourceData();
-  	}
-  });
+  $scope.$watch(function() { return $location.search() }, function(locationObj) {
+    var sources = locationObj['sources'];
+    var keyword = locationObj['keyword'];
+    console.log('keyword is ', keyword);
+    if(sources) {
+      sources = sources.split(',');
+      var newSourcesArray = [];
+      sources.forEach(function(el) {
+        var sourceObj = $filter('filter')($scope.sourceList, {name: el}, true)[0];
+        newSourcesArray.push(sourceObj);
+      });
+      $scope.selectedSources = newSourcesArray;
+    } else {
+      $location.search('sources', null);
+    }
+    if(keyword) {
+      $scope.loadedSources = [];
+      $scope.keyword.value = keyword;
+    } else {
+      $scope.keyword.value = null;
+      $scope.loadedSources = [];
+    }
+    getSourceData();
+  }, true);
+
+  $scope.clearQuery = function() {
+    $scope.keyword.value = null;
+    $scope.loadedSources = [];
+    $scope.setQuery();
+  }
 
   $scope.$watch('selectedSources', function(newVal, oldVal) {
   	if(newVal) {
@@ -47,21 +56,16 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   	}
   }, true);
 
-  $scope.setQuery = function(query) {
-  	console.log(query);
-  	if(query) {
-  		$location.search(angular.extend($location.search(), { q: query }));
-  	} else {
-  		$location.search('q', null);
-  	}
+  $scope.setQuery = function() {
+  	$location.search(angular.extend($location.search(), { keyword: $scope.keyword.value }));
   }
 
 
   function createParamsObj(source) {
   	if(source.name === 'Todas') {
-  		return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.query, source: source.value};
+  		return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.keyword.value, source: source.value};
   	} else {
-			return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.query, source: source.name};
+			return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.keyword.value, source: source.name};
 		}
   }
 
@@ -72,6 +76,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 			var idForX = 'timeFor' + sourceName;
 			var xsObj = {};
   		if($scope.loadedSources.indexOf(sourceName) === -1) {
+        console.log('getSourceData called with', $scope.keyword.value, $scope.selectedSources, $scope.loadedSources);
   			SAPONews.get(paramsObj).then(function(data) {
   				$scope.loadedSources.push(sourceName);
   				xsObj[sourceName] = idForX;

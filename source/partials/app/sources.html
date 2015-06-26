@@ -1,13 +1,7 @@
 <div id="sources" layout-padding layout="column">
+  
   <md-whiteframe class="md-whiteframe-z1" layout-padding flex style="background-color: #FFF;">
-    <div flex layout="row">
-      <form ng-submit="setQuery(query)">
-        <md-input-container>
-          <label>Palavra chave</label>
-          <input ng-model="query">
-        </md-input-container>
-      </form>
-    </div>
+    
     <div flex layout="row">
       <div flex="80">
         <source-select-chips source-list="sourceList" selected="selectedSources"></source-select-chips>
@@ -16,6 +10,26 @@
         <md-button class="md-raised md-warn" ng-click="clearChart()">Limpar</md-button>     
       </div>
     </div>
+
+    <div flex layout="row" layout-align="start center">
+      <div layout="row" layout-align="start center" style="padding: 12px 6px;">
+        <span style="display: block;">Pesquisa</span>
+        <md-switch ng-model="searchSwitch" aria-label="Pesquisa">
+        </md-switch>
+      </div>
+      <div ng-show="searchSwitch" layout="row" layout-align="start center">
+        <form ng-submit="setQuery()">
+          <md-input-container>
+            <label>Palavra-chave</label>
+            <input ng-model="keyword.value">
+          </md-input-container>
+        </form>
+        <md-button class="md-icon-button" aria-label="Limpar" ng-click="clearQuery()" ng-show="keyword.value.length">
+          <md-icon md-svg-icon="images/icons/ic_clear_black_24px.svg"></md-icon>
+        </md-button>
+      </div>
+    </div>
+
   </md-whiteframe>
 
   <md-content>

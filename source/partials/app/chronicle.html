@@ -13,7 +13,7 @@
 </md-whiteframe>
 
 	<md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
-		<div flex="85" class="md-padding">
+		<div flex class="md-padding">
 			<loading-flash>A carregar...</loading-flash>
       <div flex layout="row" layout-align="start center">
 			 <h2 class="md-title">Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h2>
@@ -23,7 +23,7 @@
 			<div c3-chart dataset="timeData" type="line" options="timeChartOpts" xs="xsObj" class="md-padding" watch-params="keywords"></div>
 			<!-- <div id="keyword-chart"></div> -->
 		</div>
-		<div flex="15" style="height: 550px; border-left: 1px solid #eee; margin: 0;">
+<!-- 		<div flex="15" style="height: 550px; border-left: 1px solid #eee; margin: 0;">
 			<div layout="column">
 				<div layout="row" flex ng-repeat="item in snippetData | orderBy:'-count'" style="border-bottom: 1px solid #eee;" ng-show="item.show">
 					<div flex="5" style="background-color: {{setBgColor(item.index)}};"></div>
@@ -44,7 +44,7 @@
 
 				</div>
 			</div>
-		</div>		
+		</div> -->		
 	</md-content>
 
 	<div ng-show="keywords.selected.length">

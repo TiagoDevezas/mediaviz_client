@@ -32,8 +32,8 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$
 	function($mdThemingProvider, $routeProvider, uiSelectConfig, $locationProvider) {
 
 		$mdThemingProvider.theme('default')
-			.primaryPalette('blue-grey')
-			.accentPalette('indigo');
+			.primaryPalette('cyan')
+			.accentPalette('red');
 
 		$routeProvider.when('/', {
 			templateUrl: 'partials/app/home.html',
