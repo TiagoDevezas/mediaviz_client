@@ -5,7 +5,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   $scope.selectedSources = [];
   $scope.loadedSources = [];
 
-  var startDate = $routeParams.since || '2015-01-01';
+  var startDate = $routeParams.since || '2014-06-01';
   var endDate = moment().format("YYYY-MM-DD");
   var timeFrame = $routeParams.by || 'DAY';
 
@@ -21,7 +21,6 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   $scope.$watch(function() { return $location.search() }, function(locationObj) {
     var sources = locationObj['sources'];
     var keyword = locationObj['keyword'];
-    console.log('keyword is ', keyword);
     if(sources) {
       sources = sources.split(',');
       var newSourcesArray = [];
@@ -76,7 +75,6 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 			var idForX = 'timeFor' + sourceName;
 			var xsObj = {};
   		if($scope.loadedSources.indexOf(sourceName) === -1) {
-        console.log('getSourceData called with', $scope.keyword.value, $scope.selectedSources, $scope.loadedSources);
   			SAPONews.get(paramsObj).then(function(data) {
   				$scope.loadedSources.push(sourceName);
   				xsObj[sourceName] = idForX;

@@ -1468,31 +1468,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
 
   // $scope.type = 'donut';
 
-  $scope.twitterLineChartOpts = {
-    size: {
-      height: 300
-    },
-    point: {
-      r: 1.5
-    },
-    axis: {
-      x: {
-        padding: {left: 0, right: 0},
-        type: 'timeseries',
-        tick: {
-          culling: {
-            max: 5
-          },
-          format: '%d %b'
-        }
-      },
-      y: {
-        min: 0,
-        padding: {bottom: 0}
-      }
-    }
-  };
-
   $scope.timeChartOpts = {
     size: {
       height: 450
@@ -1579,7 +1554,10 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     }
   };
 
-  $scope.twitterBarChartOpts = {
+  $scope.barChartOpts = {
+    size: {
+      height: 300
+    },
     data: {
       x: 'x'
     },
@@ -1589,11 +1567,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
       }
     },
     tooltip: {
-      format: {
-        value: function(value, ratio, id) {
-          return value + ' (' + (+ratio * 100).toFixed(1) + ' %)';
-        }
-      }
     }
   };
 
@@ -1641,6 +1614,8 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
               $scope.totalShareCount = DataFormatter.sumValue(dataObj, keyword, 'total_shares', 'Partilhas no Twitter e Facebook');
               $scope.totalArticles = DataFormatter.sumValue(dataObj, keyword, 'articles', 'Artigos');
 
+              console.log($scope.donutData, $scope.totalArticles);
+
               var twitterShareCountOnly = $scope.twitterShareCount[1][1];
               var facebookShareCountOnly = $scope.facebookShareCount[1][1];
               
@@ -1648,7 +1623,6 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
               firstIndex++;
               // keywordChart.options.axis.y.label.text = 'Número de artigos';
               $scope.xsObj = xsObj;
-              console.log($scope.timeData, $scope.xsObj);
             }
             // if($scope.dataFormat === 'relative') {
             //   formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type_by_day');
@@ -1677,9 +1651,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
           // }
         }
         });
-        Resources.get(queryArticlesResource).$promise.then(function(response) {
-          $scope.queryArticles.push({keyword: keyword, articles: response})
-        });
+        // Resources.get(queryArticlesResource).$promise.then(function(response) {
+        //   $scope.queryArticles.push({keyword: keyword, articles: response})
+        // });
 }
 });
 };

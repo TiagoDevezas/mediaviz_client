@@ -15,6 +15,7 @@
 	<md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
 		<div flex class="md-padding">
 			<loading-flash>A carregar...</loading-flash>
+      <date-select></date-select>
       <div flex layout="row" layout-align="start center">
 			 <h2 class="md-title">Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h2>
        <span flex></span>
@@ -47,59 +48,31 @@
 		</div> -->		
 	</md-content>
 
-	<div ng-show="keywords.selected.length">
-  <md-content class="md-whiteframe-z1" style="margin: 20px 0 20px;">
-  	<h2 class="md-title" style="padding-left: 16px;">Últimos artigos</h2>
-    <md-tabs md-dynamic-height md-border-bottom>
-    	<md-tab ng-repeat="query in queryArticles" label="{{query.keyword}}">
-    		<md-content flex layout="row">
-    			<md-whiteframe class="md-padding" ng-repeat="article in query.articles" style="padding-bottom:0; padding-top: 0; border-right: 1px solid #eee;" flex={{100 / query.articles.length}}>
-    				<!-- <div flex layout="column" layout-align="space-between left"> -->
-  					<h3 class="md-subhead"><a href="{{ article.url }}">{{ article.title }}</a></h3>
-  					<p class="md-body-1" ng-show="article.summary.length > 10" style="margin: 0;">
-							<span ng-bind-html="article.summary | words:30"></span>
-						</p>
-  					<p class="md-caption">{{article.source}}, {{ article.pub_date | date:'yyyy-MM-dd HH:mm' }}</p>
-  					<!-- </div> -->
-    			</md-whiteframe>
-    		</md-content>
-
-    	</md-tab>
-      <!-- <md-tab label="one">
-        <md-content class="md-padding">
-          <h1 class="md-display-2">Tab One</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue. Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec, feugiat ultricies mi.</p>
-        </md-content>
-      </md-tab>
-      <md-tab label="two">
-        <md-content class="md-padding">
-          <h1 class="md-display-2">Tab Two</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue. Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec, feugiat ultricies mi. Aliquam erat volutpat. Nam placerat, tortor in ultrices porttitor, orci enim rutrum enim, vel tempor sapien arcu a tellus. Vivamus convallis sodales ante varius gravida. Curabitur a purus vel augue ultrices ultricies id a nisl. Nullam malesuada consequat diam, a facilisis tortor volutpat et. Sed urna dolor, aliquet vitae posuere vulputate, euismod ac lorem. Sed felis risus, pulvinar at interdum quis, vehicula sed odio. Phasellus in enim venenatis, iaculis tortor eu, bibendum ante. Donec ac tellus dictum neque volutpat blandit. Praesent efficitur faucibus risus, ac auctor purus porttitor vitae. Phasellus ornare dui nec orci posuere, nec luctus mauris semper.</p>
-          <p>Morbi viverra, ante vel aliquet tincidunt, leo dolor pharetra quam, at semper massa orci nec magna. Donec posuere nec sapien sed laoreet. Etiam cursus nunc in condimentum facilisis. Etiam in tempor tortor. Vivamus faucibus egestas enim, at convallis diam pulvinar vel. Cras ac orci eget nisi maximus cursus. Nunc urna libero, viverra sit amet nisl at, hendrerit tempor turpis. Maecenas facilisis convallis mi vel tempor. Nullam vitae nunc leo. Cras sed nisl consectetur, rhoncus sapien sit amet, tempus sapien.</p>
-          <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
-        </md-content>
-      </md-tab>
-      <md-tab label="three">
-        <md-content class="md-padding">
-          <h1 class="md-display-2">Tab Three</h1>
-          <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
-        </md-content>
-      </md-tab> -->
-    </md-tabs>
+  <md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
+    <div flex="20" class="md-padding">
+      <div c3-chart dataset="totalArticles" type="bar" options="barChartOpts" xs="xsObj" class="md-padding" watch-params="keywords"></div>
+    </div>
   </md-content>
-</div>
 
-<!-- 	<div layout="column" layout-gt-md="row">
-		<md-card flex class="md-padding">
-			<div c3-chart dataset="totalArticles" type="donut" options="twitterBarChartOpts"></div>
-			<md-card-content>
-				<h3>Distribuição dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-			</md-card-content>
-		</md-card>
-		<md-card flex class="md-padding">
-			<h3>Partilhas no Twitter dos artigos <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h3>
-			<div c3-chart dataset="totalShareCount" type="donut" options="twitterBarChartOpts"></div>
-		</md-card>
-	</div> -->
+<!-- 	<div ng-show="keywords.selected.length">
+    <md-content class="md-whiteframe-z1" style="margin: 20px 0 20px;">
+    	<h2 class="md-title" style="padding-left: 16px;">Últimos artigos</h2>
+      <md-tabs md-dynamic-height md-border-bottom>
+      	<md-tab ng-repeat="query in queryArticles" label="{{query.keyword}}">
+      		<md-content flex layout="row">
+      			<md-whiteframe class="md-padding" ng-repeat="article in query.articles" style="padding-bottom:0; padding-top: 0; border-right: 1px solid #eee;" flex={{100 / query.articles.length}}>
+      				<div flex layout="column" layout-align="space-between left">
+    					<h3 class="md-subhead"><a href="{{ article.url }}">{{ article.title }}</a></h3>
+    					<p class="md-body-1" ng-show="article.summary.length > 10" style="margin: 0;">
+  							<span ng-bind-html="article.summary | words:30"></span>
+  						</p>
+    					<p class="md-caption">{{article.source}}, {{ article.pub_date | date:'yyyy-MM-dd HH:mm' }}</p>
+      			</md-whiteframe>
+      		</md-content>
+
+      	</md-tab>
+      </md-tabs>
+    </md-content>
+  </div> -->
 
 </div>

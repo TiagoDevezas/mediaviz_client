@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.10.0-master-05119a7
+ * v0.10.0-master-044dbdc
  */
 goog.provide('ng.material.components.virtualRepeat');
 goog.require('ng.material.core');
@@ -56,7 +56,7 @@ function VirtualRepeatContainerDirective() {
 }
 
 
-function virtualRepeatContainerTemplate($element, $attrs) {
+function virtualRepeatContainerTemplate($element) {
   return '<div class="md-virtual-repeat-scroller">' +
     '<div class="md-virtual-repeat-sizer"></div>' +
     '<div class="md-virtual-repeat-offsetter">' +
@@ -64,6 +64,22 @@ function virtualRepeatContainerTemplate($element, $attrs) {
     '</div></div>';
 }
 
+/**
+ * Maximum size, in pixels, that can be explicitly set to an element. The actual value varies
+ * between browsers, but IE11 has the very lowest size at a mere 1,533,917px. Ideally we could
+ * *compute* this value, but Firefox always reports an element to have a size of zero if it
+ * goes over the max, meaning that we'd have to binary search for the value.
+ * @const {number}
+ */
+var MAX_ELEMENT_SIZE = 1533917;
+
+/**
+ * Number of additional elements to render above and below the visible area inside
+ * of the virtual repeat container. A higher number results in less flicker when scrolling
+ * very quickly in Safari, but comes with a higher rendering and dirty-checking cost.
+ * @const {number}
+ */
+var NUM_EXTRA = 3;
 
 /** ngInject */
 function VirtualRepeatContainerController($$rAF, $scope, $element, $attrs) {
@@ -104,7 +120,7 @@ VirtualRepeatContainerController.$inject = ["$$rAF", "$scope", "$element", "$att
 /** Called by the md-virtual-repeat inside of the container at startup. */
 VirtualRepeatContainerController.prototype.register = function(repeaterCtrl) {
   this.repeater = repeaterCtrl;
-  
+
   angular.element(this.scroller)
       .on('scroll wheel touchmove touchend', angular.bind(this, this.handleScroll_));
 };
@@ -140,11 +156,40 @@ VirtualRepeatContainerController.prototype.getScrollSize = function() {
 /**
  * Sets the scrollHeight or scrollWidth. Called by the repeater based on
  * its item count and item size.
- * @param {number} The new size.
+ * @param {number} size The new size.
  */
 VirtualRepeatContainerController.prototype.setScrollSize = function(size) {
   if (this.scrollSize !== size) {
-    this.sizer.style[this.isHorizontal() ? 'width' : 'height'] = size + 'px';
+    var dimension =  this.isHorizontal() ? 'width' : 'height';
+    var crossDimension = this.isHorizontal() ? 'height' : 'width';
+
+    // If the size falls within the browser's maximum explicit size for a single element, we can
+    // set the size and be done. Otherwise, we have to create children that add up the the desired
+    // size.
+    if (size < MAX_ELEMENT_SIZE) {
+      this.sizer.style[dimension] = size + 'px';
+    } else {
+      // Clear any existing dimensions.
+      this.sizer.innerHTML = '';
+      this.sizer.style[dimension] = 'auto';
+      this.sizer.style[crossDimension] = 'auto';
+
+      // Divide the total size we have to render into N max-size pieces.
+      var numChildren = Math.floor(size / MAX_ELEMENT_SIZE);
+
+      // Element template to clone for each max-size piece.
+      var sizerChild = document.createElement('div');
+      sizerChild.style[dimension] = MAX_ELEMENT_SIZE + 'px';
+      sizerChild.style[crossDimension] = '1px';
+
+      for (var i = 0; i < numChildren; i++) {
+        this.sizer.appendChild(sizerChild.cloneNode(false));
+      }
+
+      // Re-use the element template for the remainder.
+      sizerChild.style[dimension] = (size - (numChildren * MAX_ELEMENT_SIZE)) + 'px';
+      this.sizer.appendChild(sizerChild);
+    }
   }
 
   this.scrollSize = size;
@@ -156,10 +201,17 @@ VirtualRepeatContainerController.prototype.getScrollOffset = function() {
   return this.scrollOffset;
 };
 
+/**
+ * Scrolls to a given scrollTop position.
+ * @param {number} position
+ */
+VirtualRepeatContainerController.prototype.scrollTo = function(position) {
+  this.scroller[this.isHorizontal() ? 'scrollLeft' : 'scrollTop'] = position;
+  this.handleScroll_();
+};
 
 VirtualRepeatContainerController.prototype.resetScroll = function() {
-  this.scroller[this.isHorizontal() ? 'scrollLeft' : 'scrollTop'] = 0;
-  this.handleScroll_();
+  this.scrollTo(0);
 };
 
 
@@ -168,7 +220,7 @@ VirtualRepeatContainerController.prototype.handleScroll_ = function() {
   if (offset === this.scrollOffset) return;
 
   var itemSize = this.repeater.getItemSize();
-  var numItems = Math.max(0, Math.floor(offset / itemSize) - VirtualRepeatController.NUM_EXTRA);
+  var numItems = Math.max(0, Math.floor(offset / itemSize) - NUM_EXTRA);
 
   var transform = this.isHorizontal() ? 'translateX(' : 'translateY(';
       transform +=  (numItems * itemSize) + 'px)';
@@ -258,6 +310,13 @@ function VirtualRepeatController($scope, $element, $attrs, $browser, $document) 
   // getComputedStyle?
   /** @type {number} Height/width of repeated elements. */
   this.itemSize = $scope.$eval($attrs.mdItemSize);
+
+  /** @type {boolean} Whether this is the first time that items are rendered. */
+  this.isFirstRender = true;
+
+  /** @type {number} Most recently seen length of items. */
+  this.itemsLength = 0;
+
   /**
    * Presently rendered blocks by repeat index.
    * @type {Object<number, !VirtualRepeatController.Block}
@@ -274,15 +333,6 @@ VirtualRepeatController.$inject = ["$scope", "$element", "$attrs", "$browser", "
  * @typedef {{element: !jqLite, new: boolean, scope: !angular.Scope}}
  */
 VirtualRepeatController.Block;
-
-
-/**
- * Number of additional elements to render above and below the visible area inside
- * of the virtual repeat container. A higher number results in less flicker when scrolling
- * very quickly in Safari, but comes with a higher rendering and dirty-checking cost.
- * @const {number}
- */
-VirtualRepeatController.NUM_EXTRA = 3;
 
 
 /**
@@ -346,6 +396,12 @@ VirtualRepeatController.prototype.getItemSize = function() {
  */
 VirtualRepeatController.prototype.virtualRepeatUpdate_ = function(items, oldItems) {
   var itemsLength = items ? items.length : 0;
+  var lengthChanged = false;
+
+  if (itemsLength !== this.itemsLength) {
+    lengthChanged = true;
+    this.itemsLength = itemsLength;
+  }
 
   // If the number of items shrank, scroll up to the top.
   if (this.items && itemsLength < this.items.length && this.container.getScrollOffset() !== 0) {
@@ -360,7 +416,16 @@ VirtualRepeatController.prototype.virtualRepeatUpdate_ = function(items, oldItem
   }
 
   this.parentNode = this.$element[0].parentNode;
-  this.container.setScrollSize(itemsLength * this.itemSize);
+
+  if (lengthChanged) {
+    this.container.setScrollSize(itemsLength * this.itemSize);
+  }
+
+  if (this.isFirstRender) {
+    this.isFirstRender = false;
+    var startIndex = this.$attrs.mdStartIndex ? this.$scope.$eval(this.$attrs.mdStartIndex) : 0;
+    this.container.scrollTo(startIndex * this.itemSize);
+  }
 
   // Detach and pool any blocks that are no longer in the viewport.
   Object.keys(this.blocks).forEach(function(blockIndex) {
@@ -527,9 +592,8 @@ VirtualRepeatController.prototype.updateIndexes_ = function() {
   this.newStartIndex = Math.max(0, Math.min(
       itemsLength - containerLength,
       Math.floor(this.container.getScrollOffset() / this.itemSize)));
-  this.newEndIndex = Math.min(itemsLength, this.newStartIndex + containerLength +
-      VirtualRepeatController.NUM_EXTRA);
-  this.newStartIndex = Math.max(0, this.newStartIndex - VirtualRepeatController.NUM_EXTRA);
+  this.newEndIndex = Math.min(itemsLength, this.newStartIndex + containerLength + NUM_EXTRA);
+  this.newStartIndex = Math.max(0, this.newStartIndex - NUM_EXTRA);
 };
 
 ng.material.components.virtualRepeat = angular.module("material.components.virtualRepeat");

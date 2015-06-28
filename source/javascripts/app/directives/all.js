@@ -89,6 +89,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
             angular.forEach(oldVal, function(keyword) {
               if(newVal.indexOf(keyword) === -1) {
                 scope.chart.unload({ids: keyword});
+                scope.chart.flush();
               }
             });
           } else if(scope.chart){
