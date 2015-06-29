@@ -33,11 +33,11 @@ mediavizDirectives.directive('dateSelect', function($location, $filter) {
 
       scope.selectedPeriod = scope.allPeriods[0].name;
 
-      scope.$watch('selectedPeriod', function(period) {
+/*      scope.$watch('selectedPeriod', function(period) {
         var periodObj = $filter('filter')(scope.allPeriods, {name: period}, true)[0];
         $location.search('since', periodObj.startDate);
         $location.search('until', periodObj.endDate);
-      });
+      });*/
 
 
     }

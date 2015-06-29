@@ -14,41 +14,61 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
   $scope.keyword = {value: ''};
 
-  $scope.clearChart = function() {
-  	$scope.selectedSources = [];
-  	$scope.loadedSources = [];
-  }
+  // $scope.$on('$routeUpdate', function(){
+  //   var locationObj = $location.search();
+  //   var sources = locationObj.sources.split(',');
+  //   var keyword = locationObj.keyword;
+  //   var since = locationObj.since;
 
-  $scope.$watch(function() { return $location.search() }, function(locationObj) {
-    var sources = locationObj['sources'];
-    var keyword = locationObj['keyword'];
-    var until = locationObj['until'];
-    var since = locationObj['since'];
-    if(sources) {
-      sources = sources.split(',');
-      var newSourcesArray = [];
-      sources.forEach(function(el) {
-        var sourceObj = $filter('filter')($scope.sourceList, {name: el}, true)[0];
-        newSourcesArray.push(sourceObj);
-      });
-      $scope.selectedSources = newSourcesArray;
-    } else {
-      $location.search('sources', null);
-    }
-    if(keyword) {
+  //   var newSourcesArray = [];
+  //   sources.forEach(function(el) {
+  //     var sourceObj = $filter('filter')($scope.sourceList, {name: el}, true)[0];
+  //     newSourcesArray.push(sourceObj);
+  //   });
+  //   $scope.selectedSources = newSourcesArray;
+  //   $scope.keyword.value = keyword;
+  //   $scope.loadedSources = [];
+  //   getSourceData();
+    
+  // });
+
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    if(newVal) {
       $scope.loadedSources = [];
-      $scope.keyword.value = keyword;
-    } else {
-      $scope.keyword.value = null;
-      $scope.loadedSources = [];
+      getSourceData();
     }
+    // var sources = locationObj['sources'];
+    // var keyword = locationObj['keyword'];
+    // var until = locationObj['until'];
+    // var since = locationObj['since'];
+    // if(sources) {
+    //   sources = sources.split(',');
+    //   var newSourcesArray = [];
+    //   sources.forEach(function(el) {
+    //     var sourceObj = $filter('filter')($scope.sourceList, {name: el}, true)[0];
+    //     newSourcesArray.push(sourceObj);
+    //   });
+    //   $scope.selectedSources = newSourcesArray;
+    //   if(keyword) {
+    //     $scope.keyword.value = keyword;
+    //   }
+    // } else {
+    //   $location.search('sources', null);
+    // }
+    // if(keyword) {
+    //   $scope.loadedSources = [];
+    //   $scope.keyword.value = keyword;
+    // } else {
+    //   $scope.keyword.value = null;
+    //   $scope.loadedSources = [];
+    // }
     // if(until) {
     //   $scope.until = until;
     // }
     // if(since) {
     //   $scope.since = since;
     // }
-    getSourceData();
+    // getSourceData();
   }, true);
 
   $scope.checkValue = function(value) {
@@ -66,15 +86,16 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
     $scope.setQuery();
   }
 
-  $scope.$watch('selectedSources', function(newVal, oldVal) {
-  	if(newVal) {
-  		var sources = newVal.map(function(el) { return el.name });
-  		$location.search(angular.extend($location.search(), { sources: sources.toString() }));
+  $scope.$watch('selectedSources', function(selectedSources) {
+  	if(selectedSources) {
+  		var sources = selectedSources.map(function(el) { return el.name });
+      $location.search('sources', sources.toString());
   	}
   }, true);
 
   $scope.setQuery = function() {
-  	$location.search(angular.extend($location.search(), { keyword: $scope.keyword.value }));
+    $location.search('keyword', $scope.keyword.value);
+  	// $location.search(angular.extend($location.search(), { keyword: $scope.keyword.value }));
   }
 
 
@@ -94,7 +115,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   	$scope.selectedSources.forEach(function(source) {
 			var sourceName = source.name;
   		var paramsObj = createParamsObj(source);
-			var idForX = 'timeFor' + sourceName;
+			var idForX = 't' + sourceName;
 			var xsObj = {};
   		if($scope.loadedSources.indexOf(sourceName) === -1) {
   			SAPONews.get(paramsObj).then(function(data) {

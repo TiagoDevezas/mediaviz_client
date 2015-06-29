@@ -40,15 +40,15 @@ mediavizDirectives.directive('c3Chart', function($location) {
       scope.options.data.xs = scope.xs ? scope.xs : {};
       scope.options.data.type = attrs.type;
       scope.options.color = {pattern: colorbrewer.Dark2[8]};
-      scope.chart = null;
+      
 
       // Add the c3 class to element for css styling
       angular.element(element).attr('class', 'c3');
 
 
       // dataset watcher
-      scope.$watch('dataset', function(newVal) {
-        if(newVal && !scope.chart) {
+      scope.$watch('dataset', function(data) {
+        if(data && !scope.chart) {
           scope.addIdentifier();
           scope.options.data.columns = scope.dataset;
           if(!scope.xs)
@@ -58,19 +58,19 @@ mediavizDirectives.directive('c3Chart', function($location) {
             scope.chart = c3.generate(scope.options);
           }
         }
-        else if(scope.chart) {
+        if(data &&scope.chart) {
           if(scope.xs) {
             // scope.chart.flush();
             // scope.chart.resize();
-            scope.chart.load({xs: scope.xs, columns: newVal});
+            scope.chart.load({xs: scope.xs, columns: data});
           } else {
             // scope.chart.flush();
             // scope.chart.resize();
-            scope.chart.load({columns: newVal});
+            scope.chart.load({columns: data});
           }
         }
 
-      });
+      }, true);
 
       // xsObj watcher
 
@@ -85,7 +85,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
 
       if(attrs.watchParams) {
         scope.$watch(function() { return $location.search()[attrs.watchParams] }, function(newVal, oldVal) {
-          if(newVal) {
+          if(newVal && oldVal) {
             var newSources = newVal.split(',');
             var oldSources = oldVal.split(',');
             angular.forEach(oldSources, function(keyword) {
