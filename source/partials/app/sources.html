@@ -11,17 +11,17 @@
       </div>
     </div>
 
-    <div flex layout="row" layout-align="start center">
+    <div flex layout="row" layout-align="start center" ng-show="selectedSources.length > 0">
       <div layout="row" layout-align="start center" style="padding: 12px 6px;">
         <span style="display: block;">Pesquisa</span>
-        <md-switch ng-model="searchSwitch" aria-label="Pesquisa">
+        <md-switch ng-model="searchSwitch" aria-label="Pesquisa" ng-change="checkValue(searchSwitch)" class="md-primary">
         </md-switch>
       </div>
       <div ng-show="searchSwitch" layout="row" layout-align="start center">
         <form ng-submit="setQuery()">
           <md-input-container>
             <label>Palavra-chave</label>
-            <input ng-model="keyword.value">
+            <input ng-model="keyword.value" id="search-input">
           </md-input-container>
         </form>
         <md-button class="md-icon-button" aria-label="Limpar" ng-click="clearQuery()" ng-show="keyword.value.length">

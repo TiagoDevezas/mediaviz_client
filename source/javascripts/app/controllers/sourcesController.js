@@ -1,4 +1,4 @@
-mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filter, $routeParams, Page, SAPONews, SourceList) {
+mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filter, $timeout, $routeParams, Page, SAPONews, SourceList) {
 
   Page.setTitle('Fontes');
 
@@ -42,6 +42,15 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
     getSourceData();
   }, true);
 
+  $scope.checkValue = function(value) {
+    if(value) {
+      var domNode = document.getElementById("search-input");
+      $timeout(function() {
+        angular.element(domNode).focus();
+      }, 0);
+    }
+  }
+
   $scope.clearQuery = function() {
     $scope.keyword.value = null;
     $scope.loadedSources = [];
@@ -62,7 +71,11 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
   function createParamsObj(source) {
   	if(source.name === 'Todas') {
-  		return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.keyword.value, source: source.value};
+      var array = source.value.split(',');
+      var index = array.indexOf('Meios & Publicidade');
+      array.splice(index, 1);
+      var value = array.join(',');
+  		return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.keyword.value, source: value};
   	} else {
 			return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.keyword.value, source: source.name};
 		}

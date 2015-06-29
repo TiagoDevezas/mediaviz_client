@@ -1,4 +1,4 @@
-mediavizDirectives.directive('sourceSelectChips', function(SourceList, SAPONewsSourceList, $q, $filter, $location) {
+mediavizDirectives.directive('sourceSelectChips', function($q, $filter, $location) {
 return {
     restrict: 'AE',
     scope: {
