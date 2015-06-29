@@ -5,8 +5,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   $scope.selectedSources = [];
   $scope.loadedSources = [];
 
-  var startDate = $routeParams.since || '2014-06-01';
-  var endDate = moment().format("YYYY-MM-DD");
+  $scope.since = "2014-06-31";
+  $scope.until = null;
+
   var timeFrame = $routeParams.by || 'DAY';
 
   $scope.sourceList = SourceList.getSAPONewsList();
@@ -21,6 +22,8 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   $scope.$watch(function() { return $location.search() }, function(locationObj) {
     var sources = locationObj['sources'];
     var keyword = locationObj['keyword'];
+    var until = locationObj['until'];
+    var since = locationObj['since'];
     if(sources) {
       sources = sources.split(',');
       var newSourcesArray = [];
@@ -39,6 +42,12 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
       $scope.keyword.value = null;
       $scope.loadedSources = [];
     }
+    // if(until) {
+    //   $scope.until = until;
+    // }
+    // if(since) {
+    //   $scope.since = since;
+    // }
     getSourceData();
   }, true);
 
@@ -75,9 +84,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
       var index = array.indexOf('Meios & Publicidade');
       array.splice(index, 1);
       var value = array.join(',');
-  		return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.keyword.value, source: value};
+  		return {beginDate: $scope.since, endDate: $scope.until, timeFrame: timeFrame, q: $scope.keyword.value, source: value};
   	} else {
-			return {beginDate: startDate, endDate: endDate, timeFrame: timeFrame, q: $scope.keyword.value, source: source.name};
+			return {beginDate: $scope.since, endDate: $scope.until, timeFrame: timeFrame, q: $scope.keyword.value, source: source.name};
 		}
   }
 

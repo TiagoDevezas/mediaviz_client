@@ -47,7 +47,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
 
 
       // dataset watcher
-      scope.$watch('dataset', function(newVal, oldVal) {
+      scope.$watch('dataset', function(newVal) {
         if(newVal && !scope.chart) {
           scope.addIdentifier();
           scope.options.data.columns = scope.dataset;
@@ -60,10 +60,12 @@ mediavizDirectives.directive('c3Chart', function($location) {
         }
         else if(scope.chart) {
           if(scope.xs) {
-            scope.chart.flush();
+            // scope.chart.flush();
+            // scope.chart.resize();
             scope.chart.load({xs: scope.xs, columns: newVal});
           } else {
-            scope.chart.flush();
+            // scope.chart.flush();
+            // scope.chart.resize();
             scope.chart.load({columns: newVal});
           }
         }
@@ -84,28 +86,27 @@ mediavizDirectives.directive('c3Chart', function($location) {
       if(attrs.watchParams) {
         scope.$watch(function() { return $location.search()[attrs.watchParams] }, function(newVal, oldVal) {
           if(newVal) {
-            newVal = newVal.split(',');
-            oldVal = oldVal.split(',');
-            angular.forEach(oldVal, function(keyword) {
-              if(newVal.indexOf(keyword) === -1) {
+            var newSources = newVal.split(',');
+            var oldSources = oldVal.split(',');
+            angular.forEach(oldSources, function(keyword) {
+              if(newSources.indexOf(keyword) === -1) {
                 scope.chart.unload({ids: keyword});
-                scope.chart.flush();
               }
             });
           } else if(scope.chart){
             scope.chart.unload();
           }
-        });
+        }, true);
       }
 
 
       // chart type watcher
 
-      scope.$watch('options.data.type', function(typeValue) {
-        if(scope.chart) {
-          scope.chart.transform(typeValue);
-        }
-      });
+      // scope.$watch('options.data.type', function(typeValue) {
+      //   if(scope.chart) {
+      //     scope.chart.transform(typeValue);
+      //   }
+      // });
 
       // Add unique id to chart
       scope.addIdentifier = function() {
