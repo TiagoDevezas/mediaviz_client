@@ -40,34 +40,33 @@ mediavizDirectives.directive('c3Chart', function($location) {
       scope.options.data.xs = scope.xs ? scope.xs : {};
       scope.options.data.type = attrs.type;
       scope.options.color = {pattern: colorbrewer.Dark2[8]};
-      
+
+      var chart = null;
 
       // Add the c3 class to element for css styling
       angular.element(element).attr('class', 'c3');
 
 
       // dataset watcher
-      scope.$watch('dataset', function(data) {
+      scope.$watchCollection('dataset', function(data) {
 
-        if(data && !scope.chart) {
-          scope.addIdentifier();
+        if(data && !chart) {
+          addIdentifier();
           scope.options.data.columns = scope.dataset;
-          if(!scope.xs)
-            scope.chart = c3.generate(scope.options);
-          else {
-            scope.options.data.xs = scope.xs
-            scope.chart = c3.generate(scope.options);
-          }
-        }
-        if(data && scope.chart) {
           if(scope.xs) {
-            // scope.chart.flush();
-            // scope.chart.resize();
-            scope.chart.load({xs: scope.xs, columns: data});
+            scope.options.data.xs = scope.xs
+          }
+          chart = c3.generate(scope.options);
+        }
+        if(data && chart) {
+          if(scope.xs) {
+            // chart.flush();
+            // chart.resize();
+            chart.load({xs: scope.xs, columns: data});
           } else {
-            // scope.chart.flush();
-            // scope.chart.resize();
-            scope.chart.load({columns: data});
+            // chart.flush();
+            // chart.resize();
+            chart.load({columns: data});
           }
         }
 
@@ -76,9 +75,13 @@ mediavizDirectives.directive('c3Chart', function($location) {
       // xsObj watcher
 
       // scope.$watch('xs', function(newVal, oldVal) {
-      //   if(newVal && scope.chart) {
-      //     scope.chart.load({xs: newVal})
+      //   if(newVal && chart) {
+      //     chart.load({xs: newVal})
       //   }
+      // });
+
+      // scope.$on('sourceRemoved', function(event, source) {
+      //   if(chart) chart.unload({ids: source});
       // });
 
       
@@ -86,16 +89,16 @@ mediavizDirectives.directive('c3Chart', function($location) {
 
       if(attrs.watchParams) {
         scope.$watch(function() { return $location.search()[attrs.watchParams] }, function(newVal, oldVal) {
-          if(newVal && oldVal && scope.chart) {
+          if(newVal && oldVal && chart) {
             var newSources = newVal.split(',');
             var oldSources = oldVal.split(',');
             angular.forEach(oldSources, function(keyword) {
               if(newSources.indexOf(keyword) === -1) {
-                scope.chart.unload({ids: keyword});
+                chart.unload({ids: keyword});
               }
             });
-          } else if(scope.chart){
-            scope.chart.unload();
+          } else if(chart){
+            chart.unload();
           }
         }, true);
       }
@@ -104,13 +107,13 @@ mediavizDirectives.directive('c3Chart', function($location) {
       // chart type watcher
 
       // scope.$watch('options.data.type', function(typeValue) {
-      //   if(scope.chart) {
-      //     scope.chart.transform(typeValue);
+      //   if(chart) {
+      //     chart.transform(typeValue);
       //   }
       // });
 
       // Add unique id to chart
-      scope.addIdentifier = function() {
+      function addIdentifier() {
         scope.dataAttributeChartID = 'chartid' + Math.floor(Math.random() * 1000000001);
         angular.element(element).attr('id', scope.dataAttributeChartID);
         scope.options.bindto = '#' + scope.dataAttributeChartID;

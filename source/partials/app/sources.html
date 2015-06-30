@@ -18,13 +18,13 @@
         </md-switch>
       </div>
       <div ng-show="searchSwitch" layout="row" layout-align="start center">
-        <form ng-submit="setQuery()">
+        <form ng-submit="setQuery(inputKeyword)">
           <md-input-container>
             <label>Palavra-chave</label>
-            <input ng-model="keyword.value" id="search-input">
+            <input ng-model="inputKeyword" id="search-input">
           </md-input-container>
         </form>
-        <md-button class="md-icon-button" aria-label="Limpar" ng-click="clearQuery()" ng-show="keyword.value.length">
+        <md-button class="md-icon-button" aria-label="Limpar" ng-click="clearInput()" ng-show="keyword.value.length">
           <md-icon md-svg-icon="images/icons/ic_clear_black_24px.svg"></md-icon>
         </md-button>
       </div>
@@ -32,7 +32,7 @@
 
   </md-whiteframe>
 
-  <md-content>
+  <md-content ng-show="selectedSources">
     <div class="md-padding">
       <div c3-chart dataset="sapoData" type="line" options="timeChartOpts" xs="xsObj" watch-params="sources"></div>
     </div>

@@ -6,7 +6,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   $scope.loadedSources = [];
 
   $scope.since = "2014-06-31";
-  $scope.until = null;
+  $scope.until = moment().format("YYYY-MM-DD");
 
   var timeFrame = $routeParams.by || 'DAY';
 
@@ -14,62 +14,37 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
   $scope.keyword = {value: ''};
 
-  // $scope.$on('$routeUpdate', function(){
-  //   var locationObj = $location.search();
-  //   var sources = locationObj.sources.split(',');
-  //   var keyword = locationObj.keyword;
-  //   var since = locationObj.since;
-
-  //   var newSourcesArray = [];
-  //   sources.forEach(function(el) {
-  //     var sourceObj = $filter('filter')($scope.sourceList, {name: el}, true)[0];
-  //     newSourcesArray.push(sourceObj);
-  //   });
-  //   $scope.selectedSources = newSourcesArray;
-  //   $scope.keyword.value = keyword;
-  //   $scope.loadedSources = [];
-  //   getSourceData();
-    
-  // });
-
   $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-    if(newVal) {
-      $scope.loadedSources = [];
-      getSourceData();
+    var sourceList = newVal['sources'];
+    var keyword = newVal['keyword'];
+    if(sourceList) {
+      var selectedSources = [];
+      var sourceArray = sourceList.split(',').length ? sourceList.split(',') : sourceList;
+      sourceArray.forEach(function(source) {
+        var sourceObj = $filter('filter')($scope.sourceList, {name: source}, true)[0];
+        selectedSources.push(sourceObj);
+      });
+      $scope.selectedSources = selectedSources;
     }
-    // var sources = locationObj['sources'];
-    // var keyword = locationObj['keyword'];
-    // var until = locationObj['until'];
-    // var since = locationObj['since'];
-    // if(sources) {
-    //   sources = sources.split(',');
-    //   var newSourcesArray = [];
-    //   sources.forEach(function(el) {
-    //     var sourceObj = $filter('filter')($scope.sourceList, {name: el}, true)[0];
-    //     newSourcesArray.push(sourceObj);
-    //   });
-    //   $scope.selectedSources = newSourcesArray;
-    //   if(keyword) {
-    //     $scope.keyword.value = keyword;
-    //   }
-    // } else {
-    //   $location.search('sources', null);
-    // }
-    // if(keyword) {
-    //   $scope.loadedSources = [];
-    //   $scope.keyword.value = keyword;
-    // } else {
-    //   $scope.keyword.value = null;
-    //   $scope.loadedSources = [];
-    // }
-    // if(until) {
-    //   $scope.until = until;
-    // }
-    // if(since) {
-    //   $scope.since = since;
-    // }
-    // getSourceData();
-  }, true);
+    if(keyword) {
+      $scope.inputKeyword = keyword;
+      $scope.keyword.value = keyword;
+    }
+  })
+
+  // $scope.$watch(function() { return $location.search()['sources'] }, function(newVal, oldVal) {
+  //   if(newVal) {
+  //     var selectedSources = [];
+  //     var sourceArray = newVal.split(',').length ? newVal.split(',') : newVal;
+  //     sourceArray.forEach(function(source) {
+  //       var sourceObj = $filter('filter')($scope.sourceList, {name: source}, true)[0];
+  //       selectedSources.push(sourceObj);
+  //     });
+  //     $scope.selectedSources = selectedSources;
+  //   } else {
+  //     $scope.clearChart();
+  //   }
+  // });
 
   $scope.checkValue = function(value) {
     if(value) {
@@ -77,30 +52,56 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
       $timeout(function() {
         angular.element(domNode).focus();
       }, 0);
+    } else {
+      $scope.clearInput();
     }
   }
 
-  $scope.clearQuery = function() {
-    $scope.keyword.value = null;
+  $scope.clearInput = function() {
+    $scope.inputKeyword = '';
+    $scope.keyword.value = '';
     $scope.loadedSources = [];
-    $scope.setQuery();
+    getSourceData();
+    // $scope.setQuery();
   }
 
-  $scope.$watch('selectedSources', function(selectedSources) {
-  	if(selectedSources) {
-  		var sources = selectedSources.map(function(el) { return el.name });
-      $location.search('sources', sources.toString());
-  	}
+  $scope.$watch('selectedSources', function(newVal, oldVal) {
+    var sources = newVal.map(function(el) { return el.name });
+    var oldSources = oldVal.map(function(el) { return el.name });
+    oldSources.forEach(function(oldSource) {
+      if(sources.indexOf(oldSource) === -1) {
+        $scope.loadedSources.splice($scope.loadedSources.indexOf(oldSource), 1);
+        $scope.$broadcast('sourceRemoved', oldSource);
+      }
+    })
+  	if(newVal.length > 0 && newVal !== '') {
+  		var sources = newVal.map(function(el) { return el.name });
+      $location.search('sources', sources.join(','));
+      getSourceData();
+  	} else {
+      $scope.clearChart();
+    }
   }, true);
 
-  $scope.setQuery = function() {
-    $location.search('keyword', $scope.keyword.value);
-  	// $location.search(angular.extend($location.search(), { keyword: $scope.keyword.value }));
+  $scope.$watch('keyword.value', function(newVal, oldVal) {
+    if(newVal && newVal !== oldVal) {
+      console.log(newVal);
+      $location.search('keyword', newVal);
+      $scope.loadedSources = [];
+      getSourceData();
+    } else {
+      $location.search('keyword', null);
+    }
+  }, true);
+
+  $scope.setQuery = function(value) {
+    $scope.keyword.value = value;
   }
 
   $scope.clearChart = function() {
     $scope.selectedSources = [];
     $scope.keyword.value = null;
+    $scope.inputKeyword = null;
     $scope.loadedSources = [];
     $location.search({});
   }
@@ -124,11 +125,11 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
       var timeId = 'timeFor' + sourceName;
 			var countId = sourceName;
 			var xsObj = {};
+      xsObj[countId] = timeId;
 
       var paramsObj = createParamsObj(source);
   		if($scope.loadedSources.indexOf(sourceName) === -1) {
   			SAPONews.get(paramsObj).then(function(data) {
-          xsObj[countId] = timeId;
   				$scope.loadedSources.push(sourceName);
           var columns = [];
   				var dateAndCounts = data.data.facet_counts.facet_ranges.pubdate.counts;
@@ -143,7 +144,6 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   				counts.unshift(countId);
   				columns.push(dates, counts);
   				$scope.sapoData = columns;
-          console.log($scope.sapoData);
           $scope.xsObj = xsObj;
 				});
   		}
