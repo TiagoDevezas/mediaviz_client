@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.10.0-master-1414b3c
+ * v0.10.0-master-f5959cc
  */
 goog.provide('ng.material.components.tabs');
 goog.require('ng.material.components.icon');
@@ -240,6 +240,7 @@ function MdTabsController ($scope, $element, $window, $timeout, $mdConstant, $md
   ctrl.shouldCenterTabs = shouldCenterTabs();
 
   //-- define public methods
+  ctrl.updatePagination = $mdUtil.debounce(updatePagination, 100);
   ctrl.redirectFocus = redirectFocus;
   ctrl.attachRipple = attachRipple;
   ctrl.shouldStretchTabs = shouldStretchTabs;
@@ -287,8 +288,6 @@ function MdTabsController ($scope, $element, $window, $timeout, $mdConstant, $md
 
   function bindEvents () {
     angular.element($window).on('resize', handleWindowResize);
-    angular.element(elements.paging).on('DOMSubtreeModified', ctrl.updateInkBarStyles);
-    angular.element(elements.paging).on('DOMSubtreeModified', updatePagination);
   }
 
   function configureWatchers () {
@@ -778,11 +777,9 @@ function MdTabsController ($scope, $element, $window, $timeout, $mdConstant, $md
         oldIndex = ctrl.lastSelectedIndex,
         ink = angular.element(elements.inkBar);
     if (!angular.isNumber(oldIndex)) return;
-    if (newIndex < oldIndex) {
-      ink.addClass('md-left').removeClass('md-right');
-    } else if (newIndex > oldIndex) {
-      ink.addClass('md-right').removeClass('md-left');
-    }
+    ink
+        .toggleClass('md-left', newIndex < oldIndex)
+        .toggleClass('md-right', newIndex > oldIndex);
   }
 
   /**
@@ -1041,6 +1038,10 @@ function MdTemplate ($compile, $mdUtil, $timeout) {
     var compileScope = scope.compileScope.$new();
     element.html(scope.template);
     $compile(element.contents())(compileScope);
+    element.on('DOMSubtreeModified', function () {
+      ctrl.updatePagination();
+      ctrl.updateInkBarStyles();
+    });
     return $timeout(handleScope);
     function handleScope () {
       scope.$watch('connected', function (value) { value === false ? disconnect() : reconnect(); });

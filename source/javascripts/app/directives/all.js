@@ -48,6 +48,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
 
       // dataset watcher
       scope.$watch('dataset', function(data) {
+
         if(data && !scope.chart) {
           scope.addIdentifier();
           scope.options.data.columns = scope.dataset;
@@ -58,7 +59,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
             scope.chart = c3.generate(scope.options);
           }
         }
-        if(data &&scope.chart) {
+        if(data && scope.chart) {
           if(scope.xs) {
             // scope.chart.flush();
             // scope.chart.resize();
@@ -85,7 +86,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
 
       if(attrs.watchParams) {
         scope.$watch(function() { return $location.search()[attrs.watchParams] }, function(newVal, oldVal) {
-          if(newVal && oldVal) {
+          if(newVal && oldVal && scope.chart) {
             var newSources = newVal.split(',');
             var oldSources = oldVal.split(',');
             angular.forEach(oldSources, function(keyword) {

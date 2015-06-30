@@ -1614,7 +1614,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
               $scope.totalShareCount = DataFormatter.sumValue(dataObj, keyword, 'total_shares', 'Partilhas no Twitter e Facebook');
               $scope.totalArticles = DataFormatter.sumValue(dataObj, keyword, 'articles', 'Artigos');
 
-              console.log($scope.donutData, $scope.totalArticles);
+              console.log($scope.timeData);
 
               var twitterShareCountOnly = $scope.twitterShareCount[1][1];
               var facebookShareCountOnly = $scope.facebookShareCount[1][1];

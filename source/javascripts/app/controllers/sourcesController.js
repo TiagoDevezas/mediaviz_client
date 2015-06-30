@@ -98,6 +98,13 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   	// $location.search(angular.extend($location.search(), { keyword: $scope.keyword.value }));
   }
 
+  $scope.clearChart = function() {
+    $scope.selectedSources = [];
+    $scope.keyword.value = null;
+    $scope.loadedSources = [];
+    $location.search({});
+  }
+
 
   function createParamsObj(source) {
   	if(source.name === 'Todas') {
@@ -112,27 +119,32 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   }
 
   function getSourceData() {
-  	$scope.selectedSources.forEach(function(source) {
+  	$scope.selectedSources.forEach(function(source, index) {
 			var sourceName = source.name;
-  		var paramsObj = createParamsObj(source);
-			var idForX = 't' + sourceName;
+      var timeId = 'timeFor' + sourceName;
+			var countId = sourceName;
 			var xsObj = {};
+
+      var paramsObj = createParamsObj(source);
   		if($scope.loadedSources.indexOf(sourceName) === -1) {
   			SAPONews.get(paramsObj).then(function(data) {
+          xsObj[countId] = timeId;
   				$scope.loadedSources.push(sourceName);
-  				xsObj[sourceName] = idForX;
-  				$scope.xsObj = xsObj;
+          var columns = [];
   				var dateAndCounts = data.data.facet_counts.facet_ranges.pubdate.counts;
   				var dates = dateAndCounts.map(function(el) {
-  					return moment(el[0]).toDate();
+            var momentDate = moment(el[0]);
+  					return momentDate.format('YYYY-MM-DD');
   				});
-  				dates.unshift(idForX);
+  				dates.unshift(timeId);
   				var counts = dateAndCounts.map(function(el) {
   					return el[1];
   				});
-  				counts.unshift(sourceName);
-  				var columns = [dates, counts];
+  				counts.unshift(countId);
+  				columns.push(dates, counts);
   				$scope.sapoData = columns;
+          console.log($scope.sapoData);
+          $scope.xsObj = xsObj;
 				});
   		}
   	})
