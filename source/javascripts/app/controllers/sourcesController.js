@@ -37,6 +37,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
       $scope.inputKeyword = keyword;
       $scope.keyword.value = keyword;
       $scope.searchSwitch = true;
+    } else {
+      $scope.clearInput();
+      $scope.searchSwitch = false;
     }
     if(since) {
       $scope.period.since = since;
@@ -106,7 +109,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   }, true);
 
   $scope.$watch('keyword.value', function(newVal, oldVal) {
-    if(newVal && newVal !== oldVal) {
+    if(newVal) {
       $location.search('keyword', newVal);
       $scope.loadedSources = [];
       getSourceData();
