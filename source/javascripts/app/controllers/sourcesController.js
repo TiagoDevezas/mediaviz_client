@@ -1,12 +1,9 @@
-mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filter, $timeout, $routeParams, Page, SAPONews, SourceList) {
+mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SourceList) {
 
   Page.setTitle('Fontes');
 
   $scope.selectedSources = [];
   $scope.loadedSources = [];
-
-  $scope.since = "2014-06-31";
-  $scope.until = moment().format("YYYY-MM-DD");
 
   var timeFrame = $routeParams.by || 'DAY';
 
@@ -14,9 +11,19 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
   $scope.keyword = {value: ''};
 
+  $scope.period = {
+    since: "2015-01-01",
+    until: moment().format("YYYY-MM-DD")
+  }
+
+  // $scope.since = "2015-01-01";
+  // $scope.until = moment().format("YYYY-MM-DD");
+
   $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
     var sourceList = newVal['sources'];
     var keyword = newVal['keyword'];
+    var since = newVal['since'];
+    var until = newVal['until'];
     if(sourceList) {
       var selectedSources = [];
       var sourceArray = sourceList.split(',').length ? sourceList.split(',') : sourceList;
@@ -30,7 +37,13 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
       $scope.inputKeyword = keyword;
       $scope.keyword.value = keyword;
     }
-  })
+    if(since) {
+      $scope.period.since = since;
+    }
+    if(until) {
+      $scope.period.until = until;
+    }
+  }, true);
 
   // $scope.$watch(function() { return $location.search()['sources'] }, function(newVal, oldVal) {
   //   if(newVal) {
@@ -53,9 +66,17 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
         angular.element(domNode).focus();
       }, 0);
     } else {
-      $scope.clearInput();
+      if($scope.keyword.value) $scope.clearInput();
     }
   }
+
+  // $scope.showPickerDialog = function(ev) {
+  //   $mdDialog.show({
+  //     parent: angular.element(document.body),
+  //     templateUrl: 'partials/app/picker_dialog.html',
+  //     targetEvent: ev
+  //   });
+  // }
 
   $scope.clearInput = function() {
     $scope.inputKeyword = '';
@@ -66,7 +87,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   }
 
   $scope.$watch('selectedSources', function(newVal, oldVal) {
-    var sources = newVal.map(function(el) { return el.name });
+    var sources = newVal.map(function(el) { return el.name }) || null;
     var oldSources = oldVal.map(function(el) { return el.name });
     oldSources.forEach(function(oldSource) {
       if(sources.indexOf(oldSource) === -1) {
@@ -85,12 +106,20 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
   $scope.$watch('keyword.value', function(newVal, oldVal) {
     if(newVal && newVal !== oldVal) {
-      console.log(newVal);
       $location.search('keyword', newVal);
       $scope.loadedSources = [];
       getSourceData();
     } else {
       $location.search('keyword', null);
+    }
+  }, true);
+
+  $scope.$watch('period', function(newVal, oldVal) {
+    if(newVal) {
+      $location.search('since', newVal.since);
+      $location.search('until', newVal.until);
+      $scope.loadedSources = [];
+      getSourceData();
     }
   }, true);
 
@@ -113,9 +142,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
       var index = array.indexOf('Meios & Publicidade');
       array.splice(index, 1);
       var value = array.join(',');
-  		return {beginDate: $scope.since, endDate: $scope.until, timeFrame: timeFrame, q: $scope.keyword.value, source: value};
+  		return {beginDate: $scope.period.since, endDate: $scope.period.until, timeFrame: timeFrame, q: $scope.keyword.value, source: value};
   	} else {
-			return {beginDate: $scope.since, endDate: $scope.until, timeFrame: timeFrame, q: $scope.keyword.value, source: source.name};
+			return {beginDate: $scope.period.since, endDate: $scope.period.until, timeFrame: timeFrame, q: $scope.keyword.value, source: source.name};
 		}
   }
 

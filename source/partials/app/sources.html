@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <div flex layout="row" layout-align="start center" ng-show="selectedSources.length > 0">
+    <div flex layout="row" layout-align="start center" ng-show="selectedSources.length > 0" style="padding-bottom: 0px;">
       <div layout="row" layout-align="start center" style="padding: 12px 6px;">
         <span style="display: block;">Pesquisa</span>
         <md-switch ng-model="searchSwitch" aria-label="Pesquisa" ng-change="checkValue(searchSwitch)" class="md-primary">
@@ -28,12 +28,14 @@
           <md-icon md-svg-icon="images/icons/ic_clear_black_24px.svg"></md-icon>
         </md-button>
       </div>
+      <date-select></date-select>
+      <!-- <md-button class="md-raised md-primary" ng-click="showPickerDialog($event)">Data</md-button> -->
     </div>
 
   </md-whiteframe>
 
   <md-content ng-show="selectedSources">
-    <div class="md-padding">
+    <div style="padding: 0 16px;">
       <div c3-chart dataset="sapoData" type="line" options="timeChartOpts" xs="xsObj" watch-params="sources"></div>
     </div>
   </md-content>

@@ -9,6 +9,7 @@ var mediavizApp = angular.module('mediavizApp', [
 	'ngMaterial',
 	'ui.select',
 	'pickadate',
+	'mdDateTime',
 
 	'mediavizControllers',
 	'mediavizServices',

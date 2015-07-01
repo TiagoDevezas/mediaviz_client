@@ -1,0 +1,16 @@
+<md-dialog ng-controller="SourcesCtrl">
+  <md-dialog-content>
+    <md-tabs md-dynamic-height>
+      <md-tab label="Início">
+        <md-content class="md-padding">
+        <time-date-picker ng-model="since" display-mode="date" orientation="false"></time-date-picker>
+        </md-content>
+      </md-tab>
+      <md-tab label="Fim">
+        <md-content class="md-padding">
+        <time-date-picker ng-model="until" display-mode="date" orientation="false"></time-date-picker>
+        </md-content>
+      </md-tab>
+    </md-tabs>
+  </md-dialog-content>
+</md-dialog>

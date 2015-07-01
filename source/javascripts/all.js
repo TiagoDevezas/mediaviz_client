@@ -11,5 +11,6 @@
 //= require angular-ui-select/dist/select.min
 //= require moment/min/moment.min
 //= require angular-pickadate/src/angular-pickadate
+//= require md-date-time/dist/md-date-time
 //= require d3tip/d3tip
 //= require_tree ./app/
