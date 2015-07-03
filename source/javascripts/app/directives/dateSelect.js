@@ -66,7 +66,9 @@ mediavizDirectives.directive('dateSelect', function($location, $filter) {
           scope.selectedPeriod = periodObj.name;
         } else {
           var optionObj = {
-            name: 'Personalizado (' + newVal.since + ' / ' + newVal.until + ')'
+            name: 'Personalizado (' + newVal.since + ' / ' + newVal.until + ')',
+            startDate: newVal.since,
+            endDate: newVal.until
           };
           scope.allPeriods.push(optionObj);
           scope.selectedPeriod = optionObj.name;

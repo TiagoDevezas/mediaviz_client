@@ -5,7 +5,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   $scope.selectedSources = [];
   $scope.loadedSources = [];
 
-  var timeFrame = $routeParams.by || 'DAY';
+  var timeFrame = 'DAY';
 
   $scope.sourceList = SourceList.getSAPONewsList();
 

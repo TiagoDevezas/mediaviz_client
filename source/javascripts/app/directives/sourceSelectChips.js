@@ -63,20 +63,3 @@ return {
     
   };
 });
-
-    // <md-chips ng-model="ctrl.selectedVegetables" md-autocomplete-snap md-require-match>
-    //   <md-autocomplete
-    //       md-selected-item="ctrl.selectedItem"
-    //       md-search-text="ctrl.searchText"
-    //       md-items="item in ctrl.querySearch(ctrl.searchText)"
-    //       md-item-text="item.name"
-    //       placeholder="Search for a vegetable">
-    //     <span md-highlight-text="ctrl.searchText">{{item.name}} :: {{item.type}}</span>
-    //   </md-autocomplete>
-    //   <md-chip-template>
-    //     <span>
-    //       <strong>{{$chip.name}}</strong>
-    //       <em>({{$chip.type}})</em>
-    //     </span>
-    //   </md-chip-template>
-    // </md-chips>

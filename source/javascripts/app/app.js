@@ -18,6 +18,9 @@ var mediavizApp = angular.module('mediavizApp', [
 ]);
 
 var mediavizControllers = angular.module('mediavizControllers', []);
+var mediavizServices = angular.module('mediavizServices', []);
+var mediavizDirectives = angular.module('mediavizDirectives', []);
+var mediavizFilters = angular.module('mediavizFilters', []);
 
 mediavizApp.run(function($rootScope, $location, $window) {
   $rootScope.$on('$locationChangeSuccess',
