@@ -1,6 +1,6 @@
 'use strict';
 
-var mediavizControllers = angular.module('mediavizControllers', []);
+// var mediavizControllers = angular.module('mediavizControllers', []);
 
 mediavizControllers.controller('RootCtrl', function($scope, $rootScope, $mdSidenav, $location, SourceList, $mdMedia) {
 

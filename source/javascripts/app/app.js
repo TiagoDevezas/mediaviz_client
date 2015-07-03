@@ -49,6 +49,11 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$
 			templateUrl: 'partials/app/source.html',
 			controller: 'SourceCtrl'
 		}).
+		when('/sapo', {
+			templateUrl: 'partials/app/sources.html',
+			controller: 'SapoCtrl',
+			reloadOnSearch: false
+		}).
 		when('/sources', {
 			templateUrl: 'partials/app/sources.html',
 			controller: 'SourcesCtrl',

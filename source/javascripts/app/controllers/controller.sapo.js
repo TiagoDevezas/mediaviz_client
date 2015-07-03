@@ -1,6 +1,6 @@
-mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SourceList) {
+mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SAPODataFormatter, SourceList) {
 
-  Page.setTitle('Fontes');
+  Page.setTitle('SAPO Fontes');
 
   $scope.selectedSources = [];
   $scope.loadedSources = [];
@@ -164,19 +164,22 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   		if($scope.loadedSources.indexOf(sourceName) === -1) {
   			SAPONews.get(paramsObj).then(function(data) {
   				$scope.loadedSources.push(sourceName);
-          var columns = [];
-  				var dateAndCounts = data.data.facet_counts.facet_ranges.pubdate.counts;
-  				var dates = dateAndCounts.map(function(el) {
-            var momentDate = moment(el[0]);
-  					return momentDate.format('YYYY-MM-DD');
-  				});
-  				dates.unshift(timeId);
-  				var counts = dateAndCounts.map(function(el) {
-  					return el[1];
-  				});
-  				counts.unshift(countId);
-  				columns.push(dates, counts);
-  				$scope.sapoData = columns;
+          var data = data.data.facet_counts.facet_ranges.pubdate.counts;
+      //     var columns = [];
+  				// var dateAndCounts = data.data.facet_counts.facet_ranges.pubdate.counts;
+  				// var dates = dateAndCounts.map(function(el) {
+      //       var momentDate = moment(el[0]);
+  				// 	return momentDate.format('YYYY-MM-DD');
+  				// });
+  				// dates.unshift(timeId);
+  				// var counts = dateAndCounts.map(function(el) {
+  				// 	return el[1];
+  				// });
+  				// counts.unshift(countId);
+  				// columns.push(dates, counts);
+          var weekData = SAPODataFormatter.getWeekDays(data);
+          $scope.weekData = SAPODataFormatter.toColumns(weekData, timeId, countId, 'ddd');
+  				$scope.sapoData = SAPODataFormatter.toColumns(data, timeId, countId, 'YYYY-MM-DD');
           $scope.xsObj = xsObj;
 				});
   		}
