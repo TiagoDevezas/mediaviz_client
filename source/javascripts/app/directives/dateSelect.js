@@ -60,7 +60,7 @@ mediavizDirectives.directive('dateSelect', function($location, $filter) {
       // }
 
 
-      scope.$watch('period', function(newVal, oldVal) {
+      scope.$watch('urlParams', function(newVal, oldVal) {
         var periodObj = $filter('filter')(scope.allPeriods, {startDate: newVal.since, endDate: newVal.until}, true)[0] || null;
         if(periodObj) {
           scope.selectedPeriod = periodObj.name;

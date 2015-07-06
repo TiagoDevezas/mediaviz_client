@@ -80,9 +80,9 @@ mediavizDirectives.directive('c3Chart', function($location) {
       //   }
       // });
 
-      // scope.$on('sourceRemoved', function(event, source) {
-      //   if(chart) chart.unload({ids: source});
-      // });
+      scope.$on('sourceRemoved', function(event, source) {
+        if(chart) chart.unload({ids: source});
+      });
 
       
       // Keyword watcher

@@ -36,7 +36,8 @@
 
   <md-content ng-show="selectedSources">
     <div style="padding: 0 16px;">
-      <div c3-chart dataset="sapoData" type="area" options="timeChartOpts" xs="xsObj" watch-params="sources"></div>
+      <!-- <div c3-chart dataset="sapoData" type="area" options="timeChartOpts" xs="xsObj" watch-params="sources"></div> -->
+      <div c3-chart dataset="weekData" type="area" options="weekChartOpts" xs="xsObj"></div>
     </div>
   </md-content>
 </div>

@@ -9,17 +9,13 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
 
   $scope.sourceList = SourceList.getSAPONewsList();
 
-  $scope.keyword = {value: ''};
-
-  $scope.period = {
+  $scope.urlParams = {
+    keyword: '',
     since: "2015-01-01",
     until: moment().format("YYYY-MM-DD")
   }
 
-  // $scope.since = "2015-01-01";
-  // $scope.until = moment().format("YYYY-MM-DD");
-
-  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+  $scope.$watch(function() { return $location.search() }, function(newVal) {
     var sourceList = newVal['sources'];
     var keyword = newVal['keyword'];
     var since = newVal['since'];
@@ -35,33 +31,19 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
     }
     if(keyword) {
       $scope.inputKeyword = keyword;
-      $scope.keyword.value = keyword;
+      $scope.urlParams.keyword = keyword;
       $scope.searchSwitch = true;
     } else {
-      $scope.clearInput();
+      // $scope.clearInput();
       $scope.searchSwitch = false;
     }
     if(since) {
-      $scope.period.since = since;
+      $scope.urlParams.since = since;
     }
     if(until) {
-      $scope.period.until = until;
+      $scope.urlParams.until = until;
     }
   }, true);
-
-  // $scope.$watch(function() { return $location.search()['sources'] }, function(newVal, oldVal) {
-  //   if(newVal) {
-  //     var selectedSources = [];
-  //     var sourceArray = newVal.split(',').length ? newVal.split(',') : newVal;
-  //     sourceArray.forEach(function(source) {
-  //       var sourceObj = $filter('filter')($scope.sourceList, {name: source}, true)[0];
-  //       selectedSources.push(sourceObj);
-  //     });
-  //     $scope.selectedSources = selectedSources;
-  //   } else {
-  //     $scope.clearChart();
-  //   }
-  // });
 
   $scope.checkValue = function(value) {
     if(value) {
@@ -70,7 +52,7 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
         angular.element(domNode).focus();
       }, 0);
     } else {
-      if($scope.keyword.value) $scope.clearInput();
+      if($scope.urlParams.keyword) $scope.clearInput();
     }
   }
 
@@ -84,9 +66,9 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
 
   $scope.clearInput = function() {
     $scope.inputKeyword = '';
-    $scope.keyword.value = '';
-    $scope.loadedSources = [];
-    getSourceData();
+    $scope.urlParams.keyword = '';
+    // $scope.loadedSources = [];
+    // getSourceData();
     // $scope.setQuery();
   }
 
@@ -108,32 +90,21 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
     }
   }, true);
 
-  $scope.$watch('keyword.value', function(newVal, oldVal) {
-    if(newVal) {
-      $location.search('keyword', newVal);
-      $scope.loadedSources = [];
-      getSourceData();
-    } else {
-      $location.search('keyword', null);
+  $scope.$watch('urlParams', function(urlParams) {
+    for (var key in urlParams) {
+      urlParams[key] ? $location.search(key, urlParams[key]) : null;
     }
-  }, true);
-
-  $scope.$watch('period', function(newVal, oldVal) {
-    if(newVal) {
-      $location.search('since', newVal.since);
-      $location.search('until', newVal.until);
-      $scope.loadedSources = [];
-      getSourceData();
-    }
+    $scope.loadedSources = [];
+    getSourceData();      
   }, true);
 
   $scope.setQuery = function(value) {
-    $scope.keyword.value = value;
+    $scope.urlParams.keyword = value;
   }
 
   $scope.clearChart = function() {
     $scope.selectedSources = [];
-    $scope.keyword.value = null;
+    $scope.urlParams.keyword = null;
     $scope.inputKeyword = null;
     $scope.loadedSources = [];
     $location.search({});
@@ -146,9 +117,9 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
       var index = array.indexOf('Meios & Publicidade');
       array.splice(index, 1);
       var value = array.join(',');
-  		return {beginDate: $scope.period.since, endDate: $scope.period.until, timeFrame: timeFrame, q: $scope.keyword.value, source: value};
+  		return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: timeFrame, q: $scope.urlParams.keyword, source: value};
   	} else {
-			return {beginDate: $scope.period.since, endDate: $scope.period.until, timeFrame: timeFrame, q: $scope.keyword.value, source: source.name};
+			return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: timeFrame, q: $scope.urlParams.keyword, source: source.name};
 		}
   }
 
@@ -158,27 +129,15 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
       var timeId = 'timeFor' + sourceName;
 			var countId = sourceName;
 			var xsObj = {};
-      xsObj[countId] = timeId;
 
       var paramsObj = createParamsObj(source);
   		if($scope.loadedSources.indexOf(sourceName) === -1) {
   			SAPONews.get(paramsObj).then(function(data) {
   				$scope.loadedSources.push(sourceName);
+          xsObj[countId] = timeId;
           var data = data.data.facet_counts.facet_ranges.pubdate.counts;
-      //     var columns = [];
-  				// var dateAndCounts = data.data.facet_counts.facet_ranges.pubdate.counts;
-  				// var dates = dateAndCounts.map(function(el) {
-      //       var momentDate = moment(el[0]);
-  				// 	return momentDate.format('YYYY-MM-DD');
-  				// });
-  				// dates.unshift(timeId);
-  				// var counts = dateAndCounts.map(function(el) {
-  				// 	return el[1];
-  				// });
-  				// counts.unshift(countId);
-  				// columns.push(dates, counts);
           var weekData = SAPODataFormatter.getWeekDays(data);
-          $scope.weekData = SAPODataFormatter.toColumns(weekData, timeId, countId, 'ddd');
+          $scope.weekData = SAPODataFormatter.toColumns(weekData, timeId, countId);
   				$scope.sapoData = SAPODataFormatter.toColumns(data, timeId, countId, 'YYYY-MM-DD');
           $scope.xsObj = xsObj;
 				});
@@ -216,6 +175,55 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
               max: 5 // the number of tick texts will be adjusted to less than this value
             },
             format: '%d %b %Y'
+          }
+        },
+        y: {
+          min: 0,
+          padding: {bottom: 0},
+        }
+      },
+      tooltip: {
+      },
+      grid: {
+        x: {
+          show: false
+        },
+        y: {
+          show: true
+        }
+      }
+  };
+
+  $scope.weekChartOpts = {
+    size: {
+      height: 450
+    },
+    legend: {
+      position: 'bottom'
+    },
+    tooltip: {
+      grouped: true 
+    },
+    data: {
+    },
+    point: {
+      r: 1.5
+    },
+    subchart: {
+      show: true
+    },
+    transition: {
+      duration: 0
+    },
+    axis: {
+      x: {
+          padding: {left: 0, right: 0},
+          type: '',
+          tick: {
+/*            culling: {
+              max: 7 // the number of tick texts will be adjusted to less than this value
+            },*/
+            format: function(d) { return moment().isoWeekday(d).format('ddd'); }
           }
         },
         y: {
