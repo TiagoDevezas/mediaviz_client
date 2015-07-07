@@ -1436,7 +1436,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
       height: 450
     },
     legend: {
-      position: 'bottom'
+      position: 'right'
     },
     tooltip: {
       grouped: true 
@@ -1458,7 +1458,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
           padding: {left: 0, right: 0},
           max: new Date(),
           type: 'timeseries',
-          extent: [moment().subtract(3, 'months').toDate(), moment().toDate()],
+          // extent: [moment().subtract(3, 'months').toDate(), moment().toDate()],
           tick: {
             culling: {
               max: 5 // the number of tick texts will be adjusted to less than this value
