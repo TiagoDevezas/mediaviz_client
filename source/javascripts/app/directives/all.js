@@ -49,7 +49,10 @@ mediavizDirectives.directive('c3Chart', function($location) {
 
       // dataset watcher
       scope.$watchCollection('dataset', function(data) {
+        createChart(data);
+      }, true);
 
+      function createChart(data) {
         if(data && !chart) {
           addIdentifier();
           scope.options.data.columns = scope.dataset;
@@ -69,8 +72,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
             chart.load({columns: data});
           }
         }
-
-      }, true);
+      }
 
       // xsObj watcher
 
@@ -80,8 +82,16 @@ mediavizDirectives.directive('c3Chart', function($location) {
       //   }
       // });
 
-      scope.$on('sourceRemoved', function(event, source) {
+      scope.$on('sourceRemoved', function(evt, source) {
         if(chart) chart.unload({ids: source});
+      });
+
+      scope.$on('changeXAxisFormat', function(evt, options) {
+        if(chart) {
+          chart.internal.config.axis_x_tick_format = options.format;
+          chart.internal.config.axis_x_type = options.type;
+          // chart.flush();
+        }
       });
 
       

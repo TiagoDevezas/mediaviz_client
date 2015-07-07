@@ -1,104 +1,19 @@
-<div id="home"><!-- 
-	<h3>Ferramentas</h3>
-	<p>Escolha uma fonte</p>
-	<div class="home-search-bar">
-		<ui-select ng-model="selectedSources.selected" on-select="goToSourcePage($item, $model)" style="min-width: 300px">
-		<ui-select-match placeholder="Escolher/pesquisar fontes...">{{$select.selected.name}}</ui-select-match>
-		<ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
-		{{ source.name }}
-		<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
-	</ui-select-choices>
-</ui-select>
+<div id="home">
+    <div layout="column" layout-gt-sm="row" layout-wrap>
+      <div ng-repeat="tool in toolsToDisplay" flex-gt-sm="50" flex-gt-md="33">
+        <md-card ng-mouseover="hovered = true" ng-mouseleave="hovered = false" ng-class="{'md-whiteframe-z3': hovered}">
+          <md-card-content>
+            <h2 class="md-title">{{tool.name}}</h2>
+            <p>
+              {{tool.description}}
+            </p>
+          </md-card-content>
+          <div class="md-actions" layout="row">
+            <md-button class="md-primary" href="#{{tool.url}}">Abrir</md-button>
+            <span flex="100"></span>
+          </div>
+        </md-card>
+      </div>
+    </div>
+    
 </div>
-<hr>
-<div class="tools">
-	<div class="tool">
-		<a href="#/chronicle">
-			<img src="images/chronicle.png" alt="">
-			<h4>Crónica</h4>
-			<p>Comparar a cobertura de múltiplos temas por um conjunto de fontes noticiosas online ao longo do tempo.</p>
-		</a>
-	</div>
-	<div class="tool">
-		<a href="#/flow">
-			<img src="images/flow.png" alt="">
-			<h4>Fluxo</h4>
-			<p>Comparar os horários e fluxos de publicação de múltiplas fontes noticiosas online.</p>
-		</a>
-	</div>
-	<div class="tool">
-		<a href="#/compare">
-			<img src="" alt="">
-			<h4>Comparador</h4>
-			<p>Comparar a cobertura de um tema por múltiplas fontes noticiosas online ao longo do tempo.</p>
-		</a>
-	</div>
-	<div class="tool">
-		<a href="#/coverage">
-			<img src="" alt="">
-			<h4>Cobertura</h4>
-			<p>Comparar a cobertura e as partilhas nas redes sociais de múltiplos temas por uma fonte noticiosa online ao longo do tempo.</p>
-		</a>
-	</div>
-	<div class="tool">
-		<a href="#/photofinish">
-			<img src="" alt="">
-			<h4>PhotoFinish</h4>
-			<p>Comparar a distância temporal entre o primeiro artigo de múltiplas fontes noticiosas online a cobrir um determinado tema.</p>
-		</a>
-	</div>
-</div>
-
-<div class="source-stats inline" ng-show="hasData">
-		<h3>Estatísticas</h3>
-		<hr>
-		<div class="source-stats-home">
-			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.articles_count.toLocaleString('pt-PT') }}</p>
-				<p class="stat-name">Artigos</p>
-				<hr>	
-			</div>
-			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.articles_day.toLocaleString('pt-PT') }}</p>
-				<p class="stat-name">Artigos/dia</p>
-				<hr>	
-			</div>
-			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.articles_hour.toLocaleString('pt-PT') }}</p>
-				<p class="stat-name">Artigos/hora</p>
-				<hr>	
-			</div>
-			<div class="stat-inline-wrapper">	
-				<p class="stat">{{ stats.sources_count.toLocaleString('pt-PT') }}</p>
-				<p class="stat-name">Fontes</p>
-				<hr>
-			</div>
-
-			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.feeds_count.toLocaleString('pt-PT') }}</p>
-				<p class="stat-name">Feeds</p>
-				<hr>
-			</div>
-
-			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.shares_count.toLocaleString('pt-PT') }}</p>
-				<p class="stat-name">Partilhas (Total)</p>
-				<hr>
-			</div>
-
-			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.twitter_shares.toLocaleString('pt-PT') }}</p>
-				<p class="stat-name">Partilhas no Twitter</p>
-				<hr>
-			</div>
-
-			<div class="stat-inline-wrapper">
-				<p class="stat">{{ stats.facebook_shares.toLocaleString('pt-PT') }}</p>
-				<p class="stat-name">Partilhas no Facebook</p>
-				<hr>
-			</div>
-
-		</div>
-</div>
-
- --></div>

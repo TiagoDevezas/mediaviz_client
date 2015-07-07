@@ -23,7 +23,6 @@ mediavizServices.factory('SAPODataFormatter', function() {
       return {time: isoDay, articles: 0, total_source_articles: 0, percent_of_source: 0 }
     });
     var weekDataMap = d3.map(weekDataObj, function(obj) { return obj.time; });
-    var weekDaysZero = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0]];
 
     var totalSourceArticles = 0;
 
@@ -39,14 +38,34 @@ mediavizServices.factory('SAPODataFormatter', function() {
       obj['percent_of_source'] = parseFloat(percent_of_source);
     });
 
-    weekDaysAndCounts.forEach(function(el) {
-      weekDaysZero.forEach(function(elem) {
-        if(parseInt(el[0]) === elem[0]) {
-          elem[1] += el[1];
-        }
-      });
+    return weekDataObj;
+  },
+  factory.getMonths = function(data) {
+    var dateAndCounts = data;
+    var monthsAndCounts = dateAndCounts.map(function(el) {
+      return [moment(el[0], 'YYYY-MM-DD').format('M'), el[1]];
     });
-    return weekDaysZero;
+    var monthDataObj = d3.range(1, 13).map(function(isoDay) {
+      return {time: isoDay, articles: 0, total_source_articles: 0, percent_of_source: 0 }
+    });
+    var monthDataMap = d3.map(monthDataObj, function(obj) { return obj.time; });
+    
+    var totalSourceArticles = 0;
+
+    monthsAndCounts.forEach(function(el) {
+      var mapObj = monthDataMap.get(el[0]);
+      if(!mapObj) return;
+      mapObj['articles'] += el[1];
+      totalSourceArticles += el[1];        
+    });
+
+    monthDataObj.forEach(function(obj) {
+      obj['total_source_articles'] = totalSourceArticles;
+      var percent_of_source = ((obj['articles'] / totalSourceArticles) * 100).toFixed(2);
+      obj['percent_of_source'] = parseFloat(percent_of_source);
+    });
+
+    return monthDataObj;
   }
   return factory;
 });

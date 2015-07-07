@@ -29,15 +29,16 @@
         </md-button>
       </div>
       <date-select></date-select>
+      <cycle-select></cycle-select>
       <!-- <md-button class="md-raised md-primary" ng-click="showPickerDialog($event)">Data</md-button> -->
     </div>
 
   </md-whiteframe>
 
   <md-content ng-show="selectedSources">
-    <div style="padding: 0 16px;">
+    <div flex class="md-padding">
       <!-- <div c3-chart dataset="sapoData" type="area" options="timeChartOpts" xs="xsObj" watch-params="sources"></div> -->
-      <div c3-chart dataset="weekData" type="area" options="weekChartOpts" xs="xsObj"></div>
+      <div class="md-padding" c3-chart dataset="chartData" type="area" options="timeChartOpts" xs="xsObj"></div>
     </div>
   </md-content>
 </div>

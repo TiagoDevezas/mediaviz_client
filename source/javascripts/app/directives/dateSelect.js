@@ -4,7 +4,7 @@ mediavizDirectives.directive('dateSelect', function($location, $filter) {
     scope: '=',
     template: 
       '<md-input-container>' + 
-        '<label>Período</label>' +
+        '<label>Intervalo</label>' +
         '<md-select ng-model="selectedPeriod" ng-change="setPeriod(selectedPeriod)">' +
           '<md-option ng-repeat="period in allPeriods" value="{{period.name}}">{{period.name}}</md-option>' +
         '</md-select>' +
@@ -40,25 +40,6 @@ mediavizDirectives.directive('dateSelect', function($location, $filter) {
         $location.search('since', periodObj.startDate);
         $location.search('until', periodObj.endDate);
       }
-
-      // function checkURLParams() {
-      //   var periodObj = $filter('filter')(scope.allPeriods, {startDate: scope.since, endDate: scope.until}, true)[0] || null;
-      //   if(periodObj) {
-      //     scope.selectedPeriod = periodObj.name;
-      //   } else {
-      //     var optionObj = {
-      //       name: 'Personalizado (' + scope.since + ' / ' + scope.until + ')'
-      //     };
-      //     scope.allPeriods.push(optionObj);
-      //     scope.selectedPeriod = optionObj.name;
-      //   }
-      // }
-
-
-      // function DateIntervalToString() {
-      //   return scope.since || scope.until ? 'Personalizado (' + scope.since + ' - ' + scope.until + ')' : null;
-      // }
-
 
       scope.$watch('urlParams', function(newVal, oldVal) {
         var periodObj = $filter('filter')(scope.allPeriods, {startDate: newVal.since, endDate: newVal.until}, true)[0] || null;

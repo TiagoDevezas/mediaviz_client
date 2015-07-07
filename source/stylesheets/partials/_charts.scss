@@ -35,9 +35,11 @@ g.resize rect {
  line {
 		stroke: $light-gray;
 	}
-	text {
-		font-size: 12px;
-	}
+}
+
+text {
+	font-size: 12px;
+	font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .c3-axis-y .tick {
