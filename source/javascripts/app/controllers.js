@@ -458,24 +458,28 @@ mediavizControllers.controller('CoverageCtrl', function($scope, Page, Resources,
     // if(chartType != $scope.chartType.selected) {
       $scope.defaultChartType = chartType;
       if(chart) chart.transform(chartType.type);
-      if(chartType.name === "Área 3") {
-        d3.selectAll('path.c3-line')
-          .classed('flat-line', true);
-        d3.selectAll('path.c3-area')
-          .classed('flat-area', true);
-
-        d3.selectAll('circle.c3-circle')
-          .classed('flat-circle', true);
-      } else {
-        d3.selectAll('path.c3-line')
-          .classed('flat-line', false);
-        d3.selectAll('path.c3-area')
-          .classed('flat-area', false);
-
-        d3.selectAll('circle.c3-circle')
-          .classed('flat-circle', false);     
-      }
+      setFlatAreaStyles()
     // }
+  }
+
+  function setFlatAreaStyles() {
+    if($scope.defaultChartType.name === "Área 3") {
+      d3.selectAll('path.c3-line')
+        .classed('flat-line', true);
+      d3.selectAll('path.c3-area')
+        .classed('flat-area', true);
+
+      d3.selectAll('circle.c3-circle')
+        .classed('flat-circle', true);
+    } else {
+      d3.selectAll('path.c3-line')
+        .classed('flat-line', false);
+      d3.selectAll('path.c3-area')
+        .classed('flat-area', false);
+
+      d3.selectAll('circle.c3-circle')
+        .classed('flat-circle', false);     
+    }    
   }
 
   $scope.removeFromChart = function(keyword) {
@@ -586,6 +590,9 @@ mediavizControllers.controller('CoverageCtrl', function($scope, Page, Resources,
                 columns: formattedData
               });
             }
+            $timeout(function() {
+              setFlatAreaStyles();
+            }, 0);
           }
         });
 };
@@ -756,28 +763,29 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
   }
 
   $scope.setChartType = function(chartType) {
-    // console.log('triggered', chartType);
-    // if(chartType != $scope.chartType.selected) {
-      $scope.defaultChartType = chartType;
-      if(chart) chart.transform(chartType.type);
-      if(chartType.name === "Área 3") {
-        d3.selectAll('path.c3-line')
-          .classed('flat-line', true);
-        d3.selectAll('path.c3-area')
-          .classed('flat-area', true);
+    $scope.defaultChartType = chartType;
+    if(chart) chart.transform(chartType.type);
+    setFlatAreaStyles();
+  }
 
-        d3.selectAll('circle.c3-circle')
-          .classed('flat-circle', true);
-      } else {
-        d3.selectAll('path.c3-line')
-          .classed('flat-line', false);
-        d3.selectAll('path.c3-area')
-          .classed('flat-area', false);
+  function setFlatAreaStyles() {
+    if($scope.defaultChartType.name === "Área 3") {
+      d3.selectAll('path.c3-line')
+        .classed('flat-line', true);
+      d3.selectAll('path.c3-area')
+        .classed('flat-area', true);
 
-        d3.selectAll('circle.c3-circle')
-          .classed('flat-circle', false);     
-      }
-    // }
+      d3.selectAll('circle.c3-circle')
+        .classed('flat-circle', true);
+    } else {
+      d3.selectAll('path.c3-line')
+        .classed('flat-line', false);
+      d3.selectAll('path.c3-area')
+        .classed('flat-area', false);
+
+      d3.selectAll('circle.c3-circle')
+        .classed('flat-circle', false);     
+    }
   }
 
   $scope.$watch('keyword.selected', function(newVal, oldVal) {
@@ -1100,6 +1108,9 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
                 columns: formattedData
               });
             }
+            $timeout(function() {
+              setFlatAreaStyles();
+            }, 0);
             // if(!chart2 || chart2.internal.data.targets.length === 0) {
             //  barChart.options.data.x = 'x';
             //  var label = '{"' + $scope.keyword.selected + '": "Artigos com ' + $scope.keyword.selected + '"}';
@@ -1390,24 +1401,28 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     // if(chartType != $scope.chartType.selected) {
       $scope.defaultChartType = chartType;
       if(chart) chart.transform(chartType.type);
-      if(chartType.name === "Área 3") {
-        d3.selectAll('path.c3-line')
-          .classed('flat-line', true);
-        d3.selectAll('path.c3-area')
-          .classed('flat-area', true);
-
-        d3.selectAll('circle.c3-circle')
-          .classed('flat-circle', true);
-      } else {
-        d3.selectAll('path.c3-line')
-          .classed('flat-line', false);
-        d3.selectAll('path.c3-area')
-          .classed('flat-area', false);
-
-        d3.selectAll('circle.c3-circle')
-          .classed('flat-circle', false);     
-      }
+      setFlatAreaStyles();
     // }
+  }
+
+  function setFlatAreaStyles() {
+    if($scope.defaultChartType.name === "Área 3") {
+      d3.selectAll('path.c3-line')
+        .classed('flat-line', true);
+      d3.selectAll('path.c3-area')
+        .classed('flat-area', true);
+
+      d3.selectAll('circle.c3-circle')
+        .classed('flat-circle', true);
+    } else {
+      d3.selectAll('path.c3-line')
+        .classed('flat-line', false);
+      d3.selectAll('path.c3-area')
+        .classed('flat-area', false);
+
+      d3.selectAll('circle.c3-circle')
+        .classed('flat-circle', false);     
+    }
   }
 
   $scope.redrawChart = function() {
@@ -1504,6 +1519,9 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
             d3.select('.c3-axis-x-label')
             .attr('transform', 'translate(0, -10)');
           }
+          $timeout(function() {
+            setFlatAreaStyles();
+          }, 0);
         });
 }
 });
