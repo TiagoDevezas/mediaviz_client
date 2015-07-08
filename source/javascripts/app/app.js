@@ -45,37 +45,9 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$
 			templateUrl: 'partials/app/home.html',
 			controller: 'HomeCtrl'
 		}).
-		when('/source/:name', {
-			templateUrl: 'partials/app/source.html',
-			controller: 'SourceCtrl'
-		}).
 		when('/sapo', {
-			templateUrl: 'partials/app/sources.html',
+			templateUrl: 'partials/app/sapo.html',
 			controller: 'SapoCtrl',
-			reloadOnSearch: false
-		}).
-		when('/sources', {
-			templateUrl: 'partials/app/sources.html',
-			controller: 'SourcesCtrl',
-			reloadOnSearch: false
-		}).
-		when('/about', {
-			templateUrl: 'partials/app/about.html',
-			controller: 'AboutCtrl'
-		}).
-		when('/flow', {
-			templateUrl: 'partials/app/flow.html',
-			controller: 'FlowCtrl',
-			reloadOnSearch: false
-		}).
-		when('/compare', {
-			templateUrl: 'partials/app/compare.html',
-			controller: 'CompareCtrl',
-			reloadOnSearch: false
-		}).
-		when('/coverage', {
-			templateUrl: 'partials/app/coverage.html',
-			controller: 'CoverageCtrl',
 			reloadOnSearch: false
 		}).
 		when('/chronicle', {
@@ -83,27 +55,15 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$
 			controller: 'ChronicleCtrl',
 			reloadOnSearch: false
 		}).
-		when('/stacks', {
-			templateUrl: 'partials/app/stacks.html',
-			controller: 'StacksCtrl',
-			reloadOnSearch: false
-		}).
-		when('/articles', {
-			templateUrl: 'partials/app/articles.html',
-			controller: 'ArticlesCtrl',
-			reloadOnSearch: false
-		}).
-		when('/photofinish', {
-			templateUrl: 'partials/app/photofinish.html',
-			controller: 'PhotoFinishCtrl',
+		when('/newsmap', {
+			templateUrl: 'partials/app/newsmap.html',
+			controller: 'NewsMapCtrl',
 			reloadOnSearch: false
 		}).
 		otherwise({
 			redirectTo: '/'
 		});
 
-		//$locationProvider.html5Mode(true);
-
-	  uiSelectConfig.theme = 'select2';
+	  // uiSelectConfig.theme = 'select2';
 
 	}]);

@@ -2,63 +2,6 @@
 
 // var mediavizControllers = angular.module('mediavizControllers', []);
 
-mediavizControllers.controller('RootCtrl', function($scope, $rootScope, $mdSidenav, $location, SourceList, $mdMedia) {
-
-  $scope.toggleMenu = function() {
-    $mdSidenav('left').toggle();
-  }
-
-  $scope.pageIs = function(url) {
-    if($location.path() === url) {
-      return 'isPage';
-    } else {
-      return 'isNotPage'
-    }
-  }
-
-
-
-  // $scope.goTo = function(url) {
-  //   $location.path(url);
-  //   $mdSidenav('left').toggle();
-  // }
-
-  // $scope.sourceList = [];
-  // $scope.sourceListOriginal = [];
-  // $scope.selectedSources = {};
-  // $scope.selectedSources.selected = [];
-
-
-  // if($scope.sourceList.length === 0) {
-  //   SourceList.get(function(data) {
-  //     $scope.sourceList = data;
-  //     $rootScope.sourceList = data;
-  //     //$scope.sourceListOriginal = $scope.sourceList;
-  //     //$scope.sourceListOriginal.splice(0, 3);
-  //     //$scope.selectedSource = $scope.sourceList[0];
-  //     $scope.selectedSources.selected.push($scope.sourceList[0]);
-  //     //getTotalsAndDraw();
-  //   });
-  // } else {
-  //   $scope.selectedSources.selected.push($scope.sourceList[0]); 
-  // }
-
-  $scope.groupSourcesByType = function(item) {
-    if(item.type === 'national') {
-      return 'Jornais Nacionais';
-    };
-    if(item.type === 'international') {
-      return 'Jornais Internacionais';
-    };
-    if(item.type === 'blogs') {
-      return 'Blogues';
-    };
-    if(item.type === 'archive') {
-      return 'Arquivo';
-    };
-  }
-
-});
 
 mediavizControllers.controller('AboutCtrl', function($scope, Resources, Page) {
   Page.setTitle('Sobre');

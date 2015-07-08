@@ -73,9 +73,6 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
     $scope.inputKeyword = '';
     $location.search('keyword', null);
     $scope.urlParams.keyword = '';
-    // $scope.loadedSources = [];
-    // getSourceData();
-    // $scope.setQuery();
   }
 
   $scope.chartData;
