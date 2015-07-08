@@ -458,6 +458,23 @@ mediavizControllers.controller('CoverageCtrl', function($scope, Page, Resources,
     // if(chartType != $scope.chartType.selected) {
       $scope.defaultChartType = chartType;
       if(chart) chart.transform(chartType.type);
+      if(chartType.name === "Área 3") {
+        d3.selectAll('path.c3-line')
+          .classed('flat-line', true);
+        d3.selectAll('path.c3-area')
+          .classed('flat-area', true);
+
+        d3.selectAll('circle.c3-circle')
+          .classed('flat-circle', true);
+      } else {
+        d3.selectAll('path.c3-line')
+          .classed('flat-line', false);
+        d3.selectAll('path.c3-area')
+          .classed('flat-area', false);
+
+        d3.selectAll('circle.c3-circle')
+          .classed('flat-circle', false);     
+      }
     // }
   }
 
@@ -743,6 +760,23 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
     // if(chartType != $scope.chartType.selected) {
       $scope.defaultChartType = chartType;
       if(chart) chart.transform(chartType.type);
+      if(chartType.name === "Área 3") {
+        d3.selectAll('path.c3-line')
+          .classed('flat-line', true);
+        d3.selectAll('path.c3-area')
+          .classed('flat-area', true);
+
+        d3.selectAll('circle.c3-circle')
+          .classed('flat-circle', true);
+      } else {
+        d3.selectAll('path.c3-line')
+          .classed('flat-line', false);
+        d3.selectAll('path.c3-area')
+          .classed('flat-area', false);
+
+        d3.selectAll('circle.c3-circle')
+          .classed('flat-circle', false);     
+      }
     // }
   }
 
@@ -1356,6 +1390,23 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
     // if(chartType != $scope.chartType.selected) {
       $scope.defaultChartType = chartType;
       if(chart) chart.transform(chartType.type);
+      if(chartType.name === "Área 3") {
+        d3.selectAll('path.c3-line')
+          .classed('flat-line', true);
+        d3.selectAll('path.c3-area')
+          .classed('flat-area', true);
+
+        d3.selectAll('circle.c3-circle')
+          .classed('flat-circle', true);
+      } else {
+        d3.selectAll('path.c3-line')
+          .classed('flat-line', false);
+        d3.selectAll('path.c3-area')
+          .classed('flat-area', false);
+
+        d3.selectAll('circle.c3-circle')
+          .classed('flat-circle', false);     
+      }
     // }
   }
 

@@ -44,6 +44,7 @@ mediavizDirectives.directive('selectChartType', function($filter) {
         {type: 'spline', name: 'Linhas 2'},
         {type: 'area', name: 'Área'},
         {type: 'area-spline', name: 'Área 2'},
+        {type: 'area', name: 'Área 3'},
         {type: 'bar', name: 'Barras'},
         {type: 'donut', name: 'Donut'}
       ];
