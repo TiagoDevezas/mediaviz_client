@@ -27,4 +27,17 @@ body {
   display: none !important;
 }
 
+.map-container {
+  border-radius: 4px;
+  margin-bottom: 16px;
+  -webkit-transition: 0.02s padding cubic-bezier(0.35, 0, 0.25, 1);
+  transition: 0.02s padding cubic-bezier(0.35, 0, 0.25, 1);
+  position: relative;
+  padding-bottom: 0;
+  .map-toolbar {
+  	border-radius: 3px 3px 0 0;
+  	box-shadow: 0 1px rgba(255, 255, 255, 0.1);
+	}
+}
+
 // @import "partials/*.scss";

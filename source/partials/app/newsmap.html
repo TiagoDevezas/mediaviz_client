@@ -1,22 +1,24 @@
 <div id="newsmap">
   <div layout="column" layout-gt-md="row">
-    <div flex="{{100 / numMaps}}">
-      <md-card>
-        <md-card-content>
-          <div layout="row" layout-align="start center" flex>
-            <div source-select></div>
-            <form ng-submit="setQuery(inputKeyword)" style="margin-left: 20px;">
-              <md-input-container>
-                <label>Palavra-chave</label>
-                <input ng-model="inputKeyword" id="search-input">
-              </md-input-container>
-            </form>
-            <span flex></span>
-            <md-button class="md-raised md-primary" ng-click="appendMap()">Comparar</md-button>
-          </div>
+    <div class="map-container md-whiteframe-z1" flex>
+      <md-toolbar class="map-toolbar" style="background-color: #ddd; border-bottom: 1px solid #e1e1e1;">
+        <div class="md-toolbar-tools">
+          <div source-select></div>
+          <form ng-submit="setQuery(inputKeyword)" style="margin-left: 20px;">
+            <md-input-container>
+              <label>Palavra-chave</label>
+              <input ng-model="inputKeyword" id="search-input">
+            </md-input-container>
+          </form>
+          <span flex></span>
+          <md-button class="md-raised md-primary" ng-click="appendMap()">Comparar</md-button>
+        </div>
+      </md-toolbar>
+      <md-content class="md-padding">
+        <div style="text-align: center;">
           <div world-map data="mapData"></div>
-        </md-card-content>
-      </md-card>
+        </div>
+      </md-content>
     </div>
   </div>
 </div>

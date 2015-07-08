@@ -14,6 +14,23 @@ mediavizDirectives.directive('worldMap', function() {
         }
       });
 
+      function resize(width) {
+
+        width = width;
+        height = width / scalingFactor;
+
+        svg
+          .attr('width', width)
+          .attr('height', height);
+
+        projection
+          .translate([width /2, height / 1.6])
+          .scale(width / 2 / Math.PI);
+
+          d3.selectAll('.country')
+            .attr('d', path);
+      }
+
       // Set up the map
       var scalingFactor = 4/2.2;
 
@@ -41,6 +58,13 @@ mediavizDirectives.directive('worldMap', function() {
             .scaleExtent([1, 8])
             .on("zoom", move);
 
+      var projection = d3.geo.mercator()
+          .translate([width /2, height / 1.6])
+          .scale(width / 2 / Math.PI);
+
+      var path = d3.geo.path()
+          .projection(projection);
+
       function move() {
 
         var t = d3.event.translate;
@@ -64,34 +88,34 @@ mediavizDirectives.directive('worldMap', function() {
 
       }
 
+        d3.json('data/world.json', function(world) {
+          var paises = topojson.feature(world, world.objects.world);
 
-      d3.json('data/world.json', function(world) {
-        var paises = topojson.feature(world, world.objects.world);
+          var projection = d3.geo.mercator()
+          .translate([width /2, height / 1.6])
+          .scale(width / 2 / Math.PI);
 
-        var projection = d3.geo.mercator()
-        .translate([width /2, height / 1.6])
-        .scale(width / 2 / Math.PI);
+          var path = d3.geo.path()
+          .projection(projection);
 
-        var path = d3.geo.path()
-        .projection(projection);
+          boundingBox = svg
+            .call(zoom)
+            .append('g')
+            .attr('class', 'mundo');
 
-        boundingBox = svg
-          .call(zoom)
-          .append('g')
-          .attr('class', 'mundo');
+          var countries = boundingBox.selectAll('g')
+            .data(paises.features, function (d) { return d.properties.name})
+            .enter()
+            .append('g')
+            .attr('class', function (d) { return d.properties.name})
+            .append('path')
+            .attr('d', path)
+            .attr('class', 'country')
+            .style('fill', 'lightgray')
+            .style('stroke', '#111')
+            .style('stroke-width', '0.25px');
+        });
 
-        var countries = boundingBox.selectAll('g')
-          .data(paises.features, function (d) { return d.properties.name})
-          .enter()
-          .append('g')
-          .attr('class', function (d) { return d.properties.name})
-          .append('path')
-          .attr('d', path)
-          .attr('class', 'country')
-          .style('fill', 'lightgray')
-          .style('stroke', '#111')
-          .style('stroke-width', '0.25px');
-      });
 
       // Update function
       function updateMap(data) {
