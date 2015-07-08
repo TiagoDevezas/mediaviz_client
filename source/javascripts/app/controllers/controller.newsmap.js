@@ -1,7 +1,7 @@
-mediavizControllers.controller('NewsMapCtrl', function($scope, Page) {
+mediavizControllers.controller('NewsMapCtrl', function($scope, Resource, Page) {
 
   Page.setTitle('NewsMap');
 
-  
+
 
 });
