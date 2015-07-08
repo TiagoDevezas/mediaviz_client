@@ -40,6 +40,11 @@
 			<li><a href="" ng-click="viewShares('all_shares')" ng-class="{'selected':shareFormat === 'all_shares'}">Twitter + Facebook</a></li>
 			<li><a href="" ng-click="viewShares('twitter_shares')" ng-class="{'selected':shareFormat === 'twitter_shares'}">Twitter</a></li>
 			<li><a href="" ng-click="viewShares('facebook_shares')" ng-class="{'selected':shareFormat === 'facebook_shares'}">Facebook</a></li>
+				<span style="float: right;">
+					<label for="chart-type-select" style="float:left;">Tipo de gráfico &nbsp;&nbsp;</label>
+					<select-chart-type></select-chart-type>
+				<!-- <select id="chart-type-select" ng-model="chartType.selected" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(chartType.selected)" style="float: left;"></select> -->
+				</span>
 		</ul>
 	</div>
 	<div class="search-tools" ng-show="showSearchToolsNav">

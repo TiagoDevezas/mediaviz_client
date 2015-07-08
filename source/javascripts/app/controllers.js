@@ -442,7 +442,7 @@ mediavizControllers.controller('CoverageCtrl', function($scope, Page, Resources,
 
   $scope.selectedNetwork = 'articlesCount';
 
-  $scope.defaultChartType = {type: 'area', name: 'Área'};
+  $scope.defaultChartType = {type: 'area', name: 'Área 3'};
 
   $scope.setSocialNetwork = function(socialNetwork) {
     if($scope.selectedNetwork !== socialNetwork) {
@@ -685,7 +685,7 @@ mediavizControllers.controller('CompareCtrl', function($scope, $timeout, Page, R
 
   $scope.dataFormat = 'absolute';
 
-  $scope.defaultChartType = {type: 'area', name: 'Área'};
+  $scope.defaultChartType = {type: 'area', name: 'Área 3'};
 
   $scope.by = $routeParams.by || 'day';
   $scope.since = $routeParams.since;
@@ -1302,7 +1302,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   //   {type: 'donut', name: 'Donut'}
   // ];
 
-  $scope.defaultChartType = {type: 'line', name: 'Linhas'};
+  $scope.defaultChartType = {type: 'area', name: 'Área 3'};
 
   // $scope.chartType = {
   //   selected: {type: 'line', name: 'Linhas'}
@@ -1776,6 +1776,8 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
   $scope.loadingQueue = [];
 
+  $scope.defaultChartType = {type: 'area', name: 'Área 3'};
+
   $scope.showSearchTools = true;
   $scope.showSearchToolsNav = false;
   $scope.loading = false;
@@ -1838,6 +1840,35 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
       }
     }, 500);
   }, true);
+
+  $scope.setChartType = function(chartType) {
+      // console.log('triggered', chartType);
+      // if(chartType != $scope.chartType.selected) {
+        $scope.defaultChartType = chartType;
+        if(chart) chart.transform(chartType.type);
+        setFlatAreaStyles()
+      // }
+    }
+
+  function setFlatAreaStyles() {
+    if($scope.defaultChartType.name === "Área 3") {
+      d3.selectAll('path.c3-line')
+        .classed('flat-line', true);
+      d3.selectAll('path.c3-area')
+        .classed('flat-area', true);
+
+      d3.selectAll('circle.c3-circle')
+        .classed('flat-circle', true);
+    } else {
+      d3.selectAll('path.c3-line')
+        .classed('flat-line', false);
+      d3.selectAll('path.c3-area')
+        .classed('flat-area', false);
+
+      d3.selectAll('circle.c3-circle')
+        .classed('flat-circle', false);     
+    }    
+  }
 
   $scope.setDateInterval = function() {
     $scope.since = $scope.dateSince;
@@ -2116,6 +2147,10 @@ function getTotalsAndDraw() {
             }
             return formattedData;
           }
+
+          $timeout(function() {
+            setFlatAreaStyles();
+          }, 0);
 
         });
 }
