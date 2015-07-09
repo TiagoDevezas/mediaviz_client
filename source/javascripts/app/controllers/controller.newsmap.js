@@ -7,12 +7,14 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, Resources, Page) 
   $scope.numMaps = 1;
 
   $scope.visibleMaps = [
-    {name: 'map1', visible: true},
-    {name: 'map2', visible: true}
+    {name: 'map1', visible: true}
   ];
 
   $scope.appendMap = function() {
-    if($scope.numMaps === 1) $scope.numMaps += 1;
+    if($scope.numMaps === 1) {
+      $scope.numMaps += 1;
+      $scope.$broadcast("resizeMap");
+    }
   }
 
   $scope.paramsObj = {resource: 'places', since: null, until: null, type: 'national', q: null, lang: 'pt', map: 'world'};

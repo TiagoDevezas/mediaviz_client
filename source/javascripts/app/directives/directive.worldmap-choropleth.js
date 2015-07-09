@@ -1,4 +1,4 @@
-mediavizDirectives.directive('worldMap', function() {
+mediavizDirectives.directive('worldMap', function($timeout) {
   return {
     restrict: 'AE',
     scope: {
@@ -14,9 +14,16 @@ mediavizDirectives.directive('worldMap', function() {
         }
       });
 
-      function resize(width) {
+      scope.$on("resizeMap", function() {
+        $timeout(function() {
+          resize();
+        }, 0)
+      });
 
-        width = width;
+      function resize() {
+
+
+        width = parseInt(d3.select(elem[0]).style("width"));
         height = width / scalingFactor;
 
         svg
@@ -36,6 +43,8 @@ mediavizDirectives.directive('worldMap', function() {
 
       var width = parseInt(d3.select(elem[0]).style("width")),
         height = width / scalingFactor;
+
+      console.log(angular.element(elem[0].parentNode.parentNode)[0].offsetWidth);
 
       var tooltip = d3.select(elem[0]).append("div").attr("class", "tooltip hidden");
 
