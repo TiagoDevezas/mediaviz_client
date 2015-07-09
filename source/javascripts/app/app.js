@@ -57,7 +57,7 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$
 		}).
 		when('/chronicle', {
 			templateUrl: 'partials/app/chronicle.html',
-			controller: 'ChronicleCtrl',
+			controller: 'KeywordsCtrl',
 			reloadOnSearch: false
 		}).
 		when('/newsmap', {
