@@ -20,7 +20,7 @@ mediavizServices.factory('SourceList', ['$http',
 	  	var sourceListArray = sourceNamesArray.map(function(el) {
 	      return {name: el, value: el}
 	    });
-	    sourceListArray.unshift({name: 'Todas', value: sourceNames});
+	    sourceListArray.unshift({name: 'Todas', value: ''});
 	    return sourceListArray;
 		}
 		return factory;

@@ -45,9 +45,14 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$
 			templateUrl: 'partials/app/home.html',
 			controller: 'HomeCtrl'
 		}).
-		when('/sapo', {
+		when('/SAPO/fontes', {
 			templateUrl: 'partials/app/sapo.html',
 			controller: 'SapoCtrl',
+			reloadOnSearch: false
+		}).
+		when('/SAPO/cronica', {
+			templateUrl: 'partials/app/chronicle.html',
+			controller: 'KeywordsCtrl',
 			reloadOnSearch: false
 		}).
 		when('/chronicle', {

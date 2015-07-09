@@ -1,4 +1,4 @@
-mediavizControllers.controller('RootCtrl', function($scope, $rootScope, $mdSidenav, $location, SourceList, $mdMedia) {
+mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $location, SourceList) {
 
   $scope.toggleMenu = function() {
     $mdSidenav('left').toggle();

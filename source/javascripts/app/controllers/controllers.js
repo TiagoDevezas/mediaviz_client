@@ -1136,9 +1136,25 @@ var barChart = {
 
 });
 
-mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Page, Resources, Chart, DataFormatter, $filter) {
+mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $location, $routeParams, $timeout, Page, Resources, Chart, DataFormatter, SourceList, $filter) {
 
   Page.setTitle('Crónica');
+
+  if($location.path().indexOf('/SAPO') !== -1) {
+    $scope.SAPOMode = true;
+  }
+
+  if($scope.SAPOMode) {
+    $scope.sourceList = SourceList.getSAPONewsList();
+  } else {
+      SourceList.getDefaultList().then(function(data) {
+      $scope.sourceList = data;
+      var defaultSource = $filter('filter')($scope.sourceList, {acronym: $scope.defaultSource}, true);
+      $scope.selectedSource = defaultSource[0];
+    });
+  }
+
+
 
   var chart;
 

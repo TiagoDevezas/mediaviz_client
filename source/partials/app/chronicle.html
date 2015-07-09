@@ -1,6 +1,16 @@
 <div id="chronicle" layout-padding layout="column">
 
-<md-whiteframe layout="row" class="md-whiteframe-z1" layout-align="center center" flex style="background-color: #FFF;">
+<md-whiteframe layout="column" class="md-whiteframe-z1" flex style="background-color: #FFF;">
+
+  <div layout="row" flex layout-align="start center">
+      <source-select class="md-padding" source-list="sourceList" selected-source="urlParams.source"></source-select>
+      <md-select ng-show="!SAPOMode" class="md-padding" placeholder="Dados" ng-model="selectedDataType" style="font-size: 16px;">
+        <md-option ng-repeat="option in dataTypes" value="{{option.type}}">{{option.type}}</md-option>
+      </md-select>
+      <date-select></date-select>
+      <!-- <date-select style="font-size: 16px;"></date-select> -->
+  </div>
+
 	<div flex layout="row">
 		<div flex="80">
 			<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>			
@@ -20,7 +30,7 @@
        <span flex></span>
        <!-- <select-chart-type></select-chart-type> -->
       </div>
-			<div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" class="md-padding" watch-params="keywords"></div>
+			<div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
 			<!-- <div id="keyword-chart"></div> -->
 		</div>
 <!-- 		<div flex="15" style="height: 550px; border-left: 1px solid #eee; margin: 0;">

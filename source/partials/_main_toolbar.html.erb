@@ -1,4 +1,4 @@
-<md-toolbar class="md-default-theme md-tall">
+<md-toolbar class="md-default-theme">
 	<div class="md-toolbar-tools" tabindex="-1">
 		<md-button class="md-icon-button md-button md-default-theme" ng-click="toggleMenu()">
 			<md-icon style="color: #fff;">menu</md-icon>
@@ -10,5 +10,5 @@
     </md-button>
   </div>
   <!-- Will need method to detect current url and change toolbar on demand -->
-  <div ng-if="pageIs('/chronicle') === 'isPage'" ng-include="'partials/app/chronicle_toolbar.html'" ng-controller="ChronicleCtrl"></div>
+<!--   <div ng-if="pageIs('/chronicle') === 'isPage' || pageIs('/chronicle/SAPO') === 'isPage'" ng-include="'partials/app/chronicle_toolbar.html'" ng-controller="ChronicleCtrl"></div> -->
 </md-toolbar>

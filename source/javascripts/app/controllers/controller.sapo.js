@@ -117,15 +117,7 @@ mediavizControllers.controller('SapoCtrl', function($scope, $location, $filter, 
 
 
   function createParamsObj(source) {
-  	if(source.name === 'Todas') {
-      var array = source.value.split(',');
-      var index = array.indexOf('Meios & Publicidade');
-      array.splice(index, 1);
-      var value = array.join(',');
-  		return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: timeFrame, q: $scope.urlParams.keyword, source: value};
-  	} else {
-			return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: timeFrame, q: $scope.urlParams.keyword, source: source.name};
-		}
+		return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: timeFrame, q: $scope.urlParams.keyword, source: source.value};
   }
 
   function getSourceData() {
