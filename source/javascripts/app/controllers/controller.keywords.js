@@ -32,7 +32,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
   }
 
   $scope.clearChart = function() {
-
   }
 
   $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
@@ -115,7 +114,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
 
   function getSourceData() {
     if(!$scope.urlParams.source) {
-      alert("Nenhuma fonte seleccionada. Por favor escolha uma fonte");
       return;
     }
     $scope.keywords.selected.forEach(function(keyword, index) {
