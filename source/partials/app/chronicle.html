@@ -3,7 +3,7 @@
 <md-whiteframe layout="column" class="md-whiteframe-z1" flex style="background-color: #FFF;">
 
   <div layout="row" flex layout-align="start center">
-      <source-select class="md-padding" source-list="sourceList" selected-source="urlParams.source"></source-select>
+      <source-select class="md-padding" source-list="sourceList" selected-source="urlParams.source" style="padding-left: 0;"></source-select>
       <md-select ng-show="!SAPOMode" class="md-padding" placeholder="Dados" ng-model="selectedDataType" style="font-size: 16px;">
         <md-option ng-repeat="option in dataTypes" value="{{option.type}}">{{option.type}}</md-option>
       </md-select>

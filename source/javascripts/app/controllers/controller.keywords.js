@@ -115,6 +115,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
 
   function getSourceData() {
     if(!$scope.urlParams.source) {
+      alert("Nenhuma fonte seleccionada. Por favor escolha uma fonte");
       return;
     }
     $scope.keywords.selected.forEach(function(keyword, index) {
@@ -138,11 +139,11 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
           });
         } else {
           var paramsObj = createParamsObj(keyword);
-          Resources.get(paramsObj).$promise.then(function(dataObj) {
+          Resources.get(paramsObj).$promise.then(function(data) {
             $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
             $scope.loadedKeywords.push(keywordName);
             xsObj[countId] = timeId;
-            $scope.timeData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
+            $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
 
             $scope.xsObj = xsObj;
           });
