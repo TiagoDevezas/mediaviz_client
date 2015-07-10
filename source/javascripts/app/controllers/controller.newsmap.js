@@ -28,12 +28,23 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
     numMaps: 1
   };
 
+  $scope.renderedMaps = [
+    {name: 'map1', source: $scope.urlParams.source1, keyword: $scope.urlParams.keyword1 }
+  ];
+
   $scope.appendMap = function() {
-    if($scope.urlParams.numMaps === 1) {
-      $scope.urlParams.numMaps += 1;
-      broadcastResize();
+    if($scope.renderedMaps.length === 1) {
+      $scope.renderedMaps.push({name: 'map2', source: 'urlParams.source2', keyword: 'urlParams.keyword2' });
     }
+    broadcastResize();
   }
+
+  // $scope.appendMap = function() {
+  //   if($scope.urlParams.numMaps === 1) {
+  //     $scope.urlParams.numMaps += 1;
+  //     broadcastResize();
+  //   }
+  // }
 
   function broadcastResize() {
     $timeout(function() {
@@ -41,18 +52,14 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
     }, 0)
   }
 
-  $scope.setQuery = function(keyword, mapId) {
-    console.log(keyword, mapId);
-    if(mapId === 'map1') {
-      $scope.urlParams.keyword1 = keyword;
-    }
-    else if(mapId === 'map2') {
-      $scope.urlParams.keyword2 = keyword;
-    }
+  $scope.setQuery = function(keyword, mapObj) {
+    mapObj.keyword = keyword;
   }
 
-  $scope.closeMap = function() {
-    $scope.urlParams.numMaps = 1;
+  $scope.closeMap = function(mapName) {
+    var foundMap = $filter('filter')($scope.renderedMaps, {name: mapName}, true)[0];
+    $scope.renderedMaps.splice($scope.renderedMaps.indexOf(foundMap), 1)
+    // $scope.urlParams.numMaps = 1;
     broadcastResize();
   }
 

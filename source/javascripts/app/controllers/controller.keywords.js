@@ -16,7 +16,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
   $scope.urlParams = {
     source: null,
     since: "2015-01-01",
-    until: moment().format("YYYY-MM-DD")
+    until: moment().format("YYYY-MM-DD"),
+    by: 'day'
   }
 
   if($scope.SAPOMode) {
@@ -39,6 +40,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
     var source = $location.search()['source'];
     var since = $location.search()['since'];
     var until = $location.search()['until'];
+    var by = $location.search()['by'];
     var keywordArray = [];
     if(source) {
       $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: source}, true)[0];
@@ -57,6 +59,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
     }
     if(until) {
       $scope.urlParams.until = until;
+    }
+    if(by) {
+      $scope.urlParams.by = by;
     }
   }, true);
 
@@ -101,7 +106,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
   }, true);
 
   function createSAPOParamsObj(keyword) {
-    return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: 'DAY', q: keyword, source: $scope.urlParams.source.value};
+    return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: $filter('uppercase')($scope.urlParams.by), q: keyword, source: $scope.urlParams.source.value};
   }
 
   function createParamsObj(keyword) {

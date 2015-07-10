@@ -48,9 +48,9 @@ mediavizDirectives.directive('worldMap', function($timeout) {
 
       var svg = d3.select(elem[0]).append('svg')
         .attr('width', width)
-        .attr('height', height)
+        .attr('height', height);
         // .style('background-color', '#9CB8CC')
-        .style('border', '1px solid #bbb')
+        // .style('border', '1px solid #bbb')
 
       var boundingBox;
 

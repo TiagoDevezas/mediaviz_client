@@ -1,6 +1,29 @@
 <div id="newsmap">
   <div layout="column" layout-gt-md="row">
-    <div flex="{{100/urlParams.numMaps}}">
+    <div flex="{{100/renderedMaps.length}}" ng-repeat="map in renderedMaps">
+      <div class="map-container md-whiteframe-z1">
+        <md-toolbar class="map-toolbar" style="background-color: #ddd; border-bottom: 1px solid #e1e1e1;">
+          <div class="md-toolbar-tools">
+            <source-select source-list="sourceList" selected-source="map.source"></source-select>
+            <form ng-submit="setQuery(map.keyword, map)" style="margin-left: 20px;">
+              <md-input-container>
+                <label>Palavra-chave</label>
+                <input ng-model="map.keyword" id="search-input">
+              </md-input-container>
+            </form>
+            <span flex></span>
+            <md-button ng-show="renderedMaps.length === 1" class="md-raised md-primary" ng-click="appendMap()">Comparar</md-button>
+          </div>
+        </md-toolbar>
+        <md-content>
+          <div style="text-align: center;">
+            <div world-map data="mapData"></div>
+          </div>
+      </div>
+    </div>
+
+
+<!--     <div flex="{{100/urlParams.numMaps}}">
       <div class="map-container md-whiteframe-z1">
         <md-toolbar class="map-toolbar" style="background-color: #ddd; border-bottom: 1px solid #e1e1e1;">
           <div class="md-toolbar-tools">
@@ -15,7 +38,7 @@
             <md-button ng-show="urlParams.numMaps === 1" class="md-raised md-primary" ng-click="appendMap()">Comparar</md-button>
           </div>
         </md-toolbar>
-        <md-content class="md-padding">
+        <md-content>
           <div style="text-align: center;">
             <div world-map data="mapData"></div>
           </div>
@@ -40,13 +63,13 @@
             </md-button>
           </div>
         </md-toolbar>
-        <md-content class="md-padding">
+        <md-content>
           <div style="text-align: center;">
             <div world-map data="mapData"></div>
           </div>
         </md-content>
       </div>
-    </div>
+    </div> -->
 
   </div>
 </div>
