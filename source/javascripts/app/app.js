@@ -7,9 +7,10 @@ var mediavizApp = angular.module('mediavizApp', [
 	'ngSanitize',
 	'ngAria',
 	'ngMaterial',
-	'ui.select',
-	'pickadate',
-	'mdDateTime',
+	'mdPickers',
+	// 'ui.select',
+	// 'pickadate',
+	// 'mdDateTime',
 
 	'mediavizControllers',
 	'mediavizServices',
@@ -34,7 +35,7 @@ mediavizApp.run(function($rootScope, $location, $window) {
     });
 });
 
-mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$locationProvider',
+mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 	function($mdThemingProvider, $routeProvider, uiSelectConfig, $locationProvider) {
 
 		$mdThemingProvider.theme('default')
@@ -46,8 +47,8 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', 'uiSelectConfig', '$
 			controller: 'HomeCtrl'
 		}).
 		when('/SAPO/fontes', {
-			templateUrl: 'partials/app/sapo.html',
-			controller: 'SapoCtrl',
+			templateUrl: 'partials/app/sources.html',
+			controller: 'SourcesCtrl',
 			reloadOnSearch: false
 		}).
 		when('/SAPO/cronica', {

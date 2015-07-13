@@ -105,8 +105,13 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
     }
   }, true);
 
+  function tokenizeKeyword(keyword) {
+    var keyword = keyword.trim().split(' ').join(' AND ');
+    return keyword;
+  }
+
   function createSAPOParamsObj(keyword) {
-    return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: $filter('uppercase')($scope.urlParams.by), q: keyword, source: $scope.urlParams.source.value};
+    return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: $filter('uppercase')($scope.urlParams.by), q: tokenizeKeyword(keyword), source: $scope.urlParams.source.value};
   }
 
   function createParamsObj(keyword) {

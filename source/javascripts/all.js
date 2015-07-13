@@ -1,3 +1,7 @@
+// require angular-pickadate/src/angular-pickadate
+// require md-date-time/dist/md-date-time
+// require angular-ui-select/dist/select.min
+
 //= require angular/angular.min
 //= require angular-route/angular-route.min
 //= require angular-resource/angular-resource.min
@@ -8,9 +12,7 @@
 //= require d3/d3.min
 //= require c3/c3.min
 //= require d3/colorbrewer
-//= require angular-ui-select/dist/select.min
 //= require moment/min/moment.min
-//= require angular-pickadate/src/angular-pickadate
-//= require md-date-time/dist/md-date-time
+//= require mdPickers/dist/mdPickers.min
 //= require d3tip/d3tip
 //= require_tree ./app/

@@ -7,7 +7,7 @@ return {
     },
     template: 
       '<md-chips ng-model="selected" md-autocomplete-snap md-require-match>' +
-        '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="" placeholder="Escolher fonte">' +
+        '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="source.name" md-selected-item-change="selectedItemChange()" placeholder="Escolher fonte">' +
           '<span md-highlight-text="searchText" md-highlight-flags="">{{source.name}}</span>' +
         '</md-autocomplete>' +
         '<md-chip-template>' +
@@ -17,6 +17,10 @@ return {
         '</md-chip-template>' +
       '</md-chips>',
     link: function(scope, elem, attrs) {
+
+      scope.selectedItemChange = function() {
+        this.searchText = undefined;
+      }
 
 
 

@@ -9,7 +9,9 @@
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 // @import "../components/angular-ui-select/dist/select";
 // @import "../components/angular-pickadate/src/angular-pickadate";
-@import "../components/md-date-time/dist/md-date-time";
+// @import "../components/md-date-time/dist/md-date-time";
+
+@import "../components/mdPickers/dist/mdPickers.min";
 
 @import "partials/_variables.scss";
 @import "partials/_sidenav.scss";
@@ -21,10 +23,6 @@ body {
 
 .md-scroll-mask {
   position: initial !important;  
-}
-
-.time-date > .display {
-  display: none !important;
 }
 
 .map-container {
