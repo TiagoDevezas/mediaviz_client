@@ -121,8 +121,12 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
   }
 
   function tokenizeKeyword(keyword) {
-    var keyword = keyword.trim().split(' ').join(' AND ');
-    return keyword;
+    if(keyword) {
+      var keyword = keyword.trim().split(' ').join(' AND ');
+      return keyword;
+    } else {
+      return undefined;
+    }
   }
 
   function getSourceData() {

@@ -106,8 +106,12 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
   }, true);
 
   function tokenizeKeyword(keyword) {
-    var keyword = keyword.trim().split(' ').join(' AND ');
-    return keyword;
+    if(keyword) {
+      var keyword = keyword.trim().split(' ').join(' AND ');
+      return keyword;
+    } else {
+      return undefined;
+    }
   }
 
   function createSAPOParamsObj(keyword) {
