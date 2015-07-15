@@ -1,6 +1,6 @@
 <div id="newsmap">
   <div layout="column" layout-gt-md="row">
-    <div flex="{{100/renderedMaps.length}}" ng-repeat="map in renderedMaps">
+    <div flex="{{100/countDisplayMaps()}}" ng-repeat="map in mapsToRender" ng-if="map.display">
       <div class="map-container md-whiteframe-z1">
         <md-toolbar class="map-toolbar" style="background-color: #ddd; border-bottom: 1px solid #e1e1e1;">
           <div class="md-toolbar-tools">
@@ -12,12 +12,15 @@
               </md-input-container>
             </form>
             <span flex></span>
-            <md-button ng-show="renderedMaps.length === 1" class="md-raised md-primary" ng-click="appendMap()">Comparar</md-button>
+            <md-button ng-show="countDisplayMaps() === 1" class="md-raised md-primary" ng-click="appendMap()">Comparar</md-button>
+            <md-button class="md-icon-button" aria-label="Fechar" ng-click="closeMap(map.name)" ng-show="countDisplayMaps() > 1">
+              <md-icon>close</md-icon>
+            </md-button>
           </div>
         </md-toolbar>
         <md-content>
           <div style="text-align: center;">
-            <div world-map data="mapData"></div>
+            <div world-map data="map.data" id="{{map.name}}"></div>
           </div>
       </div>
     </div>

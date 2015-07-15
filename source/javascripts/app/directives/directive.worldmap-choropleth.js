@@ -11,10 +11,11 @@ mediavizDirectives.directive('worldMap', function($timeout) {
       // Data watcher
 
       scope.$watch('data', function(incomingData) {
+        // var incomingData = angular.fromJson(incomingData);
         if(incomingData) {
           updateMap(incomingData);
         }
-      });
+      }, true);
 
       scope.$on("resizeMap", function() {
         resize();
@@ -43,7 +44,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
       var width = parseInt(d3.select(elem[0]).style("width")),
         height = width / scalingFactor;
 
-      var tooltip = d3.select(elem[0]).append("div").attr("class", "tooltip hidden");
+      var tooltip = d3.select(elem[0]).append("div").attr("class", "map-tooltip tooltip hidden");
 
 
       var svg = d3.select(elem[0]).append('svg')
@@ -139,7 +140,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
           nameByAlpha3[d.alpha3] = d.name;
         });
 
-        var countries = d3.selectAll('.country');
+        var countries = svg.selectAll('.country');
 
 
         countries
