@@ -354,16 +354,29 @@ input {
   }
 }
 
+// Global page styles
+//
+// [2] Ensure the page always fills at least the entire height of the viewport.
+// [3] Prevent iOS text size adjust after orientation change, without disabling user zoom
+// [4] Fonts on OSX will look more consistent with other systems that do not
+// render text using sub-pixel anti-aliasing.
+
 html, body {
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   -webkit-touch-callout: none;
-  -webkit-text-size-adjust: 100%;
-  -webkit-font-smoothing: antialiased;
+
+  min-height: 100%; // [2]
+
+  -webkit-text-size-adjust: 100%; // [3]
+  -ms-text-size-adjust: 100%; // [3]
+
+  -webkit-font-smoothing: antialiased; // [4]
+  -moz-osx-font-smoothing: grayscale; // [4]
 }
 
 md-select, md-card, md-list, md-toolbar,
 ul, ol, p, h1, h2, h3, h4, h5, h6 {
-  text-rendering: optimizeLegibility;
+  //text-rendering: optimizeLegibility;
 }
 
 /************
@@ -875,6 +888,9 @@ md-autocomplete {
     position: relative;
     overflow: visible;
     height: 40px;
+    &.md-menu-showing {
+      z-index: $z-index-backdrop + 1;
+    }
     md-progress-linear[md-mode=indeterminate] {
       position: absolute;
       bottom: 0; left: 0; width: 100%;
@@ -1046,7 +1062,8 @@ md-backdrop {
   background-color: rgba(0,0,0,0);
 
   position: absolute;
-  height: 100%;
+  top:0;
+  bottom:0;
   left: 0;
   right: 0;
 
@@ -1059,7 +1076,11 @@ md-backdrop {
     animation: $swift-ease-out-timing-function mdBackdropFadeIn 0.5s both;
   }
   &.ng-leave {
-    animation: $swift-ease-in-timing-function mdBackdropFadeOut 0.2s both;
+    animation: $swift-ease-in-timing-function mdBackdropFadeOut 0.4s both;
+  }
+
+  &.md-opaque {
+    background-color: rgba(0,0,0,0.42);
   }
 }
 
@@ -1300,9 +1321,8 @@ $icon-button-margin: rem(0.600) !default;
 
   outline: none;
   border: 0;
-  display: inline-flex;
+  display: inline-block;
   align-items: center;
-  flex-direction: column;
   padding: $button-padding;
   margin: $button-margin;
   line-height: $button-line-height;
@@ -1393,8 +1413,6 @@ $icon-button-margin: rem(0.600) !default;
     width: $button-fab-width;
     height: $button-fab-height;
     vertical-align: middle;
-    flex-grow: 0;
-    flex-shrink: 0;
 
     @include md-shadow-bottom-z-1();
     border-radius: 50%;
@@ -1540,6 +1558,7 @@ $checkbox-margin: 8px !default;
 $checkbox-border-radius: 2px !default;
 $checkbox-border-width: 2px !default;
 $checkbox-text-margin: 10px !default;
+$checkbox-top-left: 12px !default;
 
 md-checkbox {
   box-sizing: border-box;
@@ -1580,10 +1599,10 @@ md-checkbox {
   .md-container {
     position: absolute;
     top: 50%;
+    transform: translateY(-50%);
     display: inline-block;
     width: $checkbox-width;
     height: $checkbox-height;
-    transform: translateY(-50%);
     @include rtl(left, 0, auto);
     @include rtl(right, auto, 0);
 
@@ -1621,6 +1640,10 @@ md-checkbox {
       right: -15px;
       bottom: -15px;
     }
+  }
+
+  &.md-align-top-left > div.md-container {
+    top: $checkbox-top-left;
   }
 
   // unchecked
@@ -1668,10 +1691,9 @@ md-checkbox {
     white-space: normal;
     user-select: text;
 
-    span {
-      @include rtl(margin-left, $checkbox-text-margin, 0);
-      @include rtl(margin-right, 0, $checkbox-text-margin);
-    }
+    @include rtl(margin-left, $checkbox-text-margin, 0);
+    @include rtl(margin-right, 0, $checkbox-text-margin);
+
   }
 }
 
@@ -1885,7 +1907,7 @@ $dialog-padding: $baseline-grid * 3;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -1894,12 +1916,14 @@ $dialog-padding: $baseline-grid * 3;
 }
 
 md-dialog {
-  &.transition-in {
+
+  &.md-transition-in {
     opacity: 1;
     transition: $swift-ease-out;
     transform: translate3d(0,0,0) scale(1.0);
   }
-  &.transition-out {
+  &.md-transition-out {
+    opacity: 0;
     transition: $swift-ease-out;
     transform: translate3d(0,100%,0) scale(0.2);
   }
@@ -1909,7 +1933,7 @@ md-dialog {
   max-width: 80%;
   max-height: 80%;
   position: relative;
-  overflow: hidden; // stop content from leaking out of dialog parent
+  overflow: auto; // stop content from leaking out of dialog parent and fix IE
 
   box-shadow: $whiteframe-shadow-z5;
 
@@ -1963,6 +1987,7 @@ md-dialog {
     padding-right: $baseline-grid;
     padding-left: $baseline-grid * 2;
     min-height: $baseline-grid * 6.5;
+    overflow: hidden;
 
     .md-button {
       margin-bottom: $baseline-grid;
@@ -2466,10 +2491,19 @@ md-input-container {
     opacity: 0;
   }
 
-  &:not( .md-input-has-value ) input:not( :focus ) {
-    color: transparent;
+  &:not( .md-input-has-value ) input:not( :focus ),
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-ampm-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-day-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-hour-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-millisecond-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-minute-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-month-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-second-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-week-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-year-field,
+  &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-text {
+      color: transparent;
   }
-
 
   /*
    * The .md-input class is added to the input/textarea
@@ -2510,7 +2544,7 @@ md-input-container {
   ng-message, data-ng-message, x-ng-message,
   [ng-message], [data-ng-message], [x-ng-message],
   .md-char-counter {
-    -webkit-font-smoothing: antialiased;
+    //-webkit-font-smoothing: antialiased;
     position: absolute;
     font-size: $input-error-font-size;
     line-height: $input-error-height;
@@ -2831,12 +2865,21 @@ md-list-item.md-3-line > .md-no-style {
   }
 }
 
+$menu-border-radius: 2px;
+$max-visible-items: 6;
+$menu-item-height: 6 * $baseline-grid;
+$dense-menu-item-height: 4 * $baseline-grid;
+$max-menu-height: 2 * $baseline-grid + $max-visible-items * $menu-item-height;
+$max-dense-menu-height: 2 * $baseline-grid + $max-visible-items * $dense-menu-item-height;
+
 .md-open-menu-container {
   position: fixed;
   left: 0;
   top: 0;
   z-index: $z-index-menu;
   opacity: 0;
+  border-radius: $menu-border-radius;
+  overflow: hidden;
 
   md-menu-divider {
     margin-top: $baseline-grid / 2;
@@ -2844,7 +2887,6 @@ md-list-item.md-3-line > .md-no-style {
     height: 1px;
     width: 100%;
   }
-
 
   md-menu-content > * {
     opacity: 0;
@@ -2879,16 +2921,20 @@ md-menu-content {
   display: flex;
   flex-direction: column;
   padding: $baseline-grid 0;
-
-  &.md-dense md-menu-item {
-    height: 4 * $baseline-grid;
+  max-height: $max-menu-height;
+  overflow-y: auto;
+  &.md-dense {
+    max-height: $max-dense-menu-height;
+    md-menu-item {
+      height: $dense-menu-item-height;
+    }
   }
 }
 
 md-menu-item {
   display: flex;
   flex-direction: row;
-  height: 6 * $baseline-grid;
+  height: $menu-item-height;
   align-content: center;
   justify-content: flex-start;
 
@@ -3327,6 +3373,8 @@ md-progress-linear[md-mode="indeterminate"] {
 
 $radio-width: 16px !default;
 $radio-height: $radio-width !default;
+$radio-text-margin: 10px !default;
+$radio-top-left: -15px !default;
 
 md-radio-button,
 .md-switch-thumb { // Used in switch
@@ -3379,6 +3427,9 @@ md-radio-button,
     }
   }
 
+  &.md-align-top-left > div.md-container {
+     top: $radio-top-left;
+   }
 
   .md-off {
     position: absolute;
@@ -3410,8 +3461,10 @@ md-radio-button,
   .md-label {
     position: relative;
     display: inline-block;
-    margin-left: 10px;
-    margin-right: 10px;
+
+    @include rtl(margin-left, $radio-text-margin, 0);
+    @include rtl(margin-right, 0, $radio-text-margin);
+
     vertical-align: middle;
     white-space: normal;
     pointer-events: none;
@@ -3536,6 +3589,7 @@ md-select {
   box-sizing: content-box;
   min-width: 8 * $baseline-grid;
   min-height: 26px;
+  flex-grow: 1;
 
   *:first-child {
     flex: 1;
@@ -3659,15 +3713,15 @@ $sidenav-min-space: 56px !default;
 md-sidenav {
   box-sizing: border-box;
   position: absolute;
+  flex-direction: column;
+  z-index: $z-index-sidenav;
 
   width: $sidenav-default-width;
   min-width: $sidenav-default-width;
   max-width: $sidenav-default-width;
   bottom: 0;
-  z-index: $z-index-sidenav;
   background-color: white;
   overflow: auto;
-  flex-direction: column;
 
   *,
   *:before,
@@ -3863,6 +3917,12 @@ md-slider {
     left: 0;
     right: 0;
     height: 100%;
+  }
+  .md-track-ticks canvas {
+    // Restrict the width of the canvas so that ticks are rendered correctly
+    // when parent elements are resized. Else, the position of the ticks might
+    // be incorrect as we only update the canvas width attribute on window resize.
+    width: 100%;
   }
 
   /**
@@ -4528,6 +4588,8 @@ md-tab {
   float: left;
   font-weight: 500;
   box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
   &.md-focused {
     box-shadow: none;
     outline: none;
