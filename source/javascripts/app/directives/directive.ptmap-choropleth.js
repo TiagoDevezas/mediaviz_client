@@ -193,7 +193,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
            .attr('class', 'distrito')
            .style('stroke', '#d3d3d3');
 
-           d3.selectAll('.distrito')
+           svg.selectAll('.distrito')
             .style('fill', 'lightgray')
             .style('stroke', '#111')
             .style('stroke-width', '0.25px');

@@ -1,6 +1,11 @@
 <div id="newsmap">
+  <div layout="row" style="padding: 0 0 0 16px;">
+    <md-select ng-model="selectedMap" ng-change="setSelectedMap(selectedMap)" style="min-width: 200px; margin: 0;">
+      <md-option ng-repeat="mapType in mapTypes" ng-value="mapType">{{mapType.name}}</md-option>
+    </md-select>    
+  </div>
   <div layout="column" layout-gt-md="row">
-    <div flex="{{100/countDisplayMaps()}}" ng-repeat="map in mapsToRender" ng-if="map.display">
+    <div flex ng-repeat="map in mapsToRender" ng-if="map.display">
       <div class="map-container md-whiteframe-z1">
         <md-toolbar class="map-toolbar" style="background-color: #ddd; border-bottom: 1px solid #e1e1e1;">
           <div class="md-toolbar-tools">
@@ -19,8 +24,9 @@
           </div>
         </md-toolbar>
         <md-content>
-          <div style="text-align: center;">
-            <div world-map data="map.data" id="{{map.name}}"></div>
+          <div>
+            <div world-map data="map.data" id="{{map.name}}" ng-if="selectedMap.type === 'world'"></div>
+            <div pt-map data="map.data" id="{{map.name}}" ng-if="selectedMap.type === 'portugal'"></div>
           </div>
       </div>
     </div>

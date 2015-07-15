@@ -21,6 +21,11 @@ body {
 	background-color: #EDECEC;
 }
 
+* {
+  min-height: 0;
+  min-width: 0;
+}
+
 .md-scroll-mask {
   position: initial !important;  
 }

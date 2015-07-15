@@ -23,10 +23,14 @@ mediavizDirectives.directive('worldMap', function($timeout) {
 
       function resize() {
 
+        var scalingFactor = 4/2.2;
+
         width = parseInt(d3.select(elem[0]).style("width"));
         height = width / scalingFactor;
 
-        svg
+        console.log('resize called', width, height);
+
+        d3.selectAll('svg')
           .attr('width', width)
           .attr('height', height);
 
@@ -34,7 +38,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
           .translate([width /2, height / 1.6])
           .scale(width / 2 / Math.PI);
 
-          d3.selectAll('.country')
+          d3.selectAll('svg').selectAll('.country')
             .attr('d', path);
       }
 

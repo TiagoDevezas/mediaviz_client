@@ -10,6 +10,28 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
   //   $scope.selectedSource2 = defaultSource2[0];
   // })
 
+  $scope.mapTypes = [
+    {name: 'Mundo', type: 'world'}, 
+    {name: 'Portugal', type: 'portugal'}
+  ];
+
+  $scope.selectedMap = $scope.mapTypes[0];
+
+  $scope.setSelectedMap = function(mapType) {
+    $scope.selectedMap = mapType;
+    var mapsDisplayed = displayedMapsArray();
+    mapsDisplayed.forEach(function(mapObj) {
+      getMapData(mapObj);
+    });
+  }
+
+  function displayedMapsArray() {
+    var mapsDisplayed = $scope.mapsToRender.filter(function(obj) {
+      return obj.display;
+    });
+    return mapsDisplayed;
+  }
+
   SourceList.getDefaultList().then(function(data) {
     $scope.sourceList = data;
   });
@@ -18,8 +40,6 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
     {name: 'map1', source: undefined, keyword: undefined, display: true, data: undefined },
     {name: 'map2', source: undefined, keyword: undefined, display: false, data: undefined }
   ];
-
-  $scope.loadedMaps = [];
 
   // $scope.urlParams = {};
 
@@ -71,10 +91,6 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
     foundMap.display = false;
     foundMap.source = undefined;
     foundMap.keyword = undefined;
-    if($scope.loadedMaps.indexOf(foundMap.name !== -1)) {
-      var mapIndex = $scope.loadedMaps.indexOf(foundMap.name);
-      $scope.loadedMaps.splice(mapIndex, 1);
-    }
     broadcastResize();
   }
 
@@ -131,9 +147,9 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
 
   function createParamsObj(mapObj) {
     if(mapObj.source.group) {
-      return {resource: 'places', since: null, until: null, type: mapObj.source.type, q: mapObj.keyword, map: 'world'};    
+      return {resource: 'places', since: null, until: null, type: mapObj.source.type, q: mapObj.keyword, map: $scope.selectedMap.type};    
     } else {
-      return {resource: 'places', since: null, until: null, source: mapObj.source.name, q: mapObj.keyword, map: 'world'};
+      return {resource: 'places', since: null, until: null, source: mapObj.source.name, q: mapObj.keyword, map: $scope.selectedMap.type};
     }
   }
 
