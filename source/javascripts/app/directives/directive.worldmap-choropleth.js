@@ -22,24 +22,27 @@ mediavizDirectives.directive('worldMap', function($timeout) {
       });
 
       function resize() {
+        $timeout(function() {
 
-        var scalingFactor = 4/2.2;
+          var scalingFactor = 4/2.2;
 
-        width = parseInt(d3.select(elem[0]).style("width"));
-        height = width / scalingFactor;
+          width = parseInt(d3.select(elem[0]).style("width"));
+          height = width / scalingFactor;
 
-        console.log('resize called', width, height);
+          console.log('resize called', width, height);
 
-        d3.selectAll('svg')
-          .attr('width', width)
-          .attr('height', height);
+          d3.selectAll('svg')
+            .attr('width', width)
+            .attr('height', height);
 
-        projection
-          .translate([width /2, height / 1.6])
-          .scale(width / 2 / Math.PI);
+          projection
+            .translate([width /2, height / 1.6])
+            .scale(width / 2 / Math.PI);
 
-          d3.selectAll('svg').selectAll('.country')
-            .attr('d', path);
+            d3.selectAll('svg').selectAll('.country')
+              .attr('d', path);
+
+        }, 0);
       }
 
       // Set up the map
