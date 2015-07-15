@@ -153,7 +153,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
 
         countries
           .transition()
-          .duration(1500)
+          .duration(500)
           .style('fill', function(d) {
             return countByAlpha3[d.id] ? color(countByAlpha3[d.id]) : '#eee'
           });

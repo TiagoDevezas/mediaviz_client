@@ -46,7 +46,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           .attr('height', height);
 
         var colorbrewerRamp = colorbrewer.GnBu[7];
-        colorbrewerRamp.shift();
+        // colorbrewerRamp.shift();
 
         var color = d3.scale.quantile()
           .range(colorbrewerRamp);
@@ -103,7 +103,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           .attr('transform', 'translate(' + cWidth + ',' + 0 + ')');
 
           var portugal = bb.selectAll('g')
-          .data(portugal.features)
+          .data(portugal.features, function (d) { return d.properties.name})
           .enter()
           .append('g')
           .attr('class', function (d) { return d.properties.name})
@@ -220,7 +220,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
 
           distritos
             .transition()
-              .duration(1500)
+              .duration(500)
               .style('fill', function(d) {
                 return countByFIPS[d.id] ? color(countByFIPS[d.id]) : '#eee'
               });
