@@ -31,7 +31,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
 
           console.log('resize called', width, height);
 
-          d3.selectAll('svg')
+          d3.selectAll('svg.world-map')
             .attr('width', width)
             .attr('height', height);
 
@@ -39,7 +39,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
             .translate([width /2, height / 1.6])
             .scale(width / 2 / Math.PI);
 
-            d3.selectAll('svg').selectAll('.country')
+            d3.selectAll('svg.world-map').selectAll('.country')
               .attr('d', path);
 
         }, 0);
@@ -55,6 +55,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
 
 
       var svg = d3.select(elem[0]).append('svg')
+        .attr('class', 'world-map')
         .attr('width', width)
         .attr('height', height);
         // .style('background-color', '#9CB8CC')
