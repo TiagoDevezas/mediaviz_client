@@ -3,7 +3,7 @@
   <div layout="row" style="padding: 0 0 0 16px;">
     <md-select ng-model="selectedMap" ng-change="setSelectedMap(selectedMap)" style="min-width: 200px; margin: 0;">
       <md-option ng-repeat="mapType in mapTypes" ng-value="mapType">{{mapType.name}}</md-option>
-    </md-select>    
+    </md-select>  
   </div>
   <div layout="column" layout-gt-md="row">
     <div flex ng-repeat="map in mapsToRender" ng-if="map.display">

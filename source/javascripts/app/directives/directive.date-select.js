@@ -38,8 +38,6 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
         {name: 'Personalizado', startDate: undefined, endDate: undefined}
       ];
 
-      
-
       scope.showDatePicker = function(optionName) {
         if(optionName.indexOf('Personalizado') !== -1) {
           scope.$broadcast('OpenPicker');

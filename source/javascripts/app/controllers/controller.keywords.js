@@ -17,7 +17,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
     source: null,
     since: "2015-01-01",
     until: moment().format("YYYY-MM-DD"),
-    by: 'day'
+    by: 'day',
+    data: 'articles'
   }
 
   if($scope.SAPOMode) {
@@ -41,6 +42,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
     var since = $location.search()['since'];
     var until = $location.search()['until'];
     var by = $location.search()['by'];
+    var dataType = $location.search()['data'];
     var keywordArray = [];
     if(source) {
       $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: source}, true)[0];
@@ -62,6 +64,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
     }
     if(by) {
       $scope.urlParams.by = by;
+    }
+    if(dataType) {
+      $scope.urlParams.data = dataType;
     }
   }, true);
 
@@ -155,7 +160,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
             $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
             $scope.loadedKeywords.push(keywordName);
             xsObj[countId] = timeId;
-            $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+            $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
 
             $scope.xsObj = xsObj;
           });

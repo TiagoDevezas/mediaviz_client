@@ -48,8 +48,8 @@ mediavizDirectives.directive('ptMap', function($timeout) {
         var colorbrewerRamp = colorbrewer.GnBu[7];
         // colorbrewerRamp.shift();
 
-        var color = d3.scale.quantile()
-          .range(colorbrewerRamp);
+        var color = d3.scale.log()
+          .range(['#ffffbf', '#2b83ba']);
 
         d3.json('data/pt.json', function(pt) {
           // console.log(pt.objects.portugal);
@@ -203,10 +203,11 @@ mediavizDirectives.directive('ptMap', function($timeout) {
         function updateMap(data) {
 
           var maxCount = d3.max(data, function(d) { return d.count });
+          var minCount = d3.min(data, function(d) { return d.count });
 
-          var color_domain = [0, maxCount / 3];
+          var color_domain = [minCount + 1, maxCount];
 
-          color.domain(color_domain);
+          color.domain(color_domain).base(2);
 
           var countByFIPS = {};
           var nameByFIPS = {};
