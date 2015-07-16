@@ -162,8 +162,9 @@ mediavizDirectives.directive('worldMap', function($timeout) {
       // Update function
       function updateMap(data) {
         var maxCount = d3.max(data, function(d) { return d.count });
+        var minCount = d3.min(data, function(d) { return d.count });
 
-        var color_domain = [1, maxCount];
+        var color_domain = [minCount + 1, maxCount];
 
         color.domain(color_domain);
 
