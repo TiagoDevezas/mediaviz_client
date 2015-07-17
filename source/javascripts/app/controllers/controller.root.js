@@ -12,4 +12,14 @@ mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $locatio
     }
   }
 
+  $scope.theme = 'default';
+
+  $scope.$watch(function() { return $location.path() }, function(newVal) {
+    if(newVal && newVal.indexOf('/SAPO') !== -1) {
+      $scope.theme = 'sapoTheme';
+    } else {
+      $scope.theme = 'default';
+    }
+  });
+
 });

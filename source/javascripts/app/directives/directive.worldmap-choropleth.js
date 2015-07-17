@@ -69,7 +69,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
       var colorbrewerRamp = colorbrewer.GnBu[7];
       // colorbrewerRamp.shift();
 
-      var color = d3.scale.log()
+      var color = d3.scale.pow().exponent(.5)
         .range(['#ffffbf', '#2b83ba']);
         // .range(colorbrewerRamp);
 
@@ -196,8 +196,6 @@ mediavizDirectives.directive('worldMap', function($timeout) {
         //   .text(function(d, i) {
         //     return "" + color.invertExtent(d)[0] + "-" + color.invertExtent(d)[1]
         //   });
-
-        // console.log(color.invertExtent('#f0f9e8'));
 
         //offsets for tooltips
       var offsetL = elem[0].offsetLeft+20;

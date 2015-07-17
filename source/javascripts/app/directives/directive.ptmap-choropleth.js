@@ -48,7 +48,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
         var colorbrewerRamp = colorbrewer.GnBu[7];
         // colorbrewerRamp.shift();
 
-        var color = d3.scale.log()
+        var color = d3.scale.pow().exponent(.5)
           .range(['#ffffbf', '#2b83ba']);
 
         d3.json('data/pt.json', function(pt) {
@@ -207,7 +207,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
 
           var color_domain = [minCount + 1, maxCount];
 
-          color.domain(color_domain).base(2);
+          color.domain(color_domain);
 
           var countByFIPS = {};
           var nameByFIPS = {};

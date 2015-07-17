@@ -42,6 +42,10 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 			.primaryPalette('cyan')
 			.accentPalette('red');
 
+		$mdThemingProvider.theme('sapoTheme')
+			.primaryPalette('green')
+			.accentPalette('yellow');
+
 		$routeProvider.when('/', {
 			templateUrl: 'partials/app/home.html',
 			controller: 'HomeCtrl'

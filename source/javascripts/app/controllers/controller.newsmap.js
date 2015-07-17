@@ -15,6 +15,13 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
     {name: 'Portugal', type: 'portugal'}
   ];
 
+  $scope.lang = 'pt';
+
+  $scope.urlParams = {
+    since: "2015-01-01",
+    until: moment().format("YYYY-MM-DD")
+  }
+
   $scope.selectedMap = $scope.mapTypes[0];
 
   $scope.setSelectedMap = function(mapType) {
@@ -94,52 +101,66 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
     broadcastResize();
   }
 
-  // $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
-  //   var numMaps = newVal['numMaps'];
-  //   var source1 = newVal['source1'];
-  //   var source2 = newVal['source2'];
-  //   var keyword1 = newVal['keyword1'];
-  //   var keyword2 = newVal['keyword2'];
-  //   // if(numMaps && numMaps > 0 && numMaps < 3) {
-  //   //   $scope.urlParams.numMaps = parseInt(numMaps);
-  //   //   broadcastResize();
-  //   // }
-  //     if(source1) {
-  //       $timeout(function() {
-  //         var sourceObj = $filter('filter')($scope.sourceList, {acronym: source1}, true)[0];
-  //         $scope.mapsToRender[0].source = sourceObj;
-  //       }, 500);
-  //       // $scope.urlParams.source1 = sourceObj;
-  //     }
-  //     if(source2) {
-  //       $timeout(function() {
-  //         var sourceObj = $filter('filter')($scope.sourceList, {acronym: source2}, true)[0];
-  //         $scope.mapsToRender[1].source = sourceObj;
-  //       }, 500);
+  $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
+    var since = newVal['since'];
+    var until = newVal['until'];
+    if(since) {
+      $scope.urlParams.since = since;
+    }
+    if(until) {
+      $scope.urlParams.until = until;
+    }
+    // var numMaps = newVal['numMaps'];
+    // var source1 = newVal['source1'];
+    // var source2 = newVal['source2'];
+    // var keyword1 = newVal['keyword1'];
+    // var keyword2 = newVal['keyword2'];
+    // // if(numMaps && numMaps > 0 && numMaps < 3) {
+    // //   $scope.urlParams.numMaps = parseInt(numMaps);
+    // //   broadcastResize();
+    // // }
+    //   if(source1) {
+    //     $timeout(function() {
+    //       var sourceObj = $filter('filter')($scope.sourceList, {acronym: source1}, true)[0];
+    //       $scope.mapsToRender[0].source = sourceObj;
+    //     }, 500);
+    //     // $scope.urlParams.source1 = sourceObj;
+    //   }
+    //   if(source2) {
+    //     $timeout(function() {
+    //       var sourceObj = $filter('filter')($scope.sourceList, {acronym: source2}, true)[0];
+    //       $scope.mapsToRender[1].source = sourceObj;
+    //     }, 500);
         
-  //       // $scope.urlParams.source2 = sourceObj;
-  //     }
-  //   if(keyword1) {
-  //     $scope.mapsToRender[0].keyword = keyword1;
-  //     // $scope.urlParams.keyword1 = keyword1;
-  //   }
-  //   if(keyword2) {
-  //     $scope.mapsToRender[1].keyword = keyword2;
-  //     // $scope.urlParams.keyword2 = keyword2;
-  //   }
+    //     // $scope.urlParams.source2 = sourceObj;
+    //   }
+    // if(keyword1) {
+    //   $scope.mapsToRender[0].keyword = keyword1;
+    //   // $scope.urlParams.keyword1 = keyword1;
+    // }
+    // if(keyword2) {
+    //   $scope.mapsToRender[1].keyword = keyword2;
+    //   // $scope.urlParams.keyword2 = keyword2;
+    // }
 
-  // }, true)
+  }, true)
 
-  // $scope.$watch('urlParams', function(urlParams) {
-  //   for (var key in urlParams) {
-  //     if(urlParams[key] && urlParams[key].acronym) {
-  //       $location.search(key, urlParams[key].acronym);
-  //     } else if(urlParams[key]) {
-  //       $location.search(key, urlParams[key])
-  //     }
-  //   }
-  //   getMapData();  
-  // }, true);
+  $scope.$watch('urlParams', function(urlParams) {
+    if(urlParams) {
+      var displayed = $filter('filter')($scope.mapsToRender, {display: true}, true);
+      displayed.forEach(function(mapObj) {
+        getMapData(mapObj);
+      });
+    }
+    // for (var key in urlParams) {
+    //   if(urlParams[key] && urlParams[key].acronym) {
+    //     $location.search(key, urlParams[key].acronym);
+    //   } else if(urlParams[key]) {
+    //     $location.search(key, urlParams[key])
+    //   }
+    // }
+    // getMapData();  
+  }, true);
 
   // $scope.$watch('countDisplayMaps()', function(newVal) {
   //   $location.search('numMaps', newVal);
@@ -147,20 +168,30 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
 
   function createParamsObj(mapObj) {
     if(mapObj.source.group) {
-      return {resource: 'places', since: null, until: null, type: mapObj.source.type, q: mapObj.keyword, map: $scope.selectedMap.type};    
+      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, type: mapObj.source.type, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};    
     } else {
-      return {resource: 'places', since: null, until: null, source: mapObj.source.name, q: mapObj.keyword, map: $scope.selectedMap.type};
+      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, source: mapObj.source.name, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};
     }
   }
 
   $scope.$watch(function() { return $scope.mapsToRender[0].source }, function(newVal) {
     if(newVal) {
+      if(newVal.type === 'international') { 
+        $scope.lang = 'en';
+      } else {
+        $scope.lang = 'pt';
+      }
       getMapData($scope.mapsToRender[0]);
     }
   }, true);
 
   $scope.$watch(function() { return $scope.mapsToRender[1].source }, function(newVal) {
     if(newVal) {
+      if(newVal.type === 'international') { 
+        $scope.lang = 'en';
+      } else {
+        $scope.lang = 'pt';
+      }
       getMapData($scope.mapsToRender[1]);
     }
   }, true);
@@ -168,13 +199,15 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
   // getMapData();
 
   function getMapData(mapObj) {
-    $scope.loading = true;
-    var paramsObj = createParamsObj(mapObj);
-    Resources.get(paramsObj).$promise.then(function(data) {
-      // $scope.loadedMaps.push(mapObj.name);
-      $scope.loading = false;
-      mapObj.data = data;
-    });
+    if($scope.mapsToRender[0].source || $scope.mapsToRender[1].source) {
+      $scope.loading = true;
+      var paramsObj = createParamsObj(mapObj);
+      Resources.get(paramsObj).$promise.then(function(data) {
+        // $scope.loadedMaps.push(mapObj.name);
+        $scope.loading = false;
+        mapObj.data = data;
+      });
+    }
   }
 
   // function getMapData() {
