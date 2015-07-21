@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.10.1-rc1-master-d52e9c2
+ * v0.10.1-rc2-master-c5c148d
  */
 goog.provide('ng.material.components.dialog');
 goog.require('ng.material.components.backdrop');
@@ -501,15 +501,15 @@ function MdDialogProvider($$interimElementProvider) {
      * Remove function for all dialogs
      */
     function onRemove(scope, element, options) {
-      angular.element($document[0].body).removeClass('md-dialog-is-showing');
-
       options.deactivateListeners();
       options.unlockScreenReader();
-      options.hideBackdrop();
 
       return dialogPopOut(element, options)
-        .then(function () {
+        .finally(function () {
+          angular.element($document[0].body).removeClass('md-dialog-is-showing');
+          options.hideBackdrop();
           element.remove();
+
           options.origin.focus();
         });
     }
@@ -543,6 +543,13 @@ function MdDialogProvider($$interimElementProvider) {
      */
     function activateListeners(element, options) {
       var removeListeners = [ ];
+      var smartClose = function() {
+        // Only 'confirm' dialogs have a cancel button... escape/clickOutside will
+        // cancel or fallback to hide.
+        var closeFn =  ( options.$type == 'alert' ) ? $mdDialog.hide : $mdDialog.cancel;
+
+        $mdUtil.nextTick( closeFn, true );
+      };
 
       if (options.escapeToClose) {
         var target = options.parent;
@@ -551,7 +558,7 @@ function MdDialogProvider($$interimElementProvider) {
                 ev.stopPropagation();
                 ev.preventDefault();
 
-                $mdUtil.nextTick($mdDialog.cancel);
+                smartClose();
               }
             };
 
@@ -568,12 +575,12 @@ function MdDialogProvider($$interimElementProvider) {
       if (options.clickOutsideToClose) {
         var target = element;
         var clickHandler = function (ev) {
-              // Only close if we click the flex container outside the backdrop
+              // Only close if we click the flex container outside on the backdrop
               if (ev.target === target[0]) {
                 ev.stopPropagation();
                 ev.preventDefault();
 
-                $mdUtil.nextTick($mdDialog.cancel);
+                smartClose();
               }
             };
 
