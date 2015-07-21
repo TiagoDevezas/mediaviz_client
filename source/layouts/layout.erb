@@ -16,7 +16,7 @@
     <%= javascript_include_tag  "all" %>
   </head>
   
-  <body layout="row" ng-controller="RootCtrl">
+  <body layout="row" ng-cloak ng-controller="RootCtrl">
     
     <%= partial 'partials/sidenav' %>
     <div layout="column" role="main" flex>
@@ -24,6 +24,5 @@
       <md-content ng-view layout-padding style="background-color: #EDECEC;"></md-content>
     </div>
     <%= partial 'partials/analytics' %>
-    <script src="http://d3js.org/topojson.v1.min.js"></script>
   </body>
 </html>

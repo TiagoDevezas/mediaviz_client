@@ -1,11 +1,15 @@
-mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SAPODataFormatter, DataFormatter, SourceList) {
+mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SAPODataFormatter, DataFormatter, SourceList) {
 
   Page.setTitle('SAPO Fontes');
 
   $scope.selectedSources = [];
   $scope.loadedSources = [];
 
+  $scope.loadingQueue = [];
+
   var timeFrame = 'DAY';
+
+  $scope.selectedIndex.value = 1;
 
   $scope.sourceList = SourceList.getSAPONewsList();
 
@@ -103,6 +107,14 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
     getSourceData();      
   }, true);
 
+  $scope.$watch('loadingQueue', function(newVal, oldVal) {
+    if($scope.loadingQueue.length !== 0) {
+      $rootScope.loading = true;
+    } else {
+      $rootScope.loading = false;
+    }
+  }, true);
+
   $scope.setQuery = function(value) {
     $scope.urlParams.keyword = value;
   }
@@ -138,8 +150,10 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $location, $filte
 
       var paramsObj = createParamsObj(source);
   		if($scope.loadedSources.indexOf(sourceName) === -1) {
+        $scope.loadingQueue.push(sourceName);
   			SAPONews.get(paramsObj).then(function(data) {
   				$scope.loadedSources.push(sourceName);
+          $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
           xsObj[countId] = timeId;
           var data = data.data.facet_counts.facet_ranges.pubdate.counts;
           $scope.dayData = SAPODataFormatter.toColumns(data, timeId, countId, 'YYYY-MM-DD');

@@ -1,4 +1,4 @@
-mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout, $location, $q, Resources, Page, SourceList) {
+mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filter, $timeout, $location, $q, Resources, Page, SourceList) {
 
   Page.setTitle('NewsMap');
 
@@ -23,6 +23,8 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
   }
 
   $scope.selectedMap = $scope.mapTypes[0];
+
+  $scope.loadingQueue = [];
 
   $scope.setSelectedMap = function(mapType) {
     $scope.selectedMap = mapType;
@@ -162,6 +164,14 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
     // getMapData();  
   }, true);
 
+  $scope.$watch('loadingQueue', function(newVal, oldVal) {
+    if($scope.loadingQueue.length !== 0) {
+      $rootScope.loading = true;
+    } else {
+      $rootScope.loading = false;
+    }
+  }, true);
+
   // $scope.$watch('countDisplayMaps()', function(newVal) {
   //   $location.search('numMaps', newVal);
   // });
@@ -200,11 +210,11 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $filter, $timeout
 
   function getMapData(mapObj) {
     if($scope.mapsToRender[0].source || $scope.mapsToRender[1].source) {
-      $scope.loading = true;
+      $rootScope.loading = true;
       var paramsObj = createParamsObj(mapObj);
       Resources.get(paramsObj).$promise.then(function(data) {
         // $scope.loadedMaps.push(mapObj.name);
-        $scope.loading = false;
+        $rootScope.loading = false;
         mapObj.data = data;
       });
     }

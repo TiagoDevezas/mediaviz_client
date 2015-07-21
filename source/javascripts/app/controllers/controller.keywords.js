@@ -1,4 +1,4 @@
-mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filter, Page, SourceList, SAPONews, SAPODataFormatter, Resources, DataFormatter) {
+mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $location, $filter, Page, SourceList, SAPONews, SAPODataFormatter, Resources, DataFormatter) {
 
   Page.setTitle('Palavras-chave');
 
@@ -25,6 +25,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
     $scope.sourceList = SourceList.getSAPONewsList();
     $scope.defaultSource = 'Todas';
     $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: $scope.defaultSource}, true)[0];
+    $scope.selectedIndex.value = 0;
   } else {
     SourceList.getDefaultList().then(function(data) {
       $scope.sourceList = data;
@@ -104,9 +105,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $location, $filt
 
   $scope.$watch('loadingQueue', function(newVal, oldVal) {
     if($scope.loadingQueue.length !== 0) {
-      $scope.loading = true;
+      $rootScope.loading = true;
     } else {
-      $scope.loading = false;
+      $rootScope.loading = false;
     }
   }, true);
 

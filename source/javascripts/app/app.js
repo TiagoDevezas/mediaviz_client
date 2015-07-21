@@ -50,6 +50,10 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 			templateUrl: 'partials/app/home.html',
 			controller: 'HomeCtrl'
 		}).
+		when('/SAPO', {
+			templateUrl: 'partials/app/sapo.html',
+			controller: 'SAPOCtrl'
+		}).
 		when('/SAPO/fontes', {
 			templateUrl: 'partials/app/sources.html',
 			controller: 'SourcesCtrl',
