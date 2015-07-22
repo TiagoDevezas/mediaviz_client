@@ -167,25 +167,10 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
       $rootScope.loading = true;
       if($scope.SAPOMode) {
         Resources.get({resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, map: $scope.selectedMap.type, listOnly: 'true'}).$promise.then(function(data) {
-          data.forEach(function(obj) {
-            var placeName = obj.name;
-            var query = mapObj.keyword ? tokenizeKeyword(placeName + " " + mapObj.keyword) : tokenizeKeyword(placeName);
-            var sourceName = mapObj.source.name !== 'Todas' ? mapObj.source.name : null;
-            var paramsObj = createSAPOParamsObj(query, sourceName);
-            // SAPONews.get(paramsObj).then(function(sapoData) {
-            //   if(sapoData) {
-            //     var sData = sapoData.data.facet_counts.facet_ranges.pubdate.counts;
-            //     var countSum = d3.sum(sData, function(el) {
-            //       return el[1];
-            //     });
-            //     obj['count'] = countSum;
-            //   } else {
-            //     obj['count'] = 0;
-            //   }
-            // });
+          getPlacesCounts(data, mapObj).then(function(data) {
+            $rootScope.loading = false;
+            mapObj.data = data;
           });
-          $rootScope.loading = false;
-          mapObj.data = data;
         });
       } else {
          var paramsObj = createParamsObj(mapObj);
@@ -196,6 +181,49 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
          });       
       }
     }
+  }
+
+  function removeParentheses(string) {
+    var cleanString = string;
+    if(cleanString) {
+      if(cleanString.indexOf('(') !== -1) {
+        cleanString = cleanString.replace('(', '');
+      }
+      if(cleanString.indexOf(')') !== -1) {
+        cleanString = cleanString.replace(')', '');
+      }
+    } else {
+      cleanString = null;
+    }
+    return cleanString;
+  }
+
+  function getPlacesCounts(data, mapObj) {
+    var deferred = $q.defer();
+    var count = 0;
+    var data = data;
+    data.forEach(function(obj) {
+      var placeName = removeParentheses(obj.name);
+      var query = mapObj.keyword ? tokenizeKeyword(placeName + " " + mapObj.keyword) : tokenizeKeyword(placeName);
+      var sourceName = mapObj.source.name !== 'Todas' ? mapObj.source.name : null;
+      var paramsObj = createSAPOParamsObj(query, sourceName);
+      SAPONews.get(paramsObj).then(function(sapoData) {
+        if(sapoData) {
+          var sData = sapoData.data.facet_counts.facet_ranges.pubdate.counts;
+          var countSum = d3.sum(sData, function(el) {
+            return el[1];
+          });
+          obj['count'] = countSum;
+        } else {
+          obj['count'] = 0;
+        }
+        count++;
+        if(count === data.length) {
+          deferred.resolve(data);
+        }
+      });
+    });
+    return deferred.promise;
   }
 
 });
