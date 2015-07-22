@@ -18,7 +18,7 @@
               </md-input-container>
             </form>
             <span flex></span>
-            <md-button ng-show="countDisplayMaps() === 1" class="md-raised md-primary" ng-click="appendMap()">Comparar</md-button>
+            <md-button ng-show="countDisplayMaps() === 1" class="md-raised md-{{theme}}-theme md-primary" ng-click="appendMap()">Comparar</md-button>
             <md-button class="md-icon-button" aria-label="Fechar" ng-click="closeMap(map.name)" ng-show="countDisplayMaps() > 1">
               <md-icon>close</md-icon>
             </md-button>
