@@ -1,13 +1,13 @@
 <div id="sources" layout-padding layout="column">
   
-  <md-whiteframe class="md-whiteframe-z1" layout-padding flex style="background-color: #FFF;">
+  <md-whiteframe class="md-whiteframe-z1" flex style="background-color: #FFF;">
     
     <div flex layout="row">
-      <div flex="80">
+      <div flex="85">
         <source-select-chips source-list="sourceList" selected="selectedSources"></source-select-chips>
       </div>
-      <div flex="20" layout-align="center">
-        <md-button class="md-raised md-warn" ng-click="clearChart()">Limpar</md-button>     
+      <div flex="15" layout="row" layout-align="center center">
+        <md-button class="md-raised md-warn" ng-click="clearChart()" ng-disabled="!selectedSources.length">Limpar</md-button>
       </div>
     </div>
 
@@ -36,7 +36,7 @@
 
   </md-whiteframe>
 
-  <md-content ng-show="selectedSources">
+  <md-content ng-show="selectedSources.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
     <div flex class="md-padding">
       <!-- <div c3-chart dataset="sapoData" type="area" options="timeChartOpts" xs="xsObj" watch-params="sources"></div> -->
       <div class="md-padding" c3-chart dataset="chartData" type="area" options="timeChartOpts" xs="xsObj"></div>

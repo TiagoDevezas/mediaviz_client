@@ -12,7 +12,8 @@
 </div>
 </md-toolbar>
 
-  <md-toolbar md-theme="{{theme}}" class="md-{{theme}}-theme" ng-if="SAPOToolbar">
+<div style="min-height: 112px;" ng-if="SAPOToolbar">
+  <md-toolbar md-theme="{{theme}}" class="md-{{theme}}-theme">
     <loading-flash></loading-flash>
     <div class="md-toolbar-tools" tabindex="-1">
       <h2><a href="#/SAPO">SAPO NewsViz</a></h2>
@@ -21,10 +22,12 @@
         <md-icon>help</md-icon>
       </md-button>
     </div>
-    <md-tabs class="md-{{theme}}-theme md-primary md-no-tab-content" md-selected="selectedIndex.value">
+    <md-tabs class="md-{{theme}}-theme md-primary md-no-tab-content" md-selected="selectedIndex.value" style="padding-left: 16px;">
       <md-tab label="palavras-chave"></md-tab>
       <md-tab label="fontes"></md-tab>
+      <md-tab label="newsmap"></md-tab>
     </md-tabs>
   </md-toolbar>
+</div>
 
 

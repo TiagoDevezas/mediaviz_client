@@ -25,7 +25,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     $scope.sourceList = SourceList.getSAPONewsList();
     $scope.defaultSource = 'Todas';
     $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: $scope.defaultSource}, true)[0];
-    $scope.selectedIndex.value = 0;
+    // $scope.selectedIndex.value = 0;
   } else {
     SourceList.getDefaultList().then(function(data) {
       $scope.sourceList = data;
@@ -35,6 +35,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   }
 
   $scope.clearChart = function() {
+    $scope.keywords.selected = [];
+    $scope.loadedKeywords = [];
+    $location.search('keywords', null);
   }
 
   $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
@@ -150,8 +153,12 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
             $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
             $scope.loadedKeywords.push(keywordName);
             xsObj[countId] = timeId;
-            var data = data.data.facet_counts.facet_ranges.pubdate.counts;
-            $scope.timeData = SAPODataFormatter.toColumns(data, timeId, countId, 'YYYY-MM-DD');
+            var data = data.data.facet_counts.facet_ranges.pubdate.counts
+            data = SAPODataFormatter.getDays(data);
+
+            $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+            $scope.countData = DataFormatter.countOnly(data, keyword, 'total_articles');
+            console.log($scope.countData);
 
             $scope.xsObj = xsObj;
           });
@@ -169,6 +176,18 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       }
     })
   }
+
+$scope.donuChart = {
+  data: {
+      type : 'donut',
+      onclick: function (d, i) { console.log("onclick", d, i); },
+      onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+      onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+  },
+  donut: {
+      title: "Artigos"
+  }
+}
 
 $scope.timeChartOpts = {
     size: {

@@ -25,6 +25,12 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
 
       var oneYear = moment(today).subtract(1, 'years').format(dateFormat);
 
+      var twoYears = moment(today).subtract(2, 'years').format(dateFormat);
+
+      var fiveYears = moment(today).subtract(5, 'years').format(dateFormat);
+
+      var tenYears = moment(today).subtract(10, 'years').format(dateFormat);
+
       scope.selectedPeriod;
 
       scope.customPeriodObj = {name: 'Personalizado', startDate: undefined, endDate: undefined}
@@ -35,8 +41,17 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
         {name: '1 mês', startDate: oneMonth, endDate: today},
         {name: '6 meses', startDate: sixMonths, endDate: today},
         {name: '1 ano', startDate: oneYear, endDate: today},
-        {name: 'Personalizado', startDate: undefined, endDate: undefined}
       ];
+
+      if(scope.SAPOMode) {
+        scope.allPeriods.push(
+          {name: '2 anos', startDate: twoYears, endDate: today},
+          {name: '5 anos', startDate: fiveYears, endDate: today},
+          {name: '10 anos', startDate: tenYears, endDate: today}
+        )
+      };
+
+      scope.allPeriods.push({name: 'Personalizado', startDate: undefined, endDate: undefined});
 
       scope.showDatePicker = function(optionName) {
         if(optionName.indexOf('Personalizado') !== -1) {

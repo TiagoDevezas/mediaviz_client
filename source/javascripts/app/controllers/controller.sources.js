@@ -9,7 +9,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 
   var timeFrame = 'DAY';
 
-  $scope.selectedIndex.value = 1;
+  // $scope.selectedIndex.value = 1;
 
   $scope.sourceList = SourceList.getSAPONewsList();
 
@@ -124,7 +124,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     $scope.urlParams.keyword = null;
     $scope.inputKeyword = null;
     $scope.loadedSources = [];
-    $location.search({});
+    $location.search('sources', null);
   }
 
 

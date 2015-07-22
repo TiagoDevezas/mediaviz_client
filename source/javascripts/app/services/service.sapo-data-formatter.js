@@ -14,6 +14,22 @@ mediavizServices.factory('SAPODataFormatter', function() {
       columns.push(dates, counts);
       return columns;
   },
+  factory.getDays = function(data) {
+    var dateAndCounts = data;
+    var daysAndCounts = dateAndCounts.map(function(el) {
+      return {time: moment(el[0], 'YYYY-MM-DD').format('YYYY-MM-DD'), articles: el[1], total_articles: 0 };
+    });
+
+    var totalArticles = d3.sum(data, function(el) {
+      return el[1];
+    });
+
+    daysAndCounts.forEach(function(obj) {
+      obj['total_articles'] = totalArticles;
+    });
+
+    return daysAndCounts;
+  }
   factory.getWeekDays = function(data) {
     var dateAndCounts = data;
     var weekDaysAndCounts = dateAndCounts.map(function(el) {

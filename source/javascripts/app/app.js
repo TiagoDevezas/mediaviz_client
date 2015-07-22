@@ -52,20 +52,28 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 		}).
 		when('/SAPO', {
 			templateUrl: 'partials/app/sapo.html',
-			controller: 'SAPOCtrl'
+			controller: 'SAPOCtrl',
+			caseInsensitiveMatch: true
 		}).
 		when('/SAPO/fontes', {
 			templateUrl: 'partials/app/sources.html',
 			controller: 'SourcesCtrl',
+			caseInsensitiveMatch: true,
 			reloadOnSearch: false
 		}).
 		when('/SAPO/cronica', {
-			templateUrl: 'partials/app/chronicle.html',
+			templateUrl: 'partials/app/keywords.html',
 			controller: 'KeywordsCtrl',
+			caseInsensitiveMatch: true,
+			reloadOnSearch: false
+		}).
+		when('/SAPO/newsmap', {
+			templateUrl: 'partials/app/newsmap.html',
+			controller: 'NewsMapCtrl',
 			reloadOnSearch: false
 		}).
 		when('/chronicle', {
-			templateUrl: 'partials/app/chronicle.html',
+			templateUrl: 'partials/app/keywords.html',
 			controller: 'KeywordsCtrl',
 			reloadOnSearch: false
 		}).

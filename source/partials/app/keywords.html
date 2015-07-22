@@ -2,26 +2,26 @@
 
 <md-whiteframe layout="column" class="md-whiteframe-z1" flex style="background-color: #FFF;">
 
-  <div layout="row" flex layout-align="start center">
-      <source-select class="md-padding" source-list="sourceList" selected-source="urlParams.source" style="padding-left: 0;"></source-select>
-      <type-select ng-show="!SAPOMode" style="font-size: 16px;"></type-select>
-      <date-select></date-select>
-      <cycle-select ng-show="SAPOMode"></cycle-select>
-      <date-picker></date-picker>
-  </div>
-
 	<div flex layout="row">
-		<div flex="80">
+		<div flex="85">
 			<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>			
 		</div>
-		<div flex="20" layout="row" layout-align="center">
-			<md-button class="md-raised md-warn">Limpar</md-button>			
+		<div flex="15" layout="row" layout-align="center center">
+			<md-button class="md-raised md-warn" ng-click="clearChart()" ng-disabled="!keywords.selected.length">Limpar</md-button>			
 		</div>
 	</div>
 
+  <div layout="row" flex layout-align="start center" ng-show="keywords.selected.length">
+    <source-select class="md-padding" source-list="sourceList" selected-source="urlParams.source" style="padding-left: 0;"></source-select>
+    <type-select ng-show="!SAPOMode" style="font-size: 16px;"></type-select>
+    <date-select></date-select>
+    <cycle-select ng-show="SAPOMode"></cycle-select>
+    <date-picker></date-picker>
+  </div>
+
 </md-whiteframe>
 
-	<md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
+	<md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px;">
 		<div flex class="md-padding">
 <!--       <div flex layout="row" layout-align="start center">
 			 <h2 class="md-title">Artigos publicados por dia <span ng-show="keywords.selected.length">com <span ng-if="keywords.selected.length === 1">o termo</span><span ng-if="keywords.selected.length > 1">os termos</span> <span class="md-subhead"><em>{{keywords.selected.join(', ')}}</em></span></span></h2>
@@ -55,11 +55,11 @@
 		</div> -->		
 	</md-content>
 
-  <md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
-    <div flex="20" class="md-padding">
-      <div c3-chart dataset="totalArticles" type="donut" options="barChartOpts" xs="xsObj" class="md-padding" watch-params="keywords"></div>
+<!--   <md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
+    <div flex="33" class="md-padding">
+      <div c3-chart dataset="countData" type="donut" options="donutChartOpts" class="md-padding"></div>
     </div>
-  </md-content>
+  </md-content> -->
 
 <!-- 	<div ng-show="keywords.selected.length">
     <md-content class="md-whiteframe-z1" style="margin: 20px 0 20px;">

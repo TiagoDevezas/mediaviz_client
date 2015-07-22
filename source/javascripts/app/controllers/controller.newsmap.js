@@ -1,14 +1,18 @@
-mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filter, $timeout, $location, $q, Resources, Page, SourceList) {
+mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filter, $timeout, $location, $q, Resources, Page, SourceList, SAPONews) {
 
   Page.setTitle('NewsMap');
 
-  // SourceList.getDefaultList().then(function(data) {
-  //   $scope.sourceList = data;
-  //   var defaultSource1 = $filter('filter')($scope.sourceList, {acronym: $scope.defaultSource1}, true);
-  //   var defaultSource2 = $filter('filter')($scope.sourceList, {acronym: $scope.defaultSource2}, true);
-  //   $scope.selectedSource1 = defaultSource1[0];
-  //   $scope.selectedSource2 = defaultSource2[0];
-  // })
+  if($location.path().indexOf('/SAPO') !== -1) {
+    $scope.SAPOMode = true;
+  }
+
+  if($scope.SAPOMode) {
+    $scope.sourceList = SourceList.getSAPONewsList();
+  } else {
+    SourceList.getDefaultList().then(function(data) {
+      $scope.sourceList = data;
+    });
+  }
 
   $scope.mapTypes = [
     {name: 'Mundo', type: 'world'}, 
@@ -41,30 +45,10 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
     return mapsDisplayed;
   }
 
-  SourceList.getDefaultList().then(function(data) {
-    $scope.sourceList = data;
-  });
-
   $scope.mapsToRender = [
     {name: 'map1', source: undefined, keyword: undefined, display: true, data: undefined },
     {name: 'map2', source: undefined, keyword: undefined, display: false, data: undefined }
   ];
-
-  // $scope.urlParams = {};
-
-  // $scope.$watch('mapsToRender', function(newVal) {
-  //   createUrlParams();
-  // }, true);
-
-  // function createUrlParams() {
-  //   $scope.urlParams = {
-  //     source1: $scope.mapsToRender[0].source,
-  //     source2: $scope.mapsToRender[1].source
-  //     // keyword1: $scope.mapsToRender[0].keyword,
-  //     // keyword2: $scope.mapsToRender[1].keyword
-  //     // numMaps: null
-  //   };
-  // }
 
 
 
@@ -112,39 +96,6 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
     if(until) {
       $scope.urlParams.until = until;
     }
-    // var numMaps = newVal['numMaps'];
-    // var source1 = newVal['source1'];
-    // var source2 = newVal['source2'];
-    // var keyword1 = newVal['keyword1'];
-    // var keyword2 = newVal['keyword2'];
-    // // if(numMaps && numMaps > 0 && numMaps < 3) {
-    // //   $scope.urlParams.numMaps = parseInt(numMaps);
-    // //   broadcastResize();
-    // // }
-    //   if(source1) {
-    //     $timeout(function() {
-    //       var sourceObj = $filter('filter')($scope.sourceList, {acronym: source1}, true)[0];
-    //       $scope.mapsToRender[0].source = sourceObj;
-    //     }, 500);
-    //     // $scope.urlParams.source1 = sourceObj;
-    //   }
-    //   if(source2) {
-    //     $timeout(function() {
-    //       var sourceObj = $filter('filter')($scope.sourceList, {acronym: source2}, true)[0];
-    //       $scope.mapsToRender[1].source = sourceObj;
-    //     }, 500);
-        
-    //     // $scope.urlParams.source2 = sourceObj;
-    //   }
-    // if(keyword1) {
-    //   $scope.mapsToRender[0].keyword = keyword1;
-    //   // $scope.urlParams.keyword1 = keyword1;
-    // }
-    // if(keyword2) {
-    //   $scope.mapsToRender[1].keyword = keyword2;
-    //   // $scope.urlParams.keyword2 = keyword2;
-    // }
-
   }, true)
 
   $scope.$watch('urlParams', function(urlParams) {
@@ -153,15 +104,7 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
       displayed.forEach(function(mapObj) {
         getMapData(mapObj);
       });
-    }
-    // for (var key in urlParams) {
-    //   if(urlParams[key] && urlParams[key].acronym) {
-    //     $location.search(key, urlParams[key].acronym);
-    //   } else if(urlParams[key]) {
-    //     $location.search(key, urlParams[key])
-    //   }
-    // }
-    // getMapData();  
+    } 
   }, true);
 
   $scope.$watch('loadingQueue', function(newVal, oldVal) {
@@ -175,14 +118,6 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
   // $scope.$watch('countDisplayMaps()', function(newVal) {
   //   $location.search('numMaps', newVal);
   // });
-
-  function createParamsObj(mapObj) {
-    if(mapObj.source.group) {
-      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, type: mapObj.source.type, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};    
-    } else {
-      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, source: mapObj.source.name, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};
-    }
-  }
 
   $scope.$watch(function() { return $scope.mapsToRender[0].source }, function(newVal) {
     if(newVal) {
@@ -206,36 +141,61 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
     }
   }, true);
 
-  // getMapData();
+  function tokenizeKeyword(keyword) {
+    if(keyword) {
+      var keyword = keyword.trim().split(' ').join(' AND ');
+      return keyword;
+    } else {
+      return undefined;
+    }
+  }
+
+  function createSAPOParamsObj(query, source) {
+    return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until,  q: query, source: source};
+  }
+
+  function createParamsObj(mapObj) {
+    if(mapObj.source.group) {
+      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, type: mapObj.source.type, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};    
+    } else {
+      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, source: mapObj.source.name, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};
+    }
+  }
 
   function getMapData(mapObj) {
     if($scope.mapsToRender[0].source || $scope.mapsToRender[1].source) {
       $rootScope.loading = true;
-      var paramsObj = createParamsObj(mapObj);
-      Resources.get(paramsObj).$promise.then(function(data) {
-        // $scope.loadedMaps.push(mapObj.name);
-        $rootScope.loading = false;
-        mapObj.data = data;
-      });
+      if($scope.SAPOMode) {
+        Resources.get({resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, map: $scope.selectedMap.type, listOnly: 'true'}).$promise.then(function(data) {
+          data.forEach(function(obj) {
+            var placeName = obj.name;
+            var query = mapObj.keyword ? tokenizeKeyword(placeName + " " + mapObj.keyword) : tokenizeKeyword(placeName);
+            var sourceName = mapObj.source.name !== 'Todas' ? mapObj.source.name : null;
+            var paramsObj = createSAPOParamsObj(query, sourceName);
+            // SAPONews.get(paramsObj).then(function(sapoData) {
+            //   if(sapoData) {
+            //     var sData = sapoData.data.facet_counts.facet_ranges.pubdate.counts;
+            //     var countSum = d3.sum(sData, function(el) {
+            //       return el[1];
+            //     });
+            //     obj['count'] = countSum;
+            //   } else {
+            //     obj['count'] = 0;
+            //   }
+            // });
+          });
+          $rootScope.loading = false;
+          mapObj.data = data;
+        });
+      } else {
+         var paramsObj = createParamsObj(mapObj);
+         Resources.get(paramsObj).$promise.then(function(data) {
+           // $scope.loadedMaps.push(mapObj.name);
+           $rootScope.loading = false;
+           mapObj.data = data;
+         });       
+      }
     }
   }
-
-  // function getMapData() {
-  //   var mapsDisplayed = $scope.mapsToRender.filter(function(obj) {
-  //     return obj.display;
-  //   });
-  //   $scope.loading = true;
-  //   mapsDisplayed.forEach(function(mapObj) {
-  //     if($scope.loadedMaps.indexOf(mapObj.name === -1)) {
-  //       var paramsObj = createParamsObj(mapObj);
-  //       Resources.get(paramsObj).$promise.then(function(data) {
-  //         $scope.loadedMaps.push(mapObj.name);
-  //         $scope.loading = false;
-  //         mapObj.data = data;
-  //         // console.log($scope.mapData);
-  //       });       
-  //     };
-  //   });
-  // };
 
 });

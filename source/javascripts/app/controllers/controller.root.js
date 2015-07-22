@@ -22,13 +22,14 @@ mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $locatio
   // };
 
   $scope.$watch('selectedIndex.value', function(newVal) {
-    if(newVal === 0) {
-      $scope.selectedIndex.value = 0;
+    if(newVal === 0 && $location.path().indexOf('/SAPO/cronica') === -1) {
       $location.url('/SAPO/cronica');
     }
-    if(newVal === 1) {
-      $scope.selectedIndex.value = 1;
+    if(newVal === 1 && $location.path().indexOf('/SAPO/fontes') === -1) {
       $location.url('/SAPO/fontes');
+    }
+    if(newVal === 2 && $location.path().indexOf('/SAPO/newsmap') === -1) {
+      $location.url('/SAPO/newsmap');
     }
   });
 
@@ -41,6 +42,15 @@ mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $locatio
       $scope.theme = 'default';
       $scope.defaultToolbar = true;
       $scope.SAPOToolbar = false;
+    }
+    if(newVal.indexOf('/SAPO/cronica') !== -1) {
+      $scope.selectedIndex.value = 0;
+    }
+    if(newVal.indexOf('/SAPO/fontes') !== -1) {
+      $scope.selectedIndex.value = 1;
+    }
+    if(newVal.indexOf('/SAPO/newsmap') !== -1) {
+      $scope.selectedIndex.value = 2;
     }
   });
 
