@@ -85,6 +85,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
       function addIdentifier() {
         scope.dataAttributeChartID = 'chartid' + Math.floor(Math.random() * 1000000001);
         angular.element(element).attr('id', scope.dataAttributeChartID);
+        angular.element(element).attr('class', 'chart-container');
         scope.options.bindto = '#' + scope.dataAttributeChartID;
       };
     }

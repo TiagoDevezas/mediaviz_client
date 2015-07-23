@@ -158,7 +158,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
             $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
             $scope.countData = DataFormatter.countOnly(data, keyword, 'total_articles');
-            console.log($scope.countData);
 
             $scope.xsObj = xsObj;
           });
@@ -178,15 +177,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   }
 
 $scope.donuChart = {
-  data: {
-      type : 'donut',
-      onclick: function (d, i) { console.log("onclick", d, i); },
-      onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-      onmouseout: function (d, i) { console.log("onmouseout", d, i); }
-  },
-  donut: {
-      title: "Artigos"
-  }
 }
 
 $scope.timeChartOpts = {

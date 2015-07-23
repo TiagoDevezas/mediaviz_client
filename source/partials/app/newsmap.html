@@ -29,57 +29,8 @@
             <div world-map data="map.data" id="{{map.name}}" ng-if="selectedMap.type === 'world'"></div>
             <div pt-map data="map.data" id="{{map.name}}" ng-if="selectedMap.type === 'portugal'"></div>
           </div>
-      </div>
-    </div>
-
-
-<!--     <div flex="{{100/urlParams.numMaps}}">
-      <div class="map-container md-whiteframe-z1">
-        <md-toolbar class="map-toolbar" style="background-color: #ddd; border-bottom: 1px solid #e1e1e1;">
-          <div class="md-toolbar-tools">
-            <source-select source-list="sourceList" selected-source="urlParams.source1"></source-select>
-            <form ng-submit="setQuery(keyword1, 'map1')" style="margin-left: 20px;">
-              <md-input-container>
-                <label>Palavra-chave</label>
-                <input ng-model="keyword1" id="search-input">
-              </md-input-container>
-            </form>
-            <span flex></span>
-            <md-button ng-show="urlParams.numMaps === 1" class="md-raised md-primary" ng-click="appendMap()">Comparar</md-button>
-          </div>
-        </md-toolbar>
-        <md-content>
-          <div style="text-align: center;">
-            <div world-map data="mapData"></div>
-          </div>
         </md-content>
       </div>
     </div>
-
-    <div ng-if="urlParams.numMaps === 2" flex="{{100/urlParams.numMaps}}">
-      <div class="map-container md-whiteframe-z1">
-        <md-toolbar class="map-toolbar" style="background-color: #ddd; border-bottom: 1px solid #e1e1e1;">
-          <div class="md-toolbar-tools">
-            <source-select source-list="sourceList" selected-source="urlParams.source2"></source-select>
-            <form ng-submit="setQuery(keyword2, 'map2')" style="margin-left: 20px;">
-              <md-input-container>
-                <label>Palavra-chave</label>
-                <input ng-model="keyword2" id="search-input">
-              </md-input-container>
-            </form>
-            <span flex></span>
-            <md-button class="md-icon-button" aria-label="Fechar" ng-click="closeMap()">
-              <md-icon>close</md-icon>
-            </md-button>
-          </div>
-        </md-toolbar>
-        <md-content>
-          <div style="text-align: center;">
-            <div world-map data="mapData"></div>
-          </div>
-        </md-content>
-      </div>
-    </div> -->
-
   </div>
 </div>

@@ -16,4 +16,5 @@
 //= require topojson/topojson
 //= require moment/min/moment.min
 //= require mdPickers/dist/mdPickers.min
+//= require canvg/dist/canvg.bundle.min
 //= require_tree ./app/
