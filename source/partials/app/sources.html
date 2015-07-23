@@ -38,6 +38,7 @@
 
   <md-content ng-show="selectedSources.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
     <div flex class="md-padding">
+      <download-bar></download-bar>
       <!-- <div c3-chart dataset="sapoData" type="area" options="timeChartOpts" xs="xsObj" watch-params="sources"></div> -->
       <div class="md-padding" c3-chart dataset="chartData" type="area" options="timeChartOpts" xs="xsObj"></div>
     </div>

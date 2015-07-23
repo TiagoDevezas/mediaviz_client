@@ -26,6 +26,7 @@
         </md-toolbar>
         <md-content>
           <div>
+          <download-bar></download-bar>
             <div world-map data="map.data" id="{{map.name}}" ng-if="selectedMap.type === 'world'"></div>
             <div pt-map data="map.data" id="{{map.name}}" ng-if="selectedMap.type === 'portugal'"></div>
           </div>

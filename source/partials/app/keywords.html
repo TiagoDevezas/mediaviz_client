@@ -23,15 +23,17 @@
 
 	<md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px;">
 		<div flex class="md-padding">
+      <download-bar></download-bar>
 			<div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
 		</div>
 	</md-content>
 
-  <md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
+<!--   <md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
     <div flex="33" class="md-padding">
+      <download-bar></download-bar>
       <div c3-chart dataset="countData" type="donut" options="donutChartOpts" class="md-padding"></div>
     </div>
-  </md-content>
+  </md-content> -->
 
 <!-- 	<div ng-show="keywords.selected.length">
     <md-content class="md-whiteframe-z1" style="margin: 20px 0 20px;">
