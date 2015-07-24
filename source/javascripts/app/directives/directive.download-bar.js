@@ -180,13 +180,13 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
             }
           };
 
+          d3.selectAll('svg *').each(changeToDisplay);
+
           // Inline apply all the CSS rules as inline
           for (i = 0; i < chartStyle.length; i++) {
             if (chartStyle[i].type === 1) {
               selector = chartStyle[i].selectorText;
               styles = makeStyleObject(chartStyle[i]);
-              d3.selectAll('svg *').each(changeToDisplay);
-              // console.log(angular.element(selector).not('.c3-chart path'), d3.selectAll(selector).select(':not(.c3-chart):not(path)'));
               angular.element(selector).not('.c3-chart path').not('.c3-legend-item-tile').css(styles);
             }
 
