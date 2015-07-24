@@ -19,7 +19,7 @@
 	opacity: 0.2;
 }
 .c3-axis .domain {
-	stroke: $light-gray;
+	stroke: #DDD;
 }
 .c3-axis-y .domain {
 	opacity: 0;
@@ -33,7 +33,7 @@
 }
 g rect.background {
 	visibility: visible !important;
-	fill: $light-gray;
+	fill: #DDD;
 	opacity: 0.2;
 }
 // g.resize {
@@ -41,11 +41,11 @@ g rect.background {
 // }
 g.resize rect {
 	visibility: visible !important;
-	fill: $dark-gray !important;
+	fill: #333 !important;
 }
 .tick {
  line {
-		stroke: $light-gray;
+		stroke: #DDD;
 	}
 }
 
