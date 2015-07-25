@@ -49,7 +49,7 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
         // Copy CSS styles to Canvas
         inlineAllStyles();
 
-        var canvasId = 'canvasid' + Math.floor(Math.random() * 1000000001);
+        var canvasId = 'id' + Math.floor(Math.random() * 1000000001);
     		
     		// Append canvas to body
         d3.select('body').append('canvas')
@@ -139,7 +139,9 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
          // not needed but good so it validates
          source = source.replace(/<defs xmlns="http:\/\/www.w3.org\/1999\/xhtml">/gi, '<defs>');
 
-        var filename = 'mediaVizChart';
+         var svgId = 'id' + Math.floor(Math.random() * 1000000001);
+
+         var filename = 'mediaVizChart_' + svgId;
 
         d3.select('body')
           .append('a')
@@ -175,8 +177,8 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
         if (chartStyle !== null && chartStyle !== undefined) {
           // SVG doesn't use CSS visibility and opacity is an attribute, not a style property. Change hidden stuff to "display: none"
           var changeToDisplay = function(){
-            if (angular.element(this).css('visibility') === 'hidden' || angular.element(this).css('opacity') === 0) {
-              angular.element(this).css('display', 'none');
+            if (d3.select(this).style('visibility') === 'hidden' || d3.select(this).style('opacity') === 0) {
+              d3.select(this).style('display', 'none');
             }
           };
 
@@ -187,7 +189,8 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
             if (chartStyle[i].type === 1) {
               selector = chartStyle[i].selectorText;
               styles = makeStyleObject(chartStyle[i]);
-              angular.element(selector).not('.c3-chart path').not('.c3-legend-item-tile').css(styles);
+              d3.selectAll(selector).style(styles);
+              // angular.element(selector).not('.c3-chart path').not('.c3-legend-item-tile').css(styles);
             }
 
             /* C3 puts line colour as a style attribute, which gets overridden
@@ -198,11 +201,11 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
             */
 
             d3.selectAll('.c3-chart path').each(function() {
-              if(angular.element(this).css('fill') === 'none') {
-                angular.element(this).attr('fill', 'none');
+              if(d3.select(this).style('fill') === 'none') {
+                d3.select(this).attr('fill', 'none');
               } else {
-                var fill = angular.element(this).css('fill');
-                angular.element(this).css('fill', fill);
+                var fill = d3.select(this).style('fill');
+                d3.select(this).style('fill', fill);
               }
             });
 
