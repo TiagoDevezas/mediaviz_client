@@ -1,5 +1,6 @@
 mediavizServices.factory('SourceList', ['$http',
 	function($http) {
+		var baseUrl = 'http://irlab.fe.up.pt/p/mediaviz/panorama/api/';
 		var callback = '?callback=JSON_CALLBACK';
 		var factory = {};
 		factory.getDefaultList = function() {

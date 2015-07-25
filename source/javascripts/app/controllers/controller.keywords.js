@@ -1,4 +1,4 @@
-mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $location, $filter, Page, SourceList, SAPONews, SAPODataFormatter, Resources, DataFormatter) {
+mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $location, $timeout, $filter, Page, SourceList, SAPONews, SAPODataFormatter, Resources, DataFormatter) {
 
   Page.setTitle('Palavras-chave');
 
@@ -49,7 +49,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     var dataType = $location.search()['data'];
     var keywordArray = [];
     if(source) {
-      $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: source}, true)[0];
+      $timeout(function() {
+        $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: source}, true)[0];
+      }, 500);
     }
     if(keywords && keywords.length) {
       if(keywords.split(',').length === 1) {

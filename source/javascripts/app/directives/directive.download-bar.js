@@ -1,4 +1,4 @@
-mediavizDirectives.directive('downloadBar', function($window, $document, $timeout) {
+mediavizDirectives.directive('downloadBar', function($window) {
 	return {
 		restrict: 'AE',
 		template: 
@@ -10,13 +10,13 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
       	'</md-button>' +
       	'<md-menu-content>' +
       		'<md-menu-item ng-repeat="opt in downloadOptions">' +
-      			'<md-button ng-click="announceClick(opt.format)">{{opt.label}}</md-button>' +
+      			'<md-button ng-click="itemClicked(opt.format)">{{opt.label}}</md-button>' +
       		'</md-menu-item>' +
     		'</md-menu-content>' +
       '</md-menu>' +
   	'</div>',
     link: function postLink(scope, element, attrs) {
-    	var d3 = $window.d3
+    	var d3 = $window.d3;
 
     	// var originatorEv;
 	    // scope.openMenu = function($mdOpenMenu, ev) {
@@ -29,7 +29,7 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
     		{label: 'Guardar como SVG', format: 'SVG'}
     	];
 
-    	scope.announceClick = function(format) {
+    	scope.itemClicked = function(format) {
     		if(format === 'PNG') {
     			createChartPNG();
     		}
