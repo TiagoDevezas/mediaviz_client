@@ -18,12 +18,6 @@ mediavizDirectives.directive('downloadBar', function($window) {
     link: function postLink(scope, element, attrs) {
     	var d3 = $window.d3;
 
-    	// var originatorEv;
-	    // scope.openMenu = function($mdOpenMenu, ev) {
-	    //   originatorEv = ev;
-	    //   $mdOpenMenu(ev);
-	    // };
-
     	scope.downloadOptions = [
     		{label: 'Guardar como PNG', format: 'PNG'},
     		{label: 'Guardar como SVG', format: 'SVG'}
