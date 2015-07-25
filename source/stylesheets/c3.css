@@ -3,9 +3,9 @@
   font-size: 12px;
   font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;}
 
-/*.c3 path, .c3 line {
+.c3 path, .c3 line {
   fill: none;
-  stroke: #000; }*/
+  stroke: #000; }
 
 .c3 text {
   -webkit-user-select: none;
@@ -184,9 +184,6 @@ path.domain {
   stroke: #DDD;
 }
 
-.c3-axis .domain {
-  stroke: #DDD;
-}
 .c3-axis-y .domain {
   opacity: 0;
 }
@@ -210,11 +207,6 @@ g.resize rect {
 g.tick line {
   stroke: #DDD !important;
 }
-
-/*text {
-  font-size: 12px;
-  font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;
-}*/
 
 .c3-axis-y.tick line {
   opacity: 0;

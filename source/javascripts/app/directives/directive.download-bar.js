@@ -182,6 +182,13 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
             }
           };
 
+          var applyStyles = function() {
+            var self = d3.select(this);
+            if(self[0][0].nodeName !== 'path' || self[0][0].className.baseVal.indexOf('domain') !== -1) {
+              self.style(styles);
+            }
+          }
+
           d3.selectAll('svg *').each(changeToDisplay);
 
           // Inline apply all the CSS rules as inline
@@ -189,7 +196,7 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
             if (chartStyle[i].type === 1) {
               selector = chartStyle[i].selectorText;
               styles = makeStyleObject(chartStyle[i]);
-              d3.selectAll(selector).style(styles);
+              d3.selectAll(selector).each(applyStyles);
               // angular.element(selector).not('.c3-chart path').not('.c3-legend-item-tile').css(styles);
             }
 
@@ -208,28 +215,6 @@ mediavizDirectives.directive('downloadBar', function($window, $document, $timeou
                 d3.select(this).style('fill', fill);
               }
             });
-
-            // d3.selectAll('.c3-chart path').forEach(function(el) {
-            //   if(angular.element(el).css('fill') !== 'none') {
-            //     var fill = angular.element(el).attr('fill');
-            //     console.log(fill);
-            //     angular.element(el).css('fill')
-            //   }
-            // });
-
-            // angular.element('.c3-chart path')
-            //   .filter(function(){
-            //     return angular.element(this).css('fill') === 'none';
-            //   })
-            //   .attr('fill', 'none');
-
-            // angular.element('.c3-chart path')
-            //   .filter(function(){
-            //     return angular.element(this).css('fill') !== 'none';
-            //   })
-            //   .attr('fill', function(){
-            //     return angular.element(this).css('fill');
-            //   });
           }
         }
       };
