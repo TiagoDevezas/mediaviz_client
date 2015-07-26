@@ -9086,7 +9086,8 @@ function MenuProvider($$interimElementProvider) {
       // Return the promise for when our menu is done animating in
       return animator
           .waitTransitionEnd(element, {timeout: 370})
-          .then( function(response) {
+          //.then(function (response) {
+          .finally( function(response) {
             opts.cleanupInteraction = activateInteraction();
             return response;
           });

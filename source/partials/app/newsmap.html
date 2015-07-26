@@ -1,9 +1,12 @@
 <div id="newsmap" layout="column">
   <div layout="row" layout-align="start center" style="padding: 0 0 0 16px;">
-    <md-select ng-model="selectedMap" ng-change="setSelectedMap(selectedMap)" style="margin: 0;">
-      <md-option ng-repeat="mapType in mapTypes" ng-value="mapType">{{mapType.name}}</md-option>
-    </md-select> 
-    <date-select></date-select>
+    <md-input-container style="margin: 0 10px;">
+      <label>Mapa</label>
+      <md-select ng-model="selectedMap" ng-change="setSelectedMap(selectedMap)">
+        <md-option ng-repeat="mapType in mapTypes" ng-value="mapType">{{mapType.name}}</md-option>
+      </md-select> 
+    </md-input-container>
+    <date-select style="margin: 0 10px;"></date-select>
     <date-picker></date-picker>
   </div>
   <div layout="column" layout-gt-md="row" style="margin-top: -10px;">

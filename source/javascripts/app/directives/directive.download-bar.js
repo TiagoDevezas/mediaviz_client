@@ -18,6 +18,8 @@ mediavizDirectives.directive('downloadBar', function($window) {
     link: function postLink(scope, element, attrs) {
     	var d3 = $window.d3;
 
+      var styles;
+
     	scope.downloadOptions = [
     		{label: 'Guardar como PNG', format: 'PNG'},
     		{label: 'Guardar como SVG', format: 'SVG'}
@@ -57,25 +59,30 @@ mediavizDirectives.directive('downloadBar', function($window) {
 
         var svg = svg[0][0];
 
-        var outerSvg = svg.outerHTML;
+       var serializer = new XMLSerializer();
+        svg = serializer.serializeToString(svg);
 
-        canvasContext.drawSvg(outerSvg, 0, 0);
+        canvasContext.drawSvg(svg, 0, 0);
 
         var filename = 'mediaVizChart_' + canvasId;
 
+        var dataUrl = canvas.toDataURL('png');
+
         d3.select('body')
         	.append('a')
-        	.attr('id', canvasId)
-        	.attr('href', canvas.toDataURL('png'))
+        	.attr('class', 'file-download')
+        	.attr('href', dataUrl)
           .attr('download', function() { return filename + '.png';})
           .style('display', 'none');
 
-        var downloadLink = d3.select('a#' + canvasId);
+        var downloadLink = d3.select('a.file-download');
 
         var e = document.createEvent('UIEvents');
 				e.initUIEvent('click', true, true, $window, 1);
 				downloadLink.node().dispatchEvent(e);
 				downloadLink.remove();
+
+        d3.select('#' + canvasId).remove();
     		
     	}
 
@@ -137,10 +144,12 @@ mediavizDirectives.directive('downloadBar', function($window) {
 
          var filename = 'mediaVizChart_' + svgId;
 
+         var dataUrl = 'data:text/svg,'+ source;
+
         d3.select('body')
           .append('a')
           .attr('class', 'svg-download-link')
-          .attr('href', 'data:text/svg,'+ source)
+          .attr('href', dataUrl)
           .attr('download', function() { return filename + '.svg';})
           .style('display', 'none');
 

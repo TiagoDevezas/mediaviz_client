@@ -3,12 +3,12 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
     restrict: 'AE',
     scope: '=',
     template: 
-      // '<md-input-container>' + 
-        // '<label>Intervalo</label>' +
-        '<md-select ng-model="selectedPeriod" style="margin: 10px;">' +
+      '<md-input-container>' + 
+        '<label>Intervalo</label>' +
+        '<md-select ng-model="selectedPeriod">' +
           '<md-option ng-repeat="period in allPeriods" value="{{period.name}}" ng-click="setPeriod(period.name)">{{period.name}}</md-option>' +
-        '</md-select>', // +
-      // '</md-input-container>',
+        '</md-select>' +
+      '</md-input-container>',
     link: function(scope, elem, attrs) {
 
       var dateFormat = "YYYY-MM-DD";

@@ -1,6 +1,6 @@
-<div id="sources" layout-padding layout="column">
+<div id="sources" layout-padding>
   
-  <md-whiteframe class="md-whiteframe-z1" flex style="background-color: #FFF;">
+  <md-content class="md-whiteframe-z1 md-padding">
     
     <div flex layout="row">
       <div flex="85">
@@ -28,15 +28,15 @@
           <md-icon md-svg-icon="images/icons/ic_clear_black_24px.svg"></md-icon>
         </md-button> -->
       </div>
-      <date-select></date-select>
-      <cycle-select></cycle-select>
-      <date-picker></date-picker>
+      <date-select style="margin: 0 10px;"></date-select>
+      <cycle-select style="margin: 0 10px;"></cycle-select>
+      <date-picker style="margin: 0 10px;"></date-picker>
       <!-- <md-button class="md-raised md-primary" ng-click="showPickerDialog($event)">Data</md-button> -->
     </div>
 
-  </md-whiteframe>
+  </md-content>
 
-  <md-content ng-show="selectedSources.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
+  <md-content ng-show="selectedSources.length" class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
     <div flex class="md-padding">
       <download-bar></download-bar>
       <!-- <div c3-chart dataset="sapoData" type="area" options="timeChartOpts" xs="xsObj" watch-params="sources"></div> -->
