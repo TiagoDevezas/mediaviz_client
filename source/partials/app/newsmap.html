@@ -4,6 +4,7 @@
       <md-option ng-repeat="mapType in mapTypes" ng-value="mapType">{{mapType.name}}</md-option>
     </md-select> 
     <date-select></date-select>
+    <date-picker></date-picker>
   </div>
   <div layout="column" layout-gt-md="row" style="margin-top: -10px;">
     <div flex ng-repeat="map in mapsToRender" ng-if="map.display">

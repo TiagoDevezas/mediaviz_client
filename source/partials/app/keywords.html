@@ -21,12 +21,10 @@
 
 </md-whiteframe>
 
-	<md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px;">
-		<div flex class="md-padding">
-      <download-bar></download-bar>
-			<div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" class="md-padding"></div>
-		</div>
-	</md-content>
+	<md-whiteframe ng-show="keywords.selected.length" layout="column" flex class="md-whiteframe-z1" style="margin-top: 20px; background-color: #FFF;">
+    <download-bar></download-bar>
+		<div layout="row" c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj"></div>
+	</md-whiteframe>
 
 <!--   <md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
     <div flex="33" class="md-padding">

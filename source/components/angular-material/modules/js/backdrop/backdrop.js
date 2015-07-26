@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.10.1-rc3-master-d270684
+ * v0.10.1-rc3
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -29,7 +29,6 @@
 angular
   .module('material.components.backdrop', ['material.core'])
   .directive('mdBackdrop', ["$mdTheming", "$animate", "$rootElement", "$window", "$log", "$$rAF", function BackdropDirective($mdTheming, $animate, $rootElement, $window, $log, $$rAF) {
-    var ERROR_CSS_POSITION = "<md-backdrop> may not work properly in a scrolled, static-positioned parent container.";
 
     return {
         restrict: 'E',
@@ -49,7 +48,8 @@ angular
           var position = $window.getComputedStyle(parent).getPropertyValue('position');
           if (position == 'static') {
             // backdrop uses position:absolute and will not work properly with parent position:static (default)
-            $log.warn( ERROR_CSS_POSITION );
+            var positionError = "<md-backdrop> may not work properly in a scrolled, static-positioned parent container.";
+            $log.warn( positionError );
           }
         }
 

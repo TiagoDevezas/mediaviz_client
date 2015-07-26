@@ -4,6 +4,7 @@ mediavizDirectives.directive('datePicker', function($location, $mdDatePicker) {
     scope: '=',
     link: function(scope, elem, attrs) {
       scope.$on('OpenPicker', function(ev) {
+        console.log('picker called')
         var sinceDate = moment($location.search()['since']).toDate();
         var untilDate = moment($location.search()['until']).toDate();
         var until, since;

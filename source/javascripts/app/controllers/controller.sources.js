@@ -2,6 +2,10 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 
   Page.setTitle('SAPO Fontes');
 
+  if($location.path().indexOf('/SAPO') !== -1) {
+    $scope.SAPOMode = true;
+  }
+
   $scope.selectedSources = [];
   $scope.loadedSources = [];
 
@@ -156,7 +160,8 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
           $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
           xsObj[countId] = timeId;
           var data = data.data.facet_counts.facet_ranges.pubdate.counts;
-          $scope.dayData = SAPODataFormatter.toColumns(data, timeId, countId, 'YYYY-MM-DD');
+          dayData = SAPODataFormatter.getDays(data);
+          $scope.dayData = DataFormatter.inColumns(dayData, sourceName, 'time', 'articles');
 
           var weekData = SAPODataFormatter.getWeekDays(data);
           $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'percent_of_source');

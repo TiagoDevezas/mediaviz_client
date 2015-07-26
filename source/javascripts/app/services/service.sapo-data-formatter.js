@@ -1,19 +1,19 @@
 mediavizServices.factory('SAPODataFormatter', function() {
   var factory = {};
-  factory.toColumns = function(data, timeId, countId, dateFormat) {
-      var columns = [];
-      var dateAndCounts = data;
-      var dates = dateAndCounts.map(function(el) {
-        return dateFormat ? moment(el[0]).format(dateFormat) : el[0];
-      });
-      dates.unshift(timeId);
-      var counts = dateAndCounts.map(function(el) {
-        return el[1];
-      });
-      counts.unshift(countId);
-      columns.push(dates, counts);
-      return columns;
-  },
+  // factory.toColumns = function(data, timeId, countId, dateFormat) {
+  //     var columns = [];
+  //     var dateAndCounts = data;
+  //     var dates = dateAndCounts.map(function(el) {
+  //       return dateFormat ? moment(el[0]).format(dateFormat) : el[0];
+  //     });
+  //     dates.unshift(timeId);
+  //     var counts = dateAndCounts.map(function(el) {
+  //       return el[1];
+  //     });
+  //     counts.unshift(countId);
+  //     columns.push(dates, counts);
+  //     return columns;
+  // },
   factory.getDays = function(data) {
     var dateAndCounts = data;
     var daysAndCounts = dateAndCounts.map(function(el) {

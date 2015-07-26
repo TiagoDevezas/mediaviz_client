@@ -5,8 +5,8 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
     template: 
       // '<md-input-container>' + 
         // '<label>Intervalo</label>' +
-        '<md-select ng-model="selectedPeriod" ng-change="setPeriod(selectedPeriod)" style="margin: 10px;">' +
-          '<md-option ng-repeat="period in allPeriods" value="{{period.name}}" ng-click="showDatePicker(period.name)">{{period.name}}</md-option>' +
+        '<md-select ng-model="selectedPeriod" style="margin: 10px;">' +
+          '<md-option ng-repeat="period in allPeriods" value="{{period.name}}" ng-click="setPeriod(period.name)">{{period.name}}</md-option>' +
         '</md-select>', // +
       // '</md-input-container>',
     link: function(scope, elem, attrs) {
@@ -33,40 +33,53 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
 
       scope.selectedPeriod;
 
-      scope.customPeriodObj = {name: 'Personalizado', startDate: undefined, endDate: undefined}
+      scope.allPeriods;
 
-      scope.allPeriods = [
-        {name: '1 dia', startDate: oneDay, endDate: today},
-        {name: '7 dias', startDate: sevenDays, endDate: today},
-        {name: '1 mês', startDate: oneMonth, endDate: today},
-        {name: '6 meses', startDate: sixMonths, endDate: today},
-        {name: '1 ano', startDate: oneYear, endDate: today},
-      ];
+      // scope.customPeriodObj = {name: 'Personalizado', startDate: undefined, endDate: undefined}
 
       if(scope.SAPOMode) {
-        scope.allPeriods.push(
+        scope.allPeriods = [
+          {name: '1 dia', startDate: oneDay, endDate: today},
+          {name: '7 dias', startDate: sevenDays, endDate: today},
+          {name: '1 mês', startDate: oneMonth, endDate: today},
+          {name: '6 meses', startDate: sixMonths, endDate: today},
+          {name: '1 ano', startDate: oneYear, endDate: today},
           {name: '2 anos', startDate: twoYears, endDate: today},
           {name: '5 anos', startDate: fiveYears, endDate: today},
-          {name: '10 anos', startDate: tenYears, endDate: today}
-        )
-      };
+          {name: '10 anos', startDate: tenYears, endDate: today},
+          {name: 'Personalizado', startDate: undefined, endDate: undefined}
+        ]
+      } else {
+        scope.allPeriods = [
+          {name: '1 dia', startDate: oneDay, endDate: today},
+          {name: '7 dias', startDate: sevenDays, endDate: today},
+          {name: '1 mês', startDate: oneMonth, endDate: today},
+          {name: '6 meses', startDate: sixMonths, endDate: today},
+          {name: '1 ano', startDate: oneYear, endDate: today},
+          {name: 'Personalizado', startDate: undefined, endDate: undefined}
+        ];
+      }
 
-      scope.allPeriods.push({name: 'Personalizado', startDate: undefined, endDate: undefined});
-
-      scope.showDatePicker = function(optionName) {
+/*      scope.showDatePicker = function(optionName) {
+        console.log(optionName)
         if(optionName.indexOf('Personalizado') !== -1) {
           scope.$broadcast('OpenPicker');
         }
-      }
+      }*/
 
       scope.setPeriod = function(periodName) {
-        var periodObj = $filter('filter')(scope.allPeriods, {name: periodName}, true)[0] || null;
-        $location.search('since', periodObj.startDate);
-        $location.search('until', periodObj.endDate);
+        console.log(periodName, scope.allPeriods);
+        var periodObj = $filter('filter')(scope.allPeriods, {name: periodName}, true)[0];
+        if(periodObj.name.indexOf('Personalizado') === -1) {
+          $location.search('since', periodObj.startDate);
+          $location.search('until', periodObj.endDate);
+        } else {
+           scope.$broadcast('OpenPicker');
+        }
       }
 
       scope.$watch('urlParams', function(newVal) {
-        var periodObj = $filter('filter')(scope.allPeriods, {startDate: newVal.since, endDate: newVal.until}, true)[0] || null;
+        var periodObj = $filter('filter')(scope.allPeriods, {startDate: newVal.since, endDate: newVal.until}, true)[0];
         var customPeriodObj = scope.allPeriods.filter(function(el) {
           if(el.name.indexOf('Personalizado') !== -1) {
             return el;
