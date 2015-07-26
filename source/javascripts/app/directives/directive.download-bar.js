@@ -18,8 +18,6 @@ mediavizDirectives.directive('downloadBar', function($window) {
     link: function postLink(scope, element, attrs) {
     	var d3 = $window.d3;
 
-      var styles;
-
     	scope.downloadOptions = [
     		{label: 'Guardar como PNG', format: 'PNG'},
     		{label: 'Guardar como SVG', format: 'SVG'}
@@ -38,6 +36,8 @@ mediavizDirectives.directive('downloadBar', function($window) {
     		var parentNode = d3.select(element[0].parentNode);
     		var svg = parentNode.select('svg');
 
+        var containerId = parentNode.select('.chart-container').attr('id');
+
     		// Rescale SVG and remove defs
     		svg
           .select('defs').remove();
@@ -45,24 +45,28 @@ mediavizDirectives.directive('downloadBar', function($window) {
         // Copy CSS styles to Canvas
         inlineAllStyles();
 
+        var svgString = document.querySelector('#' + containerId + ' svg').outerHTML;
+
+        svgString = svgString.trim();
+
         var canvasId = 'id' + Math.floor(Math.random() * 1000000001);
     		
     		// Append canvas to body
         d3.select('body').append('canvas')
-          .attr('width', function() { return parseInt(svg.style("width")) })
-          .attr('height', function() { return parseInt(svg.style("height")) })
+          .attr('width', function() { return parseInt(svg.attr("width")) })
+          .attr('height', function() { return parseInt(svg.attr("height")) })
           .attr('id', canvasId)
           .style('display', 'none');
 
-        var canvas = angular.element(document.querySelector('#' + canvasId)).empty()[0];
+        var canvas = document.querySelector('#' + canvasId);
         var canvasContext = canvas.getContext('2d');
 
-        var svg = svg[0][0];
+        // var svg = svg[0][0];
 
-       var serializer = new XMLSerializer();
-        svg = serializer.serializeToString(svg);
+       // var serializer = new XMLSerializer();
+       //  svg = serializer.serializeToString(svg);
 
-        canvasContext.drawSvg(svg, 0, 0);
+        canvasContext.drawSvg(svgString,0,0);
 
         var filename = 'mediaVizChart_' + canvasId;
 
@@ -163,16 +167,15 @@ mediavizDirectives.directive('downloadBar', function($window) {
       };
 
       function inlineAllStyles() {
-        var chartStyle = {}, 
-            selector;
+        var chartStyle, selector;
 
         // Get rules from c3.css
         for (var i = 0; i <= document.styleSheets.length - 1; i++) {
           if (document.styleSheets[i].href && document.styleSheets[i].href.indexOf('c3.css') !== -1) {
             if (document.styleSheets[i].rules !== undefined) {
-              chartStyle = angular.extend(chartStyle, document.styleSheets[i].rules);
+              chartStyle = document.styleSheets[i].rules;
             } else {
-              chartStyle = angular.extend(chartStyle, document.styleSheets[i].cssRules);
+              chartStyle = document.styleSheets[i].cssRules;
             }
           }
         }
@@ -231,7 +234,12 @@ mediavizDirectives.directive('downloadBar', function($window) {
 
         for (s = 0; s < styleDec.length; s++) {
           output[styleDec[s]] = styleDec[styleDec[s]];
+          if(styleDec[styleDec[s]] === undefined) {
+            //firefox being ffoxy
+            output[styleDec[s]] = styleDec.getPropertyValue(styleDec[s])
+          }
         }
+
         return output;
       };
 
