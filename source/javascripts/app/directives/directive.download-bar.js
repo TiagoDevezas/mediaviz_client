@@ -74,19 +74,23 @@ mediavizDirectives.directive('downloadBar', function($window) {
 
         d3.select('body')
         	.append('a')
-        	.attr('class', 'file-download')
+        	.attr('id', 'png-download')
         	.attr('href', dataUrl)
           .attr('download', function() { return filename + '.png';})
           .style('display', 'none');
 
-        var downloadLink = d3.select('a.file-download');
+        var downloadLink = document.querySelector('a#png-download');
+        downloadLink.click();
+        downloadLink.remove();
 
-        var e = document.createEvent('UIEvents');
-				e.initUIEvent('click', true, true, $window, 1);
-				downloadLink.node().dispatchEvent(e);
-				downloadLink.remove();
+    //     var downloadLink = d3.select('a.file-download');
 
-        d3.select('#' + canvasId).remove();
+    //     var e = document.createEvent('UIEvents');
+				// e.initUIEvent('click', true, true, $window, 1);
+				// downloadLink.node().dispatchEvent(e);
+				// downloadLink.remove();
+
+        // d3.select('#' + canvasId).remove();
     		
     	}
 
@@ -152,17 +156,21 @@ mediavizDirectives.directive('downloadBar', function($window) {
 
         d3.select('body')
           .append('a')
-          .attr('class', 'svg-download-link')
+          .attr('id', 'svg-download')
           .attr('href', dataUrl)
           .attr('download', function() { return filename + '.svg';})
           .style('display', 'none');
 
-        var downloadLink = d3.select('a.svg-download-link');
-
-        var e = document.createEvent('UIEvents');
-        e.initUIEvent('click', true, true, $window, 1);
-        downloadLink.node().dispatchEvent(e);
+        var downloadLink = document.querySelector('a#svg-download');
+        downloadLink.click();
         downloadLink.remove();
+
+        // var downloadLink = d3.select('a.svg-download-link');
+
+        // var e = document.createEvent('UIEvents');
+        // e.initUIEvent('click', true, true, $window, 1);
+        // downloadLink.node().dispatchEvent(e);
+        // downloadLink.remove();
              
       };
 

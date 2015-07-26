@@ -175,8 +175,8 @@
 }
 
 .c3-ygrid {
-  stroke-dasharray: 0;
-  opacity: 0.2;
+  stroke-dasharray: none;
+  opacity: 0.3;
 }
 
 path.domain {
