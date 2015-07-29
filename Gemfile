@@ -10,6 +10,11 @@ gem "middleman", "~>3.3.7"
 
 # gem "neat"
 
+
+# Auto inject angularjs annotation
+gem 'middleman-ngannotate'
+
+# Faster js minification
 gem 'therubyracer'
 
 # Live-reloading plugin
