@@ -3,7 +3,7 @@
 
 	<div class="home-search-bar">
 		<ui-select ng-model="selectedSource.selected" on-select="loadSourceData($item)" style="min-width: 300px">
-		<ui-select-match placeholder="Escolher/pesquisar fontes...">{{$select.selected.name}}</ui-select-match>
+		<ui-select-match placeholder="Select sources...">{{$select.selected.name}}</ui-select-match>
 		<ui-select-choices repeat="source in sourceList | filter: $select.search" group-by="groupSourcesByType">
 		{{ source.name }}
 		<div ng-bind-html="trustAsHtml((source.name | highlight: $select.search))"></div>
@@ -13,9 +13,9 @@
 
 <div class="keyword-select">
 	<form ng-submit="redrawMap()" style="margin-top: 1em; width: 50%; display: inline-block;">
-		<input type="text" placeholder="Introduzir palavra-chave" ng-model="keyword.selected">
+		<input type="text" placeholder="Insert keyword" ng-model="keyword.selected">
 	</form>
-	<button ng-click="removeKeyword()" style="">Limpar</button>
+	<!-- <button ng-click="removeKeyword()" style="">Limpar</button> -->
 </div>
 
 <div class="search-tools">
@@ -27,12 +27,12 @@
 <div class="pickadate-selector" ng-show="pickadayOpen">
 	<div class="pickadate-input" pickadate ng-model="dateSince" max-date="today"></div>
 	<div class="pickadate-input" pickadate ng-model="dateUntil" max-date="today"></div>
-	<button ng-click="setDateInterval()">Submeter</button>
+	<button ng-click="setDateInterval()">Submit</button>
 </div>
 
 <select id="map-select" ng-model="selectedMap" ng-options="item.name for item in mapTypes" ng-change="changeMap()"></select>
 
-<loading-flash>A carregar...</loading-flash>
+<loading-flash>Loading...</loading-flash>
 
 	<div world-map data="mapData" style="height: 800px;" ng-show="selectedMap.type === 'world'"></div>
 

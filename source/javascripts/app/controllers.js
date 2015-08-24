@@ -42,7 +42,7 @@ mediavizControllers.controller('RootCtrl', function($scope, SourceList) {
 
 mediavizControllers.controller('HomeCtrl', function($scope, $location, Resources, Page, $timeout) {
 
-  Page.setTitle('Início');
+  Page.setTitle('Home');
 
   $scope.selectedSources = {};
   $scope.selectedSources.selected = [];
@@ -1302,7 +1302,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   //   {type: 'donut', name: 'Donut'}
   // ];
 
-  $scope.defaultChartType = {type: 'area', name: 'Área 3'};
+  $scope.defaultChartType = {type: 'area', name: 'Area 3'};
 
   // $scope.chartType = {
   //   selected: {type: 'line', name: 'Linhas'}
@@ -1406,7 +1406,7 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
   }
 
   function setFlatAreaStyles() {
-    if($scope.defaultChartType.name === "Área 3") {
+    if($scope.defaultChartType.name === "Area 3") {
       d3.selectAll('path.c3-line')
         .classed('flat-line', true);
       d3.selectAll('path.c3-area')
@@ -1492,11 +1492,11 @@ mediavizControllers.controller('ChronicleCtrl', function($scope, $rootScope, $lo
             $scope.loadedKeywords.push(keyword);
             if($scope.dataFormat === 'absolute') {
               formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'articles');
-              keywordChart.options.axis.y.label.text = 'Número de artigos';
+              keywordChart.options.axis.y.label.text = 'Articles';
             }
             if($scope.dataFormat === 'relative') {
               formattedData = DataFormatter.inColumns(dataObj, keyword, 'time', 'percent_of_type_by_day');
-              keywordChart.options.axis.y.label.text = 'Percentagem do total de artigos';
+              keywordChart.options.axis.y.label.text = 'Percent of articles';
             }
             if(!chart) {
               keywordChart.options.data.xs = xsObj;
@@ -1575,7 +1575,7 @@ var keywordChart = {
           padding: {left: 0, right: 0},
           max: new Date(),
           label: {
-            text: 'Dias',
+            text: 'Day',
             position: 'outer-center'
           },
           type: 'timeseries',
@@ -1609,7 +1609,7 @@ var keywordChart = {
         format: {
           value: function(value, ratio, id) {
             if($scope.dataFormat === 'relative') {
-              return value + '% de todos os artigos publicados nesta data';
+              return value + '% of all articles published on this date';
             }
             if($scope.dataFormat === 'absolute') {
               return value;
@@ -1756,7 +1756,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $location, $rout
 
 mediavizControllers.controller('FlowCtrl', function($scope, $location, $routeParams, $timeout, Page, Resources, SourceList, Chart, DataFormatter) {
 
-  Page.setTitle('Fluxo');
+  Page.setTitle('Flow');
 
   $scope.selectedSources = {};
 
@@ -1776,7 +1776,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
 
   $scope.loadingQueue = [];
 
-  $scope.defaultChartType = {type: 'area', name: 'Área 3'};
+  $scope.defaultChartType = {type: 'area', name: 'Area 3'};
 
   $scope.showSearchTools = true;
   $scope.showSearchToolsNav = false;
@@ -1784,11 +1784,11 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
   var chart;
 
   $scope.optionsForDateSelect = [
-  {name: 'Tudo'},
-  {name: 'Último dia'},
-  {name: 'Últimos 7 dias'},
-  {name: 'Últimos 30 dias'},
-  {name: 'Intervalo Personalizado'}
+  {name: 'All'},
+  {name: 'Last day'},
+  {name: 'Last 7 days'},
+  {name: 'Last 30 days'},
+  {name: 'Custom interval'}
   ];
 
   $scope.dateOptions = [];
@@ -1851,7 +1851,7 @@ mediavizControllers.controller('FlowCtrl', function($scope, $location, $routePar
     }
 
   function setFlatAreaStyles() {
-    if($scope.defaultChartType.name === "Área 3") {
+    if($scope.defaultChartType.name === "Area 3") {
       d3.selectAll('path.c3-line')
         .classed('flat-line', true);
       d3.selectAll('path.c3-area')
@@ -2046,13 +2046,13 @@ function getTotalsAndDraw() {
         $scope.loadedSources.push(keyword);
         timeChart.options.data.type = 'area';
         timeChart.options.axis.x.padding = {left: 0, right: 0};
-        timeChart.options.axis.y.label.text = 'Número de artigos';
+        timeChart.options.axis.y.label.text = 'Articles';
         if($scope.dataFormat === 'absolute') {
           if($scope.shareFormat === '') {
             var formattedData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
           } else {
             var formattedData = getShareData($scope.shareFormat);
-            timeChart.options.axis.y.label.text = 'Número de partilhas';
+            timeChart.options.axis.y.label.text = 'Shares';
             //timeChart.options.data.type = 'bar';
             //timeChart.options.axis.x.padding = {left: 1, right: 1};
           }
@@ -2076,7 +2076,7 @@ function getTotalsAndDraw() {
               var formattedData = getShareData($scope.shareFormat);
             }
           }
-          $scope.shareFormat === '' ? timeChart.options.axis.y.label.text = 'Percentagem do total de artigos' : timeChart.options.axis.y.label.text = 'Percentagem do total de partilhas'
+          $scope.shareFormat === '' ? timeChart.options.axis.y.label.text = 'Percent of articles' : timeChart.options.axis.y.label.text = 'Percent of shares'
           // timeChart.options.axis.y.label.text = 'Percentagem do total de artigos';
           timeChart.options.data.groups = [];
           timeChart.options.axis.y.tick.format = function(d, i) {
@@ -2089,7 +2089,7 @@ function getTotalsAndDraw() {
           if($scope.by === 'hour') {
               //timeChart.options.data.type = 'area';
               timeChart.options.axis.x.type = '';
-              timeChart.options.axis.x.label.text = 'Hora';
+              timeChart.options.axis.x.label.text = 'Hour';
               timeChart.options.axis.x.tick.format = function(d, i) {
                 var d = d < 10 ? '0' + d : d;
                 return d + ':00';
@@ -2097,21 +2097,21 @@ function getTotalsAndDraw() {
             }
             if($scope.by === 'day') {
               timeChart.options.axis.x.type = 'timeseries';
-              timeChart.options.axis.x.label.text = 'Dia';
+              timeChart.options.axis.x.label.text = 'Day';
               timeChart.options.axis.x.tick.format = '%d %b';
               //timeChart.options.data.type = 'area-spline';
                 timeChart.options.data.groups = [];
             }
             if($scope.by === 'month') {
               timeChart.options.axis.x.type = '';
-              timeChart.options.axis.x.label.text = 'Mês';
+              timeChart.options.axis.x.label.text = 'Month';
               timeChart.options.axis.x.tick.format = function(d, i) {
                 return d;
               };
             }
             if($scope.by === 'week') {
               timeChart.options.axis.x.type = '';
-              timeChart.options.axis.x.label.text = 'Dia da semana';
+              timeChart.options.axis.x.label.text = 'Weekday';
               timeChart.options.axis.x.tick.format = function(d) {
                 return moment().isoWeekday(d).format('ddd');
               };
@@ -2213,7 +2213,7 @@ function getItemData(datum) {
         x: {
           padding: {left: 0, right: 0},
           label: {
-            text: 'Horas',
+            text: 'Hour',
             position: 'outer-center'
           },
           tick: {
@@ -2231,7 +2231,7 @@ function getItemData(datum) {
           //padding: {top: 1, bottom: 1},
           //min: 0,
           label: {
-            text: 'Artigos',
+            text: 'Articles',
             position: 'outer-middle'
           },
           tick: {}
@@ -2399,11 +2399,11 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
   $scope.keyword.selected = [];
 
   $scope.optionsForDateSelect = [
-    {name: 'Tudo'},
-    {name: 'Último dia'},
-    {name: 'Últimos 7 dias'},
-    {name: 'Últimos 30 dias'},
-    {name: 'Intervalo Personalizado'}
+    {name: 'All'},
+    {name: 'Last day'},
+    {name: 'Last 7 days'},
+    {name: 'Last 30 days'},
+    {name: 'Custom interval'}
   ];
 
   $scope.dateOptions = [];
@@ -2419,7 +2419,7 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
   $scope.dateUntil = '';
 
   $scope.mapTypes = [
-    {type: 'world', name: 'Mundo'},
+    {type: 'world', name: 'World'},
     {type: 'portugal', name: 'Portugal'}
   ];
 

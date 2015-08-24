@@ -40,12 +40,12 @@ mediavizDirectives.directive('selectChartType', function($filter) {
     replace: true,
     link: function(scope, elem, attrs) {
       scope.chartTypes = [
-        {type: 'line', name: 'Linhas'},
-        {type: 'spline', name: 'Linhas 2'},
-        {type: 'area', name: 'Área'},
-        {type: 'area-spline', name: 'Área 2'},
-        {type: 'area', name: 'Área 3'},
-        {type: 'bar', name: 'Barras'},
+        {type: 'line', name: 'Line'},
+        {type: 'spline', name: 'Line 2'},
+        {type: 'area', name: 'Area'},
+        {type: 'area-spline', name: 'Area 2'},
+        {type: 'area', name: 'Area 3'},
+        {type: 'bar', name: 'Bar'},
         {type: 'donut', name: 'Donut'}
       ];
       var defaultChartName = scope.defaultChartType.name;

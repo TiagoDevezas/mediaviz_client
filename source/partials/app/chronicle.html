@@ -1,27 +1,27 @@
 <div id="chronicle">
 
-	<h3>Crónica</h3>
+	<h3>Chronicle</h3>
 
 	<div class="search-form">
 		<div class="keyword-select">
 			<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
-		    <ui-select-match placeholder="Introduzir palavras a pesquisar...">{{$item}}</ui-select-match>
+		    <ui-select-match placeholder="Insert search terms...">{{$item}}</ui-select-match>
 		    <ui-select-choices repeat="keyword in keywords.selected">
 		      {{ keyword }}
 		    </ui-select-choices>
 		  </ui-select>
-		  <button class="clear-chart" ng-click="clearChart()">Limpar gráfico</button>		
+		  <button class="clear-chart" ng-click="clearChart()">Clear</button>		
 		</div>
 
 		<div class="field-select">
-			<span><strong>Campos a pesquisar: </strong></span>
-			<label>Título ou sumário</label>
+			<span><strong>Fields to search: </strong></span>
+			<label>Title or summary</label>
 			<input type="radio" value="title_summary" ng-model="searchFields" ng-change="redrawChart()">
 
-			<label>Título</label>
+			<label>Title</label>
 			<input type="radio" value="title" ng-model="searchFields" ng-change="redrawChart()">
 
-			<label>Sumário</label>
+			<label>Summary</label>
 			<input type="radio" value="summary" ng-model="searchFields" ng-change="redrawChart()">
 		</div>		
 	</div>
@@ -30,15 +30,15 @@
 	<div class="search-tools">
 		<ul style="float: left;">
 			<li><a href="" ng-click="setDataFormat('absolute')" ng-class="{'selected':dataFormat === 'absolute'}">Total</a></li>
-			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percentagem</a></li>
+			<li><a href="" ng-click="setDataFormat('relative')" ng-class="{'selected':dataFormat === 'relative'}">Percent</a></li>
 			<li class="menu-separator"> | </li>
-			<li><a href="" ng-click="setSourceType('national')" ng-class="{'selected':sourceType === 'national'}">Jornais Nacionais</a></li>
-			<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">Jornais Internacionais</a></li>
+			<li><a href="" ng-click="setSourceType('national')" ng-class="{'selected':sourceType === 'national'}">Portuguese media</a></li>
+			<li><a href="" ng-click="setSourceType('international')" ng-class="{'selected':sourceType === 'international'}">International media</a></li>
 			<li><a href="" ng-click="setSourceType('blogs')" ng-class="{'selected':sourceType === 'blogs'}">Blogs</a></li>
-			<li><a href="" ng-click="setSourceType('all')" ng-class="{'selected':sourceType === 'all'}">Todas</a></li>
+			<li><a href="" ng-click="setSourceType('all')" ng-class="{'selected':sourceType === 'all'}">All</a></li>
 		</ul>
 		<div style="float: right;">
-			<label for="chart-type-select" style="float:left;">Tipo de gráfico &nbsp;&nbsp;</label>
+			<label for="chart-type-select" style="float:left;">Chart type &nbsp;&nbsp;</label>
 			<select-chart-type></select-chart-type>
 			<!-- <select id="chart-type-select" ng-model="chartType.selected" ng-options="chart.name for chart in chartTypes" ng-change="setChartType(chartType.selected)" style="float: left;"></select> -->
 		</div>
@@ -53,7 +53,7 @@
 	</div>
 
 
-	<loading-flash>A carregar...</loading-flash>
+	<loading-flash>Loading...</loading-flash>
 
 	<div id="keyword-chart" style="margin-top: 1em;">
 	</div>
