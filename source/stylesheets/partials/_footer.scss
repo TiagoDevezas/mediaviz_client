@@ -1,9 +1,27 @@
-footer {
-	background-color: lighten($light-gray, 10);
-	margin-top: 1.5em;
-	border-top: 2px solid $light-gray;
-	.footer-inner {
-		@include outer-container;
-		padding: 1em 0;		
-	}
+.footer {
+  $base-spacing: .25em !default;
+  $action-color: #455A64 !default;
+  $medium-screen: em(640) !default;
+  $large-screen: em(860) !default;
+  $footer-background: desaturate(darken($action-color, 20%), 5%);
+  $footer-color: white;
+  $footer-link-color: transparentize($footer-color, 0.6);
+  $footer-disclaimer-color: transparentize($footer-color, 0.6);
+
+  background: $footer-background;
+  padding: 1.5em $gutter;
+  width: 100%;
+
+  position: absolute;
+	bottom: 0;
+	left: 0;
+
+  p {
+    color: $footer-disclaimer-color;
+    font-size: 0.9em;
+    line-height: 1.5em;
+    margin: auto;
+    max-width: 35em;
+    text-align: center;
+  }
 }

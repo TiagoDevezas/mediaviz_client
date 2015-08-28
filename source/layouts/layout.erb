@@ -16,12 +16,15 @@
   </head>
   
   <body>
-    
-    <%= partial 'partials/header' %>
-    <div class="outer-container">
-      <div ng-view ng-controller="RootCtrl"></div>
+
+    <div id="wrapper" style="min-height: 100%; position: relative;">
+      <%= partial 'partials/header' %>
+      <div class="outer-container">
+        <div ng-view ng-controller="RootCtrl"></div>
+      </div>
+      <%= partial 'partials/analytics' %>
+      <%= partial 'partials/footer' %>
     </div>
-    <%= partial 'partials/analytics' %>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
   </body>
 </html>

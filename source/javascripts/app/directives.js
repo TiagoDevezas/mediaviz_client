@@ -258,6 +258,10 @@ mediavizDirectives.directive('ptMap', function() {
           nameByFIPS[d.fips] = d.name;
         });
 
+        var totalArticleCount = d3.sum(data, function(d) {
+          return d.count;
+        });
+
         var distritos = d3.selectAll('.distrito');
 
         distritos
@@ -279,7 +283,7 @@ mediavizDirectives.directive('ptMap', function() {
           tooltip.classed("hidden", false)
            .attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
            .html(
-            nameByFIPS[d.id] ? nameByFIPS[d.id] + ": " + countByFIPS[d.id] + " artigos" : "Sem dados"
+            nameByFIPS[d.id] ? nameByFIPS[d.id] + ": " + countByFIPS[d.id] + " articles (" + ((countByFIPS[d.id] / totalArticleCount) * 100).toFixed(2) + "% of " + totalArticleCount + " articles)" : "No data"
             )
         })
         .on("mouseout", function(d,i) {
@@ -403,6 +407,10 @@ mediavizDirectives.directive('worldMap', function($window) {
           nameByAlpha3[d.alpha3] = d.name;
         });
 
+        var totalArticleCount = d3.sum(data, function(d) {
+          return d.count;
+        });
+
         var countries = d3.selectAll('.country');
 
 
@@ -425,7 +433,7 @@ mediavizDirectives.directive('worldMap', function($window) {
         tooltip.classed("hidden", false)
          .attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
          .html(
-          nameByAlpha3[d.id] ? nameByAlpha3[d.id] + ": " + countByAlpha3[d.id] + " artigos" : "Sem dados"
+          nameByAlpha3[d.id] ? nameByAlpha3[d.id] + ": " + countByAlpha3[d.id] + " articles (" + ((countByAlpha3[d.id] / totalArticleCount) * 100).toFixed(2) + "% of " + totalArticleCount + " articles)" : "No data"
           )
       })
       .on("mouseout", function(d,i) {

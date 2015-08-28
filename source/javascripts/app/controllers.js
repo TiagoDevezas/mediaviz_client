@@ -78,7 +78,7 @@ mediavizControllers.controller('HomeCtrl', function($scope, $location, Resources
 });
 
 mediavizControllers.controller('AboutCtrl', function($scope, Resources, Page) {
-  Page.setTitle('Sobre');
+  Page.setTitle('About');
 
   $scope.stats = [];
 

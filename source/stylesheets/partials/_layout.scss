@@ -1,8 +1,9 @@
-body {
+html, body {
 	margin: 0;
+	height: 100%;
 }
 .outer-container {
 	@include outer-container;
-	margin-bottom: 4em;
 	padding: 0 1em;
+	padding-bottom: 100px !important;
 }
