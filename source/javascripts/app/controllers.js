@@ -2423,7 +2423,7 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
     {type: 'portugal', name: 'Portugal'}
   ];
 
-  // $scope.lang = 'pt';
+  $scope.lang = 'pt';
 
   // $scope.selectedMap = null;
 
@@ -2434,7 +2434,7 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
   }
 
   if(!$location.search()['lang']) {
-    $location.search(angular.extend($location.search(), {lang: 'pt'}));
+    $location.search(angular.extend($location.search(), {lang: $scope.lang}));
   }
   // }
 
@@ -2514,7 +2514,12 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
   }
 
   $scope.loadSourceData = function(source) {
-    setLocation({source: source.acronym});
+    if(source.type !== 'international') {
+      $scope.lang = 'pt';
+    } else {
+      $scope.lang = 'en';
+    }
+    setLocation({source: source.acronym, lang: $scope.lang});
   }
 
   $scope.setDateInterval = function() {

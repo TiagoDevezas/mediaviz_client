@@ -1,38 +1,26 @@
-<h2>Sobre</h2>
-<hr>
+<h2 style="margin-bottom: .5em;">About</h2>
 
-<p>O projeto MediaViz visa dar resposta a questões como:</p> 
+<p>The study and analysis of online media content can be complex and time-consuming. Content is increasingly scattered across multiple sources, due to the rise of easy to use online publishing tools and social media.</p>
+<p>The MediaViz platform aims to assist in better understanding the dynamics, trends, and patterns of this large media archive. The system continuously collects the content published by a set of user-defined online sources, persists it in a database, and makes it available through an API. The data provided by the API is consumed by a set of interactive visualization tools, allowing users to explore and analyze it.
+</p>
 
-<ul style="list-style-type: circle; margin-left: 2em; margin-bottom: 1em;">
-	<li>Qual a cobertura e atenção que determinado tema recebeu ou está a receber dos media?</li>
-	<li>Qual o perfil de publicação de diferentes fontes ao longo do tempo?</li>
-	<li>Quantas partilhas nas redes sociais tiveram os artigos sobre determinado tema?</li>
-</ul>
+<p>Project funded by <a href="http://labs.sapo.pt">SAPO Labs/U. Porto</a>.</p>
 
-<p>Para atingir este objectivo, foi desenvolvida uma aplicação Web que disponibiliza um conjunto de ferramentas de visualização para explorar e interagir com informação extraída dos artigos de múltiplas fontes noticiosas online. As fontes incluem os principais órgãos de comunicação social portugueses presentes na Web, assim como algumas fontes internacionais e blogues portugueses seleccionados.</p>
+<h3 style="margin-bottom: .5em;">Tools</h3>
 
-<p ng-show="stats">O arquivo está em constante actualização e é constituído, neste momento, por {{ stats.articles_count }} artigos de {{ stats.sources_count }} fontes distintas, publicados através de {{ stats.feeds_count }} feeds.</p>
+<h4><a href="#/chronicle">Chronicle</a></h4>
+<p>The Chronicle tool displays which topics have been or currently are under the media's spotlight, and how their coverage changes throughout time and according the nature of the sources selected.</p>
 
-<p>Projeto financiado pela <a href="http://fe.up.pt">Faculdade de Engenharia da Universidade do Porto</a> e <a href="http://labs.sapo.pt">SAPO Labs UP</a>.</p>
+<h4><a href="#/flow">Flow</a></h4>
+<p>The Flow tool allows users to visualize and compare article publication and share count patterns of online sources according to distinct temporal granularities.</p>
 
-<h3>Ferramentas disponíveis</h3>
+<h4><a href="#/newsmap">NewsMap</a></h4>
+<p>The NewsMap allows users to visualize a source's (or group of sources) geographic coverage, both at the international and national level. Users can also input text to find co-occurrences of the introduced search term and the countries’ or Portuguese subdivisions’ names.</p>
 
-<h4><a href="#/chronicle">Crónica</a></h4>
-<p>Visualizar e comparar a utilização de palavras-chave em artigos de um conjunto de fontes noticiosas online ao longo do tempo.</p>
+<h3 style="margin-bottom: .5em;">Authors</h3>
 
-<h4><a href="#/flow">Fluxo</a></h4>
-<p>Visualizar e comparar os horários e fluxos de publicação de múltiplas fontes noticiosas online.</p>
-
-<h4><a href="#/compare">Comparador</a></h4>
-<p>Comparar a utilização de palavras-chave entre diferentes fontes noticiosas online ao longo do tempo.</p>
-
-<h4><a href="#/social">Social</a></h4>
-<p>Comparar as partilhas nas redes sociais dos artigos de diferentes fontes noticiosas online ao longo do tempo.</p>
-
-<h3>Autoria</h3>
-
-<p>Sérgio Nunes (orientador)</p>
-<p>Tiago Devezas (investigador)</p>
+<p>Sérgio Nunes (Research Advisor) - <a href="mailto:sergio.nunes@fe.up.pt?Subject=MediaViz%20inquiry">sergio.nunes@fe.up.pt</a></p>
+<p>Tiago Devezas (Researcher) - <a href="mailto:tdevezas@fe.up.pt?Subject=MediaViz%20inquiry">tdevezas@fe.up.pt</a></p>
 
 <!-- <p><strong>Lista completa de fontes</strong></p>
 
