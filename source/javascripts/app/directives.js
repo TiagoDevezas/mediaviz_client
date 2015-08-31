@@ -339,6 +339,13 @@ mediavizDirectives.directive('worldMap', function($window) {
             .scaleExtent([1, 8])
             .on("zoom", move);
 
+      var projection = d3.geo.mercator()
+        .translate([width /2, height / 1.6])
+        .scale(width / 2 / Math.PI);
+
+      var path = d3.geo.path()
+        .projection(projection);
+
       function move() {
 
         var t = d3.event.translate;
@@ -362,16 +369,31 @@ mediavizDirectives.directive('worldMap', function($window) {
 
       }
 
+      d3.select(window).on('resize', resize);
+
+      function resize() {
+        width = parseInt(d3.select(elem[0]).style("width")),
+        height = width / scalingFactor;
+
+        if(width) {      
+          projection
+            .translate([width /2, height / 1.6])
+            .scale(width / 2 / Math.PI);
+
+          svg
+            .style("width", width + "px")
+            .style("height", height + "px");
+
+          svg.selectAll('.country')
+            .attr('d', path);
+        }
+
+
+      }
+
 
       d3.json('data/world.json', function(world) {
         var paises = topojson.feature(world, world.objects.world);
-
-        var projection = d3.geo.mercator()
-        .translate([width /2, height / 1.6])
-        .scale(width / 2 / Math.PI);
-
-        var path = d3.geo.path()
-        .projection(projection);
 
         boundingBox = svg
           .call(zoom)
@@ -421,17 +443,14 @@ mediavizDirectives.directive('worldMap', function($window) {
             return countByAlpha3[d.id] ? color(countByAlpha3[d.id]) : '#eee'
           });
 
-        //offsets for tooltips
-      var offsetL = elem[0].offsetLeft+20;
-      var offsetT = elem[0].offsetTop+10;
-
+      var bodyElem = document.body;
 
       countries
       .on("mousemove", function(d,i) {
-        var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
+        var mouse = d3.mouse(bodyElem).map( function(d) { return parseInt(d); } );
 
         tooltip.classed("hidden", false)
-         .attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
+         .attr("style", "left:"+(mouse[0] + 10)+"px;top:"+(mouse[1])+"px")
          .html(
           nameByAlpha3[d.id] ? nameByAlpha3[d.id] + ": " + countByAlpha3[d.id] + " articles (" + ((countByAlpha3[d.id] / totalArticleCount) * 100).toFixed(2) + "% of " + totalArticleCount + " articles)" : "No data"
           )
