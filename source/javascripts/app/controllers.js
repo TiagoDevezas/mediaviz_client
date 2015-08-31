@@ -2484,7 +2484,7 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
           source = getSourceObjByAcronym($scope.sourceList, source);
           $scope.selectedSource.selected = source;
           getMapData();
-        }, 500);
+        }, 1000);
       }
   }, true);
 

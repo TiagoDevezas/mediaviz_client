@@ -3,16 +3,16 @@
 	<h3>Chronicle</h3>
 
 	<div class="search-form">
-		<div class="keyword-select">
+		<div class="keyword-select" style="margin-bottom: 5px;">
 			<ui-select multiple tagging tagging-label="false" ng-model="keywords.selected" style="min-width: 400px;" reset-search-input="true" search-enabled="false" on-select="addKeyword($item, $model)" on-remove="removeKeyword($item, $model)">
 		    <ui-select-match placeholder="Insert search terms...">{{$item}}</ui-select-match>
 		    <ui-select-choices repeat="keyword in keywords.selected">
 		      {{ keyword }}
 		    </ui-select-choices>
 		  </ui-select>
-		  <button class="clear-chart" ng-click="clearChart()">Clear</button>		
+		  <button class="clear-chart" ng-click="clearChart()">Clear</button>
 		</div>
-
+		<p style="font-size: 14px; color: #555">Search for multiple words in a query by separating them with a space (or the operator <span style="color: #000">&&</span>) or exclude words using the <span style="color: #000">!</span> operator. <a href="http://irlab.fe.up.pt/p/ht2015demo/#/chronicle?keywords=climate%20change%20global%20warming,climate%20change%20!global%20!warming,climate%20%26%26%20!change&format=absolute&sources=international">Click for example</a></p>
 		<div class="field-select">
 			<span><strong>Fields to search: </strong></span>
 			<label>Title or summary</label>

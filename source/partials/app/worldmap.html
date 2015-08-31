@@ -11,12 +11,13 @@
 </ui-select>
 </div>
 
-<div class="keyword-select">
+<div class="keyword-select" style="margin-bottom: -5px;">
 	<form ng-submit="redrawMap()" style="margin-top: 1em; width: 50%; display: inline-block;">
 		<input type="text" placeholder="Insert keyword" ng-model="keyword.selected">
 	</form>
 	<!-- <button ng-click="removeKeyword()" style="">Limpar</button> -->
 </div>
+<p style="font-size: 14px; color: #555">Search for multiple words in a query by separating them with a space (or the operator <span style="color: #000">&&</span>) or exclude words using the <span style="color: #000">!</span> operator. <a href="http://irlab.fe.up.pt/p/ht2015demo/#/newsmap?map=world&lang=en&source=international&keyword=elections%20!greece%20%26%26%20!united%20!states">Click for example</a></p>
 
 <div class="search-tools">
 	<ul>
