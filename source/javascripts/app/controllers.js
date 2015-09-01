@@ -1609,7 +1609,8 @@ var keywordChart = {
         format: {
           value: function(value, ratio, id) {
             if($scope.dataFormat === 'relative') {
-              return value + '% of all articles published on this date';
+              console.log(value, ratio, id);
+              return (ratio * 100).toFixed(1) + '% of all articles published on this date';
             }
             if($scope.dataFormat === 'absolute') {
               return value;
