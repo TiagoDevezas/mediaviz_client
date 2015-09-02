@@ -138,11 +138,11 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   }
 
   function createParamsObj(keyword) {
-   if($scope.urlParams.source.group) {
+    if($scope.urlParams.source.group) {
     return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: keyword};    
-   } else {
+    } else {
     return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: keyword};
-   }
+    }
   }
 
   function getSourceData() {

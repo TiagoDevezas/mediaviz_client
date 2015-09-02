@@ -1,4 +1,4 @@
-mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SAPODataFormatter, DataFormatter, SourceList) {
+mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SAPODataFormatter, DataFormatter, SourceList, Resources) {
 
   Page.setTitle('SAPO Fontes');
 
@@ -15,7 +15,13 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 
   // $scope.selectedIndex.value = 1;
 
-  $scope.sourceList = SourceList.getSAPONewsList();
+  if($scope.SAPOMode) {
+    $scope.sourceList = SourceList.getSAPONewsList();
+  } else {
+    SourceList.getDefaultList().then(function(data) {
+      $scope.sourceList = data;
+    });
+  }
 
   $scope.urlParams = {
     keyword: '',
@@ -33,11 +39,14 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     if(sourceList) {
       var selectedSources = [];
       var sourceArray = sourceList.split(',').length ? sourceList.split(',') : sourceList;
-      sourceArray.forEach(function(source) {
-        var sourceObj = $filter('filter')($scope.sourceList, {name: source}, true)[0];
-        selectedSources.push(sourceObj);
-      });
-      $scope.selectedSources = selectedSources;
+      $timeout(function() {
+        sourceArray.forEach(function(source) {
+          var sourceObj = $filter('filter')($scope.sourceList, {name: source}, true)[0];
+          selectedSources.push(sourceObj);
+        });
+        $scope.selectedSources = selectedSources;
+
+      }, 500)
     }
     if(keyword) {
       $scope.inputKeyword = keyword;
@@ -80,7 +89,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
   $scope.clearInput = function() {
     $scope.inputKeyword = '';
     $location.search('keyword', null);
-    $scope.urlParams.keyword = '';
+    $scope.urlParams.keyword = null;
   }
 
   $scope.chartData;
@@ -132,8 +141,16 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
   }
 
 
-  function createParamsObj(source) {
+  function createSAPOParamsObj(source) {
 		return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: timeFrame, q: tokenizeKeyword($scope.urlParams.keyword), source: source.value};
+  }
+
+  function createParamsObj(source) {
+    if(source.group) {
+      return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.type, q: $scope.urlParams.keyword};    
+    } else {
+      return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.by};
+    }   
   }
 
   function tokenizeKeyword(keyword) {
@@ -152,42 +169,62 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 			var countId = sourceName;
 			var xsObj = {};
 
-      var paramsObj = createParamsObj(source);
-  		if($scope.loadedSources.indexOf(sourceName) === -1) {
+      if($scope.loadedSources.indexOf(sourceName) === -1) {
         $scope.loadingQueue.push(sourceName);
-  			SAPONews.get(paramsObj).then(function(data) {
-  				$scope.loadedSources.push(sourceName);
-          $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
-          xsObj[countId] = timeId;
-          var data = data.data.facet_counts.facet_ranges.pubdate.counts;
-          dayData = SAPODataFormatter.getDays(data);
-          $scope.dayData = DataFormatter.inColumns(dayData, sourceName, 'time', 'articles');
+        if($scope.SAPOMode) {
+          var paramsObj = createSAPOParamsObj(source);
+    			SAPONews.get(paramsObj).then(function(data) {
+    				$scope.loadedSources.push(sourceName);
+            $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
+            xsObj[countId] = timeId;
+            var data = data.data.facet_counts.facet_ranges.pubdate.counts;
+            dayData = SAPODataFormatter.getDays(data);
+            $scope.dayData = DataFormatter.inColumns(dayData, sourceName, 'time', 'articles');
 
-          var weekData = SAPODataFormatter.getWeekDays(data);
-          $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'percent_of_source');
+            var weekData = SAPODataFormatter.getWeekDays(data);
+            $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'percent_of_source');
 
-          var monthData = SAPODataFormatter.getMonths(data);
-          $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'percent_of_source');
+            var monthData = SAPODataFormatter.getMonths(data);
+            $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'percent_of_source');
 
-          setChartDataForCycle();
+            setChartDataForCycle();
 
-          $scope.xsObj = xsObj;
-				});
+            $scope.xsObj = xsObj;
+  				});
+        } else {
+          var paramsObj = createParamsObj(source);
+          Resources.get(paramsObj).$promise.then(function(data) {
+            $scope.loadedSources.push(sourceName);
+            $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
+            xsObj[countId] = timeId;
+            $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'articles');
+
+            setChartDataForCycle();
+
+            $scope.xsObj = xsObj;
+          });
+        }
   		}
   	})
   }
 
   function setChartDataForCycle() {
     if($scope.urlParams.by === 'day') {
-      $scope.chartData = $scope.dayData;
+      if($scope.SAPOMode) {
+        $scope.chartData = $scope.dayData;
+      }
       $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: '%d %b %Y'});
     }
     if($scope.urlParams.by === 'week') {
-      $scope.chartData = $scope.weekData;
+      if($scope.SAPOMode) {
+        $scope.chartData = $scope.weekData;
+      }
       $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().isoWeekday(d).format('ddd');} });
     }
     if($scope.urlParams.by === 'month') {
-      $scope.chartData = $scope.monthData;
+      if($scope.SAPOMode) {
+        $scope.chartData = $scope.monthData;
+      }
       $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment(d, 'MM').format('MMM');}});
     }
   }
