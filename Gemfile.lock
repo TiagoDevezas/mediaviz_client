@@ -146,4 +146,5 @@ DEPENDENCIES
   middleman-ngannotate
   therubyracer
   tzinfo-data
+  uglifier
   wdm (~> 0.1.0)
