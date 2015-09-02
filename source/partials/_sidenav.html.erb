@@ -11,16 +11,7 @@
 	<md-content role="navigation">
 		<ul class="sidenav">
 			<li>
-				<md-button ng-href="#/chronicle" ng-click="toggleMenu()">Palavras-chave</md-button>
-			</li>
-			<li>
-				<md-button ng-href="#/SAPO/cronica" ng-click="toggleMenu()">Palavras-chave (SAPO)</md-button>
-			</li>
-			<li>
-				<md-button ng-href="#/SAPO/fontes" ng-click="toggleMenu()">Fontes (SAPO)</md-button>
-			</li>
-			<li>
-				<md-button ng-href="#/newsmap" ng-click="toggleMenu()">NewsMap</md-button>
+				<md-button ng-repeat="tool in toolsToDisplay" ng-href="#{{tool.url}}" ng-click="toggleMenu()">{{tool.name}}</md-button>
 			</li>
 		</ul>
 	</md-content>

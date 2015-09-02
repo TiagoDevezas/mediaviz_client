@@ -33,10 +33,10 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   } else {
     SourceList.getDefaultList().then(function(data) {
       $scope.sourceList = data;
-      $scope.defaultSource = 'national';
+      $scope.defaultSource = 'Todas nacionais';
       $timeout(function() {
         if(!$scope.urlParams.source) {
-          $scope.urlParams.source = $filter('filter')($scope.sourceList, {acronym: $scope.defaultSource}, true)[0];
+          $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: $scope.defaultSource}, true)[0];
         }
       }, 600);
     });
