@@ -40,6 +40,9 @@ mediavizDirectives.directive('c3Chart', function($location) {
             chart.load({columns: data});
           }
         }
+        if((!data || !data.length) && chart) {
+          chart.unload();
+        }
       }
 
       scope.$on('sourceRemoved', function(evt, source) {

@@ -24,10 +24,11 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
   }
 
   $scope.urlParams = {
-    keyword: '',
+    keyword: null,
     since: "2015-01-01",
     until: moment().format("YYYY-MM-DD"),
-    by: 'day'
+    by: 'day',
+    data: 'articles'
   }
 
   $scope.$watch(function() { return $location.search() }, function(newVal) {
@@ -36,6 +37,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     var since = newVal['since'];
     var until = newVal['until'];
     var by = newVal['by'];
+    var dataType = $location.search()['data'];
     if(sourceList) {
       var selectedSources = [];
       var sourceArray = sourceList.split(',').length ? sourceList.split(',') : sourceList;
@@ -65,6 +67,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     if(by) {
       $scope.urlParams.by = by;
     }
+    if(dataType) {
+      $scope.urlParams.data = dataType;
+    }
   }, true);
 
   $scope.checkValue = function(value) {
@@ -87,7 +92,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
   // }
 
   $scope.clearInput = function() {
-    $scope.inputKeyword = '';
+    $scope.inputKeyword = null;
     $location.search('keyword', null);
     $scope.urlParams.keyword = null;
   }
@@ -147,7 +152,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 
   function createParamsObj(source) {
     if(source.group) {
-      return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.type, q: $scope.urlParams.keyword};    
+      return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.type, q: $scope.urlParams.keyword, by: $scope.urlParams.by};    
     } else {
       return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.by};
     }   
@@ -197,7 +202,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
             $scope.loadedSources.push(sourceName);
             $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
             xsObj[countId] = timeId;
-            $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'articles');
+            $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', $scope.urlParams.data);
 
             setChartDataForCycle();
 
