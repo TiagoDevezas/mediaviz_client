@@ -23,35 +23,7 @@
 
 	<md-content ng-show="keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 20px;">
     <download-bar></download-bar>
-		<div layout="row" c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj"></div>
+		<div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
 	</md-content>
-
-<!--   <md-content ng-show="keywords.selected.length" layout="row" flex class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
-    <div flex="33" class="md-padding">
-      <download-bar></download-bar>
-      <div c3-chart dataset="countData" type="donut" options="donutChartOpts" class="md-padding"></div>
-    </div>
-  </md-content> -->
-
-<!-- 	<div ng-show="keywords.selected.length">
-    <md-content class="md-whiteframe-z1" style="margin: 20px 0 20px;">
-    	<h2 class="md-title" style="padding-left: 16px;">Últimos artigos</h2>
-      <md-tabs md-dynamic-height md-border-bottom>
-      	<md-tab ng-repeat="query in queryArticles" label="{{query.keyword}}">
-      		<md-content flex layout="row">
-      			<md-whiteframe class="md-padding" ng-repeat="article in query.articles" style="padding-bottom:0; padding-top: 0; border-right: 1px solid #eee;" flex={{100 / query.articles.length}}>
-      				<div flex layout="column" layout-align="space-between left">
-    					<h3 class="md-subhead"><a href="{{ article.url }}">{{ article.title }}</a></h3>
-    					<p class="md-body-1" ng-show="article.summary.length > 10" style="margin: 0;">
-  							<span ng-bind-html="article.summary | words:30"></span>
-  						</p>
-    					<p class="md-caption">{{article.source}}, {{ article.pub_date | date:'yyyy-MM-dd HH:mm' }}</p>
-      			</md-whiteframe>
-      		</md-content>
-
-      	</md-tab>
-      </md-tabs>
-    </md-content>
-  </div> -->
 
 </div>

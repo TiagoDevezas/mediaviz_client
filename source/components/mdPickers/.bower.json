@@ -1,5 +1,6 @@
 {
   "name": "mdPickers",
+  "version": "0.3.0",
   "homepage": "https://github.com/alenaksu/mdPickers",
   "authors": [
     "alenaksu"
@@ -29,14 +30,13 @@
     "angular-material": "~0.10.0",
     "moment": "~2.10.3"
   },
-  "_release": "29df95d244",
+  "_release": "0.3.0",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
+    "type": "version",
+    "tag": "0.3.0",
     "commit": "29df95d244aefa3e10a0940669e6f29d1f00e2f3"
   },
   "_source": "git://github.com/alenaksu/mdPickers.git",
   "_target": "*",
-  "_originalSource": "mdPickers",
-  "_direct": true
+  "_originalSource": "mdPickers"
 }

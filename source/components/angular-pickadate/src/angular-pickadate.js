@@ -7,13 +7,12 @@
     return -1;
   };
 
-  function isDescendant(parent, child) {
-    var node = child.parentNode;
-    while (node !== null) {
-      if (node === parent) return true;
-      node = node.parentNode;
-    }
-    return false;
+  function map(items, property) {
+    var mappedArray = [];
+    angular.forEach(items, function(item) {
+      mappedArray.push(angular.isFunction(property) ? property(item) : item[property]);
+    });
+    return mappedArray;
   }
 
   angular.module('pickadate', [])
@@ -37,7 +36,58 @@
       };
     })
 
-    .factory('pickadateUtils', ['$locale', function($locale) {
+    .factory('pickadateModalBindings', ['$window', '$document', function($window, $document) {
+      var supportPageOffset = $window.pageXOffset !== undefined,
+          isCSS1Compat = (($document.compatMode || "") === "CSS1Compat");
+
+      var computeStyles = function(element) {
+        var scrollX = supportPageOffset ? $window.pageXOffset : isCSS1Compat ? $document.documentElement.scrollLeft : $document.body.scrollLeft,
+            scrollY = supportPageOffset ? $window.pageYOffset : isCSS1Compat ? $document.documentElement.scrollTop : $document.body.scrollTop,
+            innerWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth,
+            styles = { top: scrollY + element.getBoundingClientRect().bottom + 'px' };
+
+        if ((innerWidth - element.getBoundingClientRect().left ) >= 300) {
+          styles.left = scrollX + element.getBoundingClientRect().left  + 'px';
+        } else {
+          styles.right = innerWidth - element.getBoundingClientRect().right - scrollX + 'px';
+        }
+
+        return styles;
+      };
+
+      var isDescendant = function(parent, child) {
+        var node = child.parentNode;
+        while (node !== null) {
+          if (node === parent) return true;
+          node = node.parentNode;
+        }
+        return false;
+      };
+
+      return function(scope, element, rootNode) {
+        var togglePicker = function(toggle) {
+          scope.displayPicker = toggle;
+          scope.$apply();
+        };
+
+        element.on('focus', function() {
+          scope.modalStyles = computeStyles(element[0]);
+          togglePicker(true);
+        });
+
+        element.on('keydown', function(e) {
+          if (indexOf.call([9, 13, 27], e.keyCode) >= 0) togglePicker(false);
+        });
+
+        $document.on('click', function(e) {
+          if (isDescendant(rootNode, e.target) || e.target === element[0]) return;
+          togglePicker(false);
+        });
+      };
+
+    }])
+
+    .factory('pickadateDateHelper', ['$locale', 'dateFilter', function($locale, dateFilter) {
 
       function getPartName(part) {
         switch (part) {
@@ -47,71 +97,123 @@
         }
       }
 
-      return {
-        parseDate: function(dateString, format) {
-          if (!dateString) return;
-          if (angular.isDate(dateString)) return new Date(dateString);
+      return function(format, options) {
+        var minDate, maxDate, disabledDates, currentDate, weekStartsOn, noExtraRows;
 
-          format = format || 'yyyy-MM-dd';
+        options      = options || {};
+        format       = format  || 'yyyy-MM-dd';
+        weekStartsOn = options.weekStartsOn;
+        noExtraRows  = options.noExtraRows;
 
-          var formatRegex = '(dd|MM|yyyy)',
-              separator   = format.match(/[-|/]/)[0],
-              dateParts   = dateString.split(separator),
-              regexp      = new RegExp([formatRegex, formatRegex, formatRegex].join(separator)),
-              formatParts = format.match(regexp),
-              dateObj     = {};
+        if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) weekStartsOn = 0;
 
-          formatParts.shift();
+        return {
 
-          angular.forEach(formatParts, function(part, i) {
-            dateObj[getPartName(part)] = parseInt(dateParts[i], 10);
-          });
+          parseDate: function(dateString) {
+            if (!dateString) return;
+            if (angular.isDate(dateString)) return new Date(dateString);
 
-          if (isNaN(dateObj.year) || isNaN(dateObj.month) || isNaN(dateObj.day)) return;
+            var formatRegex = '(dd|MM|yyyy)',
+                separator   = format.match(/[-|/]/)[0],
+                dateParts   = dateString.split(separator),
+                regexp      = new RegExp([formatRegex, formatRegex, formatRegex].join(separator)),
+                formatParts = format.match(regexp),
+                dateObj     = {};
 
-          return new Date(dateObj.year, dateObj.month - 1, dateObj.day, 3);
-        },
+            formatParts.shift();
 
-        buildDates: function(date, options) {
-          var dates = [],
-              lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0, 3);
+            angular.forEach(formatParts, function(part, i) {
+              dateObj[getPartName(part)] = parseInt(dateParts[i], 10);
+            });
 
-          options = options || {};
-          date = new Date(date);
+            if (isNaN(dateObj.year) || isNaN(dateObj.month) || isNaN(dateObj.day)) return;
 
-          while (date.getDay() !== options.weekStartsOn) {
-            date.setDate(date.getDate() - 1);
-          }
+            return new Date(dateObj.year, dateObj.month - 1, dateObj.day, 3);
+          },
 
-          for (var i = 0; i < 42; i++) {  // 42 == 6 rows of dates
-            if (options.noExtraRows && date.getDay() === options.weekStartsOn && date > lastDate) break;
+          setRestrictions: function(restrictions) {
+            minDate       = this.parseDate(restrictions.minDate) || new Date(0);
+            maxDate       = this.parseDate(restrictions.maxDate) || new Date(99999999999999);
+            currentDate   = restrictions.currentDate;
+            disabledDates = restrictions.disabledDates || [];
+          },
 
-            dates.push(new Date(date));
-            date.setDate(date.getDate() + 1);
-          }
+          allowPrevMonth: function() {
+            return currentDate > minDate;
+          },
 
-          return dates;
-        },
+          allowNextMonth: function() {
+            var nextMonth = angular.copy(currentDate);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            return nextMonth <= maxDate;
+          },
 
-        buildDayNames: function(weekStartsOn) {
-          var dayNames = $locale.DATETIME_FORMATS.SHORTDAY;
+          buildDateObject: function(date) {
+            var localDate     = angular.copy(date),
+                formattedDate = dateFilter(localDate, format),
+                disabled      = indexOf.call(disabledDates, formattedDate) >= 0,
+                monthOffset   = this.getMonthOffset(localDate, currentDate),
+                outOfMinRange = localDate < minDate,
+                outOfMaxRange = localDate > maxDate,
+                outOfMonth    = (monthOffset === -1 && !options.previousMonthSelectable) ||
+                                (monthOffset === 1 && !options.nextMonthSelectable);
 
-          if (weekStartsOn) {
-            dayNames = dayNames.slice(0);
-            for (var i = 0; i < weekStartsOn; i++) {
-              dayNames.push(dayNames.shift());
+            return {
+              date: localDate,
+              formattedDate: formattedDate,
+              today: formattedDate === dateFilter(new Date(), format),
+              disabled: disabled,
+              outOfMinRange: outOfMinRange,
+              outOfMaxRange: outOfMaxRange,
+              monthOffset: monthOffset,
+              enabled: !(disabled || outOfMinRange || outOfMaxRange || outOfMonth)
+            };
+          },
+
+          buildDates: function(year, month, options) {
+            var dates      = [],
+                date       = new Date(year, month, 1, 3),
+                lastDate   = new Date(year, month + 1, 0, 3);
+
+            options        = options || {};
+            currentDate    = angular.copy(date);
+
+            while (date.getDay() !== weekStartsOn) date.setDate(date.getDate() - 1);
+
+            for (var i = 0; i < 42; i++) {  // 42 == 6 rows of dates
+              if (noExtraRows && date.getDay() === weekStartsOn && date > lastDate) break;
+
+              dates.push(this.buildDateObject(date));
+              date.setDate(date.getDate() + 1);
             }
+
+            return dates;
+          },
+
+          buildDayNames: function() {
+            var dayNames = $locale.DATETIME_FORMATS.SHORTDAY;
+
+            if (weekStartsOn) {
+              dayNames = dayNames.slice(0);
+              for (var i = 0; i < weekStartsOn; i++) dayNames.push(dayNames.shift());
+            }
+            return dayNames;
+          },
+
+          getMonthOffset: function(date1, date2) {
+            return date1.getMonth() - date2.getMonth() + (12 * (date1.getFullYear() - date2.getFullYear()));
           }
-          return dayNames;
-        }
+        };
       };
+
     }])
 
-    .directive('pickadate', ['$locale', '$sce', '$compile', '$document', '$window', 'pickadateUtils',
-      'pickadateI18n', 'dateFilter', function($locale, $sce, $compile, $document, $window, dateUtils, i18n, dateFilter) {
+    .directive('pickadate', ['$locale', '$sce', '$compile', '$document', '$window', 'pickadateDateHelper',
+      'pickadateI18n', 'pickadateModalBindings', 'filterFilter', function($locale, $sce, $compile, $document, $window,
+                                                                          dateHelperFactory, i18n, modalBindings, filter) {
 
       var TEMPLATE =
-        '<div class="pickadate" ng-show="displayPicker" ng-style="styles">' +
+        '<div class="pickadate" ng-show="displayPicker" ng-style="modalStyles">' +
           '<div class="pickadate-header">' +
             '<div class="pickadate-controls">' +
               '<a href="" class="pickadate-prev" ng-click="changeMonth(-1)" ng-show="allowPrevMonth">' +
@@ -133,8 +235,8 @@
                 '</li>' +
               '</ul>' +
               '<ul class="pickadate-cell">' +
-                '<li ng-repeat="d in dates" ng-click="setDate(d)" ng-class="classesFor(d)">' +
-                  '{{d.dateObj | date:"d"}}' +
+                '<li ng-repeat="dateObj in dates" ng-click="setDate(dateObj)" ng-class="classesFor(dateObj)">' +
+                  '{{dateObj.date | date:"d"}}' +
                 '</li>' +
               '</ul>' +
             '</div>' +
@@ -148,56 +250,63 @@
           minDate: '=',
           maxDate: '=',
           disabledDates: '=',
-          weekStartsOn: '=',
+          weekStartsOn: '='
         },
 
         link: function(scope, element, attrs, ngModel)  {
-          var noExtraRows   = attrs.hasOwnProperty('noExtraRows'),
-              allowMultiple = attrs.hasOwnProperty('multiple'),
-              weekStartsOn  = scope.weekStartsOn,
-              selectedDates = [],
-              wantsModal    = element[0] instanceof HTMLInputElement,
-              compiledHtml  = $compile(TEMPLATE)(scope),
-              format        = (attrs.format || 'yyyy-MM-dd').replace(/m/g, 'M'),
-              minDate, maxDate;
+          var allowMultiple           = attrs.hasOwnProperty('multiple'),
+              selectedDates           = [],
+              wantsModal              = element[0] instanceof HTMLInputElement,
+              compiledHtml            = $compile(TEMPLATE)(scope),
+              format                  = (attrs.format || 'yyyy-MM-dd').replace(/m/g, 'M'),
+              dateHelper              = dateHelperFactory(format, {
+                previousMonthSelectable: /^(previous|both)$/.test(attrs.selectOtherMonths),
+                nextMonthSelectable:     /^(next|both)$/.test(attrs.selectOtherMonths),
+                weekStartsOn: scope.weekStartsOn,
+                noExtraRows: attrs.hasOwnProperty('noExtraRows')
+              });
 
           scope.displayPicker = !wantsModal;
 
-          if (!angular.isNumber(weekStartsOn) || weekStartsOn < 0 || weekStartsOn > 6) {
-            weekStartsOn = 0;
-          }
-
           scope.setDate = function(dateObj) {
-            if (isOutOfRange(dateObj.dateObj) || isDateDisabled(dateObj.date)) return;
-            selectedDates = allowMultiple ? toggleDate(dateObj.date, selectedDates) : [dateObj.date];
+            if (!dateObj.enabled) return;
+            selectedDates = allowMultiple ? toggleDate(dateObj, selectedDates) : [dateObj];
+
             setViewValue(selectedDates);
+
+            scope.changeMonth(dateObj.monthOffset);
             scope.displayPicker = !wantsModal;
           };
 
           var $render = ngModel.$render = function(options) {
-            options = options || {};
-
             if (angular.isArray(ngModel.$viewValue)) {
               selectedDates = ngModel.$viewValue;
             } else if (ngModel.$viewValue) {
               selectedDates = [ngModel.$viewValue];
             }
 
-            scope.currentDate = dateUtils.parseDate(scope.defaultDate, format) ||
-              dateUtils.parseDate(selectedDates[0], format) || new Date();
+            scope.currentDate = dateHelper.parseDate(scope.defaultDate || selectedDates[0]) || new Date();
 
-            selectedDates = enabledDatesOf(selectedDates);
+            dateHelper.setRestrictions(scope);
+
+            selectedDates = map(selectedDates, function(date) {
+              return dateHelper.buildDateObject(dateHelper.parseDate(date));
+            });
+
+            selectedDates = filter(selectedDates, { enabled: true });
 
             setViewValue(selectedDates, options);
             render();
           };
 
           scope.classesFor = function(date) {
-            var extraClasses = indexOf.call(selectedDates, date.date) >= 0 ? 'pickadate-active' : null;
-            return date.classNames.concat(extraClasses);
+            var formattedDates = map(selectedDates, 'formattedDate'),
+                classes        = indexOf.call(formattedDates, date.formattedDate) >= 0 ? 'pickadate-active' : null;
+            return date.classNames.concat(classes);
           };
 
           scope.changeMonth = function(offset) {
+            if (!offset) return;
             // If the current date is January 31th, setting the month to date.getMonth() + 1
             // sets the date to March the 3rd, since the date object adds 30 days to the current
             // date. Settings the date to the 2nd day of the month is a workaround to prevent this
@@ -208,57 +317,22 @@
           };
 
           // Workaround to watch multiple properties. XXX use $scope.$watchGroup in angular 1.3
-          scope.$watch(function(){
+          scope.$watch(function() {
             return angular.toJson([scope.minDate, scope.maxDate, scope.disabledDates]);
-          }, function() {
-            minDate = dateUtils.parseDate(scope.minDate, format) || new Date(0);
-            maxDate = dateUtils.parseDate(scope.maxDate, format) || new Date(99999999999999);
-
-            $render();
-          });
+          }, $render);
 
           // Insert datepicker into DOM
           if (wantsModal) {
-            var togglePicker = function(toggle) {
-              scope.displayPicker = toggle;
-              scope.$apply();
-            };
-
-            element.on('focus', function() {
-              var supportPageOffset = $window.pageXOffset !== undefined,
-                  isCSS1Compat = (($document.compatMode || "") === "CSS1Compat"),
-                  scrollX = supportPageOffset ? $window.pageXOffset : isCSS1Compat ? $document.documentElement.scrollLeft : $document.body.scrollLeft,
-                  scrollY = supportPageOffset ? $window.pageYOffset : isCSS1Compat ? $document.documentElement.scrollTop : $document.body.scrollTop,
-                  innerWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth;
-
-              scope.styles = { top: scrollY + element[0].getBoundingClientRect().bottom + 'px' };
-
-              if ((innerWidth - element[0].getBoundingClientRect().left ) >= 300) {
-                scope.styles.left = scrollX + element[0].getBoundingClientRect().left  + 'px';
-              } else {
-                scope.styles.right = innerWidth - element[0].getBoundingClientRect().right - scrollX + 'px';
-              }
-
-              togglePicker(true);
-            });
-
-            element.on('keydown', function(e) {
-              if (indexOf.call([9, 13, 27], e.keyCode) >= 0) togglePicker(false);
-            });
+            modalBindings(scope, element, compiledHtml[0]);
 
             // if the user types a date, update the picker and set validity
             scope.$watch(function() {
               return ngModel.$viewValue;
             }, function(val) {
-              var isValidDate = dateUtils.parseDate(val, format);
+              var isValidDate = dateHelper.parseDate(val);
 
               if (isValidDate) $render({ skipRenderInput: true });
               ngModel.$setValidity('date', !!isValidDate);
-            });
-
-            $document.on('click', function(e) {
-              if (isDescendant(compiledHtml[0], e.target) || e.target === element[0]) return;
-              togglePicker(false);
             });
 
             // if the input element has a value, set it as the ng-model
@@ -272,79 +346,39 @@
           }
 
           function render() {
-            var initialDate   = new Date(scope.currentDate.getFullYear(), scope.currentDate.getMonth(), 1, 3),
-                currentMonth  = initialDate.getMonth() + 1,
-                allDates      = dateUtils.buildDates(initialDate, { weekStartsOn: weekStartsOn, noExtraRows: noExtraRows }),
-                dates         = [],
-                today         = dateFilter(new Date(), format);
+            var dates = dateHelper.buildDates(scope.currentDate.getFullYear(), scope.currentDate.getMonth());
 
-            var nextMonthInitialDate = new Date(initialDate);
-            nextMonthInitialDate.setMonth(currentMonth);
+            scope.allowPrevMonth = dateHelper.allowPrevMonth();
+            scope.allowNextMonth = dateHelper.allowNextMonth();
+            scope.dayNames       = dateHelper.buildDayNames();
 
-            scope.allowPrevMonth = !minDate || initialDate > minDate;
-            scope.allowNextMonth = !maxDate || nextMonthInitialDate <= maxDate;
-            scope.dayNames       = dateUtils.buildDayNames(weekStartsOn);
+            scope.dates = map(dates, function(date) {
+              date.classNames = [date.enabled ? 'pickadate-enabled' : 'pickadate-disabled'];
 
-            for (var i = 0; i < allDates.length; i++) {
-              var classNames = [],
-                  dateObj    = allDates[i],
-                  date       = dateFilter(dateObj, format),
-                  isDisabled = isDateDisabled(date);
+              if (date.today)    date.classNames.push('pickadate-today');
+              if (date.disabled) date.classNames.push('pickadate-unavailable');
 
-              if (isOutOfRange(dateObj) || isDisabled) {
-                classNames.push('pickadate-disabled');
-              } else {
-                classNames.push('pickadate-enabled');
-              }
-
-              if (isDisabled)     classNames.push('pickadate-unavailable');
-              if (date === today) classNames.push('pickadate-today');
-
-              dates.push({date: date, dateObj: dateObj, classNames: classNames});
-            }
-
-            scope.dates = dates;
+              return date;
+            });
           }
 
           function setViewValue(value, options) {
             options = options || {};
 
             if (allowMultiple) {
-              ngModel.$setViewValue(value);
+              ngModel.$setViewValue(map(value, 'formattedDate'));
             } else {
-              ngModel.$setViewValue(value[0]);
+              ngModel.$setViewValue(value[0] && value[0].formattedDate);
             }
+
             if (!options.skipRenderInput) element.val(ngModel.$viewValue);
           }
 
-          function enabledDatesOf(dateArray) {
-            var resultArray = [];
-
-            for (var i = 0; i < dateArray.length; i++) {
-              var date = dateArray[i];
-
-              if (!isDateDisabled(date) && !isOutOfRange(dateUtils.parseDate(date, format))) {
-                resultArray.push(date);
-              }
-            }
-
-            return resultArray;
-          }
-
-          function isOutOfRange(date) {
-            return date < minDate || date > maxDate || dateFilter(date, 'M') !== dateFilter(scope.currentDate, 'M');
-          }
-
-          function isDateDisabled(date) {
-            return indexOf.call(scope.disabledDates || [], date) >= 0;
-          }
-
-          function toggleDate(date, dateArray) {
-            var index = indexOf.call(dateArray, date);
+          function toggleDate(dateObj, dateArray) {
+            var index = indexOf.call(dateArray, dateObj);
             if (index === -1) {
-              dateArray.push(date);
-            }
-            else {
+              dateArray.push(dateObj);
+            } else {
               dateArray.splice(index, 1);
             }
             return dateArray;

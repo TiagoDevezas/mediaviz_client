@@ -1,6 +1,6 @@
 {
   "name": "angular-pickadate",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/restorando/angular-pickadate",
   "authors": [
     "Gabriel Schammah <gschammah@gmail.com>"
@@ -14,8 +14,8 @@
     "date"
   ],
   "main": [
-    "src/angular-pickadate.js",
-    "src/angular-pickadate.css"
+    "dist/angular-pickadate.js",
+    "dist/angular-pickadate.css"
   ],
   "dependencies": {
     "angular": "1.x"
@@ -32,11 +32,11 @@
     "karma.conf.js",
     "LICENSE"
   ],
-  "_release": "1.0.0",
+  "_release": "1.1.0",
   "_resolution": {
     "type": "version",
-    "tag": "1.0.0",
-    "commit": "e89022cfb5ab7abbb26139b05a62f9147fd8f247"
+    "tag": "1.1.0",
+    "commit": "06f41026aeec5eac848d10861110f7b233a58a4d"
   },
   "_source": "git://github.com/restorando/angular-pickadate.git",
   "_target": "*",

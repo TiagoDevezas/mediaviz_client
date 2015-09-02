@@ -24,13 +24,21 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   if($scope.SAPOMode) {
     $scope.sourceList = SourceList.getSAPONewsList();
     $scope.defaultSource = 'Todas';
-    $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: $scope.defaultSource}, true)[0];
+    $timeout(function() {
+      if(!$scope.urlParams.source) {
+        $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: $scope.defaultSource}, true)[0];
+      }
+    }, 600);
     // $scope.selectedIndex.value = 0;
   } else {
     SourceList.getDefaultList().then(function(data) {
       $scope.sourceList = data;
-      $scope.defaultSource = 'national'
-      $scope.urlParams.source = $filter('filter')($scope.sourceList, {acronym: $scope.defaultSource}, true)[0];
+      $scope.defaultSource = 'national';
+      $timeout(function() {
+        if(!$scope.urlParams.source) {
+          $scope.urlParams.source = $filter('filter')($scope.sourceList, {acronym: $scope.defaultSource}, true)[0];
+        }
+      }, 600);
     });
   }
 
