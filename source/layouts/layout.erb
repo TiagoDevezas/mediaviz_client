@@ -16,10 +16,10 @@
     <%= javascript_include_tag  "all" %>
   </head>
   
-  <body layout="row" ng-cloak ng-controller="RootCtrl">
+  <body ng-cloak ng-controller="RootCtrl">
     
     <%= partial 'partials/sidenav' %>
-    <div layout="column" role="main" flex>
+    <div role="main">
       <%= partial 'partials/main_toolbar' %>
       <md-content ng-view layout-padding style="background-color: #EDECEC;"></md-content>
     </div>

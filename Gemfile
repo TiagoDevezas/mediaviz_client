@@ -12,7 +12,7 @@ gem "middleman", "~>3.3.7"
 
 gem "uglifier"
 
-# Auto inject angularjs annotation
+# Auto inject angularjs annotations
 gem 'middleman-ngannotate'
 
 # Faster js minification
