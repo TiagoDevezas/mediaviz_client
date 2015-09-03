@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0-rc1-master-ffdbb69
+ * v0.11.0-rc1-master-ffbcff3
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -14,8 +14,8 @@
 angular
   .module('material.core', [
     'ngAnimate',
-    'material.animate',
-    'material.layout',
+    'material.core.animate',
+    'material.core.layout',
     'material.core.gestures',
     'material.core.theming'
   ])
@@ -2265,7 +2265,7 @@ function InterimElementProvider() {
        *
        */
       function hide(reason, options) {
-        if ( !stack.length ) return $q.when(reason);
+        if ( !stack.length ) return $q.when(reason || SHOW_CLOSED);
         options = options || {};
 
         if (options.closeAll) {
@@ -2303,7 +2303,7 @@ function InterimElementProvider() {
        */
       function cancel(reason) {
         var interim = stack.shift();
-        if ( !interim ) return $q.when(reason);
+        if ( !interim ) return $q.when(reason || SHOW_CANCELLED);
 
         interim
           .remove(reason || SHOW_CANCELLED, true)
@@ -2573,19 +2573,6 @@ function InterimElementProvider() {
       }
     };
 
-    /**
-     * Replace `{{` and `}}` in a string (usually a template) with the actual start-/endSymbols used
-     * for interpolation. This allows pre-defined templates (for components such as dialog, toast etc)
-     * to continue to work in apps that use custom interpolation start-/endSymbols.
-     *
-     * @param {string} text The text in which to replace `{{` / `}}`
-     * @returns {string} The modified string using the actual interpolation start-/endSymbols
-     */
-    function replaceInterpolationSymbols(text) {
-      if (!text || !angular.isString(text)) return text;
-      return text.replace(/\{\{/g, startSymbol).replace(/}}/g, endSymbol);
-    }
-
   }
 
 }
@@ -2632,7 +2619,7 @@ function InterimElementProvider() {
      *  }
      *  ```
      */
-    angular.module('material.layout', [ 'ng' ])
+    angular.module('material.core.layout', [ 'ng' ])
 
       // Attribute directives with optional value(s)
 
@@ -4612,7 +4599,7 @@ function AnimateDomUtils($mdUtil, $q, $timeout, $mdConstant, $animateCss) {
 "use strict";
 
 if (angular.version.minor >= 4) {
-  angular.module('material.animate', []);
+  angular.module('material.core.animate', []);
 } else {
 (function() {
 
@@ -4747,7 +4734,7 @@ if (angular.version.minor >= 4) {
   }];
 
   angular
-    .module('material.animate', [])
+    .module('material.core.animate', [])
     .factory('$$forceReflow', $$ForceReflowFactory)
     .factory('$$AnimateRunner', $$AnimateRunnerFactory)
     .factory('$$rAFMutex', $$rAFMutexFactory)
@@ -4787,7 +4774,7 @@ if (angular.version.minor >= 4) {
         var events, eventFn;
 
         return {
-          close: close,
+          close: $window.close,
           start: function() {
             var runner = new $$AnimateRunner();
             waitUntilQuiet(function() {

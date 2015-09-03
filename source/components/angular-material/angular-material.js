@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0-rc1-master-ffdbb69
+ * v0.11.0-rc1-master-ffbcff3
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -10,7 +10,7 @@
 (function(){
 "use strict";
 
-angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","material.core.gestures","material.layout","material.core.theming.palette","material.core.theming","material.animate","material.components.autocomplete","material.components.backdrop","material.components.bottomSheet","material.components.button","material.components.card","material.components.checkbox","material.components.chips","material.components.content","material.components.datepicker","material.components.dialog","material.components.divider","material.components.fabActions","material.components.fabShared","material.components.fabSpeedDial","material.components.fabToolbar","material.components.fabTrigger","material.components.gridList","material.components.icon","material.components.input","material.components.list","material.components.menu","material.components.menuBar","material.components.progressCircular","material.components.progressLinear","material.components.radioButton","material.components.select","material.components.sidenav","material.components.slider","material.components.sticky","material.components.subheader","material.components.swipe","material.components.switch","material.components.tabs","material.components.toast","material.components.toolbar","material.components.tooltip","material.components.virtualRepeat","material.components.whiteframe"]);
+angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","material.core.gestures","material.core.layout","material.core.theming.palette","material.core.theming","material.core.animate","material.components.autocomplete","material.components.backdrop","material.components.bottomSheet","material.components.button","material.components.card","material.components.checkbox","material.components.chips","material.components.content","material.components.datepicker","material.components.dialog","material.components.divider","material.components.fabActions","material.components.fabShared","material.components.fabSpeedDial","material.components.fabToolbar","material.components.fabTrigger","material.components.gridList","material.components.icon","material.components.input","material.components.list","material.components.menu","material.components.menuBar","material.components.progressCircular","material.components.progressLinear","material.components.radioButton","material.components.select","material.components.sidenav","material.components.slider","material.components.sticky","material.components.subheader","material.components.swipe","material.components.switch","material.components.tabs","material.components.toast","material.components.toolbar","material.components.tooltip","material.components.virtualRepeat","material.components.whiteframe"]);
 })();
 (function(){
 "use strict";
@@ -22,8 +22,8 @@ angular.module('ngMaterial', ["ng","ngAnimate","ngAria","material.core","materia
 angular
   .module('material.core', [
     'ngAnimate',
-    'material.animate',
-    'material.layout',
+    'material.core.animate',
+    'material.core.layout',
     'material.core.gestures',
     'material.core.theming'
   ])
@@ -2305,7 +2305,7 @@ function InterimElementProvider() {
        *
        */
       function hide(reason, options) {
-        if ( !stack.length ) return $q.when(reason);
+        if ( !stack.length ) return $q.when(reason || SHOW_CLOSED);
         options = options || {};
 
         if (options.closeAll) {
@@ -2343,7 +2343,7 @@ function InterimElementProvider() {
        */
       function cancel(reason) {
         var interim = stack.shift();
-        if ( !interim ) return $q.when(reason);
+        if ( !interim ) return $q.when(reason || SHOW_CANCELLED);
 
         interim
           .remove(reason || SHOW_CANCELLED, true)
@@ -2613,19 +2613,6 @@ function InterimElementProvider() {
       }
     };
 
-    /**
-     * Replace `{{` and `}}` in a string (usually a template) with the actual start-/endSymbols used
-     * for interpolation. This allows pre-defined templates (for components such as dialog, toast etc)
-     * to continue to work in apps that use custom interpolation start-/endSymbols.
-     *
-     * @param {string} text The text in which to replace `{{` / `}}`
-     * @returns {string} The modified string using the actual interpolation start-/endSymbols
-     */
-    function replaceInterpolationSymbols(text) {
-      if (!text || !angular.isString(text)) return text;
-      return text.replace(/\{\{/g, startSymbol).replace(/}}/g, endSymbol);
-    }
-
   }
 
 }
@@ -2676,7 +2663,7 @@ function InterimElementProvider() {
      *  }
      *  ```
      */
-    angular.module('material.layout', [ 'ng' ])
+    angular.module('material.core.layout', [ 'ng' ])
 
       // Attribute directives with optional value(s)
 
@@ -4696,7 +4683,7 @@ function AnimateDomUtils($mdUtil, $q, $timeout, $mdConstant, $animateCss) {
 "use strict";
 
 if (angular.version.minor >= 4) {
-  angular.module('material.animate', []);
+  angular.module('material.core.animate', []);
 } else {
 (function() {
 
@@ -4831,7 +4818,7 @@ if (angular.version.minor >= 4) {
   }];
 
   angular
-    .module('material.animate', [])
+    .module('material.core.animate', [])
     .factory('$$forceReflow', $$ForceReflowFactory)
     .factory('$$AnimateRunner', $$AnimateRunnerFactory)
     .factory('$$rAFMutex', $$rAFMutexFactory)
@@ -4871,7 +4858,7 @@ if (angular.version.minor >= 4) {
         var events, eventFn;
 
         return {
-          close: close,
+          close: $window.close,
           start: function() {
             var runner = new $$AnimateRunner();
             waitUntilQuiet(function() {
@@ -8169,7 +8156,7 @@ function MdDialogProvider($$interimElementProvider) {
       function wrapSimpleContent() {
         if ( controller ) {
           var HTML_END_TAG = /<\/[\w-]*>/gm;
-          var content = controller.content;
+          var content = controller.content || "";
 
           var hasHTML = HTML_END_TAG.test(content);
           if (!hasHTML) {
@@ -13724,7 +13711,6 @@ function MdSticky($document, $mdConstant, $$rAF, $mdUtil) {
     contentEl.on('$scroll', onScroll);
 
     var self;
-    var stickyBaseoffset = contentEl.prop('offsetTop');
     return self = {
       prev: null,
       current: null, //the currently stickied item
@@ -13740,7 +13726,6 @@ function MdSticky($document, $mdConstant, $$rAF, $mdUtil) {
     // Add an element and its sticky clone to this content's sticky collection
     function add(element, stickyClone) {
       stickyClone.addClass('md-sticky-clone');
-      stickyClone.css('top', stickyBaseoffset + 'px');
 
       var item = {
         element: element,
@@ -14681,7 +14666,9 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming, $animate) {
 
       $mdTheming(element);
 
-      setupScrollShrink();
+      if (angular.isDefined(attr.mdScrollShrink)) {
+        setupScrollShrink();
+      }
 
       function setupScrollShrink() {
 
@@ -14713,7 +14700,7 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming, $animate) {
         // If the scope is destroyed (which could happen with ng-if), make sure
         // to disable scroll shrinking again
 
-        scope.$on('$destroy', disableScrollShrink );
+        scope.$on('$destroy', disableScrollShrink);
 
         /**
          *
@@ -14728,9 +14715,15 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming, $animate) {
             onMdContentLoad(null, closestContent);
           }
 
-          // Disable only if the attribute's expression evaluates to false
+          // Evaluate the expression
+          shrinkWithScroll = scope.$eval(shrinkWithScroll);
 
-         if ( shrinkWithScroll )  disableScrollShrink = enableScrollShrink();
+          // Disable only if the attribute's expression evaluates to false
+          if (shrinkWithScroll === false) {
+            disableScrollShrink();
+          } else {
+            disableScrollShrink = enableScrollShrink();
+          }
         }
 
         /**
@@ -14783,7 +14776,7 @@ function mdToolbarDirective($$rAF, $mdConstant, $mdUtil, $mdTheming, $animate) {
          *
          */
         function enableScrollShrink() {
-          if ( !contentElement )     return angular.noop;           // no md-content
+          if (!contentElement)     return angular.noop;           // no md-content
 
           contentElement.on('scroll', debouncedContentScroll);
           contentElement.attr('scroll-shrink', 'true');
@@ -16983,7 +16976,7 @@ var DELETE_HINT_TEMPLATE = '\
  * @ngInject
  */
 function MdChip($mdTheming, $mdUtil) {
-  convertTemplates();
+  var hintTemplate = $mdUtil.processTemplate(DELETE_HINT_TEMPLATE);
 
   return {
     restrict: 'E',
@@ -16993,7 +16986,7 @@ function MdChip($mdTheming, $mdUtil) {
 
   function compile(element, attr) {
     // Append the delete template
-    element.append($mdUtil.processTemplate(DELETE_HINT_TEMPLATE));
+    element.append($mdUtil.processTemplate(hintTemplate));
 
     return function postLink(scope, element, attr, ctrl) {
       element.addClass('md-chip');
@@ -17004,10 +16997,6 @@ function MdChip($mdTheming, $mdUtil) {
             ctrl.selectedChip = -1;
           });
     };
-  }
-
-  function convertTemplates() {
-    DELETE_HINT_TEMPLATE = $mdUtil.processTemplate(DELETE_HINT_TEMPLATE);
   }
 }
 MdChip.$inject = ["$mdTheming", "$mdUtil"];
@@ -17665,7 +17654,7 @@ MdChipsCtrl.prototype.hasFocus = function () {
    */
   function MdChips ($mdTheming, $mdUtil, $compile, $log, $timeout) {
     // Run our templates through $mdUtil.processTemplate() to allow custom start/end symbols
-    convertTemplates();
+    var templates = getTemplates();
 
     return {
       template: function(element, attrs) {
@@ -17674,7 +17663,7 @@ MdChipsCtrl.prototype.hasFocus = function () {
         // element propagates to the link function via the attrs argument,
         // where various contained-elements can be consumed.
         attrs['$mdUserTemplate'] = element.clone();
-        return MD_CHIPS_TEMPLATE;
+        return templates.chips;
       },
       require: ['mdChips'],
       restrict: 'E',
@@ -17730,11 +17719,11 @@ MdChipsCtrl.prototype.hasFocus = function () {
 
       // Set the chip remove, chip contents and chip input templates. The link function will put
       // them on the scope for transclusion later.
-      var chipRemoveTemplate   = getTemplateByQuery('md-chips>*[md-chip-remove]') || CHIP_REMOVE_TEMPLATE,
-          chipContentsTemplate = getTemplateByQuery('md-chips>md-chip-template') || CHIP_DEFAULT_TEMPLATE,
+      var chipRemoveTemplate   = getTemplateByQuery('md-chips>*[md-chip-remove]') || templates.remove,
+          chipContentsTemplate = getTemplateByQuery('md-chips>md-chip-template') || templates.default,
           chipInputTemplate    = getTemplateByQuery('md-chips>md-autocomplete')
               || getTemplateByQuery('md-chips>input')
-              || CHIP_INPUT_TEMPLATE,
+              || templates.input,
           staticChips = userTemplate.find('md-chip');
 
       // Warn of malformed template. See #2545
@@ -17783,7 +17772,7 @@ MdChipsCtrl.prototype.hasFocus = function () {
           // The md-autocomplete and input elements won't be compiled until after this directive
           // is complete (due to their nested nature). Wait a tick before looking for them to
           // configure the controller.
-          if (chipInputTemplate != CHIP_INPUT_TEMPLATE) {
+          if (chipInputTemplate != templates.input) {
             // The autocomplete will not appear until the readonly attribute is not true (i.e.
             // false or undefined), so we have to watch the readonly and then on the next tick
             // after the chip transclusion has run, we can configure the autocomplete and user
@@ -17810,11 +17799,13 @@ MdChipsCtrl.prototype.hasFocus = function () {
       };
     }
 
-    function convertTemplates() {
-      MD_CHIPS_TEMPLATE = $mdUtil.processTemplate(MD_CHIPS_TEMPLATE);
-      CHIP_INPUT_TEMPLATE = $mdUtil.processTemplate(CHIP_INPUT_TEMPLATE);
-      CHIP_DEFAULT_TEMPLATE = $mdUtil.processTemplate(CHIP_DEFAULT_TEMPLATE);
-      CHIP_REMOVE_TEMPLATE = $mdUtil.processTemplate(CHIP_REMOVE_TEMPLATE);
+    function getTemplates() {
+      return {
+        chips: $mdUtil.processTemplate(MD_CHIPS_TEMPLATE),
+        input: $mdUtil.processTemplate(CHIP_INPUT_TEMPLATE),
+        default: $mdUtil.processTemplate(CHIP_DEFAULT_TEMPLATE),
+        remove: $mdUtil.processTemplate(CHIP_REMOVE_TEMPLATE)
+      };
     }
   }
   MdChips.$inject = ["$mdTheming", "$mdUtil", "$compile", "$log", "$timeout"];
