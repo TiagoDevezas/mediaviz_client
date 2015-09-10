@@ -6,7 +6,7 @@ return {
       selected: '='
     },
     template: 
-      '<md-chips ng-model="selected" md-autocomplete-snap md-require-match>' +
+      '<md-chips ng-model="selected" md-autocomplete-snap md-require-match="true">' +
         '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="source.name" md-selected-item-change="selectedItemChange()" placeholder="Escolher fonte">' +
           '<span md-highlight-text="searchText" md-highlight-flags="">{{source.name}}</span>' +
         '</md-autocomplete>' +
