@@ -210,7 +210,7 @@ mediavizDirectives.directive('downloadBar', function($window) {
             if (chartStyle[i].type === 1) {
               selector = chartStyle[i].selectorText;
               styles = makeStyleObject(chartStyle[i]);
-              d3.selectAll(selector).each(applyStyles);
+              d3.selectAll(selector + ":not(.c3-legend-item-tile)").each(applyStyles);
               // angular.element(selector).not('.c3-chart path').not('.c3-legend-item-tile').css(styles);
             }
 
