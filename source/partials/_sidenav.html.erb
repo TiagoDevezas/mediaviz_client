@@ -1,17 +1,17 @@
-<md-sidenav md-component-id="left" class="md-sidenav-left md-whiteframe-z2"">
+<md-sidenav md-component-id="left" class="md-sidenav-left">
 	<md-toolbar class="md-default-theme">
 		<h1 class="md-toolbar-tools">
 		<md-button class="md-icon-button md-button md-default-theme" ng-click="toggleMenu()">
-			<md-icon style="color: #fff;">menu</md-icon>
+			<md-icon>menu</md-icon>
 		</md-button>
 		<a href="#/" ng-click="toggleMenu()">MediaViz</a>
 		</h1>
 	</md-toolbar>
 
 	<md-content role="navigation">
-		<ul class="sidenav">
+		<ul class="links-sidenav">
 			<li>
-				<md-button ng-repeat="tool in toolsToDisplay" ng-href="#{{tool.url}}" ng-click="toggleMenu()">{{tool.name}}</md-button>
+				<md-button ng-repeat="tool in toolsToDisplay" ng-href="#{{tool.url}}" ng-click="toggleMenu()" class="button-sidenav">{{tool.name}}</md-button>
 			</li>
 		</ul>
 	</md-content>
