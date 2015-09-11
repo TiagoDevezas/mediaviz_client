@@ -1,15 +1,9 @@
 @charset "utf-8";
 
-// @import "bourbon";
-// @import "base/base";
-// @import "neat";
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic);
+
 @import "../components/angular-material/angular-material";
-// @import "../components/c3/c3";
-// @import url(//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.css);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
-// @import "../components/angular-ui-select/dist/select";
-// @import "../components/angular-pickadate/src/angular-pickadate";
-// @import "../components/md-date-time/dist/md-date-time";
 
 @import "../components/mdPickers/dist/mdPickers.min";
 
@@ -26,7 +20,9 @@ body {
   background-color: #EDECEC;
 }
 
-
+.white-bg {
+  background-color: #fff !important;
+}
 
 .map-container {
   border-radius: 4px;

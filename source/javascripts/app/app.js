@@ -38,8 +38,14 @@ mediavizApp.run(function($rootScope, $location, $window) {
 mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 	function($mdThemingProvider, $routeProvider, uiSelectConfig, $locationProvider) {
 
+		// var cyanWhiteMap = $mdThemingProvider.extendPalette('cyan', {
+	 //    '500': 'ffffff'
+	 //  });
+
+	 //  $mdThemingProvider.definePalette('cyanWhite', cyanWhiteMap);
+
 		$mdThemingProvider.theme('default')
-			.primaryPalette('cyan')
+			.primaryPalette('grey')
 			.accentPalette('red');
 
 		$mdThemingProvider.theme('sapoTheme')
