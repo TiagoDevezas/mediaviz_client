@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0
+ * v0.11.0-master-dfa4dc6
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -353,7 +353,9 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $mdAria, $rootElement, 
         selectEl.data('$mdSelectController', mdSelectCtrl);
         selectScope = scope.$new();
         $mdTheming.inherit(selectContainer, element);
-        selectContainer[0].setAttribute('class', selectContainer[0].getAttribute('class') + ' ' + element.attr('md-container-class'));
+        if (element.attr('md-container-class')) {
+          selectContainer[0].setAttribute('class', selectContainer[0].getAttribute('class') + ' ' + element.attr('md-container-class'));
+        }
         selectContainer = $compile(selectContainer)(selectScope);
         selectMenuCtrl = selectContainer.find('md-select-menu').controller('mdSelectMenu');
       }
@@ -1139,12 +1141,12 @@ function SelectProvider($$interimElementProvider) {
            */
           function mouseOnScrollbar() {
             var clickOnScrollbar = false;
-            if(ev && (ev.currentTarget.children.length > 0)) {
+            if (ev && (ev.currentTarget.children.length > 0)) {
               var child = ev.currentTarget.children[0];
               var hasScrollbar = child.scrollHeight > child.clientHeight;
               if (hasScrollbar && child.children.length > 0) {
                 var relPosX = ev.pageX - ev.currentTarget.getBoundingClientRect().left;
-                if(relPosX > child.children[0].offsetWidth)
+                if (relPosX > child.querySelector('md-option').offsetWidth)
                   clickOnScrollbar = true;
               }
             }

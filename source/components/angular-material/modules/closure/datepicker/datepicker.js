@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0
+ * v0.11.0-master-dfa4dc6
  */
 goog.provide('ng.material.components.datepicker');
 goog.require('ng.material.components.icon');
@@ -513,10 +513,13 @@ goog.require('ng.material.core');
    * This should only need to be called once during initialization.
    */
   CalendarCtrl.prototype.buildWeekHeader = function() {
+    var firstDayOfWeek = this.dateLocale.firstDayOfWeek;
+    var shortDays = this.dateLocale.shortDays;
+
     var row = document.createElement('tr');
     for (var i = 0; i < 7; i++) {
       var th = document.createElement('th');
-      th.textContent = this.dateLocale.shortDays[i];
+      th.textContent = shortDays[(i + firstDayOfWeek) % 7];
       row.appendChild(th);
     }
 
@@ -715,7 +718,7 @@ goog.require('ng.material.core');
     var date = this.dateUtil.isValidDate(opt_dateInMonth) ? opt_dateInMonth : new Date();
 
     var firstDayOfMonth = this.dateUtil.getFirstDateOfMonth(date);
-    var firstDayOfTheWeek = firstDayOfMonth.getDay();
+    var firstDayOfTheWeek = this.getLocaleDay_(firstDayOfMonth);
     var numberOfDaysInMonth = this.dateUtil.getNumberOfDaysInMonth(date);
 
     // Store rows for the month in a document fragment so that we can append them all at once.
@@ -806,6 +809,15 @@ goog.require('ng.material.core');
     return monthBody;
   };
 
+  /**
+   * Gets the day-of-the-week index for a date for the current locale.
+   * @private
+   * @param {Date} date
+   * @returns {number} The column index of the date in the calendar.
+   */
+  CalendarMonthCtrl.prototype.getLocaleDay_ = function(date) {
+    return (date.getDay() + (7 - this.dateLocale.firstDayOfWeek)) % 7
+  };
 })();
 
 (function() {
@@ -828,6 +840,8 @@ goog.require('ng.material.core');
    * @property {(Array<string>)=} shortDays Array of abbreviated dayes of the week.
    * @property {(Array<string>)=} dates Array of dates of the month. Only necessary for locales
    *     using a numeral system other than [1, 2, 3...].
+   * @property {(Array<string>)=} firstDayOfWeek The first day of the week. Sunday = 0, Monday = 1,
+   *    etc.
    * @property {(function(string): Date)=} parseDate Function to parse a date object from a string.
    * @property {(function(Date): string)=} formatDate Function to format a date object to a string.
    * @property {(function(Date): string)=} monthHeaderFormatter Function that returns the label for
@@ -848,6 +862,9 @@ goog.require('ng.material.core');
    *     $mdDateLocaleProvider.days = ['dimanche', 'lundi', 'mardi', ...];
    *     $mdDateLocaleProvider.shortDays = ['Di', 'Lu', 'Ma', ...];
    *
+   *     // Can change week display to start on Monday.
+   *     $mdDateLocaleProvider.firstDayOfWeek = 1;
+   *
    *     // Optional.
    *     $mdDateLocaleProvider.dates = [1, 2, 3, 4, 5, 6, ...];
    *
@@ -861,7 +878,7 @@ goog.require('ng.material.core');
    *     };
    *
    *     $mdDateLocaleProvider.monthHeaderFormatter = function(date) {
-   *       myShortMonths[date.getMonth()] + ' ' + date.getFullYear();
+   *       return myShortMonths[date.getMonth()] + ' ' + date.getFullYear();
    *     };
    *
    *     // In addition to date display, date components also need localized messages
@@ -898,6 +915,9 @@ goog.require('ng.material.core');
 
       /** Array of dates of a month (1 - 31). Characters might be different in some locales. */
       this.dates = null;
+
+      /** Index of the first day of the week. 0 = Sunday, 1 = Monday, etc. */
+      this.firstDayOfWeek = 0;
 
       /**
        * Function that converts the date portion of a Date to a string.
@@ -956,7 +976,23 @@ goog.require('ng.material.core');
        * @returns {string}
        */
       function defaultFormatDate(date) {
-        return date ? date.toLocaleDateString() : '';
+        if (!date) {
+          return '';
+        }
+
+        // All of the dates created through ng-material *should* be set to midnight.
+        // If we encounter a date where the localeTime shows at 11pm instead of midnight,
+        // we have run into an issue with DST where we need to increment the hour by one:
+        // var d = new Date(1992, 9, 8, 0, 0, 0);
+        // d.toLocaleString(); // == "10/7/1992, 11:00:00 PM"
+        var localeTime = date.toLocaleTimeString();
+        var formatDate = date;
+        if (date.getHours() == 0 &&
+            (localeTime.indexOf('11:') !== -1 || localeTime.indexOf('23:') !== -1)) {
+          formatDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 1, 0, 0);
+        }
+
+        return formatDate.toLocaleDateString();
       }
 
       /**
@@ -1041,6 +1077,7 @@ goog.require('ng.material.core');
         days: this.days || $locale.DATETIME_FORMATS.DAY,
         shortDays: this.shortDays || defaultShortDays,
         dates: this.dates || defaultDates,
+        firstDayOfWeek: this.firstDayOfWeek || 0,
         formatDate: this.formatDate || defaultFormatDate,
         parseDate: this.parseDate || defaultParseDate,
         isDateComplete: this.isDateComplete || defaultIsDateComplete,
@@ -1161,6 +1198,26 @@ goog.require('ng.material.core');
   var DEFAULT_DEBOUNCE_INTERVAL = 500;
 
   /**
+   * Height of the calendar pane used to check if the pane is going outside the boundary of
+   * the viewport. See calendar.scss for how $md-calendar-height is computed; an extra 20px is
+   * also added to space the pane away from the exact edge of the screen.
+   *
+   *  This is computed statically now, but can be changed to be measured if the circumstances
+   *  of calendar sizing are changed.
+   */
+  var CALENDAR_PANE_HEIGHT = 368;
+
+  /**
+   * Width of the calendar pane used to check if the pane is going outside the boundary of
+   * the viewport. See calendar.scss for how $md-calendar-width is computed; an extra 20px is
+   * also added to space the pane away from the exact edge of the screen.
+   *
+   *  This is computed statically now, but can be changed to be measured if the circumstances
+   *  of calendar sizing are changed.
+   */
+  var CALENDAR_PANE_WIDTH = 360;
+
+  /**
    * Controller for md-datepicker.
    *
    * ngInject @constructor
@@ -1247,6 +1304,9 @@ goog.require('ng.material.core');
 
     /** Pre-bound click handler is saved so that the event listener can be removed. */
     this.bodyClickHandler = angular.bind(this, this.handleBodyClick);
+
+    /** Pre-bound resize handler so that the event listener can be removed. */
+    this.windowResizeHandler = $mdUtil.debounce(angular.bind(this, this.closeCalendarPane), 100);
 
     // Unless the user specifies so, the datepicker should not be a tab stop.
     // This is necessary because ngAria might add a tabindex to anything with an ng-model
@@ -1390,12 +1450,33 @@ goog.require('ng.material.core');
     var elementRect = this.inputContainer.getBoundingClientRect();
     var bodyRect = document.body.getBoundingClientRect();
 
-    calendarPane.style.left = (elementRect.left - bodyRect.left) + 'px';
-    calendarPane.style.top = (elementRect.top - bodyRect.top) + 'px';
+    // Check to see if the calendar pane would go off the screen. If so, adjust position
+    // accordingly to keep it within the viewport.
+    var paneTop = elementRect.top - bodyRect.top;
+    var paneLeft = elementRect.left - bodyRect.left;
+
+    // If the right edge of the pane would be off the screen and shifting it left by the
+    // difference would not go past the left edge of the screen.
+    if (paneLeft + CALENDAR_PANE_WIDTH > bodyRect.right &&
+        bodyRect.right - CALENDAR_PANE_WIDTH > 0) {
+      paneLeft = bodyRect.right - CALENDAR_PANE_WIDTH;
+      calendarPane.classList.add('md-datepicker-pos-adjusted');
+    }
+
+    // If the bottom edge of the pane would be off the screen and shifting it up by the
+    // difference would not go past the top edge of the screen.
+    if (paneTop + CALENDAR_PANE_HEIGHT > bodyRect.bottom &&
+        bodyRect.bottom - CALENDAR_PANE_HEIGHT > 0) {
+      paneTop = bodyRect.bottom - CALENDAR_PANE_HEIGHT;
+      calendarPane.classList.add('md-datepicker-pos-adjusted');
+    }
+
+    calendarPane.style.left = paneLeft + 'px';
+    calendarPane.style.top = paneTop + 'px';
     document.body.appendChild(this.calendarPane);
 
     // The top of the calendar pane is a transparent box that shows the text input underneath.
-    // Since the pane is flowing, though, the page underneath the pane *adjacent* to the input is
+    // Since the pane is floating, though, the page underneath the pane *adjacent* to the input is
     // also shown unless we cover it up. The inputMask does this by filling up the remaining space
     // based on the width of the input.
     this.inputMask.style.left = elementRect.width + 'px';
@@ -1410,6 +1491,7 @@ goog.require('ng.material.core');
   DatePickerCtrl.prototype.detachCalendarPane = function() {
     this.$element.removeClass('md-datepicker-open');
     this.calendarPane.classList.remove('md-pane-open');
+    this.calendarPane.classList.remove('md-datepicker-pos-adjusted');
 
     if (this.calendarPane.parentNode) {
       // Use native DOM removal because we do not want any of the angular state of this element
@@ -1442,6 +1524,8 @@ goog.require('ng.material.core');
       this.$mdUtil.nextTick(function() {
         document.body.addEventListener('click', self.bodyClickHandler);
       }, false);
+
+      window.addEventListener('resize', this.windowResizeHandler);
     }
   };
 
@@ -1454,6 +1538,7 @@ goog.require('ng.material.core');
     this.$mdUtil.enableScrolling();
 
     document.body.removeEventListener('click', this.bodyClickHandler);
+    window.removeEventListener('resize', this.windowResizeHandler);
   };
 
   /** Gets the controller instance for the calendar in the floating pane. */
