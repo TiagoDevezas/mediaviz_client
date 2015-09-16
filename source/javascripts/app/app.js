@@ -93,6 +93,11 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 			controller: 'NewsMapCtrl',
 			reloadOnSearch: false
 		}).
+		when('/articles', {
+			templateUrl: 'partials/app/articles.html',
+			controller: 'ArticlesCtrl',
+			reloadOnSearch: false
+		}).
 		otherwise({
 			redirectTo: '/'
 		});

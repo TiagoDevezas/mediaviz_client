@@ -20,6 +20,19 @@ body {
   background-color: #EDECEC;
 }
 
+.md-list-item-text h3 {
+  line-height: 1.35em !important;
+}
+
+.item-text.h4 p {
+  color: rgba(0,0,0,0.87) !important;
+  font-size: 14px !important;
+  letter-spacing: .01em !important;
+  margin: 10px 0 5px !important;
+  font-weight: 400 !important;
+  line-height: 1.25em !important;
+}
+
 .white-bg {
   background-color: #fff !important;
 }
