@@ -168,6 +168,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
   }
 
   function getSourceData() {
+    console.log($scope.dataTypes);
   	$scope.selectedSources.forEach(function(source, index) {
 			var sourceName = source.name;
       var timeId = 'timeFor' + sourceName;
@@ -202,9 +203,17 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
             $scope.loadedSources.push(sourceName);
             $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
             xsObj[countId] = timeId;
-            $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', $scope.urlParams.data);
+            if($scope.urlParams.data === 'percent') {
+              if(source.group) {
+                $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_type');                
+              } else {
+                $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_source');
+              }
+            } else {
+              $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', $scope.urlParams.data);
+            }
 
-            setChartDataForCycle();
+            // setChartDataForCycle();
 
             $scope.xsObj = xsObj;
           });
@@ -218,19 +227,19 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       if($scope.SAPOMode) {
         $scope.chartData = $scope.dayData;
       }
-      $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: '%d %b %Y'});
+      // $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: '%d %b %Y'});
     }
     if($scope.urlParams.by === 'week') {
       if($scope.SAPOMode) {
         $scope.chartData = $scope.weekData;
       }
-      $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().isoWeekday(d).format('ddd');} });
+      // $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().isoWeekday(d).format('ddd');} });
     }
     if($scope.urlParams.by === 'month') {
       if($scope.SAPOMode) {
         $scope.chartData = $scope.monthData;
       }
-      $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment(d, 'MM').format('MMM');}});
+      // $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment(d, 'MM').format('MMM');}});
     }
   }
 
@@ -263,12 +272,31 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
             culling: {
               max: 5 // the number of tick texts will be adjusted to less than this value
             },
-            format: '%d %b %Y'
+            format: function(d) {
+              if($scope.urlParams.by === 'day') {
+                return moment(d).format("DD MMM YYYY");
+              }
+              if($scope.urlParams.by === 'week') {
+                return moment().isoWeekday(d).format('ddd');
+              }
+              if($scope.urlParams.by === 'month') {
+                return moment().month(d-1).format('MMM');
+              }
+            }
           }
         },
         y: {
           min: 0,
           padding: {bottom: 0},
+          tick: {
+            format: function(d) {
+              if($scope.urlParams.data === 'percent') {
+                return d + '%';
+              } else {
+                return d;
+              }
+            }
+          }
         }
       },
       tooltip: {
