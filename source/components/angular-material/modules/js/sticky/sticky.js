@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0-master-d6d6b78
+ * v0.11.0
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -305,7 +305,7 @@ function MdSticky($document, $mdConstant, $$rAF, $mdUtil) {
     element.on('scroll touchmove', function() {
       if (!isScrolling) {
         isScrolling = true;
-        $$rAF.throttle(loopScrollEvent);
+        $$rAF(loopScrollEvent);
         element.triggerHandler('$scrollstart');
       }
       element.triggerHandler('$scroll');
@@ -318,7 +318,7 @@ function MdSticky($document, $mdConstant, $$rAF, $mdUtil) {
         element.triggerHandler('$scrollend');
       } else {
         element.triggerHandler('$scroll');
-        $$rAF.throttle(loopScrollEvent);
+        $$rAF(loopScrollEvent);
       }
     }
   }

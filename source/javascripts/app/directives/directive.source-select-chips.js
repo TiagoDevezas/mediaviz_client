@@ -7,8 +7,8 @@ return {
     },
     template: 
       '<md-chips ng-model="selected" md-autocomplete-snap md-require-match="true">' +
-        '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="source.name" md-selected-item-change="selectedItemChange()" placeholder="Escolher fonte">' +
-          '<span md-highlight-text="searchText" md-highlight-flags="">{{source.name}}</span>' +
+        '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="source in querySearch(searchText)" md-item-text="source.name" placeholder="Escolher fonte">' +
+          '<span md-highlight-text="searchText">{{source.name}}</span>' +
         '</md-autocomplete>' +
         '<md-chip-template>' +
           '<span>' +
@@ -44,6 +44,7 @@ return {
 
       scope.querySearch = function(query) {
         sources = scope.sourceList;
+        console.log(sources);
         var results = query ? sources.filter( createFilterFor(query) ) : sources, deferred;
         deferred = $q.defer();
         deferred.resolve(results);
