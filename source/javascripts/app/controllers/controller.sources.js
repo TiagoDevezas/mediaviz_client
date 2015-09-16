@@ -1,6 +1,6 @@
 mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SAPODataFormatter, DataFormatter, SourceList, Resources) {
 
-  Page.setTitle('SAPO Fontes');
+  Page.setTitle('Fontes');
 
   if($location.path().indexOf('/SAPO') !== -1) {
     $scope.SAPOMode = true;
