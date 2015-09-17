@@ -75,15 +75,6 @@ mediavizDirectives.directive('c3Chart', function($location) {
         }, true);
       }
 
-
-      // chart type watcher
-
-      // scope.$watch('options.data.type', function(typeValue) {
-      //   if(chart) {
-      //     chart.transform(typeValue);
-      //   }
-      // });
-
       // Add unique id to chart
       function addIdentifier() {
         scope.dataAttributeChartID = 'chartid' + Math.floor(Math.random() * 1000000001);

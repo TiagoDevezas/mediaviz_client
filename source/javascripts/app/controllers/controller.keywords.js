@@ -111,7 +111,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   }
 
   function setParamsforArticles(date, keyword, source) {
-    $location.path('/articles').search({keyword: keyword, since: date, until: date, source: source });
+    console.log(source);
+    $location.path('/articles').search({keyword: keyword, since: date, until: date, source: source.name });
     $scope.$apply();
   }
 
