@@ -16,8 +16,8 @@ gem "middleman", "~>3.3.7"
 gem 'middleman-ngannotate'
 
 # Faster js minification
+gem 'oj'
 gem 'therubyracer'
-# gem 'oj'
 
 # Live-reloading plugin
 gem "middleman-livereload", "~> 3.1.0"
