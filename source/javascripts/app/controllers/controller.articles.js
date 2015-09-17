@@ -1,4 +1,4 @@
-mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filter, $location, $rootScope, Page, Resources, SourceList) {
+mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filter, $location, $rootScope, Page, Resources, SourceList, DataFormatter) {
 	
 	Page.setTitle('Artigos');
 
@@ -11,6 +11,10 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
 
   $scope.sourceList;
 
+  $scope.items;
+
+  $scope.chartData;
+
   SourceList.getDefaultList().then(function(data) {
     $scope.sourceList = data;
     $scope.defaultSource = 'Todas nacionais';
@@ -20,6 +24,64 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
     initializeController();
   });
 
+  $scope.timeChartOpts = {
+    size: {
+    },
+    legend: {
+      position: 'bottom'
+    },
+    tooltip: {
+      grouped: false 
+    },
+    data: {
+      onclick: function (d, i) { showArticles(d); }
+    },
+    point: {
+      r: 1.5
+    },
+    subchart: {
+      show: false
+    },
+    transition: {
+      duration: 0
+    },
+    axis: {
+      x: {
+        padding: {left: 0, right: 0},
+        type: 'timeseries',
+        tick: {
+          culling: {
+                max: 5 // the number of tick texts will be adjusted to less than this value
+              },
+              format: '%d %b %Y'
+            }
+          },
+          y: {
+            min: 0,
+            padding: {bottom: 0},
+            tick: {
+              format: function(d) {
+                if($scope.urlParams.data === 'percent') {
+                  return d + '%';
+                } else {
+                  return d;
+                }
+              }
+            }
+          }
+        },
+        tooltip: {
+        },
+        grid: {
+          x: {
+            show: false
+          },
+          y: {
+            show: true
+          }
+        }
+      };
+
   function initializeController() {
 
 
@@ -27,7 +89,6 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
 
   	var itemsOffset = 0;
 
-    $scope.items;
     $scope.fetching = false;
     $scope.disabled = false;
 
@@ -112,6 +173,15 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
       }
     }
 
+    function createParamsObjTotals(startDate) {
+      if($scope.urlParams.source.group) {
+        return {resource: 'totals', since: startDate, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: $scope.urlParams.keyword };    
+      } else {
+        return {resource: 'totals', since: startDate, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword };
+      }
+    }
+
+
   	// getItems();
 
     $scope.getMore = function() {
@@ -144,7 +214,25 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
   				$rootScope.loading = false;
   			}
   			$scope.items = data;
+        if($scope.urlParams.keyword) {
+          getChartData()
+        }
   		});
   	}
+
+    function getChartData() {
+      var oneWeekAgo = moment($scope.urlParams.until).subtract(7, 'days').format('YYYY-MM-DD');
+      var keywordName = $scope.urlParams.keyword;
+      var timeId = 'timeFor' + keywordName;
+      var countId = keywordName;
+      var xsObj = {};
+      var paramsObj = createParamsObjTotals(oneWeekAgo);
+      Resources.get(paramsObj).$promise.then(function(data) {
+        xsObj[countId] = timeId;
+        $scope.chartData = DataFormatter.inColumns(data, $scope.urlParams.keyword, 'time', 'articles');
+        $scope.xsObj = xsObj;
+      });
+    }
+
   }
 });
