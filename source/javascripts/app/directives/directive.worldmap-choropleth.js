@@ -214,6 +214,10 @@ mediavizDirectives.directive('worldMap', function($timeout) {
       })
       .on("mouseout", function(d,i) {
         tooltip.classed("hidden", true);
+      })
+      .on("click", function(d) {
+        var countryName = nameByAlpha3[d.id];
+        scope.$emit('countryClickEvent', { country: countryName, mapId: elem[0].getAttribute('id') });
       });
 
       }

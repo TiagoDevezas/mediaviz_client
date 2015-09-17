@@ -50,11 +50,30 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
     {name: 'map2', source: undefined, keyword: undefined, display: false, data: undefined }
   ];
 
+  $scope.$on('countryClickEvent', function(evt, data) {
+    var countryName = data.country;
+    var mapId = data.mapId;
+    var mapObj = $filter('filter')($scope.mapsToRender, {name: mapId}, true)[0];
+    var source = mapObj.source.name;
+    var since = $scope.urlParams.since;
+    var until = $scope.urlParams.until;
+    var keyword = null;
+    if(mapObj.keyword) {
+      keyword = countryName + ' && ' + mapObj.keyword
+    } else {
+      keyword = countryName;
+    }
+    setParamsforArticles(since, until, keyword, source);
+  });
 
+  function setParamsforArticles(since, until, keyword, source) {
+    $location.path('/articles').search({keyword: keyword, since: since, until: until, source: source });
+    $scope.$apply();
+  }
 
   $scope.countDisplayMaps = function() {
     var displayed = $scope.mapsToRender.filter(function(obj) {
-      return obj.display
+      return obj.display;
     });
     return displayed.length;
   }

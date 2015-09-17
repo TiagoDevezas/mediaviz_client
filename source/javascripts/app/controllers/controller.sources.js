@@ -243,6 +243,18 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     }
   }
 
+  function showArticles(d) {
+    var date = moment(d.x).format("YYYY-MM-DD");
+    var source = d.name;
+    var keyword = $scope.urlParams.keyword;
+    setParamsforArticles(date, keyword, source);
+  }
+
+  function setParamsforArticles(date, keyword, source) {
+    $location.path('/articles').search({keyword: keyword, since: date, until: date, source: source });
+    $scope.$apply();
+  }
+
   $scope.timeChartOpts = {
     size: {
       height: 450
@@ -254,6 +266,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       grouped: true 
     },
     data: {
+      onclick: function (d, i) { showArticles(d); }
     },
     point: {
       r: 1.5

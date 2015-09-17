@@ -186,8 +186,21 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     })
   }
 
+  function showArticles(d) {
+    console.log(d);
+    var date = moment(d.x).format("YYYY-MM-DD");
+    var keyword = d.name;
+    var source = $scope.urlParams.source;
+    setParamsforArticles(date, keyword, source);
+  }
+
+  function setParamsforArticles(date, keyword, source) {
+    $location.path('/articles').search({keyword: keyword, since: date, until: date, source: source });
+    $scope.$apply();
+  }
+
 $scope.donuChart = {
-}
+};
 
 $scope.timeChartOpts = {
     size: {
@@ -200,6 +213,7 @@ $scope.timeChartOpts = {
       grouped: true 
     },
     data: {
+      onclick: function (d, i) { showArticles(d); }
     },
     point: {
       r: 1.5
