@@ -8,6 +8,7 @@ var mediavizApp = angular.module('mediavizApp', [
 	'ngAria',
 	'ngMaterial',
 	'mdPickers',
+	'tagged.directives.infiniteScroll',
 	// 'ui.select',
 	// 'pickadate',
 	// 'mdDateTime',

@@ -36,13 +36,17 @@
 				Partilhas Facebook
 			</md-button>
 		</md-content>
-		<md-list style="padding-top: 0;">
+
+		<md-list style="padding: 0;" tagged-infinite-scroll="getMore()" tagged-infinite-scroll-disabled="fetching || disabled" tagged-infinite-scroll-distance="200">
      	<md-divider ></md-divider>
 			<md-list-item class="md-3-line" ng-repeat="item in items | orderBy:predicate:reverse">
-				<div class="md-list-item-text" layout="column">
-	        <h3>{{ item.title }}</h3>
-	        <h4 ng-bind-html="item.summary | words:30" class="item-text h4" style="margin: 0;"></h4>
-	        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' }} | Partilhas: {{item.total_shares}} Twitter: {{item.twitter_shares}} Facebook: {{item.facebook_shares}}</p>
+				<div class="md-list-item-text" layout="column" flex>
+					<a href="{{item.url}}" style="text-decoration: none;">
+		        <h3>{{ item.title }}</h3>
+		        <h4 ng-bind-html="item.summary | words:30" class="item-text h4" style="margin: 0;"></h4>
+		        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC' }}</p>
+		        <p>Partilhas: {{item.total_shares}} Twitter: {{item.twitter_shares}} Facebook: {{item.facebook_shares}}</p>
+	        </a>
 	      </div>
        	<md-divider ></md-divider>
 			</md-list-item>

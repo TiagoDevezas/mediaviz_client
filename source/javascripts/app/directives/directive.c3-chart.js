@@ -25,7 +25,6 @@ mediavizDirectives.directive('c3Chart', function($location) {
       }, true);
 
       function createChart(data) {
-        console.log(data);
         if(data && !chart) {
           addIdentifier();
           scope.options.data.columns = scope.dataset;
