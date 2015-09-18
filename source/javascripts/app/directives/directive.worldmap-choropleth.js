@@ -219,7 +219,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
         tooltip.classed("hidden", false)
          .attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
          .html(
-          nameByAlpha3[d.id] ? nameByAlpha3[d.id] + ": " + countByAlpha3[d.id] + " artigos" : "Sem dados"
+          nameByAlpha3[d.id] ? nameByAlpha3[d.id] + ": " + countByAlpha3[d.id] + " artigos<br><span style='font-size: 12px;'>Clique para ver artigos</span>" : "Sem dados"
           )
       })
       .on("mouseout", function(d,i) {

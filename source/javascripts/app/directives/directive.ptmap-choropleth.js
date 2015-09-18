@@ -286,11 +286,15 @@ mediavizDirectives.directive('ptMap', function($timeout) {
             tooltip.classed("hidden", false)
              .attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
              .html(
-              nameByFIPS[d.id] ? nameByFIPS[d.id] + ": " + countByFIPS[d.id] + " artigos" : "Sem dados"
+              nameByFIPS[d.id] ? nameByFIPS[d.id] + ": " + countByFIPS[d.id] + " artigos<br><span style='font-size: 12px;'>Clique para ver artigos</span" : "Sem dados"
               )
           })
           .on("mouseout", function(d,i) {
             tooltip.classed("hidden", true);
+          })
+          .on("click", function(d) {
+            var countryName = d.properties.name;
+            scope.$emit('countryClickEvent', { country: countryName, mapId: elem[0].getAttribute('id') });
           });
 
         }

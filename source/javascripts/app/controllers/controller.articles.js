@@ -11,7 +11,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
 
   $scope.sourceList;
 
-  $scope.items;
+  $scope.items = [];
 
   $scope.chartData;
 
@@ -85,7 +85,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
   function initializeController() {
 
 
-  	var itemsToLoad = 20;
+  	var itemsToLoad = 10;
 
   	var itemsOffset = 0;
 
@@ -137,6 +137,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
         }
       }
       if($scope.urlParams.source) {
+        itemsOffset = 0;
         getItems();
       }
     }, true);
@@ -196,7 +197,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
         if($scope.urlParams.source) {
           $rootScope.loading = false;
         }
-        if(data.length) {
+        if(data && data.length) {
           $scope.items = $scope.items.concat(data);
         } else {
           $scope.disabled = true;
@@ -215,7 +216,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
   			}
   			$scope.items = data;
         if($scope.urlParams.keyword) {
-          getChartData()
+          getChartData();
         }
   		});
   	}
