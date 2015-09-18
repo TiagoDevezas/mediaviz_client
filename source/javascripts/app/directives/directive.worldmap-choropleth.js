@@ -6,6 +6,8 @@ mediavizDirectives.directive('worldMap', function($timeout) {
     },
     link: function(scope, elem, attrs) {
 
+      angular.element(elem).attr('class', 'chart-container');
+
       d3.select(window).on('resize', resize);
 
       // Data watcher
@@ -29,8 +31,6 @@ mediavizDirectives.directive('worldMap', function($timeout) {
           width = parseInt(d3.select(elem[0]).style("width"));
           height = width / scalingFactor;
 
-          console.log('resize called', width, height);
-
           d3.selectAll('svg.world-map')
             .attr('width', width)
             .attr('height', height);
@@ -42,8 +42,7 @@ mediavizDirectives.directive('worldMap', function($timeout) {
           d3.selectAll('svg.world-map').selectAll('.country')
             .attr('d', path);
 
-          d3.selectAll('.legend-container')
-            .attr('transform', 'translate(' + 20 + ',' + (height - (colorbrewerRamp.length * 20) - 20) + ')');
+          legendContainer.attr('transform', 'translate(' + 20 + ',' + (height - (5 * 20) - 20) + ')');
 
         }, 0);
       }
@@ -84,28 +83,9 @@ mediavizDirectives.directive('worldMap', function($timeout) {
       var path = d3.geo.path()
           .projection(projection);
 
-      // var legendContainer = svg.append('g')
-      //   .attr('class', 'legend-container')
-      //   .classed('hidden', true)
-      //   .attr('transform', 'translate(' + 20 + ',' + (height - (colorbrewerRamp.length * 20) - 20) + ')');
-
-      // var legend = legendContainer.selectAll('g.legend')
-      //   .data(angular.copy(colorbrewerRamp).reverse())
-      //   .enter().append('g')
-      //   .attr('class', 'legend');
-
-      // var ls_w = 20, ls_h = 20;
-
-      // legend
-      //   .append("rect")
-      //   // .attr("x", 20)
-      //   .attr("y", function(d, i){ return (i*ls_h); })
-      //   .attr("width", ls_w)
-      //   .attr("height", ls_h);
-
-      // legend
-      //   .append('text')
-      //   .attr("transform", function(d, i) {  return "translate(" + 25 + "," + (i*20 + 14) + ")" });
+      var legendContainer = svg.append('g')
+        .attr('class', 'legend-container')
+        .classed('hidden', true);
 
       function move() {
 
@@ -165,8 +145,11 @@ mediavizDirectives.directive('worldMap', function($timeout) {
         var minCount = d3.min(data, function(d) { return d.count });
 
         var color_domain = [minCount + 1, maxCount];
+        var legend_domain = [minCount + 1, maxCount/10, maxCount/5, maxCount/2, maxCount];
 
         color.domain(color_domain);
+
+        var legendColor = color.copy();
 
         var countByAlpha3 = {};
         var nameByAlpha3 = {};
@@ -185,17 +168,44 @@ mediavizDirectives.directive('worldMap', function($timeout) {
             return countByAlpha3[d.id] ? color(countByAlpha3[d.id]) : '#eee'
           });
 
-        // legendContainer
-        //   .classed('hidden', false);
+          legendContainer.attr('transform', 'translate(' + 20 + ',' + (height - (legend_domain.length * 20) - 20) + ')');
 
-        // legend.selectAll('rect')
-        //   .style("fill", function(d, i) { return d; })
-        //   .style("opacity", 0.8);
+          var legend = legendContainer.selectAll('g.legend')
+            .data(legend_domain.reverse().map(function(d) {
+              return Math.round(d);
+            }), function(d) { return d; });
+            
+          legend.enter().append('g')
+            .attr('class', 'legend');
 
-        // legend.selectAll('text')
-        //   .text(function(d, i) {
-        //     return "" + color.invertExtent(d)[0] + "-" + color.invertExtent(d)[1]
-        //   });
+          var ls_w = 20, ls_h = 20;
+
+          legend
+            .append("rect")
+            // .attr("x", 20)
+            .attr("y", function(d, i){ return (i*ls_h); })
+            .attr("width", ls_w - 5)
+            .attr("height", ls_h - 5)
+            .style("stroke", "#000")
+            .style("stroke-width", "1px");
+
+          legend
+            .append('text')
+            .attr("transform", function(d, i) {  return "translate(" + 25 + "," + (i*20 + 14) + ")" });
+
+        legendContainer
+          .classed('hidden', false);
+
+        legend.selectAll('rect')
+          .style("fill", function(d, i) { return legendColor(d); })
+          .style("opacity", 0.8);
+
+        legend.selectAll('text')
+          .text(function(d, i) {
+            return d;
+          });
+
+        legend.exit().remove();
 
         //offsets for tooltips
       var offsetL = elem[0].offsetLeft+20;

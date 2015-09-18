@@ -6,6 +6,8 @@ mediavizDirectives.directive('ptMap', function($timeout) {
       },
       link: function(scope, elem, attrs) {
 
+        angular.element(elem).attr('class', 'chart-container');
+
         // d3.select(window).on('resize', resize);
 
         // Data watcher
@@ -44,6 +46,10 @@ mediavizDirectives.directive('ptMap', function($timeout) {
         var svg = d3.select(elem[0]).append('svg')
           .attr('width', width)
           .attr('height', height);
+
+        var legendContainer = svg.append('g')
+          .attr('class', 'legend-container')
+          .classed('hidden', true);
 
         var colorbrewerRamp = colorbrewer.GnBu[7];
         // colorbrewerRamp.shift();
@@ -206,8 +212,11 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           var minCount = d3.min(data, function(d) { return d.count });
 
           var color_domain = [minCount + 1, maxCount];
+          var legend_domain = [minCount + 1, maxCount/10, maxCount/5, maxCount/2, maxCount];
+
 
           color.domain(color_domain);
+          var legendColor = color.copy();
 
           var countByFIPS = {};
           var nameByFIPS = {};
@@ -225,6 +234,45 @@ mediavizDirectives.directive('ptMap', function($timeout) {
               .style('fill', function(d) {
                 return countByFIPS[d.id] ? color(countByFIPS[d.id]) : '#eee'
               });
+
+          legendContainer.attr('transform', 'translate(' + 20 + ',' + (height - (legend_domain.length * 20) - 20) + ')');
+
+          var legend = legendContainer.selectAll('g.legend')
+            .data(legend_domain.reverse().map(function(d) {
+              return Math.round(d);
+            }), function(d) { return d; });
+            
+          legend.enter().append('g')
+            .attr('class', 'legend');
+
+          var ls_w = 20, ls_h = 20;
+
+          legend
+            .append("rect")
+            // .attr("x", 20)
+            .attr("y", function(d, i){ return (i*ls_h); })
+            .attr("width", ls_w - 5)
+            .attr("height", ls_h - 5)
+            .style("stroke", "#000")
+            .style("stroke-width", "1px");
+
+          legend
+            .append('text')
+            .attr("transform", function(d, i) {  return "translate(" + 25 + "," + (i*20 + 14) + ")" });
+
+        legendContainer
+          .classed('hidden', false);
+
+        legend.selectAll('rect')
+          .style("fill", function(d, i) { return legendColor(d); })
+          .style("opacity", 0.8);
+
+        legend.selectAll('text')
+          .text(function(d, i) {
+            return d;
+          });
+
+        legend.exit().remove();
 
             //offsets for tooltips
           var offsetL = elem[0].offsetLeft+20;
