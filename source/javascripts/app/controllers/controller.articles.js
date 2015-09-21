@@ -216,6 +216,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
   			}
   			$scope.items = data;
         if($scope.urlParams.keyword) {
+          $scope.$broadcast('unloadAll');
           getChartData();
         }
   		});

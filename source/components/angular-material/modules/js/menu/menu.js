@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0-master-bfb8dac
+ * v0.11.0-master-3e34e02
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -633,10 +633,14 @@ function MenuProvider($$interimElementProvider) {
         opts.menuContentEl[0].addEventListener('click', captureClickListener, true);
 
         // kick off initial focus in the menu on the first element
-        var focusTarget = opts.menuContentEl[0].querySelector('[md-menu-focus-target]') ||
-          opts.menuContentEl[0].firstElementChild.querySelector('[tabindex]') ||
-          opts.menuContentEl[0].firstElementChild.firstElementChild;
-        focusTarget.focus();
+        var focusTarget = opts.menuContentEl[0].querySelector('[md-menu-focus-target]');
+        if ( !focusTarget && firstChild ) {
+          var firstChild = opts.menuContentEl[0].firstElementChild;
+
+          focusTarget = firstChild.querySelector('[tabindex]') || firstChild.firstElementChild;
+        }
+
+        focusTarget && focusTarget.focus();
 
         return function cleanupInteraction() {
           element.removeClass('md-clickable');

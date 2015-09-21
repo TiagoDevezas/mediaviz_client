@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0-master-bfb8dac
+ * v0.11.0-master-3e34e02
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -659,7 +659,8 @@ function UtilFactory($document, $timeout, $compile, $rootScope, $$mdAnimate, $in
 
             // If the expression evaluates to FALSE, then it is not focusable target
             var focusExpression = it[0].getAttribute(attribute);
-            var isFocusable = focusExpression ? (it.scope().$eval(focusExpression) !== false ) : true;
+            var isFocusable = !focusExpression || !$mdUtil.validateScope(it) ? true :
+                              (it.scope().$eval(focusExpression) !== false );
 
             if (isFocusable) elFound = it;
           });
@@ -920,6 +921,22 @@ function UtilFactory($document, $timeout, $compile, $rootScope, $$mdAnimate, $in
      */
     nextUid: function() {
       return '' + nextUniqueId++;
+    },
+
+    /**
+     * By default AngularJS attaches information about binding and scopes to DOM nodes,
+     * and adds CSS classes to data-bound elements. But this information is NOT available
+     * when `$compileProvider.debugInfoEnabled(false);`
+     *
+     * @see https://docs.angularjs.org/guide/production
+     */
+    validateScope : function(element) {
+      var hasScope = element && angular.isDefined(element.scope());
+      if ( !hasScope ) {
+        $log.warn("element.scope() is not available when 'debug mode' == false. @see https://docs.angularjs.org/guide/production!");
+      }
+
+      return hasScope;
     },
 
     // Stop watchers and events from firing on a scope without destroying it,
@@ -2452,7 +2469,7 @@ function InterimElementProvider() {
                 showAction = showElement(element, options, compiledData.controller)
                   .then(resolve, rejectAll );
 
-              });
+              }, rejectAll);
 
             function rejectAll(fault) {
               // Force the '$md<xxx>.show()' promise to reject
@@ -2471,6 +2488,10 @@ function InterimElementProvider() {
          * - perform optional clean up scope.
          */
         function transitionOutAndRemove(response, isCancelled, opts) {
+
+          // abort if the show() and compile failed
+          if ( !element ) return $q.when(false);
+
           options = angular.extend(options || {}, opts || {});
           options.cancelAutoHide && options.cancelAutoHide();
           options.element.triggerHandler('$mdInterimElementRemove');
@@ -2643,7 +2664,6 @@ function InterimElementProvider() {
               // Start transitionIn
               $q.when(options.onShow(options.scope, element, options, controller))
                 .then(function () {
-
                   notifyComplete(options.scope, element, options);
                   startAutoHide();
 

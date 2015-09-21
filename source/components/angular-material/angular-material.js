@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0-master-bfb8dac
+ * v0.11.0-master-3e34e02
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -683,7 +683,8 @@ function UtilFactory($document, $timeout, $compile, $rootScope, $$mdAnimate, $in
 
             // If the expression evaluates to FALSE, then it is not focusable target
             var focusExpression = it[0].getAttribute(attribute);
-            var isFocusable = focusExpression ? (it.scope().$eval(focusExpression) !== false ) : true;
+            var isFocusable = !focusExpression || !$mdUtil.validateScope(it) ? true :
+                              (it.scope().$eval(focusExpression) !== false );
 
             if (isFocusable) elFound = it;
           });
@@ -944,6 +945,22 @@ function UtilFactory($document, $timeout, $compile, $rootScope, $$mdAnimate, $in
      */
     nextUid: function() {
       return '' + nextUniqueId++;
+    },
+
+    /**
+     * By default AngularJS attaches information about binding and scopes to DOM nodes,
+     * and adds CSS classes to data-bound elements. But this information is NOT available
+     * when `$compileProvider.debugInfoEnabled(false);`
+     *
+     * @see https://docs.angularjs.org/guide/production
+     */
+    validateScope : function(element) {
+      var hasScope = element && angular.isDefined(element.scope());
+      if ( !hasScope ) {
+        $log.warn("element.scope() is not available when 'debug mode' == false. @see https://docs.angularjs.org/guide/production!");
+      }
+
+      return hasScope;
     },
 
     // Stop watchers and events from firing on a scope without destroying it,
@@ -2492,7 +2509,7 @@ function InterimElementProvider() {
                 showAction = showElement(element, options, compiledData.controller)
                   .then(resolve, rejectAll );
 
-              });
+              }, rejectAll);
 
             function rejectAll(fault) {
               // Force the '$md<xxx>.show()' promise to reject
@@ -2511,6 +2528,10 @@ function InterimElementProvider() {
          * - perform optional clean up scope.
          */
         function transitionOutAndRemove(response, isCancelled, opts) {
+
+          // abort if the show() and compile failed
+          if ( !element ) return $q.when(false);
+
           options = angular.extend(options || {}, opts || {});
           options.cancelAutoHide && options.cancelAutoHide();
           options.element.triggerHandler('$mdInterimElementRemove');
@@ -2683,7 +2704,6 @@ function InterimElementProvider() {
               // Start transitionIn
               $q.when(options.onShow(options.scope, element, options, controller))
                 .then(function () {
-
                   notifyComplete(options.scope, element, options);
                   startAutoHide();
 
@@ -7464,9 +7484,13 @@ function iosScrollFix(node) {
     if (this.$attrs['ngDisabled']) {
       // The expression is to be evaluated against the directive element's scope and not
       // the directive's isolate scope.
-      this.$element.scope().$watch(this.$attrs['ngDisabled'], function(isDisabled) {
-        self.setDisabled(isDisabled);
-      });
+      var scope = this.$mdUtil.validateScope(this.$element) ? this.$element.scope() : null;
+
+      if ( scope ) {
+        scope.$watch(this.$attrs['ngDisabled'], function(isDisabled) {
+          self.setDisabled(isDisabled);
+        });
+      }
     }
 
     Object.defineProperty(this, 'placeholder', {
@@ -8508,12 +8532,16 @@ function MdDialogProvider($$interimElementProvider) {
      * Listen for escape keys and outside clicks to auto close
      */
     function activateListeners(element, options) {
+      var window = angular.element($window);
+      var onWindowResize = $mdUtil.debounce(function(){
+        stretchDialogContainerToViewport(element, options);
+      }, 60);
+
       var removeListeners = [];
       var smartClose = function() {
         // Only 'confirm' dialogs have a cancel button... escape/clickOutside will
         // cancel or fallback to hide.
         var closeFn = ( options.$type == 'alert' ) ? $mdDialog.hide : $mdDialog.cancel;
-
         $mdUtil.nextTick(closeFn, true);
       };
 
@@ -8531,11 +8559,15 @@ function MdDialogProvider($$interimElementProvider) {
         // Add keyup listeners
         element.on('keyup', keyHandlerFn);
         target.on('keyup', keyHandlerFn);
+        window.on('resize', onWindowResize);
 
         // Queue remove listeners function
         removeListeners.push(function() {
+
           element.off('keyup', keyHandlerFn);
           target.off('keyup', keyHandlerFn);
+          window.off('resize', onWindowResize);
+
         });
       }
       if (options.clickOutsideToClose) {
@@ -8712,6 +8744,9 @@ function MdDialogProvider($$interimElementProvider) {
       return animator
         .translate3d(dialogEl, from, to, translateOptions)
         .then(function(animateReversal) {
+
+
+
           // Build a reversal translate function synched to this translation...
           options.reverseAnimate = function() {
 
@@ -10450,8 +10485,10 @@ angular.module('material.components.input', [
  * Input and textarea elements will not behave properly unless the md-input-container
  * parent is provided.
  *
- * @param md-is-error {expression=} When the given expression evaluates to true, the input container will go into error state. Defaults to erroring if the input has been touched and is invalid.
- * @param md-no-float {boolean=} When present, placeholders will not be converted to floating labels
+ * @param md-is-error {expression=} When the given expression evaluates to true, the input container
+ *   will go into error state. Defaults to erroring if the input has been touched and is invalid.
+ * @param md-no-float {boolean=} When present, placeholders will not be converted to floating
+ *   labels.
  *
  * @usage
  * <hljs lang="html">
@@ -10479,6 +10516,7 @@ function mdInputContainerDirective($mdTheming, $parse) {
   function postLink(scope, element, attr) {
     $mdTheming(element);
   }
+
   function ContainerCtrl($scope, $element, $attrs) {
     var self = this;
 
@@ -10496,6 +10534,9 @@ function mdInputContainerDirective($mdTheming, $parse) {
     };
     self.setHasMessages = function(hasMessages) {
       $element.toggleClass('md-input-has-messages', !!hasMessages);
+    };
+    self.setHasPlaceholder = function(hasPlaceholder) {
+      $element.toggleClass('md-input-has-placeholder', !!hasPlaceholder);
     };
     self.setInvalid = function(isInvalid) {
       $element.toggleClass('md-input-invalid', !!isInvalid);
@@ -10535,10 +10576,15 @@ function labelDirective() {
  * @description
  * Use the `<input>` or the  `<textarea>` as a child of an `<md-input-container>`.
  *
- * @param {number=} md-maxlength The maximum number of characters allowed in this input. If this is specified, a character counter will be shown underneath the input.<br/><br/>
- * The purpose of **`md-maxlength`** is exactly to show the max length counter text. If you don't want the counter text and only need "plain" validation, you can use the "simple" `ng-maxlength` or maxlength attributes.
- * @param {string=} aria-label Aria-label is required when no label is present.  A warning message will be logged in the console if not present.
- * @param {string=} placeholder An alternative approach to using aria-label when the label is not present.  The placeholder text is copied to the aria-label attribute.
+ * @param {number=} md-maxlength The maximum number of characters allowed in this input. If this is
+ *   specified, a character counter will be shown underneath the input.<br/><br/>
+ *   The purpose of **`md-maxlength`** is exactly to show the max length counter text. If you don't
+ *   want the counter text and only need "plain" validation, you can use the "simple" `ng-maxlength`
+ *   or maxlength attributes.
+ * @param {string=} aria-label Aria-label is required when no label is present.  A warning message
+ *   will be logged in the console if not present.
+ * @param {string=} placeholder An alternative approach to using aria-label when the label is not
+ *   PRESENT. The placeholder text is copied to the aria-label attribute.
  * @param md-no-autogrow {boolean=} When present, textareas will not grow automatically.
  *
  * @usage
@@ -10597,13 +10643,13 @@ function inputTextareaDirective($mdUtil, $window, $mdAria) {
     var ngModelCtrl = ctrls[1] || $mdUtil.fakeNgModel();
     var isReadonly = angular.isDefined(attr.readonly);
 
-    if ( !containerCtrl ) return;
+    if (!containerCtrl) return;
     if (containerCtrl.input) {
       throw new Error("<md-input-container> can only have *one* <input>, <textarea> or <md-select> child element!");
     }
     containerCtrl.input = element;
 
-    if(!containerCtrl.label) {
+    if (!containerCtrl.label) {
       $mdAria.expect(element, 'aria-label', element.attr('placeholder'));
     }
 
@@ -10624,8 +10670,8 @@ function inputTextareaDirective($mdUtil, $window, $mdAria) {
     }
 
     var isErrorGetter = containerCtrl.isErrorGetter || function() {
-      return ngModelCtrl.$invalid && ngModelCtrl.$touched;
-    };
+        return ngModelCtrl.$invalid && ngModelCtrl.$touched;
+      };
     scope.$watch(isErrorGetter, containerCtrl.setInvalid);
 
     ngModelCtrl.$parsers.push(ngModelPipelineCheckValue);
@@ -10661,14 +10707,15 @@ function inputTextareaDirective($mdUtil, $window, $mdAria) {
       containerCtrl.setHasValue(!ngModelCtrl.$isEmpty(arg));
       return arg;
     }
+
     function inputCheckValue() {
       // An input's value counts if its length > 0,
       // or if the input's validity state says it has bad input (eg string in a number input)
-      containerCtrl.setHasValue(element.val().length > 0 || (element[0].validity||{}).badInput);
+      containerCtrl.setHasValue(element.val().length > 0 || (element[0].validity || {}).badInput);
     }
 
     function setupTextarea() {
-      if(angular.isDefined(element.attr('md-no-autogrow'))) {
+      if (angular.isDefined(element.attr('md-no-autogrow'))) {
         return;
       }
 
@@ -10679,7 +10726,7 @@ function inputTextareaDirective($mdUtil, $window, $mdAria) {
       var lineHeight = null;
       // can't check if height was or not explicity set,
       // so rows attribute will take precedence if present
-      if(node.hasAttribute('rows')) {
+      if (node.hasAttribute('rows')) {
         min_rows = parseInt(node.getAttribute('rows'));
       }
 
@@ -10698,7 +10745,7 @@ function inputTextareaDirective($mdUtil, $window, $mdAria) {
       }
       element.on('keydown input', onChangeTextarea);
 
-      if(isNaN(min_rows)) {
+      if (isNaN(min_rows)) {
         element.attr('rows', '1');
 
         element.on('scroll', onScroll);
@@ -10717,7 +10764,7 @@ function inputTextareaDirective($mdUtil, $window, $mdAria) {
         // temporarily disables element's flex so its height 'runs free'
         element.addClass('md-no-flex');
 
-        if(isNaN(min_rows)) {
+        if (isNaN(min_rows)) {
           node.style.height = "auto";
           node.scrollTop = 0;
           var height = getHeight();
@@ -10725,7 +10772,7 @@ function inputTextareaDirective($mdUtil, $window, $mdAria) {
         } else {
           node.setAttribute("rows", 1);
 
-          if(!lineHeight) {
+          if (!lineHeight) {
             node.style.minHeight = '0';
 
             lineHeight = element.prop('clientHeight');
@@ -10742,7 +10789,7 @@ function inputTextareaDirective($mdUtil, $window, $mdAria) {
         container.style.height = 'auto';
       }
 
-      function getHeight () {
+      function getHeight() {
         var line = node.scrollHeight - node.offsetHeight;
         return node.offsetHeight + (line > 0 ? line : 0);
       }
@@ -10804,7 +10851,7 @@ function mdMaxlengthDirective($animate) {
     };
 
     function renderCharCount(value) {
-      charCountEl.text( ( element.val() || value || '' ).length + '/' + maxlength );
+      charCountEl.text(( element.val() || value || '' ).length + '/' + maxlength);
       return value;
     }
   }
@@ -10820,23 +10867,29 @@ function placeholderDirective($log) {
   };
 
   function postLink(scope, element, attr, inputContainer) {
+    // If there is no input container, just return
     if (!inputContainer) return;
-    if (angular.isDefined(inputContainer.element.attr('md-no-float'))) return;
 
+    // Add a placeholder class so we can target it in the CSS
+    inputContainer.setHasPlaceholder(true);
+
+    var label = inputContainer.element.find('label');
+    var hasNoFloat = angular.isDefined(inputContainer.element.attr('md-no-float'));
+
+    // If we have a label, or they specify the md-no-float attribute, just return
+    if ((label && label.length) || hasNoFloat) return;
+
+    // Otherwise, grab/remove the placeholder
     var placeholderText = attr.placeholder;
     element.removeAttr('placeholder');
 
-    if ( inputContainer.element.find('label').length == 0 ) {
-      if (inputContainer.input && inputContainer.input[0].nodeName != 'MD-SELECT') {
-        var placeholder = '<label ng-click="delegateClick()">' + placeholderText + '</label>';
+    // And add the placeholder text as a separate label
+    if (inputContainer.input && inputContainer.input[0].nodeName != 'MD-SELECT') {
+      var placeholder = '<label ng-click="delegateClick()">' + placeholderText + '</label>';
 
-        inputContainer.element.addClass('md-icon-float');
-        inputContainer.element.prepend(placeholder);
-      }
-    } else if (element[0].nodeName != 'MD-SELECT') {
-      $log.warn("The placeholder='" + placeholderText + "' will be ignored since this md-input-container has a child label element.");
+      inputContainer.element.addClass('md-icon-float');
+      inputContainer.element.prepend(placeholder);
     }
-
   }
 }
 placeholderDirective.$inject = ["$log"];
@@ -13556,9 +13609,14 @@ function SidenavDirective($mdMedia, $mdUtil, $mdConstant, $mdTheming, $animate, 
     };
     var backdrop = $mdUtil.createBackdrop(scope, "md-sidenav-backdrop md-opaque ng-enter");
 
-    element.on('$destroy', sidenavCtrl.destroy);
     $mdTheming.inherit(backdrop, element);
 
+    element.on('$destroy', function() {
+      backdrop.remove();
+      sidenavCtrl.destroy();
+    });
+
+    scope.$on('$destroy', backdrop.remove );
     scope.$watch(isLocked, updateIsLocked);
     scope.$watch('isOpen', updateIsOpen);
 
@@ -19968,10 +20026,14 @@ function MenuProvider($$interimElementProvider) {
         opts.menuContentEl[0].addEventListener('click', captureClickListener, true);
 
         // kick off initial focus in the menu on the first element
-        var focusTarget = opts.menuContentEl[0].querySelector('[md-menu-focus-target]') ||
-          opts.menuContentEl[0].firstElementChild.querySelector('[tabindex]') ||
-          opts.menuContentEl[0].firstElementChild.firstElementChild;
-        focusTarget.focus();
+        var focusTarget = opts.menuContentEl[0].querySelector('[md-menu-focus-target]');
+        if ( !focusTarget && firstChild ) {
+          var firstChild = opts.menuContentEl[0].firstElementChild;
+
+          focusTarget = firstChild.querySelector('[tabindex]') || firstChild.firstElementChild;
+        }
+
+        focusTarget && focusTarget.focus();
 
         return function cleanupInteraction() {
           element.removeClass('md-clickable');
