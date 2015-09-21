@@ -59,7 +59,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     axis: {
       x: {
           padding: {left: 0, right: 0},
-          type: 'timeseries',
+          type: '',
           tick: {
             culling: {
               max: 5 // the number of tick texts will be adjusted to less than this value
@@ -294,24 +294,28 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
         if($scope.SAPOMode) {
           $scope.chartData = $scope.monthData;
         }
+        $scope.timeChartOpts.axis.x.type = '';
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().hour(d).format('HH'); }});
       }
       if($scope.urlParams.by === 'day') {
         if($scope.SAPOMode) {
           $scope.chartData = $scope.dayData;
         }
+        $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: '%d %b %Y'});
       }
       if($scope.urlParams.by === 'week') {
         if($scope.SAPOMode) {
           $scope.chartData = $scope.weekData;
         }
+        $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().isoWeekday(d).format('ddd');} });
       }
       if($scope.urlParams.by === 'month') {
         if($scope.SAPOMode) {
           $scope.chartData = $scope.monthData;
         }
+        $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment(d, 'MM').format('MMM');}});
       }
     }
