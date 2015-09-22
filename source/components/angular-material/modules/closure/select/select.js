@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.11.0-master-3e34e02
+ * v0.11.0-master-3bd16be
  */
 goog.provide('ng.material.components.select');
 goog.require('ng.material.components.backdrop');
@@ -191,6 +191,12 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $mdAria, $compile, $par
         if (controller) {
           formCtrl.$removeControl(controller);
         }
+      }
+
+      if (formCtrl) {
+        $mdUtil.nextTick(function() {
+          formCtrl.$setPristine();
+        });
       }
 
       var originalRender = ngModelCtrl.$render;
@@ -500,6 +506,7 @@ function SelectMenuDirective($parse, $mdUtil, $mdTheming) {
         // reference. This allowed the developer to also push and pop from their array.
         $scope.$watchCollection($attrs.ngModel, function(value) {
           if (validateArray(value)) renderMultiple(value);
+          self.ngModel.$setPristine();
         });
       } else {
         delete ngModel.$validators['md-multiple'];
