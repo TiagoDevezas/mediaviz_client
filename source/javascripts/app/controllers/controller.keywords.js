@@ -42,6 +42,15 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     });
   }
 
+  $scope.barChartOpts = {
+    axis: {
+        x: {
+            type: 'category',
+            categories: $scope.loadedKeywords
+        }
+    }
+  };
+
 
   $scope.timeChartOpts = {
     size: {
@@ -103,7 +112,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       };
 
   function showArticles(d) {
-    console.log(d);
     var date = moment(d.x).format("YYYY-MM-DD");
     var keyword = d.name;
     var source = $scope.urlParams.source;
@@ -262,6 +270,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               } else {
                 $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
               }
+
+              $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
               // $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
 
               $scope.xsObj = xsObj;

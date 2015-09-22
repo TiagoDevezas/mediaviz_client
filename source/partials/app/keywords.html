@@ -26,4 +26,9 @@
 		<div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
 	</md-content>
 
+  <md-content ng-show="keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 20px;">
+    <download-bar></download-bar>
+    <div c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+  </md-content>
+
 </div>
