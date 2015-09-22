@@ -43,11 +43,35 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   }
 
   $scope.barChartOpts = {
+    size: {
+      height: 250
+    },
+    data: {
+      x: 'x',
+      labels: true
+    },
+    bar: {
+      width: {
+        ratio: 0.3 // this makes bar width 50% of length between ticks
+      }
+      // or
+      //width: 100 // this makes bar width 100px
+    },
     axis: {
-        x: {
-            type: 'category',
-            categories: $scope.loadedKeywords
-        }
+      x: {
+        type: 'category',
+        tick: {values: []},
+        show: false
+      }
+    },
+    tooltip: {
+      show: false
+    },
+    padding: {
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0
     }
   };
 
@@ -119,14 +143,11 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   }
 
   function setParamsforArticles(date, keyword, source) {
-    console.log(source);
     $location.path('/articles').search({keyword: keyword, since: date, until: date, source: source.name });
     $scope.$apply();
   }
 
   function initializeController() {
-
-
 
     $scope.clearChart = function() {
       $scope.keywords.selected = [];
@@ -273,8 +294,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
               $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
               // $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
-
               $scope.xsObj = xsObj;
+
+              $scope.$broadcast('flushChart');
             });
           }
         }

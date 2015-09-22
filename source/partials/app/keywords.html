@@ -21,14 +21,17 @@
 
 </md-content>
 
-	<md-content ng-show="keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 20px;">
+	<md-content ng-if="timeData" class="md-whiteframe-z1" style="margin-top: 20px;">
     <download-bar></download-bar>
 		<div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
 	</md-content>
 
-  <md-content ng-show="keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 20px;">
-    <download-bar></download-bar>
-    <div c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+  <md-content ng-if="countData && !SAPOMode" class="md-whiteframe-z1" style="margin-top: 20px;" layout-gt-md="row" layout="column">
+    <md-content flex="20" layout-padding>
+      <!-- <download-bar></download-bar> -->
+      <p style="text-align: center;">Total de artigos publicados</p>
+      <div c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+    </md-content>
   </md-content>
 
 </div>
