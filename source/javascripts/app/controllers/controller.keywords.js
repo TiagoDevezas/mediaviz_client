@@ -63,6 +63,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
         show: false
       },
       y: {
+        max: '',
         show: false
       }
     },
@@ -256,6 +257,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       }
     }
 
+    var countsArray = [];
+
     function getSourceData() {
       if(!$scope.urlParams.source) {
         return;
@@ -302,7 +305,15 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
               $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
               $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
-              // $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
+
+              countsArray.push($scope.countData[1][1]);
+              countsArray.push($scope.totalShareData[1][1]);
+              countsArray.push($scope.twitterShareData[1][1]);
+              countsArray.push($scope.facebookShareData[1][1]);
+
+              var maxValue = d3.max(countsArray);
+
+              $scope.barChartOpts.axis.y.max = maxValue;
               $scope.xsObj = xsObj;
 
               $scope.$broadcast('flushChart');
