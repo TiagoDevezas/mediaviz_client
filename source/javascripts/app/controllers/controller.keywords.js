@@ -44,32 +44,39 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
   $scope.barChartOpts = {
     size: {
-      height: 250
+      height: 100
     },
     data: {
       x: 'x',
-      labels: true
+      // labels: true
     },
     bar: {
       width: {
-        ratio: 0.5
+        ratio: 0.3
       }
     },
     axis: {
+      rotated: true,
       x: {
         type: 'category',
         tick: {values: []},
         show: false
+      },
+      y: {
+        show: false
       }
     },
     tooltip: {
-      show: false
+      show: true
     },
     padding: {
       left: 0,
       right: 0,
       top: 0,
       bottom: 0
+    },
+    legend: {
+      show: false
     }
   };
 
