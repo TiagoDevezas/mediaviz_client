@@ -240,7 +240,9 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           var legend = legendContainer.selectAll('g.legend')
             .data(legend_domain.reverse().map(function(d) {
               return Math.round(d);
-            }), function(d) { return d; });
+            }), function(d, i) { return d; })
+
+          legend.exit().remove();
             
           legend.enter().append('g')
             .attr('class', 'legend');
@@ -256,9 +258,9 @@ mediavizDirectives.directive('ptMap', function($timeout) {
             .style("stroke", "#000")
             .style("stroke-width", "1px");
 
-          legend
-            .append('text')
-            .attr("transform", function(d, i) {  return "translate(" + 25 + "," + (i*20 + 14) + ")" });
+        legend
+          .append('text')
+          .attr("transform", function(d, i) {  return "translate(" + 25 + "," + (i*20 + 14) + ")" });
 
         legendContainer
           .classed('hidden', false);
@@ -271,8 +273,6 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           .text(function(d, i) {
             return d;
           });
-
-        legend.exit().remove();
 
             //offsets for tooltips
           var offsetL = elem[0].offsetLeft+20;

@@ -173,7 +173,9 @@ mediavizDirectives.directive('worldMap', function($timeout) {
           var legend = legendContainer.selectAll('g.legend')
             .data(legend_domain.reverse().map(function(d) {
               return Math.round(d);
-            }), function(d) { return d; });
+            }), function(d, i) { return d; });
+
+          legend.exit().remove();
             
           legend.enter().append('g')
             .attr('class', 'legend');
@@ -204,8 +206,6 @@ mediavizDirectives.directive('worldMap', function($timeout) {
           .text(function(d, i) {
             return d;
           });
-
-        legend.exit().remove();
 
         //offsets for tooltips
       var offsetL = elem[0].offsetLeft+20;

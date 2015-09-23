@@ -42,7 +42,6 @@ mediavizServices.factory('DataFormatter', function() {
         });
         sumValues.push(sum);
         columns.push(sumValues);
-        console.log(columns);
         return columns;
       } else {
         return [];
