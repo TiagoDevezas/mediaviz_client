@@ -1,5 +1,9 @@
 mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $location, SourceList) {
 
+  if($location.absUrl().indexOf('irlab.fe.up.pt/p/sapoviz') > 0) {
+    $location.url('/SAPO');
+  }
+
   $scope.toggleMenu = function() {
     $mdSidenav('left').toggle();
   }
