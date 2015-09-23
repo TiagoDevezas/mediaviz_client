@@ -121,8 +121,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
             }
           }
         },
-        tooltip: {
-        },
         grid: {
           x: {
             show: false
@@ -130,7 +128,10 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           y: {
             show: true
           }
-        }
+        },
+        padding: {
+          left: 50
+        },
       };
 
   function showArticles(d) {

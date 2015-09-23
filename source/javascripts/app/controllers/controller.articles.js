@@ -52,9 +52,9 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
         type: 'timeseries',
         tick: {
           culling: {
-                max: 3 // the number of tick texts will be adjusted to less than this value
+                max: 4 // the number of tick texts will be adjusted to less than this value
               },
-              format: '%d %b %Y'
+              format: '%d %b'
             }
           },
           y: {
@@ -71,15 +71,8 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
             }
           }
         },
-        tooltip: {
-        },
-        grid: {
-          x: {
-            show: false
-          },
-          y: {
-            show: true
-          }
+        padding: {
+          right: 30
         }
       };
 
