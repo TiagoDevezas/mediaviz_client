@@ -52,7 +52,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     },
     bar: {
       width: {
-        ratio: 0.3 // this makes bar width 50% of length between ticks
+        ratio: 0.5 // this makes bar width 50% of length between ticks
       }
       // or
       //width: 100 // this makes bar width 100px
@@ -293,6 +293,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               }
 
               $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
+              $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
+              $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
+              $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
               // $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
               $scope.xsObj = xsObj;
 

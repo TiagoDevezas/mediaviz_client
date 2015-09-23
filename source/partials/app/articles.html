@@ -13,9 +13,9 @@
     </md-content>
 	</md-content>
 
-	<div layout-gt-md="row" layout="column" style="margin-top: 20px;">
+	<md-content layout-gt-md="row" layout="column" style="margin-top: 20px;">
 
-		<md-content flex-gt-md="60" tagged-infinite-scroll="getMore()" tagged-infinite-scroll-disabled="fetching || disabled" tagged-infinite-scroll-distance="200">
+		<md-content flex-order-gt-md="1" flex-order="2" flex-gt-md="60" tagged-infinite-scroll="getMore()" tagged-infinite-scroll-disabled="fetching || disabled" tagged-infinite-scroll-distance="200">
 			<md-content layout="row">
 				<md-button ng-click="order('pub_date')">
 					<md-icon ng-show="predicate === 'pub_date' && reverse === true">arrow_drop_down</md-icon>
@@ -55,15 +55,16 @@
 			</md-list>
 		</md-content>
 
-		<div flex-gt-md="40" layout-margin style="margin-top:0;">
-			<md-content ng-show="urlParams.keyword.length && chartData.length" layout-padding>
-		       <h2 class="md-title">Evolução na última semana</h2>
-		       <div c3-chart dataset="chartData" type="line" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
-		      <div class="md-actions" layout="row" layout-align="end center">
-		        <md-button>Ver mais</md-button>
-		      </div>
+		<md-content flex-gt-md="40" flex-order-gt-md="2" flex-order="1" layout-padding style="margin-top:0;">
+			<md-content ng-show="urlParams.keyword.length && chartData.length">
+	       <h2 class="md-title">Evolução na última semana</h2>
+	       <div c3-chart dataset="chartData" type="line" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+	      <div class="md-actions" layout="row" layout-align="end center">
+	        <md-button>Ver mais</md-button>
+	      </div>
 	    </md-content>
-		</div>
+		</md-content>
 
-	</div>
+	</md-content>
+
 </div>

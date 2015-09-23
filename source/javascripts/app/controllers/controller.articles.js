@@ -26,6 +26,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
 
   $scope.timeChartOpts = {
     size: {
+      height: 200
     },
     legend: {
       position: 'bottom'
@@ -51,7 +52,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
         type: 'timeseries',
         tick: {
           culling: {
-                max: 5 // the number of tick texts will be adjusted to less than this value
+                max: 3 // the number of tick texts will be adjusted to less than this value
               },
               format: '%d %b %Y'
             }

@@ -27,11 +27,30 @@
 	</md-content>
 
   <md-content ng-if="countData && !SAPOMode" class="md-whiteframe-z1" style="margin-top: 20px;" layout-gt-md="row" layout="column">
-    <md-content flex="20" layout-padding>
+    <md-content flex="25" layout-padding>
       <!-- <download-bar></download-bar> -->
       <p style="text-align: center;">Total de artigos publicados</p>
       <div c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
     </md-content>
+
+    <md-content flex="25" layout-padding>
+      <!-- <download-bar></download-bar> -->
+      <p style="text-align: center;">Partilhas dos artigos publicados (total)</p>
+      <div c3-chart dataset="totalShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+    </md-content>
+
+    <md-content flex="25" layout-padding>
+      <!-- <download-bar></download-bar> -->
+      <p style="text-align: center;">Partilhas dos artigos publicados (Twitter)</p>
+      <div c3-chart dataset="twitterShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+    </md-content>
+
+    <md-content flex="25" layout-padding>
+      <!-- <download-bar></download-bar> -->
+      <p style="text-align: center;">Partilhas dos artigos publicados (Facebook)</p>
+      <div c3-chart dataset="facebookShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+    </md-content>
+
   </md-content>
 
 </div>
