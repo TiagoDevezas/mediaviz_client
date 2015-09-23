@@ -185,7 +185,8 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
     if($scope.mapsToRender[0].source || $scope.mapsToRender[1].source) {
       $rootScope.loading = true;
       if($scope.SAPOMode) {
-        Resources.get({resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, map: $scope.selectedMap.type, listOnly: 'true'}).$promise.then(function(data) {
+        Resources.get({resource: 'places', map: $scope.selectedMap.type, listOnly: 'true'}).$promise.then(function(data) {
+          data = data.filter(function(el) { return el.name != null; });
           getPlacesCounts(data, mapObj).then(function(data) {
             $rootScope.loading = false;
             mapObj.data = data;
@@ -194,9 +195,10 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
       } else {
          var paramsObj = createParamsObj(mapObj);
          Resources.get(paramsObj).$promise.then(function(data) {
+          data = data.filter(function(el) { return el.name != null; });
            // $scope.loadedMaps.push(mapObj.name);
-           $rootScope.loading = false;
-           mapObj.data = data;
+          $rootScope.loading = false;
+          mapObj.data = data;
          });       
       }
     }
