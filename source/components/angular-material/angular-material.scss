@@ -533,7 +533,7 @@ input {
 */
 
 @-moz-document url-prefix() {
-  .layout-fill, .md-css-only [layout-fill] {
+  .layout-fill {
     margin: 0;
     width: 100%;
     min-height: 100%;
@@ -548,7 +548,7 @@ input {
   }
 
   @for $i from -9 through 9 {
-    .#{$selector}-#{$i}, .md-css-only .#{$selector}-#{$i} {
+    .#{$selector}-#{$i} {
       order: #{$i};
     }
   }
@@ -556,7 +556,7 @@ input {
 
 @mixin layout-for-name($name: null) {
   @if $name == null {
-    .layout, .md-css-only [layout]  {
+    .layout {
       box-sizing: border-box;
       display: -webkit-box;
       display: -webkit-flex;
@@ -566,19 +566,19 @@ input {
       display: flex;
     }
 
-    .layout-column, .md-css-only [layout=column] {
+    .layout-column {
       flex-direction: column;
       -webkit-flex-direction: column;
     }
 
-    .layout-row, .md-css-only [layout=row] {
+    .layout-row {
       flex-direction: row;
       -webkit-flex-direction: row;
     }
   }
 
   @if $name != null {
-    .layout-#{$name}, .md-css-only [layout-#{$name}] {
+    .layout-#{$name} {
       box-sizing: border-box;
       display: -webkit-box;
       display: -webkit-flex;
@@ -610,14 +610,10 @@ input {
       margin-left: #{$i * 5 + '%'};
     }
   }
-  .#{$offsetName}-33, .#{$offsetName}-34,
-  .md-css-only [#{$offsetName}="33"], .md-css-only [#{$offsetName}="34"]
-  {
+  .#{$offsetName}-33, .#{$offsetName}-34 {
     margin-left: 34%;
   }
-  .#{$offsetName}-66, .#{$offsetName}-67,
-  .md-css-only [#{$offsetName}="66"], .md-css-only [#{$offsetName}="67"]
-  {
+  .#{$offsetName}-66, .#{$offsetName}-67 {
     margin-left: 66%;
   }
 }
@@ -628,25 +624,24 @@ input {
     $flexName: 'flex-#{$name}';
   }
 
-  .#{$flexName}, .md-css-only [#{$flexName}] {
+  .#{$flexName} {
     box-sizing: border-box;
     flex: 1;
   }
   
   @if ( $name == 'flex' ) {
-    .flex, .md-css-only [flex=""],
-    .flex-initial, .md-css-only [flex="initial"] {
+    .flex, .flex-initial {
       box-sizing: border-box;
       flex: 0 1 auto;
     }
 
 
-    .flex-1, .md-css-only [flex="1"] {
+    .flex-1 {
       box-sizing: border-box;
       flex: 1 1 0%;
     }
   
-    .flex-auto, .md-css-only [flex="auto"] {
+    .flex-auto {
       box-sizing: border-box;
       flex: 1 1 auto;
     }
@@ -689,11 +684,11 @@ input {
 
   }
 
-  .layout-#{$name}-row, .md-css-only [layout="row"] {
+  .layout-#{$name}-row {
     > .#{$flexName}-33, > .#{$flexName}-34 { max-width: 33%; max-height: 100%;}
     > .#{$flexName}-66, > .#{$flexName}-67 { max-width: 67%; max-height: 100%;  }
   }
-  .layout-#{$name}-column, .md-css-only [layout="column"] {
+  .layout-#{$name}-column {
     > .#{$flexName}-33, > .#{$flexName}-34 { max-height: 33%; max-width: 100%; }
     > .#{$flexName}-66, > .#{$flexName}-67 { max-height: 67%; max-width: 100%;}
   }
@@ -819,6 +814,79 @@ input {
 
 }
 
+@mixin layout-padding-margin() {
+
+  .layout-padding > .flex-sm,
+  .layout-padding > .flex-lt-md,
+  .md-css-only [layout-padding] > [flex-sm],
+  .md-css-only [layout-padding] > [flex-lt-md]
+  {
+    padding: $layout-gutter-width / 4;
+  }
+
+  .layout-padding,
+  .layout-padding > .flex,
+  .layout-padding > .flex-gt-sm,
+  .layout-padding > .flex-md,
+  .layout-padding > .flex-lt-lg,
+  .md-css-only [layout-padding],
+  .md-css-only [layout-padding] > .md-css-only [flex],
+  .md-css-only [layout-padding] > .md-css-only [flex-gt-sm],
+  .md-css-only [layout-padding] > .md-css-only [flex-md],
+  .md-css-only [layout-padding] > .md-css-only [flex-lt-lg]
+  {
+    padding: $layout-gutter-width / 2;
+  }
+  .layout-padding > .flex-gt-md,
+  .layout-padding > .flex-lg,
+  .md-css-only [layout-padding] > .md-css-only [flex-gt-md],
+  .md-css-only [layout-padding] > .md-css-only [flex-lg]
+  {
+    padding: $layout-gutter-width / 1;
+  }
+
+  .layout-margin > .flex-sm,
+  .layout-margin > .flex-lt-md,
+  .md-css-only [layout-margin] >  .md-css-only [flex-sm],
+  .md-css-only [layout-margin] >  .md-css-only [flex-lt-md]
+  {
+    margin: $layout-gutter-width / 4;
+  }
+
+  .layout-margin,
+  .layout-margin > .flex,
+  .layout-margin > .flex-gt-sm,
+  .layout-margin > .flex-md,
+  .layout-margin > .flex-lt-lg,
+  .md-css-only [layout-margin],
+  .md-css-only [layout-margin] >  .md-css-only [flex],
+  .md-css-only [layout-margin] >  .md-css-only [flex-gt-sm],
+  .md-css-only [layout-margin] >  .md-css-only [flex-md],
+  .md-css-only [layout-margin] >  .md-css-only [flex-lt-lg]
+  {
+    margin: $layout-gutter-width / 2;
+  }
+
+  .layout-margin > .flex-gt-md,
+  .layout-margin > .flex-lg,
+  .md-css-only [layout-margin] >  .md-css-only [flex-gt-md],
+  .md-css-only [layout-margin] >  .md-css-only [flex-lg]
+  {
+    margin: $layout-gutter-width / 1;
+  }
+
+  .layout-wrap {
+    flex-wrap: wrap;
+  }
+
+  .layout-fill {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
+  }
+}
+
 /*
  *  Apply Mixins to create Layout/Flexbox styles
  *
@@ -829,78 +897,9 @@ input {
 @include layout-align-for-name();
 @include flex-order-for-name();
 @include offset-for-name();
+@include layout-padding-margin();
 
 
-
-.layout-padding > .flex-sm,
-.layout-padding > .flex-lt-md,
-.md-css-only [layout-padding] > [flex-sm],
-.md-css-only [layout-padding] > [flex-lt-md]
-{
-  padding: $layout-gutter-width / 4;
-}
-
-.layout-padding,
-.layout-padding > .flex,
-.layout-padding > .flex-gt-sm,
-.layout-padding > .flex-md,
-.layout-padding > .flex-lt-lg,
-.md-css-only [layout-padding],
-.md-css-only [layout-padding] > .md-css-only [flex],
-.md-css-only [layout-padding] > .md-css-only [flex-gt-sm],
-.md-css-only [layout-padding] > .md-css-only [flex-md],
-.md-css-only [layout-padding] > .md-css-only [flex-lt-lg]
-{
-  padding: $layout-gutter-width / 2;
-}
-.layout-padding > .flex-gt-md,
-.layout-padding > .flex-lg,
-.md-css-only [layout-padding] > .md-css-only [flex-gt-md],
-.md-css-only [layout-padding] > .md-css-only [flex-lg]
-{
-  padding: $layout-gutter-width / 1;
-}
-
-.layout-margin > .flex-sm,
-.layout-margin > .flex-lt-md,
-.md-css-only [layout-margin] >  .md-css-only [flex-sm],
-.md-css-only [layout-margin] >  .md-css-only [flex-lt-md]
-{
-  margin: $layout-gutter-width / 4;
-}
-
-.layout-margin,
-.layout-margin > .flex,
-.layout-margin > .flex-gt-sm,
-.layout-margin > .flex-md,
-.layout-margin > .flex-lt-lg,
-.md-css-only [layout-margin],
-.md-css-only [layout-margin] >  .md-css-only [flex],
-.md-css-only [layout-margin] >  .md-css-only [flex-gt-sm],
-.md-css-only [layout-margin] >  .md-css-only [flex-md],
-.md-css-only [layout-margin] >  .md-css-only [flex-lt-lg]
-{
-  margin: $layout-gutter-width / 2;
-}
-
-.layout-margin > .flex-gt-md,
-.layout-margin > .flex-lg,
-.md-css-only [layout-margin] >  .md-css-only [flex-gt-md],
-.md-css-only [layout-margin] >  .md-css-only [flex-lg]
-{
-  margin: $layout-gutter-width / 1;
-}
-
-.layout-wrap, .md-css-only [layout-wrap]  {
-  flex-wrap: wrap;
-}
-
-.layout-fill, .md-css-only [layout-fill] {
-  margin: 0;
-  width: 100%;
-  min-height: 100%;
-  height: 100%;
-}
 
 /**
  * `hide-gt-sm show-gt-lg` should hide from 600px to 1200px
@@ -923,26 +922,14 @@ input {
     }
   }
 
-  .md-css-only [hide-sm], .md-css-only [hide] {
-    &:not([show-sm]):not([show]) {
-      display: none;
-    }
-  }
-
   @include layout-for-name(sm);
   @include flex-properties-for-name(sm);
-  @include layout-align-for-name(sm);
-  @include offset-for-name(sm);
-  @include flex-order-for-name(sm);
 }
 
 // BIGGER THAN SMALL SCREEN
 @media (min-width: $layout-breakpoint-sm) {
   @include layout-for-name(gt-sm);
   @include flex-properties-for-name(gt-sm);
-  @include layout-align-for-name(gt-sm);
-  @include offset-for-name(gt-sm);
-  @include flex-order-for-name(gt-sm);
 }
 
 // MEDIUM SCREEN
@@ -957,29 +944,15 @@ input {
     display: none;
   }
 
-  .md-css-only [hide], .md-css-only [hide-gt-sm] {
-    &:not([show-gt-sm]):not([show-md]):not([show]) {
-      display: none;
-    }
-  }
-  .md-css-only [hide-md]:not([show-md]):not([show]) {
-    display: none;
-  }
 
   @include layout-for-name(md);
   @include flex-properties-for-name(md);
-  @include layout-align-for-name(md);
-  @include offset-for-name(md);
-  @include flex-order-for-name(md);
 }
 
 // BIGGER THAN MEDIUM SCREEN
 @media (min-width: $layout-breakpoint-md) {
   @include layout-for-name(gt-md);
   @include flex-properties-for-name(gt-md);
-  @include layout-align-for-name(gt-md);
-  @include offset-for-name(gt-md);
-  @include flex-order-for-name(gt-md);
 }
 
 // LARGE SCREEN
@@ -993,20 +966,8 @@ input {
     display: none;
   }
 
-  .md-css-only [hide], .md-css-only [hide-gt-sm], .md-css-only [hide-gt-md] {
-    &:not([show-gt-sm]):not([show-gt-md]):not([show-lg]):not([show]) {
-      display: none;
-    }
-  }
-  .md-css-only [hide-lg]:not([show-lg]):not([show]) {
-    display: none;
-  }
-
   @include layout-for-name(lg);
   @include flex-properties-for-name(lg);
-  @include layout-align-for-name(lg);
-  @include offset-for-name(lg);
-  @include flex-order-for-name(lg);
 }
 
 
@@ -1018,17 +979,8 @@ input {
     }
   }
 
-  .md-css-only [hide-gt-sm], .md-css-only [hide-gt-md], .md-css-only [hide-gt-lg], .md-css-only [hide] {
-    &:not([show-gt-sm]):not([show-gt-md]):not([show-gt-lg]):not([show]) {
-      display: none;
-    }
-  }
-
   @include layout-for-name(gt-lg);
   @include flex-properties-for-name(gt-lg);
-  @include layout-align-for-name(gt-lg);
-  @include offset-for-name(gt-lg);
-  @include flex-order-for-name(gt-lg);
 }
 
 $autocomplete-option-height: 48px;
@@ -3277,10 +3229,10 @@ md-input-container.md-icon-float {
   }
 }
 
-$list-h3-margin: 0 0 6px 0 !default;
-$list-h4-margin: 10px 0 5px 0 !default;
+$list-h3-margin: 0 0 0px 0 !default;
+$list-h4-margin: 3px 0 1px 0 !default;
 $list-h4-font-weight: 400 !default;
-$list-header-line-height: 0.75em !default;
+$list-header-line-height: 1.2em !default;
 $list-p-margin: 0 0 0 0 !default;
 $list-p-line-height: 1.6em !default;
 
@@ -3300,10 +3252,10 @@ $list-item-primary-avatar-width: $baseline-grid * 5 !default;
 $list-item-primary-icon-width: $baseline-grid * 3 !default;
 $list-item-secondary-left-margin: $baseline-grid * 2 !default;
 $list-item-secondary-button-width: $baseline-grid * 6 !default;
-$list-item-text-padding-top: $baseline-grid * 2 !default;
-$list-item-text-padding-bottom: $baseline-grid * 2.5 !default;
 $list-item-inset-divider-offset: 12 * $baseline-grid !default;
 $list-item-height: 6 * $baseline-grid !default;
+$list-item-two-line-height: 9 * $baseline-grid !default;
+$list-item-three-line-height: 11 * $baseline-grid !default;
 
 md-list {
   display: block;
@@ -3448,10 +3400,11 @@ md-list-item.md-2-line > .md-no-style,
 md-list-item.md-3-line,
 md-list-item.md-3-line > .md-no-style {
   align-items: flex-start;
+  justify-content: center;
 
   .md-list-item-text {
     flex: 1;
-    padding: $baseline-grid * 2 0;
+    margin: auto;
     text-overflow: ellipsis;
 
     &.md-offset {
@@ -3490,6 +3443,7 @@ md-list-item.md-3-line > .md-no-style {
 
 md-list-item.md-2-line,
 md-list-item.md-2-line > .md-no-style {
+  height: $list-item-two-line-height;
   > .md-avatar:first-child {
     margin-top: $baseline-grid * 1.5;
   }
@@ -3498,12 +3452,12 @@ md-list-item.md-2-line > .md-no-style {
   }
   .md-list-item-text {
     flex: 1;
-    padding-top: ($baseline-grid * 2.5) - 1;
   }
 }
 
 md-list-item.md-3-line,
 md-list-item.md-3-line > .md-no-style {
+  height: $list-item-three-line-height;
   > md-icon:first-child, 
   > .md-avatar:first-child {
     margin-top: $baseline-grid * 2;
@@ -5386,6 +5340,158 @@ md-toolbar + md-tabs {
   border-top-right-radius: 0;
 }
 
+// See height set globally, depended on by buttons
+
+
+md-toast {
+  display: flex;
+  position:absolute;
+  z-index: $z-index-toast;
+
+  box-sizing: border-box;
+  align-items: center;
+
+  min-height: 48px;
+  padding-left: 24px;
+  padding-right: 24px;
+
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  border-radius: 2px;
+  font-size: 14px;
+  cursor: default;
+
+  height:auto;
+  max-height: 7*$toast-height;
+  max-width: 100%;
+
+  overflow:hidden;
+
+  &.md-capsule {
+    border-radius: 24px;
+  }
+
+  opacity: 1;
+  transform: translate3d(0,0,0) rotateZ(0deg);
+  transition: $swift-ease-out;
+
+  &.ng-leave-active {
+    transition: $swift-ease-in;
+  }
+
+  /* Transition differently when swiping */
+  &.md-swipeleft,
+  &.md-swiperight,
+  &.md-swipeup,
+  &.md-swipedown {
+    transition: $swift-ease-out;
+  }
+
+  &.ng-enter {
+    transform: translate3d(0, 100%, 0);
+    &.md-top {
+      transform: translate3d(0, -100%, 0);
+    }
+    opacity: 0;
+    &.ng-enter-active {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+  }
+  &.ng-leave.ng-leave-active {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+    &.md-top {
+      transform: translate3d(0, -100%, 0);
+    }
+    &.md-swipeleft {
+      transform: translate3d(-100%, 0%, 0);
+    }
+    &.md-swiperight {
+      transform: translate3d(100%, 0%, 0);
+    }
+  }
+
+  .md-action {
+    line-height: 19px;
+    margin-left: 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+    float: right;
+
+    &.md-button {
+      min-width: 0;
+    }
+  }
+}
+
+@media (max-width: $layout-breakpoint-sm) {
+  md-toast {
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border-radius: 0;
+    bottom: 0;
+    &.md-top {
+      bottom: auto;
+      top: 0;
+    }
+  }
+}
+@media (min-width: $layout-breakpoint-sm) {
+  md-toast {
+    min-width: 288px;
+    &.md-bottom {
+      bottom: $toast-margin;
+    }
+    &.md-left {
+      left: $toast-margin;
+    }
+    &.md-right {
+      right: $toast-margin;
+    }
+    &.md-top {
+      top: $toast-margin;
+    }
+
+    /*
+     * When the toast doesn't take up the whole screen,
+     * make it rotate when the user swipes it away
+     */
+    &.ng-leave.ng-leave-active {
+      &.md-swipeleft {
+        transform: translate3d(-100%, 25%, 0) rotateZ(-15deg);
+      }
+      &.md-swiperight {
+        transform: translate3d(100%, 25%, 0) rotateZ(15deg);
+      }
+      &.md-top {
+        &.md-swipeleft {
+          transform: translate3d(-100%, 0, 0) rotateZ(-15deg);
+        }
+        &.md-swiperight {
+          transform: translate3d(100%, 0, 0) rotateZ(15deg);
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: $layout-breakpoint-lg) {
+  md-toast {
+    max-width: $baseline-grid * 71;
+  }
+}
+
+
+
+@media screen and (-ms-high-contrast: active) {
+  md-toast {
+    border: 1px solid #fff;
+  }
+}
+
 // Standard/Desktop Heights
 $toolbar-tools-height: 64px !default;
 $toolbar-height: 64px !default;
@@ -5545,158 +5651,6 @@ md-toolbar {
   }
 }
 
-
-// See height set globally, depended on by buttons
-
-
-md-toast {
-  display: flex;
-  position:absolute;
-  z-index: $z-index-toast;
-
-  box-sizing: border-box;
-  align-items: center;
-
-  min-height: 48px;
-  padding-left: 24px;
-  padding-right: 24px;
-
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-  border-radius: 2px;
-  font-size: 14px;
-  cursor: default;
-
-  height:auto;
-  max-height: 7*$toast-height;
-  max-width: 100%;
-
-  overflow:hidden;
-
-  &.md-capsule {
-    border-radius: 24px;
-  }
-
-  opacity: 1;
-  transform: translate3d(0,0,0) rotateZ(0deg);
-  transition: $swift-ease-out;
-
-  &.ng-leave-active {
-    transition: $swift-ease-in;
-  }
-
-  /* Transition differently when swiping */
-  &.md-swipeleft,
-  &.md-swiperight,
-  &.md-swipeup,
-  &.md-swipedown {
-    transition: $swift-ease-out;
-  }
-
-  &.ng-enter {
-    transform: translate3d(0, 100%, 0);
-    &.md-top {
-      transform: translate3d(0, -100%, 0);
-    }
-    opacity: 0;
-    &.ng-enter-active {
-      transform: translate3d(0, 0, 0);
-      opacity: 1;
-    }
-  }
-  &.ng-leave.ng-leave-active {
-    opacity: 0;
-    transform: translate3d(0, 100%, 0);
-    &.md-top {
-      transform: translate3d(0, -100%, 0);
-    }
-    &.md-swipeleft {
-      transform: translate3d(-100%, 0%, 0);
-    }
-    &.md-swiperight {
-      transform: translate3d(100%, 0%, 0);
-    }
-  }
-
-  .md-action {
-    line-height: 19px;
-    margin-left: 24px;
-    cursor: pointer;
-    text-transform: uppercase;
-    float: right;
-
-    &.md-button {
-      min-width: 0;
-    }
-  }
-}
-
-@media (max-width: $layout-breakpoint-sm) {
-  md-toast {
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    border-radius: 0;
-    bottom: 0;
-    &.md-top {
-      bottom: auto;
-      top: 0;
-    }
-  }
-}
-@media (min-width: $layout-breakpoint-sm) {
-  md-toast {
-    min-width: 288px;
-    &.md-bottom {
-      bottom: $toast-margin;
-    }
-    &.md-left {
-      left: $toast-margin;
-    }
-    &.md-right {
-      right: $toast-margin;
-    }
-    &.md-top {
-      top: $toast-margin;
-    }
-
-    /*
-     * When the toast doesn't take up the whole screen,
-     * make it rotate when the user swipes it away
-     */
-    &.ng-leave.ng-leave-active {
-      &.md-swipeleft {
-        transform: translate3d(-100%, 25%, 0) rotateZ(-15deg);
-      }
-      &.md-swiperight {
-        transform: translate3d(100%, 25%, 0) rotateZ(15deg);
-      }
-      &.md-top {
-        &.md-swipeleft {
-          transform: translate3d(-100%, 0, 0) rotateZ(-15deg);
-        }
-        &.md-swiperight {
-          transform: translate3d(100%, 0, 0) rotateZ(15deg);
-        }
-      }
-    }
-  }
-}
-
-@media (min-width: $layout-breakpoint-lg) {
-  md-toast {
-    max-width: $baseline-grid * 71;
-  }
-}
-
-
-
-@media screen and (-ms-high-contrast: active) {
-  md-toast {
-    border: 1px solid #fff;
-  }
-}
 
 $tooltip-fontsize-lg: rem(1);
 $tooltip-fontsize-sm: rem(1.4);
