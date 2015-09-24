@@ -21,13 +21,13 @@
 
 </md-content>
 
-	<md-content ng-if="timeData" class="md-whiteframe-z1" style="margin-top: 20px;" layout-padding>
+	<md-content ng-if="timeData && keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 20px;" layout-padding>
   <p class="md-subhead" style="margin-bottom: 0px; padding-left: 20px;" ng-if="keywords.selected.length">{{selectedType.name}} <span ng-if="selectedType.name.indexOf('Artigos') < 0">dos artigos </span>publicados entre {{urlParams.since}} e {{urlParams.until}} pela fonte {{urlParams.source.name}} com os termos {{keywords.selected.toString().split(',').join(', ')}}</p>
     <download-bar></download-bar>
     <div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
 	</md-content>
 
-  <md-content ng-if="countData && !SAPOMode" class="md-whiteframe-z1" style="margin-top: 5px;" layout="row" layout-padding>
+  <md-content ng-if="countData && !SAPOMode && keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 5px;" layout="row" layout-padding>
     <div flex-gt-md="50">
       <md-content layout="row" layout-align="start center">
         <!-- <download-bar></download-bar> -->

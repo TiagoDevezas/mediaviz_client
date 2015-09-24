@@ -164,6 +164,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       $scope.keywords.selected = [];
       $scope.loadedKeywords = [];
       $location.search('keywords', null);
+      $scope.$broadcast('destroyChart');
+      if(countsArray.length) countsArray = [];
     }
 
     $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {

@@ -65,6 +65,10 @@ mediavizDirectives.directive('c3Chart', function($location) {
         if(chart) chart.flush();
       });
 
+      scope.$on('destroyChart', function(evt) {
+        if(chart) chart.destroy();
+      });
+
       scope.$on('changeXAxisFormat', function(evt, options) {
         if(chart) {
           chart.internal.config.axis_x_tick_format = options.format;
