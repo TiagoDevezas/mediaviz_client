@@ -46,7 +46,7 @@
 						<a href="{{item.url}}" style="text-decoration: none;">
 			        <h3>{{ item.title }}</h3>
 			        <h4 ng-bind-html="item.summary | words:30" class="item-text h4" style="margin: 0;"></h4>
-			        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC' }}</p>
+			        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC-1' }}</p>
 			        <p>Partilhas: {{item.total_shares}} Twitter: {{item.twitter_shares}} Facebook: {{item.facebook_shares}}</p>
 		        </a>
 		      </div>
