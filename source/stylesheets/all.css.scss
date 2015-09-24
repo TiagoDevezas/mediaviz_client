@@ -24,6 +24,11 @@ body {
   line-height: 1.35em !important;
 }
 
+md-list-item.md-3-line, md-list-item.md-3-line > .md-no-style {
+  height: 100px;
+  padding: 5px 16px;
+}
+
 .item-text.h4 p {
   color: rgba(0,0,0,0.87) !important;
   font-size: 14px !important;
