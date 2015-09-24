@@ -43,17 +43,16 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   }
 
   $scope.barChartOpts = {
+    id: 'countChart',
     size: {
       height: 100
     },
     data: {
       x: 'x',
-      // labels: true
+      labels: true
     },
     bar: {
-      width: {
-        ratio: 0.3
-      }
+      width: 15
     },
     axis: {
       rotated: true,
@@ -63,7 +62,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
         show: false
       },
       y: {
-        max: '',
         show: false
       }
     },
@@ -71,7 +69,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       show: true
     },
     padding: {
-      left: 0,
+      left: 20,
       right: 0,
       top: 0,
       bottom: 0
@@ -80,6 +78,12 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       show: false
     }
   };
+
+  $scope.barChartYAxisOpts = {};
+
+  angular.copy($scope.barChartOpts, $scope.barChartYAxisOpts);
+
+  $scope.barChartYAxisOpts.axis.y.show = true;
 
 
   $scope.timeChartOpts = {
@@ -313,10 +317,11 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
               var maxValue = d3.max(countsArray);
 
-              $scope.barChartOpts.axis.y.max = maxValue;
+              // $scope.barChartOpts.axis.y.max = maxValue;
+              $scope.$broadcast('updateMaxY', maxValue);
               $scope.xsObj = xsObj;
 
-              $scope.$broadcast('flushChart');
+              // $scope.$broadcast('flushChart');
             });
           }
         }

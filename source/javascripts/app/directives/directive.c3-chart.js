@@ -45,12 +45,20 @@ mediavizDirectives.directive('c3Chart', function($location) {
         }
       }
 
+      // Event watchers
+
       scope.$on('sourceRemoved', function(evt, source) {
         if(chart) chart.unload({ids: source});
       });
 
       scope.$on('unloadAll', function(evt) {
         if(chart) chart.unload();
+      });
+
+      scope.$on('updateMaxY', function(evt, value) {
+        if(chart && chart.internal.config.data_type === 'bar') {
+          chart.axis.max({y: value});
+        }
       });
 
       scope.$on('flushChart', function(evt) {
