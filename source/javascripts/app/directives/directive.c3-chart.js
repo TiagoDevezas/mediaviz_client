@@ -58,6 +58,8 @@ mediavizDirectives.directive('c3Chart', function($location) {
       scope.$on('updateMaxY', function(evt, value) {
         if(chart && chart.internal.config.data_type === 'bar') {
           chart.axis.max({y: value});
+          chart.flush();
+          console.log('update called');
         }
       });
 

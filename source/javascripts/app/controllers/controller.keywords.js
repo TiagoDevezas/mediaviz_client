@@ -320,7 +320,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               var maxValue = d3.max(countsArray);
 
               // $scope.barChartOpts.axis.y.max = maxValue;
-              $scope.$broadcast('updateMaxY', maxValue);
+              $timeout(function() {
+                $scope.$broadcast('updateMaxY', maxValue);
+              }, 10);
               $scope.xsObj = xsObj;
 
               // $scope.$broadcast('flushChart');
