@@ -1,8 +1,14 @@
 mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $location, SourceList) {
 
-  if( $location.absUrl().indexOf('irlab.fe.up.pt/p/sapoviz') > 0 && $location.path().indexOf('/SAPO/') < 0 ) {
-    $location.url('/SAPO');
-  }
+  $scope.$watch(function() { return $location.absUrl() }, function(locationUrl) {
+    if( locationUrl.indexOf('irlab.fe.up.pt/p/sapoviz') > 0 ) {
+      if(locationUrl.indexOf('/SAPO/cronica') > 0 || locationUrl.indexOf('/SAPO/fontes') > 0 || locationUrl.indexOf('/SAPO/newsmap') > 0) {
+        // return;
+      } else {
+        $location.url('/SAPO');
+      }
+    }
+  });
 
   $scope.toggleMenu = function() {
     $mdSidenav('left').toggle();
