@@ -51,6 +51,7 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
   ];
 
   $scope.$on('countryClickEvent', function(evt, data) {
+    if($scope.SAPOMode) return;
     var countryName = data.country;
     var mapId = data.mapId;
     var mapObj = $filter('filter')($scope.mapsToRender, {name: mapId}, true)[0];

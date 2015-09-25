@@ -147,6 +147,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       };
 
   function showArticles(d) {
+    if($scope.SAPOMode) return;
     var date = moment(d.x).format("YYYY-MM-DD");
     var keyword = d.name;
     var source = $scope.urlParams.source;
