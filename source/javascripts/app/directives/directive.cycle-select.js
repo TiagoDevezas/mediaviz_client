@@ -13,12 +13,18 @@ mediavizDirectives.directive('cycleSelect', function($location, $filter) {
 
       scope.selectedCycle;
 
-      scope.allCycles = [
+      scope.allCycles = !scope.SAPOMode ? 
+      [
         {name: 'Hora', value: 'hour'},
         {name: 'Dia', value: 'day'},
         {name: 'Semana', value: 'week'},
         {name: 'Mês', value: 'month'}
-      ];
+      ] : [
+        {name: 'Dia', value: 'day'},
+        {name: 'Semana', value: 'week'},
+        {name: 'Mês', value: 'month'}
+      ]
+
 
       scope.selectedCycle = scope.allCycles[0].name;
 

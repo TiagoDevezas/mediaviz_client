@@ -252,13 +252,17 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
               xsObj[countId] = timeId;
               var data = data.data.facet_counts.facet_ranges.pubdate.counts;
               dayData = SAPODataFormatter.getDays(data);
+
               $scope.dayData = DataFormatter.inColumns(dayData, sourceName, 'time', 'articles');
 
               var weekData = SAPODataFormatter.getWeekDays(data);
-              $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'percent_of_source');
+
+              // $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'percent_of_source');
+              $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'articles');
 
               var monthData = SAPODataFormatter.getMonths(data);
-              $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'percent_of_source');
+              // $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'percent_of_source');
+              $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'articles');
 
               setChartDataForCycle();
 

@@ -290,11 +290,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               
               var countData = countData = DataFormatter.countOnly(data, keyword, 'total_articles');
 
-              $scope.countData = [];
-              $scope.countData.push(['x', keyword]);
-              $scope.countData.push(countData[0]);
-
-              console.log($scope.countData);
+              $scope.countData = [['x', keyword], countData[0]];
 
               $scope.xsObj = xsObj;
             });

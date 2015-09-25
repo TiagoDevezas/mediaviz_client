@@ -44,7 +44,6 @@ return {
 
       scope.querySearch = function(query) {
         sources = scope.sourceList;
-        console.log(sources);
         var results = query ? sources.filter( createFilterFor(query) ) : sources, deferred;
         deferred = $q.defer();
         deferred.resolve(results);
