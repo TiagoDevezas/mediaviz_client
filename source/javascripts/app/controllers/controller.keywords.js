@@ -287,7 +287,14 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               data = SAPODataFormatter.getDays(data);
 
               $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
-              $scope.countData = DataFormatter.countOnly(data, keyword, 'total_articles');
+              
+              var countData = countData = DataFormatter.countOnly(data, keyword, 'total_articles');
+
+              $scope.countData = [];
+              $scope.countData.push(['x', keyword]);
+              $scope.countData.push(countData[0]);
+
+              console.log($scope.countData);
 
               $scope.xsObj = xsObj;
             });
@@ -308,6 +315,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               }
 
               $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
+
+              console.log($scope.countData);
+
               $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
               $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
               $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
