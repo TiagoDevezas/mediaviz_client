@@ -22,9 +22,9 @@ mediavizServices.factory('SourceList', ['$http',
 			var sourceNamesArray = sourceNames.split(',');
 	  	var sourceListArray = sourceNamesArray.map(function(el) {
 	  		if(el === 'Lusa') {
-	  			return {name: 'Lusa', value: 'Lusa,lusa25'}
+	  			return {name: 'Lusa', value: 'Lusa,lusa25'};
 	  		} else {
-	  			return {name: el, value: el}	  			
+	  			return {name: el, value: el};
 	  		}
 	    });
 	    sourceListArray.unshift({name: 'Todas', value: sourceNames});

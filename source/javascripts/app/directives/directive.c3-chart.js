@@ -48,7 +48,10 @@ mediavizDirectives.directive('c3Chart', function($location) {
       // Event watchers
 
       scope.$on('sourceRemoved', function(evt, source) {
-        if(chart) chart.unload({ids: source});
+        if(chart) {
+          chart.unload({ids: source});
+          chart.flush();
+        }
       });
 
       scope.$on('unloadAll', function(evt) {

@@ -31,16 +31,16 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     since: "2015-01-01",
     until: moment().format("YYYY-MM-DD"),
     by: $location.search()['by'] || 'day',
-    data: 'articles'
+    data: setDefaultData()
   }
 
-  // function setDefaultData() {
-  //   if(!$location.search()['data'] && !$scope.SAPOMode) {
-  //     return 'articles';
-  //   } else {
-  //     return 'percent';
-  //   }
-  // }
+  function setDefaultData() {
+    if($scope.SAPOMode !== true && !$location.search()['data']) {
+      return 'articles';
+    } else if($scope.SAPOMode === true && !$location.search()['data']){
+      return 'percent';
+    }
+  }
 
   $scope.timeChartOpts = {
     size: {
