@@ -29,7 +29,24 @@ mediavizServices.factory('SAPODataFormatter', function() {
     });
 
     return daysAndCounts;
-  }
+  },
+  factory.getDaysPercent = function(data) {
+    var dateAndCounts = data;
+    var daysAndCounts = dateAndCounts.map(function(el) {
+      return [moment(el[0], 'YYYY-MM-DD').format('YYYY-MM-DD'), el[1]];
+    });
+    var totalSourceArticles = d3.sum(daysAndCounts, function(el) {
+      return el[1];
+    });
+
+    var daysCountsOBj = daysAndCounts.map(function(el) {
+      var percent_of_source = ((el[1] / totalSourceArticles) * 100).toFixed(2);
+      return {time: el[0], articles: el[1], total_source_articles: totalSourceArticles, percent_of_source: parseFloat(percent_of_source)}
+    });
+
+    return daysCountsOBj;
+
+  },
   factory.getWeekDays = function(data) {
     var dateAndCounts = data;
     var weekDaysAndCounts = dateAndCounts.map(function(el) {

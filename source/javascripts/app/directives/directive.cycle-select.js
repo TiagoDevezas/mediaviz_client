@@ -4,7 +4,7 @@ mediavizDirectives.directive('cycleSelect', function($location, $filter) {
     scope: '=',
     template: 
       '<md-input-container>' + 
-        '<label>Ciclo</label>' +
+        '<label><span ng-if="cycleSelectLabel">{{cycleSelectLabel}}</span><span ng-if="!cycleSelectLabel">Ciclo</span></label>' +
         '<md-select ng-model="selectedCycle" ng-change="setCycle(selectedCycle)">' +
           '<md-option ng-repeat="cycle in allCycles" value="{{cycle.name}}">{{cycle.name}}</md-option>' +
         '</md-select>' +

@@ -1,25 +1,27 @@
 <div id="chronicle" layout-padding>
 
-<md-content class="md-whiteframe-z1 md-padding">
+  <md-content class="md-whiteframe-z1 md-padding">
 
-	<div flex layout="row">
-		<div flex="85">
-			<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>			
-		</div>
-		<div flex="15" layout="row" layout-align="center center">
-			<md-button class="md-raised md-warn" ng-click="clearChart()" ng-disabled="!keywords.selected.length">Limpar</md-button>			
-		</div>
-	</div>
+  	<div flex layout="row">
+  		<div flex="85">
+  			<md-chips ng-model="keywords.selected" placeholder="Introduzir termo" secondary-placeholder="Introduzir termo"></md-chips>			
+  		</div>
+  		<div flex="15" layout="row" layout-align="center center">
+  			<md-button class="md-raised md-warn" ng-click="clearChart()" ng-disabled="!keywords.selected.length">Limpar</md-button>			
+  		</div>
+  	</div>
 
-  <div layout="row" layout-align="start center" ng-show="keywords.selected.length">
-    <source-select class="md-padding" source-list="sourceList" selected-source="urlParams.source" style="padding-left: 0;"></source-select>
-    <type-select ng-show="!SAPOMode" style="margin: 0 10px;"></type-select>
-    <date-select style="margin: 0 10px;"></date-select>
-    <cycle-select ng-show="SAPOMode" style="margin: 0 10px;"></cycle-select>
-    <date-picker></date-picker>
-  </div>
+    <div layout="row" layout-align="start center" ng-show="keywords.selected.length">
+      <source-select class="md-padding" source-list="sourceList" selected-source="urlParams.source" style="padding-left: 0;"></source-select>
+      <type-select ng-show="!SAPOMode" style="margin: 0 10px;"></type-select>
+      <date-select style="margin: 0 10px;"></date-select>
+      <cycle-select ng-show="SAPOMode" style="margin: 0 10px;"></cycle-select>
+      <date-picker></date-picker>
+    </div>
 
-</md-content>
+  </md-content>
+
+  <loading-flash></loading-flash>
 
 	<md-content ng-if="timeData && keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 20px;" layout-padding>
   <p class="md-subhead" style="margin-bottom: 0px; padding-left: 20px;" ng-if="keywords.selected.length">{{selectedType.name}} <span ng-if="selectedType.name.indexOf('Artigos') < 0">dos artigos </span>publicados entre {{urlParams.since}} e {{urlParams.until}} pela fonte {{urlParams.source.name}} com os termos {{keywords.selected.toString().split(',').join(', ')}}</p>

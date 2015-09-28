@@ -12,15 +12,15 @@
     </div>
 
     <div flex layout="row" layout-align="start center" ng-show="selectedSources.length > 0" style="padding-bottom: 0px;">
-      <div layout="row" layout-align="start center" style="padding: 12px 6px;">
+<!--       <div layout="row" layout-align="start center" style="padding: 12px 6px;">
         <span style="display: block;">Pesquisa</span>
         <md-switch ng-model="searchSwitch" aria-label="Pesquisa" ng-change="checkValue(searchSwitch)" class="md-primary">
         </md-switch>
-      </div>
-      <div ng-show="searchSwitch" layout="row" layout-align="start center">
+      </div> -->
+      <div layout="row" layout-align="start center">
         <form ng-submit="setQuery(inputKeyword)">
           <md-input-container>
-            <label>Palavra-chave</label>
+            <label>Pesquisar</label>
             <input ng-model="inputKeyword" id="search-input">
           </md-input-container>
         </form>
@@ -28,7 +28,7 @@
           <md-icon md-svg-icon="images/icons/ic_clear_black_24px.svg"></md-icon>
         </md-button> -->
       </div>
-      <type-select ng-show="!SAPOMode" style="margin: 0 10px;"></type-select>
+      <type-select style="margin: 0 10px;"></type-select>
       <date-select style="margin: 0 10px;"></date-select>
       <cycle-select style="margin: 0 10px;"></cycle-select>
       <date-picker style="margin: 0 10px;"></date-picker>
@@ -36,6 +36,8 @@
     </div>
 
   </md-content>
+
+  <loading-flash></loading-flash>
 
   <md-content ng-show="selectedSources.length" class="md-whiteframe-z1" style="margin-top: 20px; padding: 0px;">
     <div flex class="md-padding">

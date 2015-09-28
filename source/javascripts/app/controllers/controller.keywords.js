@@ -4,6 +4,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
   if($location.path().indexOf('/SAPO') !== -1) {
     $scope.SAPOMode = true;
+    $scope.cycleSelectLabel = 'Granularidade';
   }
 
   $scope.urlParams = {

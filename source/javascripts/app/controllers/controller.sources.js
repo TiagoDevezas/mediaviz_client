@@ -34,6 +34,14 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     data: 'articles'
   }
 
+  // function setDefaultData() {
+  //   if(!$location.search()['data'] && !$scope.SAPOMode) {
+  //     return 'articles';
+  //   } else {
+  //     return 'percent';
+  //   }
+  // }
+
   $scope.timeChartOpts = {
     size: {
       height: 450
@@ -130,10 +138,10 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       if(keyword) {
         $scope.inputKeyword = keyword;
         $scope.urlParams.keyword = keyword;
-        $scope.searchSwitch = true;
-      } else {
-        // $scope.clearInput();
-        $scope.searchSwitch = false;
+      //   $scope.searchSwitch = true;
+      // } else {
+      //   // $scope.clearInput();
+      //   $scope.searchSwitch = false;
       }
       if(since) {
         $scope.urlParams.since = since;
@@ -203,7 +211,11 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     }, true);
 
     $scope.setQuery = function(value) {
-      $scope.urlParams.keyword = value;
+      if(value.length) {
+        $scope.urlParams.keyword = value;        
+      } else {
+        $scope.clearInput();
+      }
     }
 
     $scope.clearChart = function() {
@@ -252,18 +264,20 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
               $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
               xsObj[countId] = timeId;
               var data = data.data.facet_counts.facet_ranges.pubdate.counts;
-              dayData = SAPODataFormatter.getDays(data);
-
-              $scope.dayData = DataFormatter.inColumns(dayData, sourceName, 'time', 'articles');
-
+              var dayData = SAPODataFormatter.getDays(data);
+              var dayDataPercent = SAPODataFormatter.getDaysPercent(data);
               var weekData = SAPODataFormatter.getWeekDays(data);
-
-              // $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'percent_of_source');
-              $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'articles');
-
               var monthData = SAPODataFormatter.getMonths(data);
-              // $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'percent_of_source');
-              $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'articles');
+
+              if($scope.urlParams.data === 'percent') {
+                $scope.dayData = DataFormatter.inColumns(dayDataPercent, countId, 'time', 'percent_of_source');
+                $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'percent_of_source');
+                $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'percent_of_source');
+              } else {
+                $scope.dayData = DataFormatter.inColumns(dayData, sourceName, 'time', 'articles');
+                $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'articles');
+                $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'articles');
+              }
 
               setChartDataForCycle();
 
@@ -307,7 +321,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
           $scope.chartData = $scope.dayData;
         }
         $scope.timeChartOpts.axis.x.type = 'timeseries';
-        $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: '%d %b %Y'});
+        $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: function(d) { return moment(d).format('YYYY-MM-DD')} });
       }
       if($scope.urlParams.by === 'week') {
         if($scope.SAPOMode) {

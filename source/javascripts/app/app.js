@@ -60,7 +60,8 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 		when('/SAPO', {
 			templateUrl: 'partials/app/sapo.html',
 			controller: 'SAPOCtrl',
-			caseInsensitiveMatch: true
+			caseInsensitiveMatch: true,
+			reloadOnSearch: false
 		}).
 		when('/SAPO/fontes', {
 			templateUrl: 'partials/app/sources.html',

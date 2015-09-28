@@ -13,13 +13,14 @@ mediavizDirectives.directive('typeSelect', function($location, $filter) {
       
       scope.dataTypes = [
         {name: 'Artigos (total)', type: 'articles'},
-        {name: 'Partilhas (Twitter)', type: 'twitter_shares'},
-        {name: 'Partilhas (Facebook)', type: 'facebook_shares'},
-        {name: 'Partilhas (Todas)', type: 'total_shares'}
+        {name: 'Artigos (percentagem)', type: 'percent'}
       ];
 
       if(!scope.SAPOMode) {
-        scope.dataTypes.splice(1, 0, {name: 'Artigos (percentagem)', type: 'percent'})
+        scope.dataTypes.splice(2, 0,
+        {name: 'Partilhas (Twitter)', type: 'twitter_shares'},
+        {name: 'Partilhas (Facebook)', type: 'facebook_shares'},
+        {name: 'Partilhas (Todas)', type: 'total_shares'});
       }
 
       scope.setDataType = function(dataType) {
