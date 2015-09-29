@@ -174,7 +174,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       $scope.urlParams.keyword = null;
     }
 
-    $scope.chartData;
+    // $scope.chartData;
 
     $scope.$watch('selectedSources', function(newVal, oldVal) {
       var sources = newVal.map(function(el) { return el.name }) || null;
