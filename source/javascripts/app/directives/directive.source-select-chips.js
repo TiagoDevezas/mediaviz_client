@@ -7,7 +7,7 @@ return {
     },
     template: 
       '<md-chips ng-model="selected" md-autocomplete-snap md-require-match="true">' +
-        '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="item in querySearch(searchText)" md-item-text="item.name" placeholder="Escolher fonte">' +
+        '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="item in querySearch(searchText)" md-autoselect="true" md-item-text="item.name" placeholder="Escolher fonte">' +
           '<span md-highlight-text="searchText">{{item.name}}</span>' +
         '</md-autocomplete>' +
         '<md-chip-template>' +
