@@ -5,9 +5,7 @@
   	</md-button>
     <h2><a href="#/">MediaViz</a> <span ng-if="pageTitle"> > {{pageTitle.split(' || ')[1]}}</span></h2>
     <span flex></span>
-    <md-button class="md-icon-button" aria-label="Ajuda">
-      <md-icon>help</md-icon>
-    </md-button>
+    <md-button ng-click="openAboutDialog()">Sobre</md-button>
   </div>
 </md-toolbar>
 
@@ -15,9 +13,7 @@
   <div class="md-toolbar-tools">
     <h2 style="padding-left: 24px;"><a href="#/SAPO">SAPO NewsViz</a></h2>
     <span flex></span>
-    <md-button class="md-icon-button" aria-label="Ajuda">
-      <md-icon>help</md-icon>
-    </md-button>
+    <md-button ng-click="openAboutDialog()">Sobre</md-button>
   </div>
   <md-tabs class="md-{{theme}}-theme md-primary md-no-tab-content" md-selected="selectedIndex.value" style="padding-left: 16px;">
     <md-tab label="palavras-chave"></md-tab>
