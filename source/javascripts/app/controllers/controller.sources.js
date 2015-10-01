@@ -30,8 +30,13 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     sources: $location.search()['sources'] || null,
     since: "2015-01-01",
     until: moment().format("YYYY-MM-DD"),
-    by: $location.search()['by'] || 'day',
+    cycle: $location.search()['cycle'] || 'day',
     data: setDefaultData()
+  }
+
+  if($scope.SAPOMode) {
+    $scope.urlParams.cycle = $location.search()['cycle'] || 'day';
+    $scope.urlParams.by = $location.search()['by'] || 'day';
   }
 
   function setDefaultData() {
@@ -121,6 +126,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       var keyword = newVal['keyword'];
       var since = newVal['since'];
       var until = newVal['until'];
+      var cycle = newVal['cycle'];
       var by = newVal['by'];
       var dataType = $location.search()['data'];
       if(sourceList) {
@@ -148,6 +154,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       }
       if(until) {
         $scope.urlParams.until = until;
+      }
+      if(cycle) {
+        $scope.urlParams.cycle = cycle;
       }
       if(by) {
         $scope.urlParams.by = by;
@@ -228,14 +237,14 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 
 
     function createSAPOParamsObj(source) {
-  		return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: timeFrame, q: tokenizeKeyword($scope.urlParams.keyword), source: source.value};
+  		return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: $filter('uppercase')($scope.urlParams.by), q: tokenizeKeyword($scope.urlParams.keyword), source: source.value};
     }
 
     function createParamsObj(source) {
       if(source.group) {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.type, q: $scope.urlParams.keyword, by: $scope.urlParams.by};    
+        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.type, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};    
       } else {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.by};
+        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};
       }   
     }
 
@@ -309,28 +318,28 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
     }
 
     function setChartDataForCycle() {
-      if($scope.urlParams.by === 'hour') {
+      if($scope.urlParams.cycle === 'hour') {
         if($scope.SAPOMode) {
           $scope.chartData = $scope.monthData;
         }
         $scope.timeChartOpts.axis.x.type = '';
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().hour(d).format('HH'); }});
       }
-      if($scope.urlParams.by === 'day') {
+      if($scope.urlParams.cycle === 'day') {
         if($scope.SAPOMode) {
           $scope.chartData = $scope.dayData;
         }
         $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: function(d) { return moment(d).format('YYYY-MM-DD')} });
       }
-      if($scope.urlParams.by === 'week') {
+      if($scope.urlParams.cycle === 'week') {
         if($scope.SAPOMode) {
           $scope.chartData = $scope.weekData;
         }
         $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().isoWeekday(d).format('ddd');} });
       }
-      if($scope.urlParams.by === 'month') {
+      if($scope.urlParams.cycle === 'month') {
         if($scope.SAPOMode) {
           $scope.chartData = $scope.monthData;
         }

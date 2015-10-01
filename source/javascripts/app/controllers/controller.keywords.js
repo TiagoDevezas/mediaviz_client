@@ -4,15 +4,20 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
   if($location.path().indexOf('/SAPO') !== -1) {
     $scope.SAPOMode = true;
-    $scope.cycleSelectLabel = 'Granularidade';
   }
 
   $scope.urlParams = {
     source: null,
     since: "2015-01-01",
     until: moment().format("YYYY-MM-DD"),
-    by: 'day',
+    cycle: null,
+    by: null,
     data: 'articles'
+  }
+
+  if($scope.SAPOMode) {
+    $scope.urlParams.cycle = $location.search()['cycle'] || 'day';
+    $scope.urlParams.by = $location.search()['by'] || 'day';
   }
 
   function setDefaultData() {
@@ -125,7 +130,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           culling: {
                 max: 5 // the number of tick texts will be adjusted to less than this value
               },
-              format: '%d %b %Y'
+              format: ''
             }
           },
           y: {
@@ -183,6 +188,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       var source = $location.search()['source'];
       var since = $location.search()['since'];
       var until = $location.search()['until'];
+      var cycle = $location.search()['cycle'];
       var by = $location.search()['by'];
       var dataType = $location.search()['data'];
       var keywordArray = [];
@@ -203,6 +209,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       }
       if(until) {
         $scope.urlParams.until = until;
+      }
+      if(cycle) {
+        $scope.urlParams.cycle = cycle;
       }
       if(by) {
         $scope.urlParams.by = by;
@@ -237,7 +246,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           $location.search(key, urlParams[key])
         } else if(!urlParams[key]) {
           $location.search(key, null)
-          return;
         }
       }
       $scope.loadedKeywords = [];
@@ -297,17 +305,23 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
               var dayData = SAPODataFormatter.getDays(data);
               var dayDataPercent = SAPODataFormatter.getDaysPercent(data);
-              var countData = countData = DataFormatter.countOnly(dayData, keyword, 'total_articles');
+              var countData = DataFormatter.countOnly(dayData, keyword, 'total_articles');
+              var weekData = SAPODataFormatter.getWeekDays(data);
+              var monthData = SAPODataFormatter.getMonths(data);
 
               if($scope.urlParams.data === 'percent') {
-                $scope.timeData = DataFormatter.inColumns(dayDataPercent, countId, 'time', 'percent_of_source');
+                $scope.dayData = DataFormatter.inColumns(dayDataPercent, keyword, 'time', 'percent_of_source');
+                $scope.weekData = DataFormatter.inColumns(weekData, keyword, 'time', 'percent_of_source');
+                $scope.monthData = DataFormatter.inColumns(monthData, keyword, 'time', 'percent_of_source');
               } else {
-                $scope.timeData = DataFormatter.inColumns(dayData, keyword, 'time', 'articles');
+                $scope.dayData = DataFormatter.inColumns(dayData, keyword, 'time', 'articles');
+                $scope.weekData = DataFormatter.inColumns(weekData, keyword, 'time', 'articles');
+                $scope.monthData = DataFormatter.inColumns(monthData, keyword, 'time', 'articles');
               }
-              
-              // data = SAPODataFormatter.getDays(data);
 
               $scope.countData = [['x', keyword], countData[0]];
+
+              setChartDataForCycle();
 
               $scope.xsObj = xsObj;
             });
@@ -324,10 +338,14 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                   $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_query');
                 }
               } else {
+                console.log('called');
                 $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
               }
 
+              // $scope.timeChartOpts.axis.x.type = 'timeseries';
+              
               $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
+
 
               $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
               $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
@@ -344,6 +362,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               $timeout(function() {
                 $scope.$broadcast('updateMaxY', maxValue);
               }, 10);
+
               $scope.xsObj = xsObj;
 
               // $scope.$broadcast('flushChart');
@@ -351,6 +370,37 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           }
         }
       })
+    }
+
+    function setChartDataForCycle() {
+      if($scope.urlParams.cycle === 'hour') {
+        if($scope.SAPOMode) {
+          $scope.timeData = $scope.monthData;
+        }
+        $scope.timeChartOpts.axis.x.type = '';
+        $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().hour(d).format('HH'); }});
+      }
+      if($scope.urlParams.cycle === 'day') {
+        if($scope.SAPOMode) {
+          $scope.timeData = $scope.dayData;
+        }
+        $scope.timeChartOpts.axis.x.type = 'timeseries';
+        $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: function(d) { return moment(d).format('YYYY-MM-DD')} });
+      }
+      if($scope.urlParams.cycle === 'week') {
+        if($scope.SAPOMode) {
+          $scope.timeData = $scope.weekData;
+        }
+        $scope.timeChartOpts.axis.x.type = 'timeseries';
+        $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().isoWeekday(d).format('ddd');} });
+      }
+      if($scope.urlParams.cycle === 'month') {
+        if($scope.SAPOMode) {
+          $scope.timeData = $scope.monthData;
+        }
+        $scope.timeChartOpts.axis.x.type = 'timeseries';
+        $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment(d, 'MM').format('MMM');}});
+      }
     }
 
   }

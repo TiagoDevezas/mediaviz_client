@@ -74,7 +74,7 @@ mediavizDirectives.directive('c3Chart', function($location) {
       });
 
       scope.$on('changeXAxisFormat', function(evt, options) {
-        if(chart) {
+        if(chart && chart.internal.config.data_type !== 'bar') {
           chart.internal.config.axis_x_tick_format = options.format;
           chart.internal.config.axis_x_type = options.type;
         }

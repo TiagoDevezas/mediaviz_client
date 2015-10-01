@@ -1,10 +1,10 @@
-mediavizDirectives.directive('cycleSelect', function($location, $filter) {
+mediavizDirectives.directive('granularitySelect', function($location, $filter) {
   return {
     restrict: 'AE',
     scope: '=',
     template: 
       '<md-input-container>' + 
-        '<label>Ciclo</label>' +
+        '<label>Granularidade</label>' +
         '<md-select ng-model="selectedCycle" ng-change="setCycle(selectedCycle)">' +
           '<md-option ng-repeat="cycle in allCycles" value="{{cycle.name}}">{{cycle.name}}</md-option>' +
         '</md-select>' +
@@ -30,10 +30,10 @@ mediavizDirectives.directive('cycleSelect', function($location, $filter) {
 
       scope.setCycle = function(cycleName) {
         var cycleObj = $filter('filter')(scope.allCycles, {name: cycleName}, true)[0] || null;
-        $location.search('cycle', cycleObj.value);
+        $location.search('by', cycleObj.value);
       }
 
-      scope.$watch('urlParams.cycle', function(newVal, oldVal) {
+      scope.$watch('urlParams.by', function(newVal, oldVal) {
         var cycleObj = $filter('filter')(scope.allCycles, {value: newVal}, true)[0] || null;
         if(cycleObj) {
           scope.selectedCycle = cycleObj.name;
