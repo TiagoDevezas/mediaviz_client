@@ -15,6 +15,14 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     data: 'articles'
   }
 
+  function setDefaultData() {
+    if($scope.SAPOMode !== true && !$location.search()['data']) {
+      return 'articles';
+    } else if($scope.SAPOMode === true && !$location.search()['data']){
+      return 'percent';
+    }
+  }
+
   $scope.sourceList;
 
   $scope.loadedKeywords = [];
@@ -285,12 +293,19 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
               $scope.loadedKeywords.push(keywordName);
               xsObj[countId] = timeId;
-              var data = data.data.facet_counts.facet_ranges.pubdate.counts
-              data = SAPODataFormatter.getDays(data);
+              var data = data.data.facet_counts.facet_ranges.pubdate.counts;
 
-              $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'articles');
+              var dayData = SAPODataFormatter.getDays(data);
+              var dayDataPercent = SAPODataFormatter.getDaysPercent(data);
+              var countData = countData = DataFormatter.countOnly(dayData, keyword, 'total_articles');
+
+              if($scope.urlParams.data === 'percent') {
+                $scope.timeData = DataFormatter.inColumns(dayDataPercent, countId, 'time', 'percent_of_source');
+              } else {
+                $scope.timeData = DataFormatter.inColumns(dayData, keyword, 'time', 'articles');
+              }
               
-              var countData = countData = DataFormatter.countOnly(data, keyword, 'total_articles');
+              // data = SAPODataFormatter.getDays(data);
 
               $scope.countData = [['x', keyword], countData[0]];
 
