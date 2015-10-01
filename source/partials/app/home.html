@@ -1,16 +1,15 @@
 <div id="home">
-    <div layout="column" layout-gt-sm="row" layout-wrap>
-        <md-card ng-repeat="tool in toolsToDisplay" flex-gt-sm="50" flex-gt-md="33" ng-mouseover="hovered = true" ng-mouseleave="hovered = false" ng-class="{'md-whiteframe-z3': hovered}">
-          <md-card-content>
-            <h2 class="md-title">{{tool.name}}</h2>
-            <p>
-              {{tool.description}}
-            </p>
-          </md-card-content>
-          <div class="md-actions" layout="row" layout-align="start center">
-            <md-button ng-href="#{{tool.url}}" style="min-width: 0; padding: 0 12px;" class="md-accent">Abrir</md-button>
-          </div>
-        </md-card>
-    </div>
-    
+  <div layout="column" layout-gt-sm="row" layout-wrap>
+      <md-card ng-repeat="tool in toolsToDisplay" flex-gt-md="33" ng-mouseover="hovered = true" ng-mouseleave="hovered = false" ng-class="{'md-whiteframe-z3': hovered}">
+        <md-card-content>
+          <h2 class="md-title">{{tool.name}}</h2>
+          <p>
+            {{tool.description}}
+          </p>
+        </md-card-content>
+        <div class="md-actions" layout="row" layout-align="start center">
+          <md-button ng-href="#{{tool.url}}" style="min-width: 0; padding: 0 12px;" class="md-accent">Abrir</md-button>
+        </div>
+      </md-card>
+  </div>
 </div>
