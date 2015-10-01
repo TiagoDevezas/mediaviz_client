@@ -32,6 +32,7 @@
   },
   "resolutions": {
     "moment": "~2.10.3",
-    "angular-material": "master"
+    "angular-material": "master",
+    "angular": "1.4.7"
   }
 }
