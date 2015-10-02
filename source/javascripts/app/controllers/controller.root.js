@@ -1,4 +1,4 @@
-mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $location, SourceList) {
+mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $location, $mdDialog, SourceList) {
 
   $scope.$watch(function() { return $location.absUrl() }, function(locationUrl) {
     if( locationUrl.indexOf('irlab.fe.up.pt/p/sapoviz') > 0 ) {
@@ -70,6 +70,22 @@ mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $locatio
     {name: 'NewsMap', description: 'Comparar coberturas geográficas.', url: '/newsmap'},
     {name: 'Artigos', description: 'Pesquisa de artigos.', url: '/articles'},
     {name: 'SAPO', description: 'Ferramentas integradas com a API do SAPO.', url: '/SAPO'}
-  ]
+  ];
+
+  $scope.openAboutDialog = function(ev) {
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: 'dialog1.html',
+      parent: angular.element(document.body),
+      targetEvent: ev,
+      clickOutsideToClose:true
+    });
+  }
+
+  function DialogController($scope, $mdDialog) {
+    $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
+  }
 
 });

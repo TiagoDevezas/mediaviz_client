@@ -5,7 +5,7 @@ mediavizDirectives.directive('cycleSelect', function($location, $filter) {
     template: 
       '<md-input-container>' + 
         '<label>Ciclo</label>' +
-        '<md-select ng-model="selectedCycle" ng-change="setCycle(selectedCycle)">' +
+        '<md-select ng-model="selectedCycle" ng-change="setCycle(selectedCycle)" ng-disabled="disableInput()">' +
           '<md-option ng-repeat="cycle in allCycles" value="{{cycle.name}}">{{cycle.name}}</md-option>' +
         '</md-select>' +
       '</md-input-container>',
@@ -27,6 +27,12 @@ mediavizDirectives.directive('cycleSelect', function($location, $filter) {
 
 
       scope.selectedCycle = scope.allCycles[0].name;
+
+      scope.disableInput = function() {
+        if(scope.SAPOMode && scope.urlParams.by !== 'day') {
+          return true;
+        }
+      }
 
       scope.setCycle = function(cycleName) {
         var cycleObj = $filter('filter')(scope.allCycles, {name: cycleName}, true)[0] || null;

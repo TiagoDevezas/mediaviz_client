@@ -5,7 +5,7 @@
   	</md-button>
     <h2><a href="#/">MediaViz</a> <span ng-if="pageTitle"> > {{pageTitle.split(' || ')[1]}}</span></h2>
     <span flex></span>
-    <md-button ng-click="openAboutDialog()">Sobre</md-button>
+    <md-button ng-click="openAboutDialog($event)">Sobre</md-button>
   </div>
 </md-toolbar>
 
@@ -13,7 +13,7 @@
   <div class="md-toolbar-tools">
     <h2 style="padding-left: 24px;"><a href="#/SAPO">SAPO NewsViz</a></h2>
     <span flex></span>
-    <md-button ng-click="openAboutDialog()">Sobre</md-button>
+    <md-button ng-click="openAboutDialog($event)">Sobre</md-button>
   </div>
   <md-tabs class="md-{{theme}}-theme md-primary md-no-tab-content" md-selected="selectedIndex.value" style="padding-left: 16px;">
     <md-tab label="palavras-chave"></md-tab>
@@ -21,5 +21,42 @@
     <md-tab label="newsmap"></md-tab>
   </md-tabs>
 </md-toolbar>
+
+<script type="text/ng-template" id="dialog1.html">
+<md-dialog aria-label="Sobre"  ng-cloak>
+  <form>
+  <md-toolbar>
+    <div class="md-toolbar-tools" style="background-color: #FFFFFF">
+      <h2 style="padding-left: 8px;">Sobre</h2>
+      <span flex></span>
+      <md-button class="md-icon-button" ng-click="cancel()">
+        <md-icon aria-label="Close dialog">close</md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+  <md-dialog-content style="max-width:800px;max-height:810px; padding: 0 24px;">
+    <div>
+      <p>
+        O projeto MediaViz é uma plataforma Web que procura disponibilizar um conjunto de ferramentas de análise e exploração que ajude investigadores, académicos e profissionais dos media a encontrar resposta para questões complexas acerca do panorama mediático online, de uma forma eficiente, visual e interactiva.
+      </p>
+      <p>
+        Através do uso de técnicas de visualização de dados, visamos analisar e comparar diferentes dimensões de forma a caracterizar os padrões de publicação de múltiplas fontes noticiosas online. Estas dimensões incluem a frequência e o fluxo de publicações e das partilhas nas redes sociais ao longo do tempo, a relevância mediática conferida a diferentes temas, e a cobertura geográfica das diferentes fontes online.
+      </p>
+      <p>
+        As diferentes ferramentas de visualização desenvolvidas procuram fornecer uma perspectiva de alto nível do panorama dos media online e, desta forma, ajudar os utilizadores a extrair conclusões.
+      </p>
+      <h3>Autores</h3>
+      <p class="md-body-1"><span class="md-body-2">Sérgio Nunes</span> (orientador) - INESC TEC e Departamento de Engenharia Informática, Faculdade de Engenharia, Universidade do Porto</p>
+      <p class="md-body-1"><span class="md-body-2">Tiago Devezas</span> (investigador) - SAPO Labs/U. Porto</p>
+    </div>
+  </md-dialog-content>
+  <div class="md-actions" layout="row">
+    <md-button ng-click="cancel()" style="margin-right:20px;" >
+      OK
+    </md-button>
+  </div>
+  </form>
+</md-dialog>
+</script>
 
 
