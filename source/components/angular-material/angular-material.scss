@@ -1481,6 +1481,11 @@ $icon-button-height: rem(4.800) !default;
 $icon-button-width: rem(4.800) !default;
 $icon-button-margin: rem(0.600) !default;
 
+// Fix issue causing buttons in Firefox to be 2px bigger than they should
+button.md-button::-moz-focus-inner {
+  border: 0;
+}
+
 .md-button {
   border-radius: $button-border-radius;
   box-sizing: border-box;
@@ -1714,6 +1719,7 @@ md-card {
     }
   }
   md-card-footer {
+    margin-top: auto;
     padding: $card-padding;
   }
 }
@@ -4444,7 +4450,6 @@ md-sidenav {
   min-width: $sidenav-default-width;
   max-width: $sidenav-default-width;
   bottom: 0;
-  background-color: white;
   overflow: auto;
 
   ul {
