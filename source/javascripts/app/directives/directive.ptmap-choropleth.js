@@ -47,7 +47,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           .attr('width', width)
           .attr('height', height);
 
-        var legendContainer = svg.append('g')
+        var legend = svg.append('g')
           .attr('class', 'legend-container')
           .classed('hidden', true);
 
@@ -211,9 +211,16 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           var maxCount = d3.max(data, function(d) { return d.count });
           var minCount = d3.min(data, function(d) { return d.count });
 
-          var color_domain = [minCount + 1, maxCount];
-          var legend_domain = [minCount + 1, maxCount/10, maxCount/5, maxCount/2, maxCount];
+          var color_domain = [maxCount];
+          var legend_domain = [maxCount/10, maxCount/5, maxCount/2, maxCount];
 
+          if(minCount === 0) {
+            color_domain.unshift(minCount + 1);
+            legend_domain.unshift(minCount + 1);
+          } else {
+            color_domain.unshift(minCount);
+            legend_domain.unshift(minCount);
+          }
 
           color.domain(color_domain);
           var legendColor = color.copy();
@@ -235,44 +242,66 @@ mediavizDirectives.directive('ptMap', function($timeout) {
                 return countByFIPS[d.id] ? color(countByFIPS[d.id]) : '#eee'
               });
 
-          legendContainer.attr('transform', 'translate(' + 20 + ',' + (height - (legend_domain.length * 20) - 20) + ')');
+          legend.attr('transform', 'translate(' + 20 + ',' + (height - (legend_domain.length * 20) - 20) + ')');
 
-          var legend = legendContainer.selectAll('g.legend')
-            .data(legend_domain.reverse().map(function(d) {
-              return Math.round(d);
-            }), function(d, i) { return d; })
+          var legendBox = legend.selectAll('g.legend')
+              .data(legend_domain.reverse().map(function(d) {
+                return Math.round(d);
+              }), function(d, i) { return d; });
 
-          legend.exit().remove();
-            
-          legend.enter().append('g')
+          // legend.exit().remove();
+              
+          legendBox.enter().append('g')
             .attr('class', 'legend');
+
+          var legendRects = legend.selectAll("rect")
+            .data(legend_domain.map(function(d) {
+              return Math.round(d);
+            }), function(d, i) { return d; });
+
+          legendRects.enter()
+            .append("rect");
 
           var ls_w = 20, ls_h = 20;
 
-          legend
-            .append("rect")
+          legendRects
             // .attr("x", 20)
             .attr("y", function(d, i){ return (i*ls_h); })
             .attr("width", ls_w - 5)
             .attr("height", ls_h - 5)
             .style("stroke", "#000")
-            .style("stroke-width", "1px");
+            .style("stroke-width", "1px")
+            .style("fill", function(d, i) { return legendColor(d); })
+            .style("opacity", 0.8);
 
-        legend
-          .append('text')
-          .attr("transform", function(d, i) {  return "translate(" + 25 + "," + (i*20 + 14) + ")" });
+          legendRects.exit()
+            .remove();
 
-        legendContainer
-          .classed('hidden', false);
+          var legendText = legend.selectAll("text")
+            .data(legend_domain.map(function(d) {
+              return Math.round(d);
+            }), function(d, i) { return d; });
 
-        legend.selectAll('rect')
-          .style("fill", function(d, i) { return legendColor(d); })
-          .style("opacity", 0.8);
+          legendText.enter()
+            .append("text");
 
-        legend.selectAll('text')
-          .text(function(d, i) {
-            return d;
-          });
+          legendText
+            .attr("transform", function(d, i) {  return "translate(" + 25 + "," + (i*20 + 14) + ")" })
+            .text(function(d, i) {
+              return d;
+            });
+
+          legendText.exit()
+            .remove();
+
+          legend
+            .classed('hidden', function() {
+              if(maxCount > 0) {
+                return false;
+              } else {
+                return true;
+              }
+            });
 
             //offsets for tooltips
           var offsetL = elem[0].offsetLeft+20;
