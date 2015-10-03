@@ -15,7 +15,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           if(incomingData) {
             updateMap(incomingData);
           }
-        });
+        }, true);
 
         // scope.$on("resizeMap", function() {
         //   resize();
