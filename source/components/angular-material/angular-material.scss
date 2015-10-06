@@ -99,6 +99,10 @@ $swift-ease-in-out-duration: 0.5s !default;
 $swift-ease-in-out-timing-function: cubic-bezier(0.35, 0, 0.25, 1) !default;
 $swift-ease-in-out: all $swift-ease-in-out-duration $swift-ease-in-out-timing-function !default;
 
+$swift-linear-duration: 0.08s !default;
+$swift-linear-timing-function: linear !default;
+$swift-linear: all $swift-linear-duration $swift-linear-timing-function !default;
+
 // Fab Buttons (shared between buttons.scss and fab*.scss)
 // -------------------------------------------
 $button-fab-width: rem(5.600) !default;
@@ -751,10 +755,6 @@ input {
   .#{$name}-center-center,
   .#{$name}-center-start,
   .#{$name}-center-end,
-  [#{$name}="center"],
-  [#{$name}="center center"],
-  [#{$name}="center start"],
-  [#{$name}="center end"]
   {
     justify-content: center;
   }
@@ -764,10 +764,6 @@ input {
   .#{$name}-end-center,
   .#{$name}-end-start,
   .#{$name}-end-end,
-  [#{$name}="end"], //stretch
-  [#{$name}="end center"],
-  [#{$name}="end start"],
-  [#{$name}="end end"]
   {
     justify-content: flex-end;
   }
@@ -777,10 +773,6 @@ input {
   .#{$name}-space-around-center,
   .#{$name}-space-around-start,
   .#{$name}-space-around-end,
-  [#{$name}="space-around"], //stretch
-  [#{$name}="space-around center"],
-  [#{$name}="space-around start"],
-  [#{$name}="space-around end"]
   {
     justify-content: space-around;
   }
@@ -790,10 +782,6 @@ input {
   .#{$name}-space-between-center,
   .#{$name}-space-between-start,
   .#{$name}-space-between-end,
-  [#{$name}="space-between"], //stretch
-  [#{$name}="space-between center"],
-  [#{$name}="space-between start"],
-  [#{$name}="space-between end"]
   {
     justify-content: space-between;
   }
@@ -810,11 +798,6 @@ input {
   .#{$name}-end-start,
   .#{$name}-space-between-start,
   .#{$name}-space-around-start,
-  [#{$name}="center start"],
-  [#{$name}="start start"],
-  [#{$name}="end start"],
-  [#{$name}="space-between start"],
-  [#{$name}="space-around start"]
   {
     align-items: flex-start;
   }
@@ -825,11 +808,6 @@ input {
   .#{$name}-end-center,
   .#{$name}-space-between-center,
   .#{$name}-space-around-center,
-  [#{$name}="center center"],
-  [#{$name}="start center"],
-  [#{$name}="end center"],
-  [#{$name}="space-between center"],
-  [#{$name}="space-around center"]
   {
     align-items: center;
     max-width: 100%;
@@ -842,11 +820,6 @@ input {
   .#{$name}-end-end,
   .#{$name}-space-between-end,
   .#{$name}-space-around-end,
-  [#{$name}="center end"],
-  [#{$name}="start end"],
-  [#{$name}="end end"],
-  [#{$name}="space-between end"],
-  [#{$name}="space-around end"]
   {
     align-items: flex-end;
   }
@@ -1018,6 +991,7 @@ $input-error-height: 24px !default;
     opacity: 0;
   }
 }
+
 @keyframes md-autocomplete-list-in {
   0% {
     opacity: 0;
@@ -1033,6 +1007,7 @@ $input-error-height: 24px !default;
     height: 40px;
   }
 }
+
 md-autocomplete {
   border-radius: 2px;
   display: block;
@@ -1080,26 +1055,34 @@ md-autocomplete {
     &.md-menu-showing {
       z-index: $z-index-backdrop + 1;
     }
-    md-progress-linear .md-mode-indeterminate {
+    md-progress-linear {
       position: absolute;
-      top: 20px; left: 0; width: 100%;
-      height: 3px;
-      transition: none;
+      bottom: -2px;
+      left: 0;
 
-      .md-container {
-        transition: none;
+      .md-mode-indeterminate {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
         height: 3px;
-      }
-      &.ng-enter {
-        transition: opacity 0.15s linear;
-        &.ng-enter-active {
-          opacity: 1;
+        transition: none;
+
+        .md-container {
+          transition: none;
+          height: 3px;
         }
-      }
-      &.ng-leave {
-        transition: opacity 0.15s linear;
-        &.ng-leave-active {
-          opacity: 0;
+        &.ng-enter {
+          transition: opacity 0.15s linear;
+          &.ng-enter-active {
+            opacity: 1;
+          }
+        }
+        &.ng-leave {
+          transition: opacity 0.15s linear;
+          &.ng-leave-active {
+            opacity: 0;
+          }
         }
       }
     }
@@ -1186,12 +1169,12 @@ md-autocomplete {
   max-height: 41px * 5.5;
   z-index: $z-index-tooltip;
 }
+
 .md-autocomplete-suggestions {
   margin: 0;
   list-style: none;
   padding: 0;
   li {
-    cursor: pointer;
     font-size: 14px;
     overflow: hidden;
     padding: 0 15px;
@@ -1204,6 +1187,10 @@ md-autocomplete {
 
     &:focus {
       outline: none;
+    }
+
+    &:not(.md-not-found-wrapper) {
+      cursor: pointer;
     }
   }
 }
@@ -2573,8 +2560,27 @@ md-fab-speed-dial {
   display: flex;
   align-items: center;
 
-  // Include the top/left/bottom/right fab positions
+  // Include the top/left/bottom/right fab positions and set the z-index for absolute positioning
   @include fab-all-positions();
+  z-index: $z-index-fab;
+
+  // Allow users to enable/disable hovering over the entire speed dial (i.e. the empty space where
+  // items will eventually appear)
+  &:not(.md-hover-full) {
+    // Turn off pointer events when closed
+    pointer-events: none;
+
+    md-fab-trigger, .md-fab-action-item {
+      // Always make the trigger and action items always have pointer events (the tooltip looks
+      // for the first parent with pointer-events, so we must set this for tooltips to work)
+      pointer-events: auto;
+    }
+
+    &.md-is-open {
+      // Turn on pointer events when open
+      pointer-events: auto;
+    }
+  }
 
   .md-css-variables {
     z-index: $z-index-fab;
@@ -3076,7 +3082,7 @@ md-input-container {
   .md-input {
     order: 2;
     display: block;
-    margin-top: auto;
+    margin-top: 0;
 
     background: none;
     padding-top: $input-padding-top;
@@ -3105,9 +3111,9 @@ md-input-container {
   }
 
   .md-char-counter {
-    position: relative;
-    text-align: right;
-    order: 3;
+    position: absolute;
+    right: $input-container-padding;
+    bottom: 7px;
   }
 
   ng-messages, data-ng-messages, x-ng-messages,
@@ -3120,6 +3126,7 @@ md-input-container {
       position: absolute;
       top: 0;
       right: 0;
+      bottom: auto;
     }
   }
 
@@ -3244,6 +3251,17 @@ md-input-container.md-icon-float {
       }
   }
 
+}
+
+md-input-container.md-icon-right {
+  input {
+    margin-right: $icon-offset;
+    + md-icon {
+      top: 26px;
+      right: 2px;
+      margin-right: 0;
+    }
+  }
 }
 
 @media screen and (-ms-high-contrast: active) {
@@ -4264,7 +4282,7 @@ $select-max-visible-options: 5;
 }
 
 md-input-container > md-select {
-  margin: auto 0 0 0;
+  margin: 0;
   order: 2;
 }
 
@@ -5048,7 +5066,7 @@ md-switch {
     .md-bar,
     .md-thumb-container,
     .md-thumb {
-      transition: $swift-ease-in-out;
+      transition: $swift-linear;
       transition-property: transform, background-color;
     }
     .md-bar,
@@ -5076,15 +5094,9 @@ $tabs-tab-width: $baseline-grid * 12 !default;
 $tabs-header-height: 48px !default;
 
 @keyframes md-tab-content-hide {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 1; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 md-tab-data {
@@ -5108,12 +5120,14 @@ md-tabs {
     min-height: 200 + $tabs-header-height;
   }
   &[md-align-tabs="bottom"] {
+    padding-bottom: $tabs-header-height;
     md-tabs-wrapper {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
       height: $tabs-header-height;
+      z-index: 2;
     }
     md-tabs-content-wrapper {
       top: 0;
@@ -5241,7 +5255,6 @@ md-pagination-wrapper {
   &.md-center-tabs {
     position: relative;
     width: initial;
-    flex: 1;
     margin: 0 auto;
   }
 }
@@ -5789,7 +5802,7 @@ $virtual-repeat-scrollbar-width: 16px;
   .md-virtual-repeat-sizer {
     box-sizing: border-box;
     height: 1px;
-    display: inline-block;
+    display: block;
     margin: 0;
     padding: 0;
     width: 1px;
@@ -5801,9 +5814,7 @@ $virtual-repeat-scrollbar-width: 16px;
     margin: 0;
     padding: 0;
     position: absolute;
-    // Leave room for the scroll bar.
-    // TODO: Will probably need to perform measurements at runtime.
-    right: $virtual-repeat-scrollbar-width;
+    right: 0;
     top: 0;
   }
 }
