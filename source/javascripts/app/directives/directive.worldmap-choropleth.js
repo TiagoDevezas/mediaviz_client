@@ -145,7 +145,15 @@ mediavizDirectives.directive('worldMap', function($timeout) {
         var minCount = d3.min(data, function(d) { return d.count });
 
         var color_domain = [maxCount];
-        var legend_domain = [maxCount/maxCount, maxCount/5, maxCount/2, maxCount];
+        var legend_domain = [maxCount];
+
+        var legendIntervals = [2, 5, 10];
+
+        legendIntervals.forEach(function(el) {
+          if((maxCount / el) > 1) {
+            legend_domain.unshift(maxCount/el);
+          }
+        });
 
         if(minCount === 0) {
           color_domain.unshift(minCount + 1);
