@@ -212,7 +212,7 @@ mediavizDirectives.directive('ptMap', function($timeout) {
           var minCount = d3.min(data, function(d) { return d.count });
 
           var color_domain = [maxCount];
-          var legend_domain = [maxCount/10, maxCount/5, maxCount/2, maxCount];
+          var legend_domain = [maxCount/maxCount, maxCount/5, maxCount/2, maxCount];
 
           if(minCount === 0) {
             color_domain.unshift(minCount + 1);
