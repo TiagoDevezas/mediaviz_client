@@ -2475,9 +2475,11 @@ mediavizControllers.controller('WorldMapCtrl', function($scope, $timeout, $locat
           $scope.dateOptions.selected = $scope.optionsForDateSelect[2];
         } else if($scope.since == $scope.oneMonthAgo) {
           $scope.dateOptions.selected = $scope.optionsForDateSelect[3];
-        } else if ($scope.since == undefined) {
+        } else {
           $scope.dateOptions.selected = $scope.optionsForDateSelect[4];
         }
+      } else {
+        $scope.dateOptions.selected = $scope.optionsForDateSelect[0];
       }
       if(untilParams) {
         $location.search(angular.extend($location.search(), {until: untilParams.toString()}));
