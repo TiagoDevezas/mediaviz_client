@@ -59,14 +59,14 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   $scope.barChartOpts = {
     id: 'countChart',
     size: {
-      height: 100
+      height: 60
     },
     data: {
       x: 'x',
       labels: true
     },
     bar: {
-      width: 15
+      width: {ratio: 0.9}
     },
     axis: {
       rotated: true,
@@ -80,11 +80,12 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       }
     },
     tooltip: {
-      show: true
+      show: true,
+      grouped: false
     },
     padding: {
-      left: 20,
-      right: 0,
+      left: 0,
+      right: 75,
       top: 0,
       bottom: 0
     },

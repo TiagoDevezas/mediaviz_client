@@ -30,30 +30,30 @@
     <div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
 	</md-content>
 
-  <md-content ng-if="countData && keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 5px;" layout="row" layout-padding>
-    <div flex-gt-md="50">
-      <md-content layout="row" layout-align="start center">
+  <md-content ng-if="countData && keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 5px;" layout-gt-md="row" layout-padding>
+    <div flex-gt-md="50" flex="100" layout-padding>
+      <md-content layout="column" style="padding-bottom: 15px;">
         <!-- <download-bar></download-bar> -->
-        <p class="md-subhead" flex="20">Total de artigos</p>
+        <p style="margin-bottom: 0;">Total de artigos</p>
         <div c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
       </md-content>
 
-      <md-content ng-if="!SAPOMode" layout="row" layout-align="start center">
+      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
         <!-- <download-bar></download-bar> -->
-        <p class="md-subhead" flex="20">Total de partilhas</p>
+        <p style="margin-bottom: 0;">Total de partilhas</p>
         <div c3-chart dataset="totalShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
       </md-content>
 
-      <md-content ng-if="!SAPOMode" layout="row" layout-align="start center">
+      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
         <!-- <download-bar></download-bar> -->
-        <p class="md-subhead" flex="20">Partilhas Twitter</p>
+        <p style="margin-bottom: 0;">Partilhas Twitter</p>
         <div c3-chart dataset="twitterShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
       </md-content>
 
-      <md-content ng-if="!SAPOMode" layout="row" layout-align="start center">
+      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
         <!-- <download-bar></download-bar> -->
-        <p class="md-subhead" flex="20">Partilhas Facebook</p>
-        <div c3-chart dataset="facebookShareData" type="bar" options="barChartYAxisOpts" xs="xsObj" style="padding:5px 0;"></div>
+        <p style="margin-bottom: 0;">Partilhas Facebook</p>
+        <div c3-chart dataset="facebookShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
       </md-content>
     </div>
   </md-content>
