@@ -1,4 +1,4 @@
-mediavizDirectives.directive('c3Chart', function($location) {
+mediavizDirectives.directive('c3Chart', function($location, $timeout) {
   return {
     restrict: 'AE',
     scope: {
@@ -61,12 +61,16 @@ mediavizDirectives.directive('c3Chart', function($location) {
       scope.$on('updateMaxY', function(evt, value) {
         if(chart && chart.internal.config.data_type === 'bar') {
           chart.axis.max({y: value});
-          chart.flush();
+          $timeout(function() {
+            chart.flush();
+          }, 5);
         }
       });
 
       scope.$on('flushChart', function(evt) {
-        if(chart) chart.flush();
+        $timeout(function() {
+          if(chart) chart.flush();
+        }, 5);
       });
 
       scope.$on('destroyChart', function(evt) {
