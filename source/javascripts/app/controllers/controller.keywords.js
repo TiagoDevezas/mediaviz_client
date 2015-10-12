@@ -81,11 +81,16 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     },
     tooltip: {
       show: true,
-      grouped: false
+      grouped: false,
+      format: {
+        title: function() {
+          return ''
+        }
+      }
     },
     padding: {
       left: 0,
-      right: 75,
+      right: 100,
       top: 0,
       bottom: 0
     },
