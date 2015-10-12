@@ -66,7 +66,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       labels: true
     },
     bar: {
-      width: {ratio: 0.9}
+      width: {ratio: 1.0}
     },
     axis: {
       rotated: true,
