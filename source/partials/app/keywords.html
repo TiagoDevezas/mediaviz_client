@@ -34,26 +34,31 @@
     <div flex-gt-md="50" flex="100" layout-padding>
       <md-content layout="column" style="padding-bottom: 15px;">
         <!-- <download-bar></download-bar> -->
-        <p style="margin-bottom: 0;">Total de artigos</p>
-        <div c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+        <p style="margin-bottom: 5px;">Total de artigos</p>
+        <div layout="row">
+          <div flex="10" layout="column" layout-align="space-around end">
+            <p class="md-caption" ng-repeat="keyword in keywords.selected" style="margin: 0; margin-right: 5px;">{{keyword}}</p>
+          </div>
+          <div flex="90" c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
+        </div>
       </md-content>
 
       <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
         <!-- <download-bar></download-bar> -->
-        <p style="margin-bottom: 0;">Total de partilhas</p>
-        <div c3-chart dataset="totalShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+        <p style="margin-bottom: 5px;">Total de partilhas</p>
+        <div c3-chart dataset="totalShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
       </md-content>
 
       <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
         <!-- <download-bar></download-bar> -->
-        <p style="margin-bottom: 0;">Partilhas Twitter</p>
-        <div c3-chart dataset="twitterShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+        <p style="margin-bottom: 5px;">Partilhas Twitter</p>
+        <div c3-chart dataset="twitterShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
       </md-content>
 
       <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
         <!-- <download-bar></download-bar> -->
-        <p style="margin-bottom: 0;">Partilhas Facebook</p>
-        <div c3-chart dataset="facebookShareData" type="bar" options="barChartOpts" xs="xsObj" style="padding:5px 0;"></div>
+        <p style="margin-bottom: 5px;">Partilhas Facebook</p>
+        <div c3-chart dataset="facebookShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
       </md-content>
     </div>
   </md-content>

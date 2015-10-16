@@ -63,10 +63,10 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     },
     data: {
       x: 'x',
-      labels: true
+      labels: false
     },
     bar: {
-      width: {ratio: 1.0}
+      width: {ratio: 1}
     },
     axis: {
       rotated: true,
@@ -90,8 +90,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     },
     padding: {
       left: 0,
-      right: 100,
-      top: 0,
+      right: 0,
+      top: -6,
       bottom: 0
     },
     legend: {
@@ -238,7 +238,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       })
       if(newVal.length > 0 && newVal !== '') {
         $location.search('keywords', newVal.toString());
-        getSourceData();
+        if(!oldVal || newVal !== oldVal) {
+          getSourceData();          
+        }
       } else {
         $scope.clearChart();
       }
@@ -254,6 +256,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           $location.search(key, null)
         }
       }
+      console.log('urlParams changed');
       $scope.loadedKeywords = [];
       getSourceData();
     }, true);
@@ -290,6 +293,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     var countsArray = [];
 
     function getSourceData() {
+      console.log('called');
       if(!$scope.urlParams.source) {
         return;
       }
@@ -344,7 +348,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                   $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_query');
                 }
               } else {
-                console.log('called');
                 $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
               }
 
