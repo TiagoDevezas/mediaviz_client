@@ -31,34 +31,49 @@
 	</md-content>
 
   <md-content ng-if="countData && keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 5px;" layout-gt-md="row" layout-padding>
-    <div flex-gt-md="50" flex="100" layout-padding>
-      <md-content layout="column" style="padding-bottom: 15px;">
+    <div flex-gt-md="60" flex="100" layout-padding>
+      <md-content layout="column" style="padding-top: 15px; padding-bottom: 35px;">
         <!-- <download-bar></download-bar> -->
         <p style="margin-bottom: 5px;">Total de artigos</p>
         <div layout="row">
-          <div flex="10" layout="column" layout-align="space-around end">
-            <p class="md-caption" ng-repeat="keyword in keywords.selected" style="margin: 0; margin-right: 5px;">{{keyword}}</p>
+          <div flex="5" layout="column" layout-align="space-around start">
+            <p class="md-caption" ng-repeat="count in articlesCount" style="margin: 0; margin-right: 5px;">{{count[1]}}</p>
           </div>
-          <div flex="90" c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
+          <div flex="95" c3-chart dataset="countData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
         </div>
       </md-content>
 
-      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
+      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-top: 15px; padding-bottom: 35px;">
         <!-- <download-bar></download-bar> -->
         <p style="margin-bottom: 5px;">Total de partilhas</p>
-        <div c3-chart dataset="totalShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
+        <div layout="row">
+          <div flex="5" layout="column" layout-align="space-around start">
+            <p class="md-caption" ng-repeat="count in sharesCount" style="margin: 0; margin-right: 5px;">{{count[1]}}</p>
+          </div>
+          <div flex="95" c3-chart dataset="totalShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
+        </div>
       </md-content>
 
-      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
+      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-top: 15px; padding-bottom: 35px;">
         <!-- <download-bar></download-bar> -->
         <p style="margin-bottom: 5px;">Partilhas Twitter</p>
-        <div c3-chart dataset="twitterShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
+        <div layout="row">
+          <div flex="5" layout="column" layout-align="space-around start">
+            <p class="md-caption" ng-repeat="count in twitterSharesCount" style="margin: 0; margin-right: 5px;">{{count[1]}}</p>
+          </div>
+          <div flex="95" c3-chart dataset="twitterShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
+        </div>
       </md-content>
 
-      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-bottom: 15px;">
+      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-top: 15px; padding-bottom: 35px;">
         <!-- <download-bar></download-bar> -->
         <p style="margin-bottom: 5px;">Partilhas Facebook</p>
-        <div c3-chart dataset="facebookShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
+        <div layout="row">
+          <div flex="5" layout="column" layout-align="space-around start">
+            <p class="md-caption" ng-repeat="count in facebookSharesCount" style="margin: 0; margin-right: 5px;">{{count[1]}}</p>
+          </div>
+          <div flex="95" c3-chart dataset="facebookShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
+          </div>
       </md-content>
     </div>
   </md-content>

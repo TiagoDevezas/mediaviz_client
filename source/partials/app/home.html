@@ -1,6 +1,6 @@
 <div id="home">
-  <div layout="column" layout-gt-md="row" layout-wrap>
-      <md-card ng-repeat="tool in toolsToDisplay" flex flex-gt-md="33" ng-mouseover="hovered = true" ng-mouseleave="hovered = false" ng-class="{'md-whiteframe-z3': hovered}">
+  <div layout-gt-md="row" layout-wrap>
+      <md-card ng-repeat="tool in toolsToDisplay" flex-gt-md="30" ng-mouseover="hovered = true" ng-mouseleave="hovered = false" ng-class="{'md-whiteframe-z3': hovered}">
         <md-card-content>
           <h2 class="md-title">{{tool.name}}</h2>
           <p>

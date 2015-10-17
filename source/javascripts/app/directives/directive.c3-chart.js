@@ -15,6 +15,8 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
 
       var chart = null;
 
+      charts = [];
+
       // Add the c3 class to element for css styling
       angular.element(element).attr('class', 'c3');
 
@@ -32,6 +34,7 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
             scope.options.data.xs = scope.xs
           }
           chart = c3.generate(scope.options);
+          charts.push(chart);
         }
         if(data && chart) {
           if(scope.xs) {
@@ -46,6 +49,16 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
       }
 
       // Event watchers
+
+      scope.$on('resizeChart', function(evt, height) {
+        console.log(height);
+        if(chart && chart.internal.config.data_type === 'bar') {
+          chart.resize({
+            height: height
+          });
+          chart.flush();
+        }
+      })
 
       scope.$on('sourceRemoved', function(evt, source) {
         if(chart) {
@@ -63,7 +76,7 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
           chart.axis.max({y: value});
           $timeout(function() {
             chart.flush();
-          }, 5);
+          }, 50);
         }
       });
 
@@ -74,7 +87,9 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
       });
 
       scope.$on('destroyChart', function(evt) {
-        if(chart) chart.destroy();
+        if(chart) {
+          chart.destroy();
+        }
       });
 
       scope.$on('changeXAxisFormat', function(evt, options) {

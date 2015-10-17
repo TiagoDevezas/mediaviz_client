@@ -35,6 +35,12 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
   $scope.keywords = {};
   $scope.keywords.selected = [];
 
+  $scope.countsArray = [];
+  $scope.articlesCount = [];
+  $scope.sharesCount = [];
+  $scope.twitterSharesCount = [];
+  $scope.facebookSharesCount = [];
+
   $scope.loadingQueue = [];
 
   if($scope.SAPOMode) {
@@ -56,116 +62,6 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     });
   }
 
-  $scope.barChartOpts = {
-    id: 'countChart',
-    size: {
-      height: 60
-    },
-    data: {
-      x: 'x',
-      labels: false
-    },
-    bar: {
-      width: {ratio: 1}
-    },
-    axis: {
-      rotated: true,
-      x: {
-        type: 'category',
-        tick: {values: []},
-        show: false
-      },
-      y: {
-        show: false
-      }
-    },
-    tooltip: {
-      show: true,
-      grouped: false,
-      format: {
-        title: function() {
-          return ''
-        }
-      }
-    },
-    padding: {
-      left: 0,
-      right: 0,
-      top: -6,
-      bottom: 0
-    },
-    legend: {
-      show: false
-    }
-  };
-
-  $scope.barChartYAxisOpts = {};
-
-  angular.copy($scope.barChartOpts, $scope.barChartYAxisOpts);
-
-  $scope.barChartYAxisOpts.axis.y.show = true;
-
-
-  $scope.timeChartOpts = {
-    size: {
-      height: 450
-    },
-    legend: {
-      position: 'right'
-    },
-    tooltip: {
-      grouped: true 
-    },
-    data: {
-      onclick: function (d, i) { showArticles(d); }
-    },
-    point: {
-      r: 1.5
-    },
-    subchart: {
-      show: true
-    },
-    transition: {
-      duration: 0
-    },
-    axis: {
-      x: {
-        padding: {left: 0, right: 0},
-        type: 'timeseries',
-        tick: {
-          culling: {
-                max: 5 // the number of tick texts will be adjusted to less than this value
-              },
-              format: ''
-            }
-          },
-          y: {
-            min: 0,
-            padding: {bottom: 0},
-            tick: {
-              format: function(d) {
-                if($scope.urlParams.data === 'percent') {
-                  return d + '%';
-                } else {
-                  return d;
-                }
-              }
-            }
-          }
-        },
-        grid: {
-          x: {
-            show: false
-          },
-          y: {
-            show: true
-          }
-        },
-        padding: {
-          left: 50
-        },
-      };
-
   function showArticles(d) {
     if($scope.SAPOMode) return;
     var date = moment(d.x).format("YYYY-MM-DD");
@@ -185,8 +81,17 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       $scope.keywords.selected = [];
       $scope.loadedKeywords = [];
       $location.search('keywords', null);
+      $scope.timeData = [];
+      $scope.countData = []
+      $scope.totalShareData = [];
+      $scope.twitterShareData = [];
+      $scope.facebookShareData = [];
+      // $scope.countsArray = [];
+      // $scope.articlesCount = [];
+      // $scope.sharesCount = [];
+      // $scope.twitterSharesCount = [];
+      // $scope.facebookSharesCount = [];
       $scope.$broadcast('destroyChart');
-      if(countsArray.length) countsArray = [];
     }
 
     $scope.$watch(function() { return $location.search() }, function(newVal, oldVal) {
@@ -228,14 +133,16 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     }, true);
 
     $scope.$watch('keywords.selected', function(newVal, oldVal) {
+      $scope.$broadcast('resizeChart', newVal.length * 20);
       var newKeywords = newVal.map(function(el) { return el });
       var oldKeywords = oldVal.map(function(el) { return el });
       oldKeywords.forEach(function(oldKeyword) {
         if(newKeywords.indexOf(oldKeyword) === -1) {
           $scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(oldKeyword), 1);
+          removeKeywordFromCountsArray(oldKeyword);
           $scope.$broadcast('sourceRemoved', oldKeyword);
         }
-      })
+      });
       if(newVal.length > 0 && newVal !== '') {
         $location.search('keywords', newVal.toString());
         if(!oldVal || newVal !== oldVal) {
@@ -243,8 +150,36 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
         }
       } else {
         $scope.clearChart();
-      }
+      };
     }, true);
+
+    function removeKeywordFromCountsArray(oldKeyword) {
+      $scope.countsArray = $scope.countsArray.filter(function(el) {
+        if(el[0] !== oldKeyword) {
+          return el;
+        };
+      });
+      $scope.articlesCount = $scope.articlesCount.filter(function(el) {
+        if(el[0] !== oldKeyword) {
+          return el;
+        };
+      });
+      $scope.sharesCount = $scope.sharesCount.filter(function(el) {
+        if(el[0] !== oldKeyword) {
+          return el;
+        };
+      });
+      $scope.twitterSharesCount = $scope.twitterSharesCount.filter(function(el) {
+        if(el[0] !== oldKeyword) {
+          return el;
+        };
+      });
+      $scope.facebookSharesCount = $scope.facebookSharesCount.filter(function(el) {
+        if(el[0] !== oldKeyword) {
+          return el;
+        };
+      });
+    }
 
     $scope.$watch('urlParams', function(urlParams) {
       for (var key in urlParams) {
@@ -256,8 +191,12 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           $location.search(key, null)
         }
       }
-      console.log('urlParams changed');
       $scope.loadedKeywords = [];
+      $scope.countsArray = [];
+      $scope.articlesCount = [];
+      $scope.sharesCount = [];
+      $scope.twitterSharesCount = [];
+      $scope.facebookSharesCount = [];
       getSourceData();
     }, true);
 
@@ -267,6 +206,16 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       } else {
         $rootScope.loading = false;
       }
+    }, true);
+
+    $scope.$watch('countsArray', function(newVal, oldVal) {
+      $timeout(function() {
+        var countValues = newVal.map(function(el) {
+          return el[1];
+        });
+        var maxValue = d3.max(countValues);
+        $scope.$broadcast('updateMaxY', maxValue);
+      }, 10);
     }, true);
 
     function tokenizeKeyword(keyword) {
@@ -290,10 +239,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       }
     }
 
-    var countsArray = [];
-
     function getSourceData() {
-      console.log('called');
       if(!$scope.urlParams.source) {
         return;
       }
@@ -330,6 +276,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               }
 
               $scope.countData = [['x', keyword], countData[0]];
+              $scope.countsArray.push([keyword, $scope.countData[1][1]]);
+              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
               setChartDataForCycle();
 
@@ -360,17 +308,28 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
               $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
 
-              countsArray.push($scope.countData[1][1]);
-              countsArray.push($scope.totalShareData[1][1]);
-              countsArray.push($scope.twitterShareData[1][1]);
-              countsArray.push($scope.facebookShareData[1][1]);
+              $scope.countsArray.push([keyword, $scope.countData[1][1]]);
+              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
-              var maxValue = d3.max(countsArray);
+              $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
+              $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
 
-              // $scope.barChartOpts.axis.y.max = maxValue;
-              $timeout(function() {
-                $scope.$broadcast('updateMaxY', maxValue);
-              }, 10);
+              $scope.countsArray.push([keyword, $scope.twitterShareData[1][1]]);
+              $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
+
+              $scope.countsArray.push([keyword, $scope.facebookShareData[1][1]]);
+              $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
+
+              // var countValues = $scope.countsArray.map(function(el) {
+              //   return el[1]
+              // });
+
+              // var maxValue = d3.max(countValues);
+
+              // // $scope.barChartOpts.axis.y.max = maxValue;
+              // $timeout(function() {
+              //   $scope.$broadcast('updateMaxY', maxValue);
+              // }, 10);
 
               $scope.xsObj = xsObj;
 
@@ -411,6 +370,129 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment(d, 'MM').format('MMM');}});
       }
     }
+
+    function calculateSize() {
+      keywords = $location.search()['keywords'];
+      console.log(keywords);
+      if(!keywords || keywords.split(',').length === 1) {
+        return 20;
+      }
+      if(keywords.split(',').length > 1) {
+        return keywords.split(',').length * 20;
+      }
+      
+    }
+
+    $scope.barChartOpts = {
+      id: 'countChart',
+      size: {
+        height: calculateSize()
+      },
+      data: {
+        x: 'x',
+        // labels: false
+      },
+      bar: {
+        width: {ratio: 1}
+      },
+      axis: {
+        rotated: true,
+        x: {
+          type: 'category',
+          // tick: {values: []},
+          show: false
+        },
+        y: {
+          padding: 0,
+          show: false
+        }
+      },
+      tooltip: {
+        show: true,
+        grouped: true,
+        format: {
+          title: function() {
+            return ''
+          }
+        }
+      },
+      padding: {
+        left: 0,
+        right: 0,
+        top: -6,
+        bottom: 0
+      },
+      legend: {
+        show: false
+      }
+    };
+
+    $scope.barChartYAxisOpts = {};
+
+    angular.copy($scope.barChartOpts, $scope.barChartYAxisOpts);
+
+    $scope.barChartYAxisOpts.axis.y.show = true;
+
+
+    $scope.timeChartOpts = {
+      size: {
+        height: 450
+      },
+      legend: {
+        position: 'right'
+      },
+      tooltip: {
+        grouped: true 
+      },
+      data: {
+        onclick: function (d, i) { showArticles(d); }
+      },
+      point: {
+        r: 1.5
+      },
+      subchart: {
+        show: true
+      },
+      transition: {
+        duration: 0
+      },
+      axis: {
+        x: {
+          padding: {left: 0, right: 0},
+          type: 'timeseries',
+          tick: {
+            culling: {
+                  max: 5 // the number of tick texts will be adjusted to less than this value
+                },
+                format: ''
+              }
+            },
+            y: {
+              min: 0,
+              padding: {bottom: 0},
+              tick: {
+                format: function(d) {
+                  if($scope.urlParams.data === 'percent') {
+                    return d + '%';
+                  } else {
+                    return d;
+                  }
+                }
+              }
+            }
+          },
+          grid: {
+            x: {
+              show: false
+            },
+            y: {
+              show: true
+            }
+          },
+          padding: {
+            left: 50
+          }
+        };
 
   }
 
