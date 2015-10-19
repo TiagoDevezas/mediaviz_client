@@ -72,12 +72,12 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
       });
 
       scope.$on('updateMaxY', function(evt, value) {
-        if(chart && chart.internal.config.data_type === 'bar') {
-          chart.axis.max({y: value});
-          $timeout(function() {
-            chart.flush();
-          }, 50);
-        }
+        $timeout(function() {
+          if(chart && chart.internal.config.data_type === 'bar') {
+              chart.axis.max({y: value});
+              chart.flush();
+          }
+        }, 500);
       });
 
       scope.$on('flushChart', function(evt) {
@@ -88,7 +88,8 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
 
       scope.$on('destroyChart', function(evt) {
         if(chart) {
-          chart.destroy();
+          chart.unload();
+          // chart.destroy();
         }
       });
 

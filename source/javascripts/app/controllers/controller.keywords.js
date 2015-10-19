@@ -214,7 +214,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           return el[1];
         });
         var maxValue = d3.max(countValues);
-        $scope.$broadcast('updateMaxY', maxValue);
+        if(maxValue) {
+          $scope.$broadcast('updateMaxY', maxValue);
+        }
       }, 10);
     }, true);
 
@@ -308,17 +310,24 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
               $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
 
-              $scope.countsArray.push([keyword, $scope.countData[1][1]]);
+              // $scope.countsArray.push([keyword, $scope.countData[1][1]]);
               $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
-              $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
+              // $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
               $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
 
-              $scope.countsArray.push([keyword, $scope.twitterShareData[1][1]]);
+              // $scope.countsArray.push([keyword, $scope.twitterShareData[1][1]]);
               $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
 
-              $scope.countsArray.push([keyword, $scope.facebookShareData[1][1]]);
+              // $scope.countsArray.push([keyword, $scope.facebookShareData[1][1]]);
               $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
+
+              $scope.countsArray.push(
+                [keyword, $scope.countData[1][1]],
+                [keyword, $scope.totalShareData[1][1]],
+                [keyword, $scope.twitterShareData[1][1]],
+                [keyword, $scope.facebookShareData[1][1]]
+                );
 
               // var countValues = $scope.countsArray.map(function(el) {
               //   return el[1]
@@ -409,7 +418,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       },
       tooltip: {
         show: true,
-        grouped: true,
+        grouped: false,
         format: {
           title: function() {
             return ''
