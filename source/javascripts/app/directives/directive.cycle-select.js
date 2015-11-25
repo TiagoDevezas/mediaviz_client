@@ -15,7 +15,7 @@ mediavizDirectives.directive('cycleSelect', function($location, $filter) {
 
       scope.allCycles = !scope.SAPOMode ? 
       [
-        {name: 'Hora', value: 'hour'},
+        // {name: 'Hora', value: 'hour'},
         {name: 'Dia', value: 'day'},
         {name: 'Semana', value: 'week'},
         {name: 'Mês', value: 'month'}

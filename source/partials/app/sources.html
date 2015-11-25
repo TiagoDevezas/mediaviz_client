@@ -7,7 +7,7 @@
         <source-select-chips source-list="sourceList" selected="selectedSources"></source-select-chips>
       </div>
       <div flex="15" layout="row" layout-align="center center">
-        <md-button class="md-raised md-warn" ng-click="clearChart()" ng-disabled="!selectedSources.length">Limpar</md-button>
+        <md-button class="md-raised md-warn" ng-click="clearChart()" ng-disabled="!selectedSources.length">Clear</md-button>
       </div>
     </div>
 
@@ -20,7 +20,7 @@
       <div layout="row" layout-align="start center">
         <form ng-submit="setQuery(inputKeyword)">
           <md-input-container>
-            <label>Pesquisar</label>
+            <label>Search</label>
             <input ng-model="inputKeyword" id="search-input">
           </md-input-container>
         </form>
@@ -28,11 +28,11 @@
           <md-icon md-svg-icon="images/icons/ic_clear_black_24px.svg"></md-icon>
         </md-button> -->
       </div>
-      <type-select style="margin: 0 10px;"></type-select>
+      <!-- <type-select style="margin: 0 10px;"></type-select> -->
       <date-select style="margin: 0 10px;"></date-select>
-      <granularity-select ng-if="SAPOMode" style="margin: 0 10px;"></granularity-select>
-      <cycle-select ng-if="!SAPOMode" style="margin: 0 10px;"></cycle-select>
-      <cycle-select ng-if="SAPOMode" style="margin: 0 10px;"></cycle-select>
+<!--       <granularity-select ng-if="SAPOMode" style="margin: 0 10px;"></granularity-select> -->
+      <cycle-select style="margin: 0 10px;"></cycle-select>
+<!--       <cycle-select ng-if="SAPOMode" style="margin: 0 10px;"></cycle-select> -->
       <date-picker style="margin: 0 10px;"></date-picker>
       <!-- <md-button class="md-raised md-primary" ng-click="showPickerDialog($event)">Data</md-button> -->
     </div>
