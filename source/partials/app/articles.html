@@ -1,7 +1,7 @@
 <div id="articles" layout-padding layout-margin>
 	<md-content class="md-whiteframe-z1 md-padding">
 		<form ng-submit="setQuery(inputKeyword)">
-			<md-input-container md-no-float style="padding: 5px;">
+			<md-input-container md-no-float>
 	      <md-icon>search</md-icon>
 	      <input type="text" ng-model="inputKeyword" placeholder="Introduzir termo">
 	    </md-input-container>
@@ -42,32 +42,32 @@
 			</md-content>
 
 			<md-list style="padding: 0;">
-	     	<md-divider ></md-divider>
+	     	<md-divider></md-divider>
 				<md-list-item class="md-3-line" ng-repeat="item in items | orderBy:predicate:reverse">
-					<div class="md-list-item-text" layout="column" flex>
+					<div class="md-list-item-text" layout="column">
 						<a href="{{item.url}}" style="text-decoration: none;">
 			        <h3>{{ item.title }}</h3>
-			        <h4 ng-bind-html="item.summary | words:30" class="item-text h4" style="margin: 0;"></h4>
+			        <h4 ng-bind-html="item.summary | words:15" class="item-text h4" style="margin: 0;"></h4>
 			        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC-1' }}</p>
 			        <p>Partilhas: {{item.total_shares}} Twitter: {{item.twitter_shares}} Facebook: {{item.facebook_shares}}</p>
 		        </a>
 		      </div>
-	       	<md-divider ></md-divider>
+	       	<md-divider></md-divider>
 				</md-list-item>
 			</md-list>
 		</md-content>
 
 		<div flex-gt-md="5" flex-order-gt-md="2"></div>
 
-		<md-content flex-gt-md="40" flex-order-gt-md="3" flex-order="1" style="margin-top:0;" ng-if="urlParams.keyword.length && chartData.length">
-			<md-content>
+		<div flex-gt-md="40" flex-order-gt-md="3" flex-order="1" style="margin-top:0;">
+			<md-content ng-if="urlParams.keyword.length && chartData">
 	       <h2 class="md-title md-padding">Evolução na última semana</h2>
 	       <div c3-chart dataset="chartData" type="line" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
 	      <div class="md-actions" layout="row" layout-align="end center">
 	        <md-button>Ver mais</md-button>
 	      </div>
 	    </md-content>
-		</md-content>
+		</div>
 
 	</div>
 
