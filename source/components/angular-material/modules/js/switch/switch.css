@@ -2,23 +2,26 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.12.0-rc1-master-34aca89
+ * v1.0.0-rc4-master-5e5e6cd
  */
+.md-inline-form md-switch {
+  margin-top: 18px;
+  margin-bottom: 19px; }
+
 md-switch {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  margin: 15px;
+  display: inline-block;
+  margin: 16px 0;
   white-space: nowrap;
   cursor: pointer;
   outline: none;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
-          user-select: none; }
+          user-select: none;
+  height: 30px;
+  line-height: 28px; }
+  md-switch.md-block {
+    display: block; }
   md-switch .md-container {
     cursor: -webkit-grab;
     cursor: grab;
@@ -29,7 +32,9 @@ md-switch {
        -moz-user-select: none;
         -ms-user-select: none;
             user-select: none;
-    margin-right: 8px; }
+    margin-right: 8px;
+    margin-top: 3px;
+    float: left; }
   md-switch:not([disabled]) .md-dragging, md-switch:not([disabled]).md-dragging .md-container {
     cursor: -webkit-grabbing;
     cursor: grabbing; }
@@ -42,7 +47,8 @@ md-switch {
     background-color: rgba(0, 0, 0, 0.12); }
   md-switch .md-label {
     border-color: transparent;
-    border-width: 0; }
+    border-width: 0;
+    float: left; }
   md-switch .md-bar {
     left: 1px;
     width: 34px;

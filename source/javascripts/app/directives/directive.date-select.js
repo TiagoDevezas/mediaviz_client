@@ -6,7 +6,7 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
       '<md-input-container>' + 
         '<label>Intervalo</label>' +
         '<md-select ng-model="selectedPeriod">' +
-          '<md-option ng-repeat="period in allPeriods" value="{{period.name}}" ng-click="setPeriod(period.name)">{{period.name}}</md-option>' +
+          '<md-option ng-repeat="period in allPeriods" value="{{period.name}}" ng-click="setPeriod($event, period.name)">{{period.name}}</md-option>' +
         '</md-select>' +
       '</md-input-container>',
     link: function(scope, elem, attrs) {
@@ -67,14 +67,13 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
         }
       }*/
 
-      scope.setPeriod = function(periodName) {
-        console.log(periodName, scope.allPeriods);
+      scope.setPeriod = function(evt, periodName) {
         var periodObj = $filter('filter')(scope.allPeriods, {name: periodName}, true)[0];
         if(periodObj.name.indexOf('Personalizado') === -1) {
           $location.search('since', periodObj.startDate);
           $location.search('until', periodObj.endDate);
         } else {
-           scope.$broadcast('OpenPicker');
+           scope.$broadcast('OpenPicker', evt);
         }
       }
 

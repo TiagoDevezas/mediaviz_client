@@ -37,6 +37,7 @@
     "commit": "74cf7aef6625b68f96a6bcb925dc1c729b95ebf0"
   },
   "_source": "git://github.com/alenaksu/mdPickers.git",
-  "_target": "*",
-  "_originalSource": "mdPickers"
+  "_target": "~0.3.2",
+  "_originalSource": "mdPickers",
+  "_direct": true
 }
