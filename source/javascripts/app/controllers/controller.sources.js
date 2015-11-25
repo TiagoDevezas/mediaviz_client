@@ -1,6 +1,6 @@
 mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $location, $filter, $timeout, $routeParams, $mdDialog, Page, SAPONews, SAPODataFormatter, DataFormatter, SourceList, Resources) {
 
-  Page.setTitle('Fontes');
+  Page.setTitle('Sources');
 
   if($location.path().indexOf('/SAPO') !== -1) {
     $scope.SAPOMode = true;
@@ -244,7 +244,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       if(source.group) {
         return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.type, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};    
       } else {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};
+        return {resource: 'articles', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};
       }   
     }
 
@@ -266,53 +266,25 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 
         if($scope.loadedSources.indexOf(sourceName) === -1) {
           $scope.loadingQueue.push(sourceName);
-          if($scope.SAPOMode) {
-            var paramsObj = createSAPOParamsObj(source);
-      			SAPONews.get(paramsObj).then(function(data) {
-      				$scope.loadedSources.push(sourceName);
-              $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
-              xsObj[countId] = timeId;
-              var data = data.data.facet_counts.facet_ranges.pubdate.counts;
-              var dayData = SAPODataFormatter.getDays(data);
-              var dayDataPercent = SAPODataFormatter.getDaysPercent(data);
-              var weekData = SAPODataFormatter.getWeekDays(data);
-              var monthData = SAPODataFormatter.getMonths(data);
-
-              if($scope.urlParams.data === 'percent') {
-                $scope.dayData = DataFormatter.inColumns(dayDataPercent, countId, 'time', 'percent_of_source');
-                $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'percent_of_source');
-                $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'percent_of_source');
+          var paramsObj = createParamsObj(source);
+          Resources.get(paramsObj).$promise.then(function(data) {
+            $scope.loadedSources.push(sourceName);
+            $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
+            xsObj[countId] = timeId;
+            if($scope.urlParams.data === 'percent') {
+              if(source.group) {
+                $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_type');                
               } else {
-                $scope.dayData = DataFormatter.inColumns(dayData, sourceName, 'time', 'articles');
-                $scope.weekData = DataFormatter.inColumns(weekData, countId, 'time', 'articles');
-                $scope.monthData = DataFormatter.inColumns(monthData, countId, 'time', 'articles');
+                $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_source');
               }
+            } else {
+              $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'count');
+            }
 
-              setChartDataForCycle();
+            setChartDataForCycle();
 
-              $scope.xsObj = xsObj;
-    				});
-          } else {
-            var paramsObj = createParamsObj(source);
-            Resources.get(paramsObj).$promise.then(function(data) {
-              $scope.loadedSources.push(sourceName);
-              $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
-              xsObj[countId] = timeId;
-              if($scope.urlParams.data === 'percent') {
-                if(source.group) {
-                  $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_type');                
-                } else {
-                  $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_source');
-                }
-              } else {
-                $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', $scope.urlParams.data);
-              }
-
-              setChartDataForCycle();
-
-              $scope.xsObj = xsObj;
-            });
-          }
+            $scope.xsObj = xsObj;
+          });
     		}
     	})
     }

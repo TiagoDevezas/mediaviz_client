@@ -13,10 +13,10 @@
 
     <div layout="row" layout-align="start center" ng-show="keywords.selected.length">
       <source-select class="md-padding" source-list="sourceList" selected-source="urlParams.source" style="padding-left: 0;"></source-select>
-      <type-select ng-show="!SAPOMode" style="margin: 0 10px;"></type-select>
+<!--       <type-select ng-show="!SAPOMode" style="margin: 0 10px;"></type-select> -->
       <date-select style="margin: 0 10px;"></date-select>
-      <granularity-select ng-if="SAPOMode" style="margin: 0 10px;"></granularity-select>
-      <cycle-select ng-if="SAPOMode" style="margin: 0 10px;"></cycle-select>
+<!--       <granularity-select ng-if="SAPOMode" style="margin: 0 10px;"></granularity-select>
+      <cycle-select ng-if="SAPOMode" style="margin: 0 10px;"></cycle-select> -->
       <date-picker></date-picker>
     </div>
 
@@ -25,7 +25,7 @@
   <loading-flash></loading-flash>
 
 	<md-content ng-if="timeData && keywords.selected.length" class="md-whiteframe-z1" style="margin-top: 20px;" layout-padding>
-  <p class="md-subhead" style="margin-bottom: 0px; padding-left: 20px;" ng-if="keywords.selected.length">{{selectedType.name}} <span ng-if="selectedType.name.indexOf('Artigos') < 0">dos artigos </span>publicados entre {{urlParams.since}} e {{urlParams.until}} pela fonte {{urlParams.source.name}} com os termos {{keywords.selected.toString().split(',').join(', ')}}</p>
+  <p class="md-subhead" style="margin-bottom: 0px; padding-left: 20px;" ng-if="keywords.selected.length">Articles published between {{urlParams.since}} and {{urlParams.until}} by all {{urlParams.source.name}} sources containing the terms {{keywords.selected.toString().split(',').join(', ')}}</p>
     <download-bar></download-bar>
     <div c3-chart dataset="timeData" type="area" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
 	</md-content>
@@ -34,7 +34,7 @@
     <div flex-gt-md="60" flex="100" layout-padding>
       <md-content layout="column" style="padding-top: 15px; padding-bottom: 35px;">
         <!-- <download-bar></download-bar> -->
-        <p style="margin-bottom: 20px;">Total de artigos</p>
+        <p style="margin-bottom: 20px;">Total articles</p>
         <div layout="row">
           <div flex="10" layout="column" layout-align="space-around center">
             <p class="md-caption" ng-repeat="count in articlesCount" style="margin: 0; margin-right: 5px;">{{count[1]}}</p>
@@ -43,38 +43,6 @@
         </div>
       </md-content>
 
-      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-top: 15px; padding-bottom: 35px;">
-        <!-- <download-bar></download-bar> -->
-        <p style="margin-bottom: 20px;">Total de partilhas</p>
-        <div layout="row">
-          <div flex="10" layout="column" layout-align="space-around center">
-            <p class="md-caption" ng-repeat="count in sharesCount" style="margin: 0; margin-right: 5px;">{{count[1]}}</p>
-          </div>
-          <div flex="90" c3-chart dataset="totalShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
-        </div>
-      </md-content>
-
-      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-top: 15px; padding-bottom: 35px;">
-        <!-- <download-bar></download-bar> -->
-        <p style="margin-bottom: 20px;">Partilhas Twitter</p>
-        <div layout="row">
-          <div flex="10" layout="column" layout-align="space-around center">
-            <p class="md-caption" ng-repeat="count in twitterSharesCount" style="margin: 0; margin-right: 5px;">{{count[1]}}</p>
-          </div>
-          <div flex="90" c3-chart dataset="twitterShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
-        </div>
-      </md-content>
-
-      <md-content ng-if="!SAPOMode" layout="column" style="border-top: 1px solid rgba(0,0,0,0.12); padding-top: 15px; padding-bottom: 35px;">
-        <!-- <download-bar></download-bar> -->
-        <p style="margin-bottom: 20px;">Partilhas Facebook</p>
-        <div layout="row">
-          <div flex="10" layout="column" layout-align="space-around center">
-            <p class="md-caption" ng-repeat="count in facebookSharesCount" style="margin: 0; margin-right: 5px;">{{count[1]}}</p>
-          </div>
-          <div flex="90" c3-chart dataset="facebookShareData" type="bar" options="barChartOpts" xs="xsObj" style="background-color: #eee;"></div>
-          </div>
-      </md-content>
     </div>
   </md-content>
 

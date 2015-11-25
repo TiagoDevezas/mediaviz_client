@@ -18,38 +18,16 @@
 	<div layout-gt-md="row" layout="column" style="margin-top: 20px;">
 
 		<md-content flex-gt-md="55" flex-order-gt-md="1" flex-order="2" tagged-infinite-scroll="getMore()" tagged-infinite-scroll-disabled="fetching || disabled" tagged-infinite-scroll-distance="200">
-			<md-content layout="row">
-				<md-button ng-click="order('pub_date')">
-					<md-icon ng-show="predicate === 'pub_date' && reverse === true">arrow_drop_down</md-icon>
-					<md-icon ng-show="predicate === 'pub_date' && reverse === false">arrow_drop_up</md-icon>
-					Data
-				</md-button>
-				<md-button ng-click="order('total_shares')">
-					<md-icon ng-show="predicate === 'total_shares' && reverse === true">arrow_drop_down</md-icon>
-					<md-icon ng-show="predicate === 'total_shares' && reverse === false">arrow_drop_up</md-icon>
-					Partilhas total
-				</md-button>
-				<md-button ng-click="order('twitter_shares')">
-					<md-icon ng-show="predicate === 'twitter_shares' && reverse === true">arrow_drop_down</md-icon>
-					<md-icon ng-show="predicate === 'twitter_shares' && reverse === false">arrow_drop_up</md-icon>
-					Partilhas Twitter
-				</md-button>
-				<md-button ng-click="order('facebook_shares')">
-					<md-icon ng-show="predicate === 'facebook_shares' && reverse === true">arrow_drop_down</md-icon>
-					<md-icon ng-show="predicate === 'facebook_shares' && reverse === false">arrow_drop_up</md-icon>
-					Partilhas Facebook
-				</md-button>
-			</md-content>
 
 			<md-list style="padding: 0;">
 	     	<md-divider></md-divider>
-				<md-list-item class="md-3-line" ng-repeat="item in items | orderBy:predicate:reverse">
+				<md-list-item class="md-3-line" ng-repeat="item in items">
 					<div class="md-list-item-text" layout="column">
 						<a href="{{item.url}}" style="text-decoration: none;">
 			        <h3>{{ item.title }}</h3>
-			        <h4 ng-bind-html="item.summary | words:15" class="item-text h4" style="margin: 0;"></h4>
-			        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC-1' }}</p>
-			        <p>Partilhas: {{item.total_shares}} Twitter: {{item.twitter_shares}} Facebook: {{item.facebook_shares}}</p>
+			        <h4 ng-bind-html="item.content | words:15" class="item-text h4" style="margin: 0;"></h4>
+			        <p>{{item.source}} - {{ item.published | date:'yyyy-MM-dd' }}</p>
+
 		        </a>
 		      </div>
 	       	<md-divider></md-divider>

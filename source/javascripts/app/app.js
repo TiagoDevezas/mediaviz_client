@@ -46,40 +46,40 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 	 //  $mdThemingProvider.definePalette('cyanWhite', cyanWhiteMap);
 
 		$mdThemingProvider.theme('default')
-			.primaryPalette('grey')
-			.accentPalette('red');
+			.primaryPalette('blue')
+			.accentPalette('pink');
 
-		$mdThemingProvider.theme('sapoTheme')
-			.primaryPalette('green')
-			.accentPalette('yellow');
+		// $mdThemingProvider.theme('sapoTheme')
+		// 	.primaryPalette('green')
+		// 	.accentPalette('yellow');
 
 		$routeProvider.when('/', {
 			templateUrl: 'partials/app/home.html',
 			controller: 'HomeCtrl'
 		}).
-		when('/SAPO', {
-			templateUrl: 'partials/app/sapo.html',
-			controller: 'SAPOCtrl',
-			caseInsensitiveMatch: true,
-			reloadOnSearch: false
-		}).
-		when('/SAPO/fontes', {
-			templateUrl: 'partials/app/sources.html',
-			controller: 'SourcesCtrl',
-			caseInsensitiveMatch: true,
-			reloadOnSearch: false
-		}).
-		when('/SAPO/cronica', {
-			templateUrl: 'partials/app/keywords.html',
-			controller: 'KeywordsCtrl',
-			caseInsensitiveMatch: true,
-			reloadOnSearch: false
-		}).
-		when('/SAPO/newsmap', {
-			templateUrl: 'partials/app/newsmap.html',
-			controller: 'NewsMapCtrl',
-			reloadOnSearch: false
-		}).
+		// when('/SAPO', {
+		// 	templateUrl: 'partials/app/sapo.html',
+		// 	controller: 'SAPOCtrl',
+		// 	caseInsensitiveMatch: true,
+		// 	reloadOnSearch: false
+		// }).
+		// when('/SAPO/fontes', {
+		// 	templateUrl: 'partials/app/sources.html',
+		// 	controller: 'SourcesCtrl',
+		// 	caseInsensitiveMatch: true,
+		// 	reloadOnSearch: false
+		// }).
+		// when('/SAPO/cronica', {
+		// 	templateUrl: 'partials/app/keywords.html',
+		// 	controller: 'KeywordsCtrl',
+		// 	caseInsensitiveMatch: true,
+		// 	reloadOnSearch: false
+		// }).
+		// when('/SAPO/newsmap', {
+		// 	templateUrl: 'partials/app/newsmap.html',
+		// 	controller: 'NewsMapCtrl',
+		// 	reloadOnSearch: false
+		// }).
 		when('/chronicle', {
 			templateUrl: 'partials/app/keywords.html',
 			controller: 'KeywordsCtrl',

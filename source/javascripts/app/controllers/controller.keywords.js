@@ -1,10 +1,6 @@
 mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $location, $timeout, $filter, Page, SourceList, SAPONews, SAPODataFormatter, Resources, DataFormatter) {
 
-  Page.setTitle('Palavras-chave');
-
-  if($location.path().indexOf('/SAPO') !== -1) {
-    $scope.SAPOMode = true;
-  }
+  Page.setTitle('Keywords');
 
   $scope.urlParams = {
     source: null,
@@ -15,10 +11,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     data: 'articles'
   }
 
-  if($scope.SAPOMode) {
-    $scope.urlParams.cycle = $location.search()['cycle'] || 'day';
-    $scope.urlParams.by = $location.search()['by'] || 'day';
-  }
+  $scope.urlParams.cycle = $location.search()['cycle'] || 'day';
+  $scope.urlParams.by = $location.search()['by'] || 'day';
 
   function setDefaultData() {
     if($scope.SAPOMode !== true && !$location.search()['data']) {
@@ -43,24 +37,14 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
   $scope.loadingQueue = [];
 
-  if($scope.SAPOMode) {
-    $scope.sourceList = SourceList.getSAPONewsList();
-    $scope.defaultSource = 'Todas';
+  SourceList.getDefaultList().then(function(data) {
+    $scope.sourceList = data;
+    $scope.defaultSource = 'News';
     if(!$location.search()['source']) {
       $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: $scope.defaultSource}, true)[0];
     }
     initializeController();
-    // $scope.selectedIndex.value = 0;
-  } else {
-    SourceList.getDefaultList().then(function(data) {
-      $scope.sourceList = data;
-      $scope.defaultSource = 'Todas nacionais';
-      if(!$location.search()['source']) {
-        $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: $scope.defaultSource}, true)[0];
-      }
-      initializeController();
-    });
-  }
+  });
 
   function showArticles(d) {
     if($scope.SAPOMode) return;
@@ -237,7 +221,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       if($scope.urlParams.source.group) {
         return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: keyword};    
       } else {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: keyword};
+        return {resource: 'articles', since: $scope.urlParams.since, until: $scope.urlParams.until, type: $scope.urlParams.source.acronym, q: keyword, by: $scope.urlParams.by};
       }
     }
 
@@ -253,98 +237,34 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
         if($scope.loadedKeywords.indexOf(keywordName) === -1) {
           $scope.loadingQueue.push(keyword);
-          if($scope.SAPOMode) {
-            var paramsObj = createSAPOParamsObj(keyword);
-            SAPONews.get(paramsObj).then(function(data) {
-              $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
-              $scope.loadedKeywords.push(keywordName);
-              xsObj[countId] = timeId;
-              var data = data.data.facet_counts.facet_ranges.pubdate.counts;
+          var paramsObj = createParamsObj(keyword);
+          Resources.get(paramsObj).$promise.then(function(data) {
+            $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
+            $scope.loadedKeywords.push(keywordName);
+            xsObj[countId] = timeId;
+            // if($scope.urlParams.data === 'percent') {
+            //   if($scope.urlParams.source.group) {
+            //     $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');                
+            //   } else {
+            //     $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_query');
+            //   }
+            // } else {
+            $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'count');
+            console.log($scope.timeData);
+            // }
 
-              var dayData = SAPODataFormatter.getDays(data);
-              var dayDataPercent = SAPODataFormatter.getDaysPercent(data);
-              var countData = DataFormatter.countOnly(dayData, keyword, 'total_articles');
-              var weekData = SAPODataFormatter.getWeekDays(data);
-              var monthData = SAPODataFormatter.getMonths(data);
+            
+            $scope.countData = DataFormatter.sumValue(data, keyword, 'count', keyword);
 
-              if($scope.urlParams.data === 'percent') {
-                $scope.dayData = DataFormatter.inColumns(dayDataPercent, keyword, 'time', 'percent_of_source');
-                $scope.weekData = DataFormatter.inColumns(weekData, keyword, 'time', 'percent_of_source');
-                $scope.monthData = DataFormatter.inColumns(monthData, keyword, 'time', 'percent_of_source');
-              } else {
-                $scope.dayData = DataFormatter.inColumns(dayData, keyword, 'time', 'articles');
-                $scope.weekData = DataFormatter.inColumns(weekData, keyword, 'time', 'articles');
-                $scope.monthData = DataFormatter.inColumns(monthData, keyword, 'time', 'articles');
-              }
-
-              $scope.countData = [['x', keyword], countData[0]];
-              $scope.countsArray.push([keyword, $scope.countData[1][1]]);
-              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
-
-              setChartDataForCycle();
-
-              $scope.xsObj = xsObj;
-            });
-          } else {
-            var paramsObj = createParamsObj(keyword);
-            Resources.get(paramsObj).$promise.then(function(data) {
-              $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
-              $scope.loadedKeywords.push(keywordName);
-              xsObj[countId] = timeId;
-              if($scope.urlParams.data === 'percent') {
-                if($scope.urlParams.source.group) {
-                  $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');                
-                } else {
-                  $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_query');
-                }
-              } else {
-                $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
-              }
-
-              // $scope.timeChartOpts.axis.x.type = 'timeseries';
-              
-              $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
+            $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
 
-              $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
-              $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
-              $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
+            $scope.countsArray.push(
+              [keyword, $scope.countData[1][1]]
+              );
 
-              // $scope.countsArray.push([keyword, $scope.countData[1][1]]);
-              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
-
-              // $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
-              $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
-
-              // $scope.countsArray.push([keyword, $scope.twitterShareData[1][1]]);
-              $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
-
-              // $scope.countsArray.push([keyword, $scope.facebookShareData[1][1]]);
-              $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
-
-              $scope.countsArray.push(
-                [keyword, $scope.countData[1][1]],
-                [keyword, $scope.totalShareData[1][1]],
-                [keyword, $scope.twitterShareData[1][1]],
-                [keyword, $scope.facebookShareData[1][1]]
-                );
-
-              // var countValues = $scope.countsArray.map(function(el) {
-              //   return el[1]
-              // });
-
-              // var maxValue = d3.max(countValues);
-
-              // // $scope.barChartOpts.axis.y.max = maxValue;
-              // $timeout(function() {
-              //   $scope.$broadcast('updateMaxY', maxValue);
-              // }, 10);
-
-              $scope.xsObj = xsObj;
-
-              // $scope.$broadcast('flushChart');
-            });
-          }
+            $scope.xsObj = xsObj;
+          });
         }
       })
     }

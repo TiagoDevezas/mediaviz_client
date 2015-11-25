@@ -1,15 +1,15 @@
-<md-toolbar class="md-{{theme}}-theme white-bg" ng-if="defaultToolbar">
+<md-toolbar class="md-{{theme}}-theme">
   <div class="md-toolbar-tools">
   	<md-button class="md-icon-button" ng-click="toggleMenu()">
   		<md-icon>menu</md-icon>
   	</md-button>
-    <h2><a href="#/">MediaViz</a> <span ng-if="pageTitle"> <md-icon>chevron_right</md-icon> {{pageTitle.split(' || ')[1]}}</span></h2>
+    <h2><a href="#/">IRNews Viewer</a> <span ng-if="pageTitle"> <md-icon>chevron_right</md-icon> {{pageTitle.split(' || ')[1]}}</span></h2>
     <span flex></span>
-    <md-button ng-click="openAboutDialog($event)">Sobre</md-button>
+    <md-button ng-click="openAboutDialog($event)">About</md-button>
   </div>
 </md-toolbar>
 
-<md-toolbar class="md-{{theme}}-theme" ng-if="SAPOToolbar" style="min-height: 112px;">
+<!-- <md-toolbar class="md-{{theme}}-theme" ng-if="SAPOToolbar" style="min-height: 112px;">
   <div class="md-toolbar-tools">
     <h2 style="padding-left: 24px;"><a href="#/SAPO">SAPO NewsViz</a></h2>
     <span flex></span>
@@ -20,7 +20,7 @@
     <md-tab label="fontes"></md-tab>
     <md-tab label="newsmap"></md-tab>
   </md-tabs>
-</md-toolbar>
+</md-toolbar> -->
 
 <script type="text/ng-template" id="dialog1.html">
 <md-dialog aria-label="Sobre"  ng-cloak>

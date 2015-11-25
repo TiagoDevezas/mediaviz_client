@@ -1,19 +1,18 @@
 mediavizServices.factory('Resources', function($resource, $q) {
     //var canceller = $q.defer();
-  var baseUrl = 'http://irlab.fe.up.pt/p/mediaviz/panorama/api/';
-  var jsonp = { 
+  var baseUrl = 'http://maltese.fe.up.pt/irnews/';
+  var opts = { 
     options: {
-      method: 'JSONP',
+      method: 'GET',
       isArray: true,
         // cache: true, 
       params: {
-        callback: 'JSON_CALLBACK',
         resource: '@resource'
       }
     }
   };
   return $resource(baseUrl + ':resource', {},
   {
-    get: jsonp.options
+    get: opts.options
   });
 });

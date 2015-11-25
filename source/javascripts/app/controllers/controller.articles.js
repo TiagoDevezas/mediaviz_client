@@ -1,6 +1,6 @@
 mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filter, $location, $rootScope, Page, Resources, SourceList, DataFormatter) {
 	
-	Page.setTitle('Artigos');
+	Page.setTitle('Articles');
 
   $scope.urlParams = {
     source: null,
@@ -17,7 +17,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
 
   SourceList.getDefaultList().then(function(data) {
     $scope.sourceList = data;
-    $scope.defaultSource = 'Todas nacionais';
+    $scope.defaultSource = 'News';
     if(!$location.search()['source']) {
       $scope.urlParams.source = $filter('filter')($scope.sourceList, {name: $scope.defaultSource}, true)[0];
     }
@@ -86,17 +86,17 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
     $scope.fetching = false;
     $scope.disabled = false;
 
-  	$scope.predicate = 'pub_date';
-    $scope.reverse = true;
+  	// $scope.predicate = 'published';
+   //  $scope.reverse = true;
 
-    $scope.order = function(predicate) {
-    	if(predicate === 'pub_date') {
-      	$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
-    	} else {
-    		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : true;
-    	}
-      $scope.predicate = predicate;
-    };
+   //  $scope.order = function(predicate) {
+   //  	if(predicate === 'published') {
+   //    	$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+   //  	} else {
+   //  		$scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : true;
+   //  	}
+   //    $scope.predicate = predicate;
+   //  };
 
     $scope.loadingQueue = [];
 
@@ -156,7 +156,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
       if($scope.urlParams.source.group) {
         return {resource: 'items', since: $scope.urlParams.since, limit: itemsToLoad, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: $scope.urlParams.keyword};    
       } else {
-        return {resource: 'items', since: $scope.urlParams.since, limit: itemsToLoad, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword};
+        return {resource: 'articles', since: $scope.urlParams.since, limit: itemsToLoad, until: $scope.urlParams.until, type: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword};
       }
     }
 
@@ -164,7 +164,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
       if($scope.urlParams.source.group) {
         return {resource: 'items', since: $scope.urlParams.since, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: $scope.urlParams.keyword, offset: itemsOffset};    
       } else {
-        return {resource: 'items', since: $scope.urlParams.since, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword, offset: itemsOffset};
+        return {resource: 'articles', since: $scope.urlParams.since, until: $scope.urlParams.until, type: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword, offset: itemsOffset};
       }
     }
 
@@ -172,7 +172,7 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
       if($scope.urlParams.source.group) {
         return {resource: 'totals', since: startDate, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: $scope.urlParams.keyword };    
       } else {
-        return {resource: 'totals', since: startDate, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword };
+        return {resource: 'articles', since: startDate, until: $scope.urlParams.until, type: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword };
       }
     }
 
