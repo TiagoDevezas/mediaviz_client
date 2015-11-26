@@ -19,9 +19,9 @@
       </div> -->
       <div layout="row" layout-align="start center">
         <form ng-submit="setQuery(inputKeyword)">
-          <md-input-container>
-            <label>Search</label>
-            <input ng-model="inputKeyword" id="search-input">
+          <md-input-container md-no-float>
+            <md-icon>search</md-icon>
+            <input ng-model="inputKeyword" id="search-input" placeholder="Insert term">
           </md-input-container>
         </form>
 <!--         <md-button class="md-icon-button" aria-label="Limpar" ng-click="clearInput()" ng-show="keyword.value.length">
@@ -29,11 +29,11 @@
         </md-button> -->
       </div>
       <!-- <type-select style="margin: 0 10px;"></type-select> -->
-      <date-select style="margin: 0 10px;"></date-select>
+      <!-- <date-select style="margin: 0 10px;"></date-select> -->
 <!--       <granularity-select ng-if="SAPOMode" style="margin: 0 10px;"></granularity-select> -->
       <cycle-select style="margin: 0 10px;"></cycle-select>
 <!--       <cycle-select ng-if="SAPOMode" style="margin: 0 10px;"></cycle-select> -->
-      <date-picker style="margin: 0 10px;"></date-picker>
+      <!-- <date-picker style="margin: 0 10px;"></date-picker> -->
       <!-- <md-button class="md-raised md-primary" ng-click="showPickerDialog($event)">Data</md-button> -->
     </div>
 

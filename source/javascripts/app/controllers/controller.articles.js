@@ -1,12 +1,12 @@
-mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filter, $location, $rootScope, Page, Resources, SourceList, DataFormatter) {
+mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filter, $location, $rootScope, $mdDialog, Page, Resources, SourceList, DataFormatter) {
 	
 	Page.setTitle('Articles');
 
   $scope.urlParams = {
     source: null,
     keyword: null,
-    since: "2015-01-01",
-    until: moment().format("YYYY-MM-DD")
+    since: $rootScope.startDate,
+    until: $rootScope.endDate
   }
 
   $scope.sourceList;
@@ -99,6 +99,24 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
    //  };
 
     $scope.loadingQueue = [];
+
+    $scope.showArticle = function(evt, data) {
+      $mdDialog.show({
+        controller: DialogController,
+        templateUrl: 'article_dialog.tmpl.html',
+        parent: angular.element(document.body),
+        targetEvent: evt,
+        clickOutsideToClose: true,
+        locals: { item: data }
+      });
+    }
+
+    function DialogController($scope, $mdDialog, item) {
+      $scope.item = item;
+      $scope.cancel = function() {
+        $mdDialog.cancel();
+      };
+    }
 
     $scope.$watch(function() { return $location.search() }, function(newVal) {
     	var source = $location.search()['source'];

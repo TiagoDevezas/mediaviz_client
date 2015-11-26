@@ -22,8 +22,8 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
   $scope.lang = 'pt';
 
   $scope.urlParams = {
-    since: "2015-01-01",
-    until: moment().format("YYYY-MM-DD")
+    since: $rootScope.startDate,
+    until: $rootScope.endDate
   }
 
   $scope.selectedMap = $scope.mapTypes[0];

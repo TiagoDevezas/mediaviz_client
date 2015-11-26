@@ -3,7 +3,7 @@
 		<form ng-submit="setQuery(inputKeyword)">
 			<md-input-container md-no-float>
 	      <md-icon>search</md-icon>
-	      <input type="text" ng-model="inputKeyword" placeholder="Introduzir termo">
+	      <input type="text" ng-model="inputKeyword" placeholder="Insert term">
 	    </md-input-container>
     </form>
     <md-content layout="row" layout-align="start center">
@@ -15,19 +15,18 @@
 
 	<loading-flash></loading-flash>
 
-	<div layout-gt-md="row" layout="column" style="margin-top: 20px;">
+	<div layout-gt-md="row" layout="column" style="margin: 8px; padding: 0px;">
 
-		<md-content flex-gt-md="55" flex-order-gt-md="1" flex-order="2" tagged-infinite-scroll="getMore()" tagged-infinite-scroll-disabled="fetching || disabled" tagged-infinite-scroll-distance="200">
+		<md-content flex-gt-md="55" tagged-infinite-scroll="getMore()" tagged-infinite-scroll-disabled="fetching || disabled" tagged-infinite-scroll-distance="200">
 
 			<md-list style="padding: 0;">
 	     	<md-divider></md-divider>
-				<md-list-item class="md-3-line" ng-repeat="item in items">
+				<md-list-item class="md-3-line list-item-hoverable" ng-repeat="item in items">
 					<div class="md-list-item-text" layout="column">
-						<a href="{{item.url}}" style="text-decoration: none;">
-			        <h3>{{ item.title }}</h3>
-			        <h4 ng-bind-html="item.content | words:15" class="item-text h4" style="margin: 0;"></h4>
+						<a href="" style="text-decoration: none;" ng-click="showArticle($event, item)">
+			        <h3 style="font-weight: 500;">{{ item.title }}</h3>
+			        <h4 ng-bind-html="item.content | words:15" class="item-text h4" style="margin: 10px 0;"></h4>
 			        <p>{{item.source}} - {{ item.published | date:'yyyy-MM-dd' }}</p>
-
 		        </a>
 		      </div>
 	       	<md-divider></md-divider>
@@ -35,17 +34,30 @@
 			</md-list>
 		</md-content>
 
-		<div flex-gt-md="5" flex-order-gt-md="2"></div>
+		<span flex-gt-md="45"></span>
 
-		<div flex-gt-md="40" flex-order-gt-md="3" flex-order="1" style="margin-top:0;">
-			<md-content ng-if="urlParams.keyword.length && chartData">
-	       <h2 class="md-title md-padding">Evolução na última semana</h2>
-	       <div c3-chart dataset="chartData" type="line" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
-	      <div class="md-actions" layout="row" layout-align="end center">
-	        <md-button>Ver mais</md-button>
-	      </div>
-	    </md-content>
-		</div>
+		<script type="text/ng-template" id="article_dialog.tmpl.html">
+		<md-dialog aria-label="{{item.title}}" ng-cloak flex-gt-md="50">
+			<div class="md-toolbar-tools" style="min-height: 55px;">
+	       <span flex></span>
+	       <md-button class="md-icon-button" ng-click="cancel()">
+	         <md-icon aria-label="Close dialog">close</md-icon>
+	       </md-button>
+	     </div>
+
+	     <md-dialog-content>
+		     <div class="md-dialog-content" style="padding-top: 0px;">
+		     	<h2 style="margin-top: 0px">{{item.title}}</h2>
+		     	<p style="color: rgba(0,0,0,0.54); font-weight: 500;">{{item.source}} - {{ item.published | date:'yyyy-MM-dd' }}</p>
+		     	<div style="white-space: pre-wrap;">{{item.content}}</div>
+		     </div>
+	     </md-dialog-content>
+
+	     <md-dialog-actions layout="row">
+	     <md-button ng-click="cancel()">OK</md-button>
+	     </md-dialog-actions>
+		</md-dialog>
+		</script>
 
 	</div>
 

@@ -1,14 +1,7 @@
-mediavizServices.factory('Page', function($rootScope, $location) {
-	
+mediavizServices.factory('Page', function($rootScope) {
 	return {
-		// title: function() { $rootScope.pageTitle = title; },
 		setTitle: function(newTitle) {
-			var title = null;
-			if($location.path().indexOf('/SAPO') !== -1) {
-	    	title = 'SAPO NewsViz';
-		  } else {
-		  	title = 'MediaViz';
-		  }
+		  var title = 'IRNews Viewer';
 			$rootScope.pageTitle = title + ' || ' + newTitle 
 		}
 	}

@@ -4,8 +4,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
   $scope.urlParams = {
     source: null,
-    since: "2015-01-01",
-    until: moment().format("YYYY-MM-DD"),
+    since: $rootScope.startDate,
+    until: $rootScope.endDate,
     cycle: null,
     by: null,
     data: 'articles'

@@ -28,15 +28,10 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
   $scope.urlParams = {
     keyword: $location.search()['keyword'] || null,
     sources: $location.search()['sources'] || null,
-    since: "2015-01-01",
-    until: moment().format("YYYY-MM-DD"),
+    since: $rootScope.startDate,
+    until: $rootScope.endDate,
     cycle: $location.search()['cycle'] || 'day',
     data: setDefaultData()
-  }
-
-  if($scope.SAPOMode) {
-    $scope.urlParams.cycle = $location.search()['cycle'] || 'day';
-    $scope.urlParams.by = $location.search()['by'] || 'day';
   }
 
   function setDefaultData() {
@@ -235,17 +230,8 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       $location.search('sources', null);
     }
 
-
-    function createSAPOParamsObj(source) {
-  		return {beginDate: $scope.urlParams.since, endDate: $scope.urlParams.until, timeFrame: $filter('uppercase')($scope.urlParams.by), q: tokenizeKeyword($scope.urlParams.keyword), source: source.value};
-    }
-
     function createParamsObj(source) {
-      if(source.group) {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.type, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};    
-      } else {
-        return {resource: 'articles', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};
-      }   
+      return {resource: 'articles', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle}; 
     }
 
     function tokenizeKeyword(keyword) {

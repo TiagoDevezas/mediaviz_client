@@ -24,6 +24,10 @@ body {
   line-height: 1.35em !important;
 }
 
+.list-item-hoverable:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 md-list-item.md-3-line, md-list-item.md-3-line > .md-no-style {
   height: 100px;
   padding: 5px 16px;
