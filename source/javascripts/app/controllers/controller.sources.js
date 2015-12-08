@@ -272,7 +272,14 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
             $scope.xsObj = xsObj;
           });
     		}
-    	})
+    	});
+      // getHistogramData();
+    }
+
+    function getHistogramData() {
+      Resources.get({resource: 'sources', group: true}).$promise.then(function(data) {
+        $scope.histogramData = data;
+      });
     }
 
     function setChartDataForCycle() {

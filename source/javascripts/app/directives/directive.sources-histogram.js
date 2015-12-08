@@ -1,0 +1,3 @@
+mediavizDirectives.directive('sourcesHistogram', function() {
+
+});
