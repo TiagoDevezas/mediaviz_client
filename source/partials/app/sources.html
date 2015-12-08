@@ -19,9 +19,9 @@
       </div> -->
       <div layout="row" layout-align="start center">
         <form ng-submit="setQuery(inputKeyword)">
-          <md-input-container>
-            <label>Pesquisar</label>
-            <input ng-model="inputKeyword" id="search-input">
+          <md-input-container md-no-float>
+            <md-icon>search</md-icon>
+            <input ng-model="inputKeyword" id="search-input" placeholder="Pesquisar">
           </md-input-container>
         </form>
 <!--         <md-button class="md-icon-button" aria-label="Limpar" ng-click="clearInput()" ng-show="keyword.value.length">
