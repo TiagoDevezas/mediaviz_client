@@ -309,9 +309,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
               $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
               $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
-
-              // $scope.countsArray.push([keyword, $scope.countData[1][1]]);
-              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
+              
+              // $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
               // $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
               $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
