@@ -382,67 +382,67 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       }
     }
 
-    function calculateSize() {
-      keywords = $location.search()['keywords'];
-      console.log(keywords);
-      if(!keywords || keywords.split(',').length === 1) {
-        return 20;
-      }
-      if(keywords.split(',').length > 1) {
-        return keywords.split(',').length * 20;
-      }
+    // function calculateSize() {
+    //   keywords = $location.search()['keywords'];
+    //   console.log(keywords);
+    //   if(!keywords || keywords.split(',').length === 1) {
+    //     return 20;
+    //   }
+    //   if(keywords.split(',').length > 1) {
+    //     return keywords.split(',').length * 20;
+    //   }
       
-    }
+    // }
 
-    $scope.barChartOpts = {
-      id: 'countChart',
-      size: {
-        height: calculateSize()
-      },
-      data: {
-        x: 'x',
-        // labels: false
-      },
-      bar: {
-        width: {ratio: 1}
-      },
-      axis: {
-        rotated: true,
-        x: {
-          type: 'category',
-          // tick: {values: []},
-          show: false
-        },
-        y: {
-          padding: 0,
-          show: false
-        }
-      },
-      tooltip: {
-        show: true,
-        grouped: false,
-        format: {
-          title: function() {
-            return ''
-          }
-        }
-      },
-      padding: {
-        left: 0,
-        right: 0,
-        top: -6,
-        bottom: 0
-      },
-      legend: {
-        show: false
-      }
-    };
+    // $scope.barChartOpts = {
+    //   id: 'countChart',
+    //   size: {
+    //     height: calculateSize()
+    //   },
+    //   data: {
+    //     x: 'x',
+    //     // labels: false
+    //   },
+    //   bar: {
+    //     width: {ratio: 1}
+    //   },
+    //   axis: {
+    //     rotated: true,
+    //     x: {
+    //       type: 'category',
+    //       // tick: {values: []},
+    //       show: false
+    //     },
+    //     y: {
+    //       padding: 0,
+    //       show: false
+    //     }
+    //   },
+    //   tooltip: {
+    //     show: true,
+    //     grouped: false,
+    //     format: {
+    //       title: function() {
+    //         return ''
+    //       }
+    //     }
+    //   },
+    //   padding: {
+    //     left: 0,
+    //     right: 0,
+    //     top: -6,
+    //     bottom: 0
+    //   },
+    //   legend: {
+    //     show: false
+    //   }
+    // };
 
-    $scope.barChartYAxisOpts = {};
+    // $scope.barChartYAxisOpts = {};
 
-    angular.copy($scope.barChartOpts, $scope.barChartYAxisOpts);
+    // angular.copy($scope.barChartOpts, $scope.barChartYAxisOpts);
 
-    $scope.barChartYAxisOpts.axis.y.show = true;
+    // $scope.barChartYAxisOpts.axis.y.show = true;
 
 
     $scope.timeChartOpts = {
