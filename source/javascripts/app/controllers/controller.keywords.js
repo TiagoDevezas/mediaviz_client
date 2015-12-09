@@ -242,9 +242,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     }
 
     function getSourceData() {
-      if(!$scope.urlParams.source) {
-        return;
-      }
+      // if(!$scope.urlParams.source) {
+      //   return;
+      // }
       $scope.keywords.selected.forEach(function(keyword, index) {
         var keywordName = keyword;
         var timeId = 'timeFor' + keywordName;
