@@ -288,9 +288,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           } else {
             var paramsObj = createParamsObj(keyword);
             Resources.get(paramsObj).$promise.then(function(data) {
+              $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
+              $scope.loadedKeywords.push(keywordName);
               if(data.length) {
-                $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
-                $scope.loadedKeywords.push(keywordName);
                 xsObj[countId] = timeId;
                 if($scope.urlParams.data === 'percent') {
                   if($scope.urlParams.source.group) {
