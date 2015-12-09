@@ -313,20 +313,20 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               // $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
               // $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
-              $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
+              // $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
 
               // $scope.countsArray.push([keyword, $scope.twitterShareData[1][1]]);
-              $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
+              // $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
 
               // $scope.countsArray.push([keyword, $scope.facebookShareData[1][1]]);
-              $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
+              // $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
 
-              $scope.countsArray.push(
-                [keyword, $scope.countData[1][1]],
-                [keyword, $scope.totalShareData[1][1]],
-                [keyword, $scope.twitterShareData[1][1]],
-                [keyword, $scope.facebookShareData[1][1]]
-                );
+              // $scope.countsArray.push(
+              //   [keyword, $scope.countData[1][1]],
+              //   [keyword, $scope.totalShareData[1][1]],
+              //   [keyword, $scope.twitterShareData[1][1]],
+              //   [keyword, $scope.facebookShareData[1][1]]
+              //   );
 
               // var countValues = $scope.countsArray.map(function(el) {
               //   return el[1]
