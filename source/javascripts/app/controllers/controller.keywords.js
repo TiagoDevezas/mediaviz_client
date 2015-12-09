@@ -291,59 +291,57 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
               console.log(keyword, data.length);
               $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
               $scope.loadedKeywords.push(keywordName);
-              if(data.length > 0) {
-                xsObj[countId] = timeId;
-                if($scope.urlParams.data === 'percent') {
-                  if($scope.urlParams.source.group) {
-                    $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');                
-                  } else {
-                    $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_day');
-                  }
+              xsObj[countId] = timeId;
+              if($scope.urlParams.data === 'percent') {
+                if($scope.urlParams.source.group) {
+                  $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');                
                 } else {
-                  $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
+                  $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_day');
                 }
-
-                // $scope.timeChartOpts.axis.x.type = 'timeseries';
-                
-                // $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
-
-
-                // $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
-                // $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
-                // $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
-                
-                // $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
-
-                // $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
-                // $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
-
-                // $scope.countsArray.push([keyword, $scope.twitterShareData[1][1]]);
-                // $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
-
-                // $scope.countsArray.push([keyword, $scope.facebookShareData[1][1]]);
-                // $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
-
-                // $scope.countsArray.push(
-                //   [keyword, $scope.countData[1][1]],
-                //   [keyword, $scope.totalShareData[1][1]],
-                //   [keyword, $scope.twitterShareData[1][1]],
-                //   [keyword, $scope.facebookShareData[1][1]]
-                //   );
-
-                // var countValues = $scope.countsArray.map(function(el) {
-                //   return el[1]
-                // });
-
-                // var maxValue = d3.max(countValues);
-
-                // // $scope.barChartOpts.axis.y.max = maxValue;
-                // $timeout(function() {
-                //   $scope.$broadcast('updateMaxY', maxValue);
-                // }, 10);
-
-                $scope.xsObj = xsObj;
-                console.log(xsObj);
+              } else {
+                $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
               }
+
+              // $scope.timeChartOpts.axis.x.type = 'timeseries';
+              
+              // $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
+
+
+              // $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
+              // $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
+              // $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
+              
+              // $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
+
+              // $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
+              // $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
+
+              // $scope.countsArray.push([keyword, $scope.twitterShareData[1][1]]);
+              // $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
+
+              // $scope.countsArray.push([keyword, $scope.facebookShareData[1][1]]);
+              // $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
+
+              // $scope.countsArray.push(
+              //   [keyword, $scope.countData[1][1]],
+              //   [keyword, $scope.totalShareData[1][1]],
+              //   [keyword, $scope.twitterShareData[1][1]],
+              //   [keyword, $scope.facebookShareData[1][1]]
+              //   );
+
+              // var countValues = $scope.countsArray.map(function(el) {
+              //   return el[1]
+              // });
+
+              // var maxValue = d3.max(countValues);
+
+              // // $scope.barChartOpts.axis.y.max = maxValue;
+              // $timeout(function() {
+              //   $scope.$broadcast('updateMaxY', maxValue);
+              // }, 10);
+
+              $scope.xsObj = xsObj;
+              console.log(xsObj);
 
               // $scope.$broadcast('flushChart');
             });
