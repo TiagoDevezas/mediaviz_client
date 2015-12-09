@@ -336,6 +336,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 // }, 10);
 
                 $scope.timeChartOpts.axis.x.type = 'timeseries';
+                $scope.timeChartOpts.tooltip.format.title
                 $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: function(d) { return moment(d).format('YYYY-MM-DD')} });
 
                 $scope.xsObj = xsObj;
@@ -453,7 +454,11 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       tooltip: {
         grouped: true,
         format: {
-          title: function (d) { return d + ' (clique para ver artigos)'; }
+          title: function (d) {
+            if(!scope.SAPOMode) {
+              return moment(d).format('YYYY-MM-DD') + ' (clique para ver artigos)';
+            }
+          }
         }
       },
       data: {
