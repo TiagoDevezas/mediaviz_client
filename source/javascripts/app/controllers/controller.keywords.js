@@ -133,7 +133,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     }, true);
 
     $scope.$watch('keywords.selected', function(newVal, oldVal) {
-      $scope.$broadcast('resizeChart', newVal.length * 20);
+      // $scope.$broadcast('resizeChart', newVal.length * 20);
       var newKeywords = newVal.map(function(el) { return el });
       var oldKeywords = oldVal.map(function(el) { return el });
       oldKeywords.forEach(function(oldKeyword) {
