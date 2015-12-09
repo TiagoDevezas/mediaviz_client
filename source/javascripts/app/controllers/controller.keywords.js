@@ -277,9 +277,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 $scope.monthData = DataFormatter.inColumns(monthData, keyword, 'time', 'articles');
               }
 
-              // $scope.countData = [['x', keyword], countData[0]];
-              // $scope.countsArray.push([keyword, $scope.countData[1][1]]);
-              // $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
+              $scope.countData = [['x', keyword], countData[0]];
+              $scope.countsArray.push([keyword, $scope.countData[1][1]]);
+              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
               setChartDataForCycle();
 
@@ -301,28 +301,33 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', $scope.urlParams.data);
               }
 
+              // $scope.timeChartOpts.axis.x.type = 'timeseries';
               
-              // $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
+              $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
 
 
-              // $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
-              // $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
-              // $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
+              $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
+              $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
+              $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
 
-              // $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
+              // $scope.countsArray.push([keyword, $scope.countData[1][1]]);
+              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
-              // $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
+              // $scope.countsArray.push([keyword, $scope.totalShareData[1][1]]);
+              $scope.sharesCount.push([keyword, $scope.totalShareData[1][1]]);
 
-              // $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
+              // $scope.countsArray.push([keyword, $scope.twitterShareData[1][1]]);
+              $scope.twitterSharesCount.push([keyword, $scope.twitterShareData[1][1]]);
 
-              // $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
+              // $scope.countsArray.push([keyword, $scope.facebookShareData[1][1]]);
+              $scope.facebookSharesCount.push([keyword, $scope.facebookShareData[1][1]]);
 
-              // $scope.countsArray.push(
-              //   [keyword, $scope.countData[1][1]],
-              //   [keyword, $scope.totalShareData[1][1]],
-              //   [keyword, $scope.twitterShareData[1][1]],
-              //   [keyword, $scope.facebookShareData[1][1]]
-              //   );
+              $scope.countsArray.push(
+                [keyword, $scope.countData[1][1]],
+                [keyword, $scope.totalShareData[1][1]],
+                [keyword, $scope.twitterShareData[1][1]],
+                [keyword, $scope.facebookShareData[1][1]]
+                );
 
               // var countValues = $scope.countsArray.map(function(el) {
               //   return el[1]
