@@ -139,7 +139,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       oldKeywords.forEach(function(oldKeyword) {
         if(newKeywords.indexOf(oldKeyword) === -1) {
           $scope.loadedKeywords.splice($scope.loadedKeywords.indexOf(oldKeyword), 1);
-          removeKeywordFromCountsArray(oldKeyword);
+          // removeKeywordFromCountsArray(oldKeyword);
           $scope.$broadcast('sourceRemoved', oldKeyword);
         }
       });
@@ -192,11 +192,11 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
         }
       }
       $scope.loadedKeywords = [];
-      $scope.countsArray = [];
-      $scope.articlesCount = [];
-      $scope.sharesCount = [];
-      $scope.twitterSharesCount = [];
-      $scope.facebookSharesCount = [];
+      // $scope.countsArray = [];
+      // $scope.articlesCount = [];
+      // $scope.sharesCount = [];
+      // $scope.twitterSharesCount = [];
+      // $scope.facebookSharesCount = [];
       getSourceData();
     }, true);
 
@@ -208,17 +208,17 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
       }
     }, true);
 
-    $scope.$watch('countsArray', function(newVal, oldVal) {
-      $timeout(function() {
-        var countValues = newVal.map(function(el) {
-          return el[1];
-        });
-        var maxValue = d3.max(countValues);
-        if(maxValue) {
-          $scope.$broadcast('updateMaxY', maxValue);
-        }
-      }, 10);
-    }, true);
+    // $scope.$watch('countsArray', function(newVal, oldVal) {
+    //   $timeout(function() {
+    //     var countValues = newVal.map(function(el) {
+    //       return el[1];
+    //     });
+    //     var maxValue = d3.max(countValues);
+    //     if(maxValue) {
+    //       $scope.$broadcast('updateMaxY', maxValue);
+    //     }
+    //   }, 10);
+    // }, true);
 
     function tokenizeKeyword(keyword) {
       if(keyword) {
@@ -242,9 +242,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     }
 
     function getSourceData() {
-      // if(!$scope.urlParams.source) {
-      //   return;
-      // }
+      if(!$scope.urlParams.source) {
+        return;
+      }
       $scope.keywords.selected.forEach(function(keyword, index) {
         var keywordName = keyword;
         var timeId = 'timeFor' + keywordName;
@@ -303,12 +303,12 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
               // $scope.timeChartOpts.axis.x.type = 'timeseries';
               
-              $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
+              // $scope.countData = DataFormatter.sumValue(data, keyword, 'articles', keyword);
 
 
-              $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
-              $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
-              $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
+              // $scope.totalShareData = DataFormatter.sumValue(data, keyword, 'total_shares', keyword);
+              // $scope.twitterShareData = DataFormatter.sumValue(data, keyword, 'twitter_shares', keyword);
+              // $scope.facebookShareData = DataFormatter.sumValue(data, keyword, 'facebook_shares', keyword);
               
               // $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
