@@ -289,9 +289,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
             var paramsObj = createParamsObj(keyword);
             Resources.get(paramsObj).$promise.then(function(data) {
               console.log(keyword, data.length);
-              if(data.length) {
-                $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
-                $scope.loadedKeywords.push(keywordName);
+              $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
+              $scope.loadedKeywords.push(keywordName);
+              if(data.length > 0) {
                 xsObj[countId] = timeId;
                 if($scope.urlParams.data === 'percent') {
                   if($scope.urlParams.source.group) {
@@ -342,6 +342,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 // }, 10);
 
                 $scope.xsObj = xsObj;
+                console.log(xsObj);
               }
 
               // $scope.$broadcast('flushChart');
