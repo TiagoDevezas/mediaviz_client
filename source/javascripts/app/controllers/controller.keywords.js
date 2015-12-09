@@ -288,6 +288,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           } else {
             var paramsObj = createParamsObj(keyword);
             Resources.get(paramsObj).$promise.then(function(data) {
+              console.log(data.length > 0);
               if(data.length > 0) {
                 $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
                 $scope.loadedKeywords.push(keywordName);
