@@ -55,7 +55,14 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
       position: 'right'
     },
     tooltip: {
-      grouped: true 
+      grouped: true,
+      format: {
+        title: function (d) {
+          if(!$scope.SAPOMode && $scope.urlParams.cycle === 'day') {
+            return moment(d).format('YYYY-MM-DD') + ' (clique para ver artigos)';
+          }
+        }
+      } 
     },
     data: {
       onclick: function (d, i) { showArticles(d); }
@@ -295,6 +302,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
           } else {
             var paramsObj = createParamsObj(source);
             Resources.get(paramsObj).$promise.then(function(data) {
+              setChartDataForCycle();
               $scope.loadedSources.push(sourceName);
               $scope.loadingQueue.splice($scope.loadingQueue.indexOf(sourceName), 1);
               xsObj[countId] = timeId;
@@ -308,7 +316,6 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
                 $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', $scope.urlParams.data);
               }
 
-              setChartDataForCycle();
 
               $scope.xsObj = xsObj;
             });
