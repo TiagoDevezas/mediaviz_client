@@ -455,7 +455,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
         grouped: true,
         format: {
           title: function (d) {
-            if(!scope.SAPOMode) {
+            if(!$scope.SAPOMode) {
               return moment(d).format('YYYY-MM-DD') + ' (clique para ver artigos)';
             }
           }
