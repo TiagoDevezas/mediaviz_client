@@ -277,9 +277,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 $scope.monthData = DataFormatter.inColumns(monthData, keyword, 'time', 'articles');
               }
 
-              $scope.countData = [['x', keyword], countData[0]];
-              $scope.countsArray.push([keyword, $scope.countData[1][1]]);
-              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
+              // $scope.countData = [['x', keyword], countData[0]];
+              // $scope.countsArray.push([keyword, $scope.countData[1][1]]);
+              // $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
 
               setChartDataForCycle();
 
