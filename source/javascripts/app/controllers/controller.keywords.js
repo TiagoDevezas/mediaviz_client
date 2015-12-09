@@ -335,6 +335,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 //   $scope.$broadcast('updateMaxY', maxValue);
                 // }, 10);
 
+                $scope.timeChartOpts.axis.x.type = 'timeseries';
+                $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: function(d) { return moment(d).format('YYYY-MM-DD')} });
+
                 $scope.xsObj = xsObj;
               } else {
                 $scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
@@ -448,7 +451,10 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
         position: 'right'
       },
       tooltip: {
-        grouped: true 
+        grouped: true,
+        format: {
+          title: function (d) { return d + ' (clique para ver artigos)'; }
+        }
       },
       data: {
         onclick: function (d, i) { showArticles(d); }
