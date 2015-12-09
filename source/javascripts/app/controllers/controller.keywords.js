@@ -341,7 +341,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
               $scope.xsObj = xsObj;
 
-              // $scope.$broadcast('flushChart');
+              $scope.$broadcast('flushChart');
             });
           }
         }
