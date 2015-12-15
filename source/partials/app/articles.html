@@ -48,7 +48,7 @@
 						<a href="{{item.url}}" style="text-decoration: none;">
 			        <h3>{{ item.title }}</h3>
 			        <h4 ng-bind-html="item.summary | words:15" class="item-text h4" style="margin: 0;"></h4>
-			        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC-1' }}</p>
+			        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC' }}</p>
 			        <p>Partilhas: {{item.total_shares}} Twitter: {{item.twitter_shares}} Facebook: {{item.facebook_shares}}</p>
 		        </a>
 		      </div>
@@ -60,7 +60,7 @@
 		<div flex-gt-md="5" flex-order-gt-md="2"></div>
 
 		<div flex-gt-md="40" flex-order-gt-md="3" flex-order="1" style="margin-top:0;">
-			<md-content ng-if="urlParams.keyword.length && chartData">
+			<md-content ng-if="urlParams.keyword.length && chartData.length > 0">
 	       <h2 class="md-title md-padding">Evolução na última semana</h2>
 	       <div c3-chart dataset="chartData" type="line" options="timeChartOpts" xs="xsObj" style="padding:5px 0;"></div>
 	      <div class="md-actions" layout="row" layout-align="end center">

@@ -68,8 +68,8 @@ mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $locatio
     {name: 'Palavras-chave', description: 'Comparar palavras-chave.', url: '/chronicle'},
     {name: 'Fontes', description: 'Comparar fontes.', url: '/sources'},
     {name: 'NewsMap', description: 'Comparar coberturas geográficas.', url: '/newsmap'},
-    {name: 'Artigos', description: 'Pesquisa de artigos.', url: '/articles'},
-    {name: 'SAPO', description: 'Ferramentas integradas com a API do SAPO.', url: '/SAPO'}
+    {name: 'Artigos', description: 'Pesquisa de artigos.', url: '/articles'}
+    // {name: 'SAPO', description: 'Ferramentas integradas com a API do SAPO.', url: '/SAPO'}
   ];
 
   $scope.openAboutDialog = function(ev) {

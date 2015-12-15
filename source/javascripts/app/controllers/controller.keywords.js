@@ -340,8 +340,10 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: function(d) { return moment(d).format('YYYY-MM-DD')} });
 
                 $scope.xsObj = xsObj;
-              } else {
-                $scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
+              }
+              else {
+                $scope.$broadcast('sourceRemoved', keyword);
+                // $scope.keywords.selected.splice($scope.keywords.selected.indexOf(keyword), 1);
               }
 
             });

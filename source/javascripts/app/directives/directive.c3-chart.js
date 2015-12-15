@@ -58,7 +58,7 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
           });
           chart.flush();
         }
-      })
+      });
 
       scope.$on('sourceRemoved', function(evt, source) {
         if(chart) {
