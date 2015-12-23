@@ -48,14 +48,15 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
   function showArticles(d) {
     if($scope.SAPOMode) return;
-    var date = moment(d.x).format("YYYY-MM-DD");
+    var dateSince = moment(d.x).format("YYYY-MM-DD");
+    var dateUntil = moment(dateSince).add(1, 'days').format("YYYY-MM-DD");
     var keyword = d.name;
     var source = $scope.urlParams.source;
-    setParamsforArticles(date, keyword, source);
+    setParamsforArticles(dateSince, dateUntil, keyword, source);
   }
 
-  function setParamsforArticles(date, keyword, source) {
-    $location.path('/articles').search({keyword: keyword, since: date, until: date, source: source.name });
+  function setParamsforArticles(dateSince, dateUntil, keyword, source) {
+    $location.path('/articles').search({keyword: keyword, since: dateSince, until: dateUntil, source: source.name });
     $scope.$apply();
   }
 
