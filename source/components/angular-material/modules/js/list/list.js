@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.0.0-rc4-master-5e5e6cd
+ * v1.0.1-master-226f72f
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -120,6 +120,7 @@ function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
           tEl.addClass('md-no-proxy');
         }
       }
+      wrapSecondary();
       setupToggleAria();
 
 
@@ -152,7 +153,9 @@ function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
 
         tEl[0].setAttribute('tabindex', '-1');
         tEl.append(container);
+      }
 
+      function wrapSecondary() {
         if (secondaryItem && !isButton(secondaryItem) && secondaryItem.hasAttribute('ng-click')) {
           $mdAria.expect(secondaryItem, 'aria-label');
           var buttonWrapper = angular.element('<md-button class="md-secondary-container md-icon-button">');
@@ -165,17 +168,17 @@ function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
 
         // Check for a secondary item and move it outside
         if ( secondaryItem && (
-          secondaryItem.hasAttribute('ng-click') ||
+            secondaryItem.hasAttribute('ng-click') ||
             ( tAttrs.ngClick &&
-             isProxiedElement(secondaryItem) )
-        )) {
+            isProxiedElement(secondaryItem) )
+          )) {
           tEl.addClass('md-with-secondary');
           tEl.append(secondaryItem);
         }
       }
 
       function copyAttributes(item, wrapper) {
-        var copiedAttrs = ['ng-click', 'aria-label', 'ng-disabled',
+        var copiedAttrs = ['ng-if', 'ng-click', 'aria-label', 'ng-disabled',
           'ui-sref', 'href', 'ng-href', 'ng-attr-ui-sref'];
         angular.forEach(copiedAttrs, function(attr) {
           if (item.hasAttribute(attr)) {
@@ -246,7 +249,7 @@ function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
           }
         }
         function computeClickable() {
-          if (proxies.length || hasClick) {
+          if (proxies.length == 1 || hasClick) {
             $element.addClass('md-clickable');
 
             if (!hasClick) {
@@ -273,7 +276,7 @@ function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
         $element.off('click');
         $element.off('keypress');
 
-        if (proxies.length && firstChild) {
+        if (proxies.length == 1 && firstChild) {
           $element.children().eq(0).on('click', function(e) {
             var parentButton = $mdUtil.getClosest(e.target, 'BUTTON');
             if (!parentButton && firstChild.contains(e.target)) {

@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.0.0-rc4-master-5e5e6cd
+ * v1.0.1-master-226f72f
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -71,18 +71,16 @@ MenuBarController.prototype.init = function() {
       el[0].classList.remove('md-open');
     }
 
-    if (opts.closeAll) {
-      if ($element[0].contains(el[0])) {
-        var parentMenu = el[0];
-        while (parentMenu && rootMenus.indexOf(parentMenu) == -1) {
-          parentMenu = $mdUtil.getClosest(parentMenu, 'MD-MENU', true);
-        }
-        if (parentMenu) {
-          if (!opts.skipFocus) parentMenu.querySelector('button:not([disabled])').focus();
-          self.currentlyOpenMenu = undefined;
-          self.disableOpenOnHover();
-          self.setKeyboardMode(true);
-        }
+    if ($element[0].contains(el[0])) {
+      var parentMenu = el[0];
+      while (parentMenu && rootMenus.indexOf(parentMenu) == -1) {
+        parentMenu = $mdUtil.getClosest(parentMenu, 'MD-MENU', true);
+      }
+      if (parentMenu) {
+        if (!opts.skipFocus) parentMenu.querySelector('button:not([disabled])').focus();
+        self.currentlyOpenMenu = undefined;
+        self.disableOpenOnHover();
+        self.setKeyboardMode(true);
       }
     }
   }));
@@ -379,8 +377,8 @@ function MenuBarDirective($mdUtil, $mdTheming) {
         if (menuEl.nodeName == 'MD-MENU') {
           if (!menuEl.hasAttribute('md-position-mode')) {
             menuEl.setAttribute('md-position-mode', 'left bottom');
+            menuEl.querySelector('button,a').setAttribute('role', 'menuitem');
           }
-          menuEl.setAttribute('role', 'menu');
           var contentEls = $mdUtil.nodesToArray(menuEl.querySelectorAll('md-menu-content'));
           angular.forEach(contentEls, function(contentEl) {
             contentEl.classList.add('md-menu-bar-menu');
@@ -444,11 +442,27 @@ MenuItemController.prototype.init = function(ngModel) {
     this.mode  = $attrs.type;
     this.iconEl = $element[0].children[0];
     this.buttonEl = $element[0].children[1];
-    if (ngModel) this.initClickListeners();
+    if (ngModel) {
+      // Clear ngAria set attributes
+      this.initClickListeners();
+    }
   }
 };
 
+// ngAria auto sets attributes on a menu-item with a ngModel.
+// We don't want this because our content (buttons) get the focus
+// and set their own aria attributes appropritately. Having both
+// breaks NVDA / JAWS. This undeoes ngAria's attrs.
+MenuItemController.prototype.clearNgAria = function() {
+  var el = this.$element[0];
+  var clearAttrs = ['role', 'tabindex', 'aria-invalid', 'aria-checked'];
+  angular.forEach(clearAttrs, function(attr) {
+    el.removeAttribute(attr);
+  });
+};
+
 MenuItemController.prototype.initClickListeners = function() {
+  var self = this;
   var ngModel = this.ngModel;
   var $scope = this.$scope;
   var $attrs = this.$attrs;
@@ -457,7 +471,7 @@ MenuItemController.prototype.initClickListeners = function() {
 
   this.handleClick = angular.bind(this, this.handleClick);
 
-  var icon = this.iconEl
+  var icon = this.iconEl;
   var button = angular.element(this.buttonEl);
   var handleClick = this.handleClick;
 
@@ -465,12 +479,13 @@ MenuItemController.prototype.initClickListeners = function() {
   setDisabled($attrs.disabled);
 
   ngModel.$render = function render() {
+    self.clearNgAria();
     if (isSelected()) {
       icon.style.display = '';
-      $element.attr('aria-checked', 'true');
+      button.attr('aria-checked', 'true');
     } else {
       icon.style.display = 'none';
-      $element.attr('aria-checked', 'false');
+      button.attr('aria-checked', 'false');
     }
   };
 
@@ -520,6 +535,7 @@ angular
 function MenuItemDirective() {
   return {
     require: ['mdMenuItem', '?ngModel'],
+    priority: 210, // ensure that our post link runs after ngAria
     compile: function(templateEl, templateAttrs) {
       if (templateAttrs.type == 'checkbox' || templateAttrs.type == 'radio') {
         var text = templateEl[0].textContent;
@@ -532,11 +548,11 @@ function MenuItemDirective() {
         templateEl.append(buttonEl);
         templateEl[0].classList.add('md-indent');
 
-        setDefault('role', (templateAttrs.type == 'checkbox') ? 'menuitemcheckbox' : 'menuitemradio');
+        setDefault('role', (templateAttrs.type == 'checkbox') ? 'menuitemcheckbox' : 'menuitemradio', buttonEl);
         angular.forEach(['ng-disabled'], moveAttrToButton);
 
       } else {
-        setDefault('role', 'menuitem');
+        setDefault('role', 'menuitem', templateEl[0].querySelector('md-button,button,a'));
       }
 
 
@@ -546,9 +562,13 @@ function MenuItemDirective() {
         ctrl.init(ngModel);
       };
 
-      function setDefault(attr, val) {
-        if (!templateEl[0].hasAttribute(attr)) {
-          templateEl[0].setAttribute(attr, val);
+      function setDefault(attr, val, el) {
+        el = el || templateEl;
+        if (el instanceof angular.element) {
+          el = el[0];
+        }
+        if (!el.hasAttribute(attr)) {
+          el.setAttribute(attr, val);
         }
       }
 

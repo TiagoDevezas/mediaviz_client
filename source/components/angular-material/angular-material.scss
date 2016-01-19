@@ -25,11 +25,15 @@ $caption-font-size-base:   rem(1.200) !default;
 // ------------------------------
 
 $baseline-grid:            8px !default;
-$layout-breakpoint-sm:     600px !default;
-$layout-breakpoint-md:     960px !default;
-$layout-breakpoint-lg:     1200px !default;
 $layout-gutter-width:      ($baseline-grid * 2) !default;
 
+$layout-breakpoint-xs:     600px !default;
+$layout-breakpoint-sm:     960px !default;
+$layout-breakpoint-md:     1280px !default;
+$layout-breakpoint-lg:     1920px !default;
+
+// Icon
+$icon-size: rem(2.400) !default;
 
 // App bar variables
 $app-bar-height: 64px;
@@ -75,7 +79,7 @@ $whiteframe-shadow-24dp: 0px 11px 15px -7px rgba(0, 0, 0, $shadow-key-umbra-opac
 
 $z-index-toast: 105 !default;
 $z-index-tooltip: 100 !default;
-$z-index-menu: 95 !default;
+$z-index-menu: 100 !default;
 $z-index-select: 90 !default;
 $z-index-dialog: 80 !default;
 $z-index-bottom-sheet: 70 !default;
@@ -558,7 +562,7 @@ input {
     }
   }
 
-  @for $i from 0 through 19 {
+  @for $i from -20 through 20 {
     $order : '';
     $suffix : '';
 
@@ -574,6 +578,7 @@ input {
     }
   }
 }
+
 @mixin offset-for-name($sizes:null) {
   @if $sizes == null { $sizes : ''; }
 
@@ -638,8 +643,8 @@ input {
     display: -ms-flexbox;
     display: flex;
   }
-  .layout#{$name}-column {  flex-direction: column;  }
-  .layout#{$name}-row    {  flex-direction: row;     }
+  .layout#{$name}-column {  flex-direction: column;     }
+  .layout#{$name}-row    {  flex-direction: row;        }
 }
 
 @mixin flex-properties-for-name($name: null) {
@@ -652,10 +657,25 @@ input {
   }
 
   .#{$flexName}             { flex: 1;         box-sizing: border-box; }  // === flex: 1 1 0%;
+
+  // IE mediaQuery hack for 8,9,10 to set the flex-basis properly for 'flex' values
+  // Details:
+  // Do not use unitless flex-basis values in the flex shorthand because IE 10-11 will error.
+  // Also use 0% instead of 0px since minifiers will often convert 0px to 0 (which is unitless and will have the same problem).
+  // Safari, however, fails with flex-basis : 0% and requires flex-basis : 0px
+  @media screen\0 {
+      .#{$flexName} {
+        flex: 1 1 0%;
+      }
+  }
+
+
   .#{$flexName}-grow        { flex: 1 1 100%;  box-sizing: border-box; }
   .#{$flexName}-initial     { flex: 0 1 auto;  box-sizing: border-box; }
   .#{$flexName}-auto        { flex: 1 1 auto;  box-sizing: border-box; }
   .#{$flexName}-none        { flex: 0 0 auto;  box-sizing: border-box; }
+  .#{$flexName}-noshrink    { flex: 1 0 auto;  box-sizing: border-box; }
+  .#{$flexName}-nogrow      { flex: 0 1 auto;  box-sizing: border-box; }
 
   // (1-20) * 5 = 0-100%
   @for $i from 0 through 20 {
@@ -708,20 +728,40 @@ input {
     $name: 'layout-align-#{$suffix}';
   }
 
+  .#{$name},
+  .#{$name}-start-stretch // defaults
+  {
+    justify-content : flex-start;
+    align-content : stretch;
+    align-items: stretch;
+  }
+
+  // Main Axis Center
+  .#{$name}-start,
+  .#{$name}-start-start,
+  .#{$name}-start-center,
+  .#{$name}-start-end,
+  .#{$name}-start-stretch
+  {
+    justify-content: flex-start;
+  }
+
   // Main Axis Center
   .#{$name}-center,           //stretch
-  .#{$name}-center-center,
   .#{$name}-center-start,
-  .#{$name}-center-end
+  .#{$name}-center-center,
+  .#{$name}-center-end,
+  .#{$name}-center-stretch
   {
     justify-content: center;
   }
 
   // Main Axis End
   .#{$name}-end, //stretch
-  .#{$name}-end-center,
   .#{$name}-end-start,
-  .#{$name}-end-end
+  .#{$name}-end-center,
+  .#{$name}-end-end,
+  .#{$name}-end-stretch
   {
     justify-content: flex-end;
   }
@@ -730,7 +770,8 @@ input {
   .#{$name}-space-around, //stretch
   .#{$name}-space-around-center,
   .#{$name}-space-around-start,
-  .#{$name}-space-around-end
+  .#{$name}-space-around-end,
+  .#{$name}-space-around-stretch
   {
     justify-content: space-around;
   }
@@ -739,7 +780,8 @@ input {
   .#{$name}-space-between, //stretch
   .#{$name}-space-between-center,
   .#{$name}-space-between-start,
-  .#{$name}-space-between-end
+  .#{$name}-space-between-end,
+  .#{$name}-space-between-stretch
   {
     justify-content: space-between;
   }
@@ -751,29 +793,31 @@ input {
   // ------------------------------
 
   // Cross Axis Start
-  .#{$name}-center-start,
   .#{$name}-start-start,
+  .#{$name}-center-start,
   .#{$name}-end-start,
   .#{$name}-space-between-start,
   .#{$name}-space-around-start
   {
     align-items: flex-start;
+    align-content: flex-start;
   }
 
   // Cross Axis Center
-  .#{$name}-center-center,
   .#{$name}-start-center,
+  .#{$name}-center-center,
   .#{$name}-end-center,
   .#{$name}-space-between-center,
   .#{$name}-space-around-center
   {
     align-items: center;
+    align-content: center;
     max-width: 100%;
   }
 
   // Cross Axis Center IE overflow fix
-  .#{$name}-center-center > *,
   .#{$name}-start-center > *,
+  .#{$name}-center-center > *,
   .#{$name}-end-center > *,
   .#{$name}-space-between-center > *,
   .#{$name}-space-around-center > *
@@ -783,13 +827,25 @@ input {
   }
 
   // Cross Axis End
-  .#{$name}-center-end,
   .#{$name}-start-end,
+  .#{$name}-center-end,
   .#{$name}-end-end,
   .#{$name}-space-between-end,
   .#{$name}-space-around-end
   {
     align-items: flex-end;
+    align-content: flex-end;
+  }
+
+  // Cross Axis Start
+  .#{$name}-start-stretch,
+  .#{$name}-center-stretch,
+  .#{$name}-end-stretch,
+  .#{$name}-space-between-stretch,
+  .#{$name}-space-around-stretch
+  {
+    align-items: stretch;
+    align-content: stretch;
   }
 }
 
@@ -910,20 +966,39 @@ input {
  *
  *  hide means hide everywhere
  *  Sizes:
- *         0    <= size < 600  Phone
- *         600  <= size < 960  Tablet
- *         960  <= size < 1200 Tablet-Landscape
+ *         $layout-breakpoint-xs:     600px !default;
+ *         $layout-breakpoint-sm:     960px !default;
+ *         $layout-breakpoint-md:     1280px !default;
+ *         $layout-breakpoint-lg:     1920px !default;
  */
 
 
-
-@media (max-width: $layout-breakpoint-sm - 1) {
-  // SMALL SCREEN
-  .hide-sm, .hide {
-    &:not(.show-sm):not(.show) {
+@media (max-width: $layout-breakpoint-xs - 1) {
+  // Xtra-SMALL  SCREEN
+  .hide-xs, .hide {
+    &:not(.show-xs):not(.show) {
       display: none;
     }
   }
+  @include layouts_for_breakpoint(xs);
+}
+
+@media (min-width: $layout-breakpoint-xs) {
+  // BIGGER THAN Xtra-SMALL SCREEN
+  @include layouts_for_breakpoint(gt-xs);
+
+}
+
+@media (min-width: $layout-breakpoint-xs) and (max-width: $layout-breakpoint-sm - 1) {
+  .hide, .hide-gt-xs {
+    &:not(.show-gt-xs):not(.show-sm):not(.show) {
+      display: none;
+    }
+  }
+  .hide-sm:not(.show-gt-xs):not(.show-sm):not(.show) {
+    display: none;
+  }
+
   @include layouts_for_breakpoint(sm);
 }
 
@@ -935,12 +1010,12 @@ input {
 
 @media (min-width: $layout-breakpoint-sm) and (max-width: $layout-breakpoint-md - 1) {
   // MEDIUM SCREEN
-  .hide, .hide-gt-sm {
-    &:not(.show-gt-sm):not(.show-md):not(.show) {
+  .hide, .hide-gt-xs, .hide-gt-sm {
+    &:not(.show-gt-xs):not(.show-gt-sm):not(.show-md):not(.show) {
       display: none;
     }
   }
-  .hide-md:not(.show-md):not(.show) {
+  .hide-md:not(.show-md):not(.show-gt-sm):not(.show-gt-xs):not(.show) {
     display: none;
   }
   @include layouts_for_breakpoint(md);
@@ -953,28 +1028,34 @@ input {
 
 @media (min-width: $layout-breakpoint-md) and (max-width: $layout-breakpoint-lg - 1) {
   // LARGE SCREEN
-  .hide, .hide-gt-sm, .hide-gt-md {
-      &:not(.show-gt-sm):not(.show-gt-md):not(.show-lg):not(.show) {
-        display: none;
-      }
-    }
-    .hide-lg:not(.show-lg):not(.show) {
+  .hide,.hide-gt-xs, .hide-gt-sm, .hide-gt-md {
+    &:not(.show-gt-xs):not(.show-gt-sm):not(.show-gt-md):not(.show-lg):not(.show) {
       display: none;
     }
+  }
+  .hide-lg:not(.show-lg):not(.show-gt-md):not(.show-gt-sm):not(.show-gt-xs):not(.show) {
+    display: none;
+  }
 
   @include layouts_for_breakpoint(lg);
 }
 
 @media (min-width: $layout-breakpoint-lg) {
+  @include layouts_for_breakpoint(gt-lg);
+  @include layouts_for_breakpoint(xl);
+
   // BIGGER THAN LARGE SCREEN
-  .hide-gt-sm, .hide-gt-md, .hide-gt-lg, .hide {
-    &:not(.show-gt-sm):not(.show-gt-md):not(.show-gt-lg):not(.show) {
+  .hide, .hide-gt-xs, .hide-gt-sm, .hide-gt-md, .hide-gt-lg {
+    &:not(.show-gt-xs):not(.show-gt-sm):not(.show-gt-md):not(.show-gt-lg):not(.show-xl):not(.show) {
       display: none;
     }
   }
+  .hide-xl:not(.show-xl):not(.show-gt-lg):not(.show-gt-md):not(.show-gt-sm):not(.show-gt-xs):not(.show) {
+    display: none;
+  }
 
-  @include layouts_for_breakpoint(gt-lg);
 }
+
 
 $autocomplete-option-height: 48px;
 $input-container-padding: 2px !default;
@@ -1020,7 +1101,7 @@ md-autocomplete {
   min-width: 190px;
   &[disabled] {
     input {
-      cursor: not-allowed;
+      cursor: default;
     }
   }
   &[md-floating-label] {
@@ -1159,6 +1240,7 @@ md-autocomplete {
       }
     }
   }
+  // IE Only
   @media screen and (-ms-high-contrast: active) {
     $border-color: #fff;
 
@@ -1208,6 +1290,7 @@ md-autocomplete {
   }
 }
 
+// IE Only
 @media screen and (-ms-high-contrast: active) {
   md-autocomplete,
   .md-autocomplete-suggestions {
@@ -1401,11 +1484,11 @@ md-bottom-sheet {
         @include grid-items-per-row(3, true);
       }
 
-      @media screen and (min-width: $layout-breakpoint-sm) and (max-width: $layout-breakpoint-md) {
+      @media screen and (min-width: $layout-breakpoint-sm) and (max-width: $layout-breakpoint-md - 1) {
         @include grid-items-per-row(4);
       }
 
-      @media screen and (min-width: $layout-breakpoint-md) and (max-width: $layout-breakpoint-lg) {
+      @media screen and (min-width: $layout-breakpoint-md) and (max-width: $layout-breakpoint-lg - 1) {
         @include grid-items-per-row(6);
       }
 
@@ -1454,6 +1537,7 @@ md-bottom-sheet {
   }
 }
 
+// IE only
 @media screen and (-ms-high-contrast: active) {
   md-bottom-sheet {
     border: 1px solid #fff;
@@ -1477,8 +1561,8 @@ $button-fab-mini-line-height: rem(4.00) !default;
 
 $button-fab-toast-offset: $button-fab-height * 0.75 !default;
 
-$icon-button-height: rem(4.800) !default;
-$icon-button-width: rem(4.800) !default;
+$icon-button-height: rem(4.000) !default;
+$icon-button-width: rem(4.000) !default;
 $icon-button-margin: rem(0.600) !default;
 
 // Fix issue causing buttons in Firefox to be 2px bigger than they should
@@ -1555,9 +1639,8 @@ button.md-button::-moz-focus-inner {
     margin: 0 $icon-button-margin;
     height: $icon-button-height;
     min-width: 0;
-    line-height: $icon-button-height;
-    padding-left: 0;
-    padding-right: 0;
+    line-height: $icon-size;
+    padding: $baseline-grid;
     width: $icon-button-width;
     border-radius: $button-icon-border-radius;
     .md-ripple-container {
@@ -1687,6 +1770,7 @@ button.md-button::-moz-focus-inner {
     border-radius: 0px 2px 2px 0px;
   }
 }
+// IE only
 @media screen and (-ms-high-contrast: active) {
   .md-button.md-raised,
   .md-button.md-fab {
@@ -1705,29 +1789,196 @@ md-card {
 
   box-shadow: $card-box-shadow;
 
+  md-card-header {
+    padding: $card-padding;
+    display: flex;
+    flex-direction: row;
+
+    &:first-child {
+      md-card-avatar {
+        margin-right: 12px;
+      }
+    }
+
+    &:last-child {
+      md-card-avatar {
+        margin-left: 12px;
+      }
+    }
+
+    md-card-avatar {
+      width: 40px;
+      height: 40px;
+
+      .md-user-avatar,
+      md-icon{
+        border-radius: 50%;
+      }
+
+      md-icon {
+        padding: 8px;
+      }
+
+      & + md-card-header-text {
+        max-height: 40px;
+
+        .md-title {
+          font-size: 14px;
+        }
+      }
+    }
+
+    md-card-header-text {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+
+      .md-subhead {
+        font-size: 14px;
+      }
+    }
+  }
+
   > img,
   > :not(md-card-content) img {
+    box-sizing: border-box;
     display: flex;
     flex: 0 0 auto;
     width: 100%;
     height: auto;
   }
 
+  md-card-title {
+    padding: 3 * $card-padding / 2 $card-padding $card-padding;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+
+    & + md-card-content {
+      padding-top: 0;
+    }
+
+    md-card-title-text {
+      flex: 1;
+      flex-direction: column;
+      display: flex;
+
+      .md-subhead {
+        padding-top: 0;
+        font-size: 14px;
+      }
+
+      &:only-child {
+        .md-subhead {
+          padding-top: 3 * $card-padding / 4;
+        }
+      }
+    }
+
+    md-card-title-media {
+      margin-top: - $card-padding / 2;
+
+      .md-media-sm {
+        height: 80px;
+        width: 80px;
+      }
+      .md-media-md {
+        height: 112px;
+        width: 112px;
+      }
+      .md-media-lg {
+        height: 152px;
+        width: 152px;
+      }
+    }
+  }
+
   md-card-content {
     display: block;
     padding: $card-padding;
+
+    & > p {
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .md-media-xl {
+      height: 240px;
+      width: 240px;
+    }
   }
 
   .md-actions, md-card-actions {
-    margin: 0;
+    margin: $baseline-grid;
 
-    .md-button {
-      margin-bottom: $baseline-grid;
-      margin-top: $baseline-grid;
-      margin-right: $baseline-grid * .5;
-      margin-left: $baseline-grid * .5;
+    &.layout-column {
+      .md-button {
+        &:not(.md-icon-button) {
+          margin: $baseline-grid / 4 0;
+
+          &:first-of-type {
+            margin-top: 0;
+          }
+
+          &:last-of-type {
+            margin-bottom: 0;
+          }
+        }
+
+        &.md-icon-button {
+          margin-top: 3 * $baseline-grid / 4;
+          margin-bottom: 3 * $baseline-grid / 4;
+        }
+      }
+    }
+
+    md-card-icon-actions {
+      flex: 1;
+      justify-content: flex-start;
+      display: flex;
+      flex-direction: row;
+    }
+
+    &:not(.layout-column) .md-button {
+      &:not(.md-icon-button) {
+        margin: 0 $baseline-grid * .5;
+
+        &:first-of-type {
+          margin-left: 0;
+        }
+
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+
+      &.md-icon-button {
+        margin-left: 3 * $baseline-grid / 4;
+        margin-right: 3 * $baseline-grid / 4;
+
+        &:first-of-type {
+          margin-left: 3 * $baseline-grid / 2;
+        }
+
+        &:last-of-type {
+          margin-right: 3 * $baseline-grid / 2;
+        }
+      }
+
+      & + md-card-icon-actions {
+        flex: 1;
+        justify-content: flex-end;
+        display: flex;
+        flex-direction: row;
+      }
     }
   }
+
   md-card-footer {
     margin-top: auto;
     padding: $card-padding;
@@ -1747,7 +1998,7 @@ $checkbox-margin: 16px !default;
 $checkbox-border-radius: 2px !default;
 $checkbox-border-width: 2px !default;
 $checkbox-text-margin: 10px !default;
-$checkbox-top-left: 12px !default;
+$checkbox-top: 12px !default;
 
 .md-inline-form {
   md-checkbox {
@@ -1766,6 +2017,13 @@ md-checkbox {
   position: relative;
   min-width: $checkbox-width;
   min-height: $checkbox-width;
+  @include rtl(margin-left, inherit, $checkbox-margin);
+  @include rtl(margin-right, $checkbox-margin, inherit);
+
+  &:last-of-type {
+    @include rtl(margin-left, inherit, 0);
+    @include rtl(margin-right, 0, inherit);
+  }
 
   &.md-focused:not([disabled]) {
     .md-container:before {
@@ -1834,7 +2092,7 @@ md-checkbox {
   }
 
   &.md-align-top-left > div.md-container {
-    top: $checkbox-top-left;
+    top: $checkbox-top;
   }
 
   // unchecked
@@ -1857,7 +2115,7 @@ md-checkbox {
 
   // disabled
   &[disabled] {
-    cursor: no-drop;
+    cursor: default;
   }
 
 
@@ -1958,6 +2216,10 @@ $contact-chip-name-width: rem(12) !default;
 
     .md-chip:not(.md-readonly) {
       padding-right: $chip-remove-padding-right;
+
+      .md-chip-content {
+        padding-right:rem(0.4);
+      }
     }
   }
 
@@ -1976,7 +2238,6 @@ $contact-chip-name-width: rem(12) !default;
 
     .md-chip-content {
       display: block;
-      padding-right:rem(0.4);
       float: left;
       white-space: nowrap;
       max-width: 100%;
@@ -2073,6 +2334,7 @@ $contact-chip-name-width: rem(12) !default;
     }
   }
 }
+// IE only
 @media screen and (-ms-high-contrast: active) {
   .md-chip-input-container,
   md-chip {
@@ -2283,11 +2545,13 @@ md-datepicker {
   // Leave room for the down-triangle button to "overflow" it's parent without modifying scrollLeft
   padding-right: $md-datepicker-triangle-button-width / 2;
   margin-right: -$md-datepicker-triangle-button-width / 2;
+
+  vertical-align: middle;
 }
 
 .md-inline-form {
   md-datepicker {
-    margin-top: 8px;
+    margin-top: 12px;
   }
 }
 
@@ -2588,13 +2852,14 @@ md-dialog {
   }
 }
 
-@media (max-width: $layout-breakpoint-sm) {
+@media (max-width: $layout-breakpoint-sm - 1) {
   md-dialog.md-dialog-fullscreen {
     min-height: 100%;
     min-width: 100%;
     border-radius: 0;
   }
 }
+
 md-divider {
   display: block;
   border-top-width: 1px;
@@ -2733,9 +2998,22 @@ md-fab-speed-dial {
   /*
    * Handle the animations
    */
-  &.md-scale {
+  &.md-fling {
+    .md-fab-action-item {
+      opacity: 1;
+    }
+  }
+
+  // For the initial animation, set the duration to be instant
+  &.md-fling.md-animations-waiting {
     .md-fab-action-item {
       opacity: 0;
+      transition-duration: 0s;
+    }
+  }
+
+  &.md-scale {
+    .md-fab-action-item {
       transform: scale(0.1);
       transition: $swift-ease-in;
 
@@ -2951,8 +3229,6 @@ md-grid-list {
 }
 
 
-$icon-size: rem(2.4);
-
 md-icon {
   margin: auto;
   background-repeat: no-repeat no-repeat;
@@ -3024,8 +3300,10 @@ $input-padding-top: 2px !default;
 
 $input-error-font-size: 12px !default;
 $input-error-height: 24px !default;
+$input-error-line-height: $input-error-font-size + 2px;
+$error-padding-top: ($input-error-height - $input-error-line-height) / 2;
 
-$icon-offset : 36px !default;
+$icon-offset: 36px !default;
 
 $icon-float-focused-top: -8px !default;
 
@@ -3035,27 +3313,27 @@ md-input-container {
   position: relative;
   padding: $input-container-padding;
   margin: 18px 0;
+  vertical-align: middle;
 
   &.md-block {
     display: block;
   }
 
-  &.md-has-icon {
-    padding-left: $icon-offset;
-  }
+  // Setup a spacer that is always there as a placeholder for any messages so we don't change
+  // height with only 1 message
+  .md-errors-spacer {
+    @include rtl(float, right, left);
+    min-height: $input-error-height;
 
-  // When we have ng-messages, remove the input error height from our bottom padding, since the
-  // ng-messages wrapper has a min-height of 1 error (so we don't adjust height as often; see below)
-  &.md-input-has-messages {
-    padding-bottom: $input-container-padding;
+    // Ensure the element always takes up space, even if empty
+    min-width: 1px;
   }
 
   > md-icon {
     position: absolute;
     top: 5px;
-    left: 2px;
-    + input {
-    }
+    @include rtl(left, 2px, auto);
+    @include rtl(right, auto, 2px);
   }
 
   textarea,
@@ -3094,18 +3372,30 @@ md-input-container {
     -ms-flex-preferred-size: auto; //IE fix
   }
 
-  label {
+  label:not(.md-container-ignore) {
     position: absolute;
     bottom: 100%;
+    @include rtl(left, 0, auto);
+    @include rtl(right, auto, 0);
   }
 
+  // icon offset should have higher priority as normal label
+  &.md-has-icon {
+    @include rtl(padding-left, $icon-offset, 0);
+    @include rtl(padding-right, 0, $icon-offset);
+    > label {
+      @include rtl(left, $icon-offset, auto);
+      @include rtl(right, auto, $icon-offset);
+    }
+  }
 
-  label:not(.md-no-float),
+  label:not(.md-no-float):not(.md-container-ignore),
   .md-placeholder {
     order: 1;
     pointer-events: none;
     -webkit-font-smoothing: antialiased;
-    padding-left: $input-container-padding;
+    @include rtl(padding-left, $input-container-padding + 1px, 0);
+    @include rtl(padding-right, 0, $input-container-padding + 1px);
     z-index: 1;
     transform: translate3d(0, $input-label-default-offset + 4, 0) scale($input-label-default-scale);
     transition: transform $swift-ease-out-timing-function 0.25s;
@@ -3140,7 +3430,7 @@ md-input-container {
   &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-week-field,
   &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-year-field,
   &:not( .md-input-has-value ) input:not( :focus )::-webkit-datetime-edit-text {
-      color: transparent;
+    color: transparent;
   }
 
   /*
@@ -3170,7 +3460,7 @@ md-input-container {
     // Hacky fix to force vertical alignment between `input` and `textarea`
     // Input and textarea do not align by default:
     // http://jsbin.com/buqomevage/1/edit?html,css,js,output
-    float: left;
+    @include rtl(float, left, right);
 
     &:focus {
       outline: none;
@@ -3186,34 +3476,29 @@ md-input-container {
   }
 
   .md-char-counter {
-    position: absolute;
-    right: $input-container-padding;
-    bottom: 7px;
+    @include rtl(text-align, right, left);
+    @include rtl(padding-right, $input-container-padding, 0);
+    @include rtl(padding-left, 0, $input-container-padding);
   }
 
-  &.md-input-invalid {
-    ng-messages, data-ng-messages, x-ng-messages,
-    [ng-messages], [data-ng-messages], [x-ng-messages] {
-      opacity: 1;
-    }
-  }
-
+  //
+  // ngMessage base styles - animations moved to input.js
+  //
   ng-messages, data-ng-messages, x-ng-messages,
   [ng-messages], [data-ng-messages], [x-ng-messages] {
     position: relative;
     order: 4;
-    min-height: $input-error-height;
     overflow: hidden;
-    transition: $swift-ease-out;
-    transition-duration: $swift-ease-out-duration / 1.5;
-    opacity: 0;
-    clear: left;
+    @include rtl(clear, left, right);
 
-    .md-char-counter {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: auto;
+    &.ng-enter {
+      // Upon entering the DOM, messages should be hidden
+      ng-message, data-ng-message, x-ng-message,
+      [ng-message], [data-ng-message], [x-ng-message],
+      [ng-message-exp], [data-ng-message-exp], [x-ng-message-exp] {
+        opacity: 0;
+        margin-top: -100px;
+      }
     }
   }
 
@@ -3221,43 +3506,50 @@ md-input-container {
   [ng-message], [data-ng-message], [x-ng-message],
   [ng-message-exp], [data-ng-message-exp], [x-ng-message-exp],
   .md-char-counter {
-    $input-error-line-height: $input-error-font-size + 2px;
-    //-webkit-font-smoothing: antialiased;
     font-size: $input-error-font-size;
     line-height: $input-error-line-height;
     overflow: hidden;
 
+    transition: $swift-ease-in;
+
+    // Default state for messages is to be visible
+    opacity: 1;
+    margin-top: 0;
+
     // Add some top padding which is equal to half the difference between the expected height
     // and the actual height
-    $error-padding-top: ($input-error-height - $input-error-line-height) / 2;
     padding-top: $error-padding-top;
 
     &:not(.md-char-counter) {
-      padding-right: rem(5);
+      // Add some padding so that the messages don't touch the character counter
+      @include rtl(padding-right, rem(0.5), 0);
+      @include rtl(padding-left, 0, rem(0.5));
     }
+  }
 
-    &.ng-enter {
-      transition: $swift-ease-in;
-
-      // Delay the enter transition so it happens after the leave
-      transition-delay: $swift-ease-in-duration / 1.5;
-
-      // Since we're delaying the transition, we speed up the duration a little bit to compensate
-      transition-duration: $swift-ease-in-duration / 1.5;
-      opacity: 0;
-      margin-top: -$input-error-line-height - $error-padding-top;
-      &.ng-enter-active {
-        opacity: 1;
-        margin-top: 0;
-      }
-    }
-    &.ng-leave {
-      transition: $swift-ease-out;
-      transition-duration: $swift-ease-out-duration / 1.5;
-      &.ng-leave-active {
-        margin-top: -$input-error-line-height - $error-padding-top;
+  &:not(.md-input-invalid) {
+    .md-auto-hide {
+      .md-input-message-animation {
         opacity: 0;
+        margin-top: -100px;
       }
+    }
+  }
+
+  // Note: This is a workaround to fix an ng-enter flicker bug
+  .md-auto-hide {
+    .md-input-message-animation {
+      &:not(.ng-animate) {
+        opacity: 0;
+        margin-top: -100px;
+      }
+    }
+  }
+
+  .md-input-message-animation {
+    &.ng-enter {
+      opacity: 0;
+      margin-top: -100px;
     }
   }
 
@@ -3265,7 +3557,7 @@ md-input-container {
   &.md-input-has-placeholder,
   &.md-input-has-value {
     label:not(.md-no-float) {
-      transform: translate3d(0,$input-label-float-offset,0) scale($input-label-float-scale);
+      transform: translate3d(0, $input-label-float-offset, 0) scale($input-label-float-scale);
     }
   }
 
@@ -3299,37 +3591,40 @@ md-input-container {
 
 md-input-container.md-icon-float {
 
-  transition : margin-top 0.5s $swift-ease-out-timing-function ;
+  transition: margin-top 0.5s $swift-ease-out-timing-function;
 
-
-  > label  {
-      pointer-events:none;
-      position:absolute;
+  > label {
+    pointer-events: none;
+    position: absolute;
   }
 
   > md-icon {
     top: 2px;
-    left: 2px;
+    @include rtl(left, 2px, auto);
+    @include rtl(right, auto, 2px);
   }
 
   &.md-input-focused,
   &.md-input-has-value {
 
     label {
-        transform: translate3d(0,$input-label-float-offset,0) scale($input-label-float-scale);
-        transition: transform $swift-ease-out-timing-function 0.5s;
-      }
+      transform: translate3d(0, $input-label-float-offset, 0) scale($input-label-float-scale);
+      transition: transform $swift-ease-out-timing-function 0.5s;
+    }
   }
 
 }
 
 md-input-container.md-icon-right {
-  input {
-    margin-right: $icon-offset;
+  @include rtl(padding-right, $icon-offset, $icon-offset);
+  @include rtl(padding-left, $icon-offset, $icon-offset);
+
+  .md-errors-spacer {
     + md-icon {
-      top: 26px;
-      right: 2px;
-      margin-right: 0;
+      margin: 0;
+
+      @include rtl(right, 2px, auto);
+      @include rtl(left, auto, 2px);
     }
   }
 }
@@ -3464,6 +3759,7 @@ md-list-item, md-list-item .md-list-item-inner {
     width: 3 * $baseline-grid;
     margin-left: 3px;
     margin-right: 29px;
+    margin-top: 16px;
   }
   & .md-avatar, .md-avatar-icon {
     margin-top: $baseline-grid;
@@ -3753,6 +4049,7 @@ md-toolbar {
     }
   }
 }
+
 @media (min-width: $layout-breakpoint-sm) {
   md-menu-content {
     min-width: 96px;
@@ -3763,6 +4060,7 @@ md-toolbar {
     }
   }
 }
+
 
 md-toolbar.md-menu-toolbar {
   h2.md-toolbar-tools {
@@ -3876,13 +4174,14 @@ md-progress-circular {
   padding-top: 0 !important;
   margin-bottom: 0 !important;
 
-  transform: scale(0.5);
   z-index: $z-index-progress-circular; // Used to fix a Chrome bug with spinner animation
 
   .md-spinner-wrapper {
     display:block;
-    position: relative;
+    position: absolute;
     overflow: hidden;
+    top: 50%;
+    left: 50%;
 
     .md-inner {
        width: $progress-circular-size;
@@ -3934,7 +4233,7 @@ md-progress-circular {
   }
 
 
-  .md-spinner-wrapper.md-mode-indeterminate  {
+  .md-mode-indeterminate .md-spinner-wrapper {
     animation: outer-rotate $progress-circular-outer-duration linear infinite;
     .md-inner {
       animation: sporadic-rotate $progress-circular-sporadic-duration $progress-circular-ease-in-out infinite;
@@ -4001,25 +4300,26 @@ md-progress-circular {
 // Keyframe animation for the Indeterminate Progress
 //
 @keyframes outer-rotate {
- 100%     { transform: rotate(360deg); }
+  0%       { transform: rotate(0deg) scale(0.5); }
+  100%     { transform: rotate(360deg) scale(0.5); }
 }
 @keyframes left-wobble {
- 0%, 100% { transform: rotate(130deg); }
- 50%      { transform: rotate( -5deg); }
+  0%, 100% { transform: rotate(130deg); }
+  50%      { transform: rotate( -5deg); }
 }
 @keyframes right-wobble {
- 0%, 100% { transform: rotate(-130deg); }
- 50%      { transform: rotate(   5deg); }
+  0%, 100% { transform: rotate(-130deg); }
+  50%      { transform: rotate(   5deg); }
 }
 @keyframes sporadic-rotate {
- 12.5%    { transform: rotate( 135deg); }
- 25%      { transform: rotate( 270deg); }
- 37.5%    { transform: rotate( 405deg); }
- 50%      { transform: rotate( 540deg); }
- 62.5%    { transform: rotate( 675deg); }
- 75%      { transform: rotate( 810deg); }
- 87.5%    { transform: rotate( 945deg); }
- 100%     { transform: rotate(1080deg); }
+  12.5%    { transform: rotate( 135deg); }
+  25%      { transform: rotate( 270deg); }
+  37.5%    { transform: rotate( 405deg); }
+  50%      { transform: rotate( 540deg); }
+  62.5%    { transform: rotate( 675deg); }
+  75%      { transform: rotate( 810deg); }
+  87.5%    { transform: rotate( 945deg); }
+  100%     { transform: rotate(1080deg); }
 }
 
 
@@ -4242,6 +4542,15 @@ md-radio-button {
   cursor: pointer;
   position: relative;
 
+  // disabled
+  &[disabled] {
+    cursor: default;
+
+    .md-container {
+      cursor: default;
+    }
+  }
+
   .md-container {
     position: absolute;
     top: 50%;
@@ -4341,6 +4650,20 @@ md-radio-group {
       margin-top: $radio-margin;
     }
   }
+
+  &.layout-row {
+    md-radio-button {
+      margin-top: 0;
+      margin-bottom: 0;
+      @include rtl(margin-left, inherit, $radio-margin);
+      @include rtl(margin-right, $radio-margin, inherit);
+
+      &:last-of-type {
+        @include rtl(margin-left, inherit, 0);
+        @include rtl(margin-right, 0, inherit);
+      }
+    }
+  }
   &:focus {
     outline: none;
   }
@@ -4387,6 +4710,7 @@ $select-max-visible-options: 5;
   top: 0;
   z-index: $z-index-select;
   opacity: 0;
+  display: none;
 
   // Don't let the user select a new choice while it's animating
   &:not(.md-clickable) {
@@ -4401,6 +4725,7 @@ $select-max-visible-options: 5;
 
   // enter: md-select scales in, then options fade in.
   &.md-active {
+    display: block;
     opacity: 1;
     md-select-menu {
       transition: $swift-ease-out;
@@ -4477,6 +4802,10 @@ md-select {
   min-width: 8 * $baseline-grid;
   min-height: 26px;
   flex-grow: 1;
+
+  .md-text {
+    display: inline;
+  }
 
   *:first-child {
     flex: 1 0 auto;
@@ -4555,6 +4884,10 @@ md-option {
   align-items: center;
   width: auto;
 
+  &[disabled] {
+    cursor: default;
+  }
+
   &:focus {
     outline: none;
   }
@@ -4595,7 +4928,8 @@ md-optgroup {
   }
 }
 
-$sidenav-default-width: 304px !default;
+$sidenav-mobile-width: 320px !default;
+$sidenav-desktop-width: 400px !default;
 $sidenav-min-space: 56px !default;
 
 md-sidenav {
@@ -4604,9 +4938,8 @@ md-sidenav {
   flex-direction: column;
   z-index: $z-index-sidenav;
 
-  width: $sidenav-default-width;
-  min-width: $sidenav-default-width;
-  max-width: $sidenav-default-width;
+  width: $sidenav-mobile-width;
+  max-width: $sidenav-mobile-width;
   bottom: 0;
   overflow: auto;
 
@@ -4634,11 +4967,6 @@ md-sidenav {
     display: flex;
     transform: translate3d(0, 0, 0);
   }
-  &.md-locked-open {
-    width: $sidenav-default-width;
-    min-width: $sidenav-default-width;
-    max-width: $sidenav-default-width;
-  }
 
   &.md-locked-open,
   &.md-locked-open.md-closed,
@@ -4665,8 +4993,8 @@ md-sidenav {
   &.md-closed.md-locked-open-add-active {
     transition: width $swift-ease-in-duration $swift-ease-in-timing-function,
                 min-width $swift-ease-in-duration $swift-ease-in-timing-function;
-    width: $sidenav-default-width;
-    min-width: $sidenav-default-width;
+    width: $sidenav-mobile-width;
+    min-width: $sidenav-mobile-width;
     transform: translate3d(0%, 0, 0);
   }
 
@@ -4694,12 +5022,21 @@ md-sidenav {
   }
 }
 
-@media (max-width: $sidenav-default-width + $sidenav-min-space) {
+@media screen and (min-width: $layout-breakpoint-xs) {
   md-sidenav {
-    width: 85%;
+    max-width: $sidenav-desktop-width;
   }
 }
 
+@media screen and (max-width: $sidenav-desktop-width + $sidenav-min-space) {
+  md-sidenav {
+    width: calc(100% - #{$sidenav-min-space});
+    min-width: calc(100% - #{$sidenav-min-space});
+    max-width: calc(100% - #{$sidenav-min-space});
+  }
+}
+
+// IE Only
 @media screen and (-ms-high-contrast: active) {
   .md-sidenav-left {
     border-right: 1px solid #fff;
@@ -5092,6 +5429,7 @@ $switch-width: 36px !default;
 $switch-height: $baseline-grid * 3 !default;
 $switch-bar-height: 14px !default;
 $switch-thumb-size: 20px !default;
+$switch-margin: 16px !default;
 
 .md-inline-form {
   md-switch {
@@ -5101,17 +5439,30 @@ $switch-thumb-size: 20px !default;
 }
 
 md-switch {
-  display: inline-block;
-  margin: 16px 0;
+  margin: $switch-margin 0;
   white-space: nowrap;
   cursor: pointer;
   outline: none;
   user-select: none;
   height: 30px;
   line-height: 28px;
+  align-items: center;
+  display: flex;
 
-  &.md-block {
-    display: block;
+  @include rtl(margin-left, inherit, $switch-margin);
+  @include rtl(margin-right, $switch-margin, inherit);
+
+  &:last-of-type {
+    @include rtl(margin-left, inherit, 0);
+    @include rtl(margin-right, 0, inherit);
+  }
+  
+  &[disabled] {
+    cursor: default;
+
+    .md-container {
+      cursor: default;
+    }
   }
 
   .md-container {
@@ -5121,7 +5472,6 @@ md-switch {
     position: relative;
     user-select: none;
     margin-right: 8px;
-    margin-top: (30 - $switch-height) / 2;
     float: left;
   }
 
@@ -5436,7 +5786,7 @@ md-tab-content {
   &.ng-leave, &.md-no-transition {
     transition: none;
   }
-  &.md-left {
+  &.md-left:not(.md-active) {
     transform: translateX(-100%);
     animation: 2 * $swift-ease-in-out-duration md-tab-content-hide;
     opacity: 0;
@@ -5446,7 +5796,7 @@ md-tab-content {
       visibility: hidden;
     }
   }
-  &.md-right {
+  &.md-right:not(.md-active) {
     transform: translateX(100%);
     animation: 2 * $swift-ease-in-out-duration md-tab-content-hide;
     opacity: 0;
@@ -5527,40 +5877,55 @@ md-toolbar + md-tabs {
 
 // See height set globally, depended on by buttons
 
-
 md-toast {
-  display: flex;
-  position:absolute;
+  position: absolute;
   z-index: $z-index-toast;
 
   box-sizing: border-box;
-  align-items: center;
-
-  min-height: 48px;
-  padding-left: 24px;
-  padding-right: 24px;
-
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-  border-radius: 2px;
-  font-size: 14px;
   cursor: default;
+  overflow: hidden;
 
-  height: 0px;
-  max-height: 7*$toast-height;
-  max-width: 100%;
+  // Add some padding to the outer toast container so that the wrapper's box shadow is visible
+  padding: $toast-margin;
 
-  overflow:hidden;
+  // Setup opacity transition on whole toast
+  opacity: 1;
+  transition: $swift-ease-out;
+
+  .md-toast-content {
+    display: flex;
+    align-items: center;
+
+    height: 0;
+    max-height: 7 * $toast-height;
+    max-width: 100%;
+    min-height: 48px;
+    padding-left: 24px;
+    padding-right: 24px;
+
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    border-radius: 2px;
+    font-size: 14px;
+
+    overflow: hidden;
+
+    // Setup for transform transitions on inner content
+    transform: translate3d(0, 0, 0) rotateZ(0deg);
+    transition: $swift-ease-out;
+  }
 
   &.md-capsule {
     border-radius: 24px;
+
+    .md-toast-content {
+      border-radius: 24px;
+    }
   }
 
-  opacity: 1;
-  transform: translate3d(0,0,0) rotateZ(0deg);
-  transition: $swift-ease-out;
-
   &.ng-leave-active {
-    transition: $swift-ease-in;
+    .md-toast-content {
+      transition: $swift-ease-in;
+    }
   }
 
   /* Transition differently when swiping */
@@ -5568,18 +5933,26 @@ md-toast {
   &.md-swiperight,
   &.md-swipeup,
   &.md-swipedown {
-    transition: $swift-ease-out;
+    .md-toast-content {
+      transition: $swift-ease-out;
+    }
   }
 
   &.ng-enter {
-    transform: translate3d(0, 100%, 0);
-    &.md-top {
-      transform: translate3d(0, -100%, 0);
-    }
     opacity: 0;
+    .md-toast-content {
+      transform: translate3d(0, 100%, 0);
+    }
+    &.md-top {
+      .md-toast-content {
+        transform: translate3d(0, -100%, 0);
+      }
+    }
     &.ng-enter-active {
-      transform: translate3d(0, 0, 0);
       opacity: 1;
+      .md-toast-content {
+        transform: translate3d(0, 0, 0);
+      }
     }
   }
   /*
@@ -5587,17 +5960,25 @@ md-toast {
    * make it rotate when the user swipes it away
    */
   &.ng-leave.ng-leave-active {
-    opacity: 0;
-    transform: translate3d(0, 100%, 0);
+    .md-toast-content {
+      opacity: 0;
+      transform: translate3d(0, 100%, 0);
+    }
 
     &.md-swipeup {
-      transform: translate3d(0, -50%, 0);
+      .md-toast-content {
+        transform: translate3d(0, -50%, 0);
+      }
     }
     &.md-swipedown {
-      transform: translate3d(0, 50%, 0);
+      .md-toast-content {
+        transform: translate3d(0, 50%, 0);
+      }
     }
     &.md-top {
-      transform: translate3d(0, -100%, 0);
+      .md-toast-content {
+        transform: translate3d(0, -100%, 0);
+      }
     }
   }
 
@@ -5615,7 +5996,7 @@ md-toast {
   }
 }
 
-@media (max-width: $layout-breakpoint-sm) {
+@media (max-width: $layout-breakpoint-sm - 1) {
   md-toast {
     left: 0;
     right: 0;
@@ -5627,28 +6008,33 @@ md-toast {
 
     &.ng-leave.ng-leave-active {
       &.md-swipeup {
-        transform: translate3d(0, -50%, 0);
+        .md-toast-content {
+          transform: translate3d(0, -50%, 0);
+        }
       }
       &.md-swipedown {
-        transform: translate3d(0, 50%, 0);
+        .md-toast-content {
+          transform: translate3d(0, 50%, 0);
+        }
       }
     }
   }
 }
+
 @media (min-width: $layout-breakpoint-sm) {
   md-toast {
-    min-width: 288px;
+    min-width: 288px + $toast-margin * 2;
     &.md-bottom {
-      bottom: $toast-margin;
+      bottom: 0;
     }
     &.md-left {
-      left: $toast-margin;
+      left: 0;
     }
     &.md-right {
-      right: $toast-margin;
+      right: 0;
     }
     &.md-top {
-      top: $toast-margin;
+      top: 0;
     }
 
     /*
@@ -5657,10 +6043,14 @@ md-toast {
    */
     &.ng-leave.ng-leave-active {
       &.md-swipeleft {
-        transform: translate3d(-50%, 0, 0);
+        .md-toast-content {
+          transform: translate3d(-50%, 0, 0);
+        }
       }
       &.md-swiperight {
-        transform: translate3d(50%, 0, 0);
+        .md-toast-content {
+          transform: translate3d(50%, 0, 0);
+        }
       }
     }
   }
@@ -5668,16 +6058,22 @@ md-toast {
 
 @media (min-width: $layout-breakpoint-lg) {
   md-toast {
-    max-width: $baseline-grid * 71;
+    .md-toast-content {
+      max-width: $baseline-grid * 71;
+    }
   }
 }
-
-
 
 @media screen and (-ms-high-contrast: active) {
   md-toast {
     border: 1px solid #fff;
   }
+}
+
+
+// While animating, set the toast parent's overflow to hidden so scrollbars do not appear
+.md-toast-animating {
+  overflow: hidden !important;
 }
 
 // Standard/Desktop Heights
@@ -5814,8 +6210,7 @@ md-toolbar {
 }
 
 // Handle mobile portrait
-@media only screen and (min-width: 0) and (max-width: $layout-breakpoint-sm) and
-  (orientation: portrait) {
+@media only screen and (min-width: 0) and (max-width: $layout-breakpoint-sm - 1) and (orientation: portrait) {
   md-toolbar {
     min-height: $toolbar-height-mobile-portrait;
   }
@@ -5827,8 +6222,7 @@ md-toolbar {
 }
 
 // Handle mobile landscape
-@media only screen and (min-width: 0) and (max-width: $layout-breakpoint-sm) and
-  (orientation: landscape) {
+@media only screen and (min-width: 0) and (max-width: $layout-breakpoint-sm - 1) and (orientation: landscape) {
   md-toolbar {
     min-height: $toolbar-height-mobile-landscape;
   }
@@ -5890,6 +6284,7 @@ md-tooltip {
     &.md-show, &.md-show-add-active {
       transform: scale(1);
       opacity: 1;
+      transform-origin: center top;
     }
     &.md-show-remove {
       transition: $swift-ease-out;
@@ -5908,7 +6303,7 @@ md-tooltip {
   &.md-show {
     transition: $swift-ease-out;
     pointer-events: auto;
-    transform: translate3d(0,0,0);
+    will-change: opacity, height, width;
   }
 }
 
