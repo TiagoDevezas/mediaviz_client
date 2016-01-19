@@ -21,7 +21,8 @@ mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $locatio
     {name: 'Keywords', description: 'Compare keywords.', url: '/chronicle'},
     {name: 'Sources', description: 'Compare sources.', url: '/sources'},
     // {name: 'NewsMap', description: 'Compare geographic coverages.', url: '/newsmap'},
-    {name: 'Articles', description: 'Search articles.', url: '/articles'}
+    {name: 'Articles', description: 'Search articles.', url: '/articles'},
+    {name: 'Diversity', description: 'Compare topic diversity between streams.', url: '/diversity'}
   ];
 
   $scope.openAboutDialog = function(ev) {

@@ -95,6 +95,11 @@ mediavizApp.config(['$mdThemingProvider', '$routeProvider', '$locationProvider',
 			controller: 'NewsMapCtrl',
 			reloadOnSearch: false
 		}).
+		when('/diversity', {
+			templateUrl: 'partials/app/diversity.html',
+			controller: 'DiversityCtrl',
+			reloadOnSearch: false
+		}).
 		when('/articles', {
 			templateUrl: 'partials/app/articles.html',
 			controller: 'ArticlesCtrl',
