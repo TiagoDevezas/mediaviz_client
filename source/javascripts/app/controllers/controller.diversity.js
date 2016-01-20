@@ -7,6 +7,8 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 	$scope.diversityData = [];
   $scope.countData = [];
 
+  var dateExtent = ["2015-09-01", "2015-09-30"];
+
 
   $rootScope.loading = true;
   
@@ -85,7 +87,8 @@ $scope.countChartOpts = {
           culling: {
             max: divWidth / 150
           } 
-      }
+      },
+      extent: dateExtent
     },
     y: {
       label: {
@@ -104,6 +107,15 @@ $scope.countChartOpts = {
     y: {
       show: true
     }
+  },
+  subchart: {
+    show: true,
+    size: {
+      height: 20
+    }
+  },
+  zoom: {
+    extent: [moment("2015-09-01"), moment("2015-09-30")] // enable more zooming
   }
 }
 
@@ -133,7 +145,8 @@ $scope.timeChartOpts = {
         culling: {
             max: divWidth / 150
           }
-      }
+      },
+      extent: dateExtent
     },
     y: {
       label: {
@@ -155,6 +168,12 @@ $scope.timeChartOpts = {
   },
   padding: {
     //left: 50
+  },
+  subchart: {
+    show: true,
+    size: {
+        height: 20
+      }
   }
 };
 
