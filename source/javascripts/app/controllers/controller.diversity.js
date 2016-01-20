@@ -1,6 +1,9 @@
 mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $location, Page) {
 
 	Page.setTitle('Diversity');
+
+  var divWidth = document.getElementById("diversity").offsetWidth;
+  console.log(divWidth);
 	
 	$scope.diversityData = [];
   $scope.countData = [];
@@ -79,7 +82,10 @@ $scope.countChartOpts = {
     x: {
       type: 'timeseries',
       tick: {
-          format: '%Y-%m-%d'
+          format: '%Y-%m-%d',
+          culling: {
+            max: divWidth / 150
+          } 
       }
     },
     y: {
@@ -124,7 +130,10 @@ $scope.timeChartOpts = {
       //padding: {left: 0, right: 0},
       type: 'timeseries',
       tick: {
-        format: '%Y-%m-%d'
+        format: '%Y-%m-%d',
+        culling: {
+            max: divWidth / 150
+          }
       }
     },
     y: {
