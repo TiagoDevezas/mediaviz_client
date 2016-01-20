@@ -62,6 +62,12 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 		$scope.$apply();
 	}
 
+  function setNewRange(domain) {
+    var newRange = [moment(domain[0]).format("YYYY-MM-DD"), moment(domain[1]).format("YYYY-MM-DD")];
+    // $scope.countChartOpts.axis.x.extent = newRange;
+    $scope.$broadcast('changeZoomRange', newRange);
+  }
+
 $scope.countChartOpts = {
   size: {
     height: 200
@@ -110,12 +116,10 @@ $scope.countChartOpts = {
   },
   subchart: {
     show: true,
+    onbrush: function(domain) { setNewRange(domain); },
     size: {
       height: 20
     }
-  },
-  zoom: {
-    extent: [moment("2015-09-01"), moment("2015-09-30")] // enable more zooming
   }
 }
 
@@ -171,6 +175,7 @@ $scope.timeChartOpts = {
   },
   subchart: {
     show: true,
+    onbrush: function(domain) { setNewRange(domain); },
     size: {
         height: 20
       }

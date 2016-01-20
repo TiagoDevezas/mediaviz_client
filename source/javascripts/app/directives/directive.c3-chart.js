@@ -50,6 +50,10 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
 
       // Event watchers
 
+      scope.$on('changeZoomRange', function(evt, range) {
+        chart.zoom(range);
+      });
+
       scope.$on('resizeChart', function(evt, height) {
         console.log(height);
         if(chart && chart.internal.config.data_type === 'bar') {
@@ -58,7 +62,7 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
           });
           chart.flush();
         }
-      })
+      });
 
       scope.$on('sourceRemoved', function(evt, source) {
         if(chart) {
