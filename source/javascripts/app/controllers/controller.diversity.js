@@ -3,7 +3,6 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 	Page.setTitle('Diversity');
 
   var divWidth = document.getElementById("diversity").offsetWidth;
-  console.log(divWidth);
 	
 	$scope.diversityData = [];
   $scope.countData = [];
@@ -142,7 +141,7 @@ $scope.timeChartOpts = {
         position: 'outer-middle'
       },
       tick: {
-        format: d3.format(".3g")
+        format: d3.format(".5g")
       }
     }
   },
