@@ -243,16 +243,11 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
             $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
             $scope.loadedKeywords.push(keywordName);
             xsObj[countId] = timeId;
-            // if($scope.urlParams.data === 'percent') {
-            //   if($scope.urlParams.source.group) {
-            //     $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');                
-            //   } else {
-            //     $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_query');
-            //   }
-            // } else {
-            $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'count');
-            console.log($scope.timeData);
-            // }
+            if($scope.urlParams.data === 'percent') {
+                $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');
+            } else {
+              $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'count');
+            }
 
             
             $scope.countData = DataFormatter.sumValue(data, keyword, 'count', keyword);

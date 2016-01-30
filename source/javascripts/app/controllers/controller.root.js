@@ -1,7 +1,7 @@
 mediavizControllers.controller('RootCtrl', function($scope, $mdSidenav, $location, $mdDialog, DefaultDates) {
 
   DefaultDates.setStartDate("2015-07-02");
-  DefaultDates.setEndDate("2015-11-01");
+  DefaultDates.setEndDate("2015-10-01");
 
   $scope.toggleMenu = function() {
     $mdSidenav('left').toggle();

@@ -22,6 +22,7 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 		var dates = ['x'];
 		var news = ['News'];
 		var blogs = ['Blogs'];
+    $scope.streamData = rows;
 		rows.forEach(function(el) {
 			dates.push(el.date)
 			news.push(el.news);
@@ -54,7 +55,6 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
   });
 
 	function showArticles(d) {
-		console.log(d);
 		var dateSince = moment(d.x).format("YYYY-MM-DD");
 		var dateUntil = moment(dateSince).add(5, 'days').format("YYYY-MM-DD");
 		var source = d.id == 'Blogs' ? 'Blog' : d.id;
