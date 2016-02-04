@@ -654,7 +654,7 @@ input {
   // Also use 0% instead of 0px since minifiers will often convert 0px to 0 (which is unitless and will have the same problem).
   // Safari, however, fails with flex-basis : 0% and requires flex-basis : 0px
   @if $name != '-print' {
-    @media screen\0 {
+    @media screen {
         .#{$flexName} {
           flex: 1 1 0%;
         }
