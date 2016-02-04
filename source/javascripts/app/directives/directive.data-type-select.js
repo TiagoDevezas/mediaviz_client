@@ -3,7 +3,7 @@ mediavizDirectives.directive('typeSelect', function($location, $filter) {
     restrict: 'AE',
     scope: '=',
     template: 
-      '<md-input-container>' + 
+      '<md-input-container md-no-float class="md-block md-input-has-value">' + 
         //'<label>Dados</label>' +
         '<md-select ng-model="selectedType" ng-change="setDataType(selectedType)">' +
           '<md-option ng-repeat="dataType in dataTypes" ng-value="dataType">{{dataType.name}}</md-option>' +

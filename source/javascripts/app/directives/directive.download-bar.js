@@ -4,8 +4,8 @@ mediavizDirectives.directive('downloadBar', function($window) {
 		template: 
 		'<div layout="row" flex>' +
       '<span flex></span>' +
-      '<md-menu md-position-mode="target-right target">' +
-      	'<md-button class="md-icon-button" aria-label="Descarregar imagem" ng-click="$mdOpenMenu($event)">' +
+      '<md-menu md-position-mode="target-right target" style="padding: 0;">' +
+      	'<md-button class="md-icon-button" aria-label="Descarregar imagem" ng-click="$mdOpenMenu($event)" style="padding:0;">' +
         	'<md-icon>file_download</md-icon>' +
       	'</md-button>' +
       	'<md-menu-content>' +

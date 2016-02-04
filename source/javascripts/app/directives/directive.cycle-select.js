@@ -3,7 +3,7 @@ mediavizDirectives.directive('cycleSelect', function($location, $filter) {
     restrict: 'AE',
     scope: '=',
     template: 
-      '<md-input-container>' + 
+      '<md-input-container class="md-block md-input-has-value">' + 
         '<label>Granularity</label>' +
         '<md-select ng-model="selectedCycle" ng-change="setCycle(selectedCycle)" ng-disabled="disableInput()">' +
           '<md-option ng-repeat="cycle in allCycles" value="{{cycle.name}}">{{cycle.name}}</md-option>' +
