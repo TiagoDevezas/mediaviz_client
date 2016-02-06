@@ -1,4 +1,4 @@
-mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $location, Page) {
+mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $location, $timeout, Page) {
 
 	Page.setTitle('Diversity');
 
@@ -68,6 +68,12 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
     $scope.$broadcast('changeZoomRange', newRange);
   }
 
+  $scope.getDivWidth = function(factor) {
+    $timeout(function() {
+      return document.getElementById("diversity").offsetWidth / factor;
+    }, 10);
+  }
+
 $scope.countChartOpts = {
   size: {
     height: 200
@@ -91,7 +97,7 @@ $scope.countChartOpts = {
       tick: {
           format: '%Y-%m-%d',
           culling: {
-            max: divWidth / 150
+            max: $scope.getDivWidth(150)
           } 
       },
       extent: dateExtent
@@ -147,7 +153,7 @@ $scope.timeChartOpts = {
       tick: {
         format: '%Y-%m-%d',
         culling: {
-            max: divWidth / 150
+            max: $scope.getDivWidth(150)
           }
       },
       extent: dateExtent
