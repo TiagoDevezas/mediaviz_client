@@ -75,4 +75,10 @@ md-list-item.md-3-line, md-list-item.md-3-line > .md-no-style {
   z-index: 1000;
 }
 
+#stream .brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
 // @import "partials/*.scss";

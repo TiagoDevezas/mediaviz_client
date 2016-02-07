@@ -2,13 +2,16 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 
 	Page.setTitle('Diversity');
 
-  var divWidth = document.getElementById("diversity").offsetWidth;
+  var divWidth = window.innerWidth;
+
+  $scope.streamReady;
+
+  console.log($scope.streamReady);
 	
 	$scope.diversityData = [];
   $scope.countData = [];
 
   var dateExtent = ["2015-09-01", "2015-09-30"];
-
 
   $rootScope.loading = true;
   
@@ -66,6 +69,7 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
     var newRange = [moment(domain[0]).format("YYYY-MM-DD"), moment(domain[1]).format("YYYY-MM-DD")];
     // $scope.countChartOpts.axis.x.extent = newRange;
     $scope.$broadcast('changeZoomRange', newRange);
+    $scope.$broadcast('changeStreamRange', newRange);
   }
 
   $scope.getDivWidth = function(factor) {
@@ -97,7 +101,7 @@ $scope.countChartOpts = {
       tick: {
           format: '%Y-%m-%d',
           culling: {
-            max: $scope.getDivWidth(150)
+            max: divWidth/100
           } 
       },
       extent: dateExtent
@@ -153,7 +157,7 @@ $scope.timeChartOpts = {
       tick: {
         format: '%Y-%m-%d',
         culling: {
-            max: $scope.getDivWidth(150)
+            max: divWidth/100
           }
       },
       extent: dateExtent
