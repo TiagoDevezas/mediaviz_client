@@ -156,13 +156,13 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 			      .attr("d", function(d) { return area(d.values); })
 			      .style("fill", function(d, i) {
 			      	if(d.key == 'news') {
-			      		return "#2ca02c"; 
+			      		return "#1B9E77"; 
 			      	}
 			      	if(d.key == 'blogs') {
-			      		return "#ff7f0e"; 
+			      		return "#D95F02"; 
 			      	}
 			      	if(d.key == 'common') {
-			      		return "#9F8E1C"; 
+			      		return "#887A34"; 
 			      	}
 			      });
 
@@ -173,13 +173,13 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 			      .attr("d", function(d) { return area2(d.values); })
 			      .style("fill", function(d, i) {
 			      	if(d.key == 'news') {
-			      		return "#2ca02c"; 
+			      		return "#1B9E77"; 
 			      	}
 			      	if(d.key == 'blogs') {
-			      		return "#ff7f0e"; 
+			      		return "#D95F02"; 
 			      	}
 			      	if(d.key == 'common') {
-			      		return "#9F8E1C"; 
+			      		return "#887A34"; 
 			      	}
 			      });
 
@@ -269,19 +269,28 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 			              .style("width", "1px")
 			              .style("height", height)
 			              .style("top", "30px")
-			              .style("bottom", "100px")
-			              .style("left", "0px")
-			              .style("background", "#000");
+			              .style("bottom", "132px")
+			              .style("left", 13 + margin.left + "px")
+			              .style("background", "#555")
+			              .style("visibility", "hidden")
 
-			        d3.select(elem[0])
-			            .on("mousemove", function(){  
+			        d3.select(".focus")
+			            .on("mousemove", function() {  
 			               mousex = d3.mouse(this);
-			               mousex = mousex[0] + 5;
-			               vertical.style("left", mousex + "px" )})
-			            .on("mouseover", function(){  
+			               mousex = mousex[0] + 13 + margin.left;
+			               vertical
+			               	.style("left", mousex + "px" )
+			            		.style("visibility", "visible")})
+			            .on("mouseover", function() {  
 			               mousex = d3.mouse(this);
-			               mousex = mousex[0] + 5;
-			               vertical.style("left", mousex + "px")});
+			               mousex = mousex[0] + 13 + margin.left;
+			               vertical
+			               	.style("left", mousex + "px")
+			            		.style("visibility", "visible")})
+			            .on("mouseout", function() {
+			            		vertical
+			            			.style("visibility", "hidden")
+			            })
 
 				brush.extent([moment("2015-09-01"), moment("2015-09-30")]);
 				svg.select(".brush").call(brush);

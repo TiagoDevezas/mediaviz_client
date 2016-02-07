@@ -4,9 +4,9 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 
   var divWidth = window.innerWidth;
 
-  $scope.streamReady;
+  console.log(divWidth);
 
-  console.log($scope.streamReady);
+  $scope.streamReady = false;
 	
 	$scope.diversityData = [];
   $scope.countData = [];
@@ -25,15 +25,14 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 		var dates = ['x'];
 		var news = ['News'];
 		var blogs = ['Blogs'];
-    $scope.streamData = rows;
 		rows.forEach(function(el) {
 			dates.push(el.date)
 			news.push(el.news);
 			blogs.push(el.blogs);
 		});
 		$scope.diversityData.push(dates, news, blogs);
+    $rootScope.loading = false;
 		$scope.diversity = $scope.diversityData;
-		$rootScope.loading = false;
 	});
 
   d3.csv("data/document_count.csv", function(d) {
@@ -53,8 +52,8 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
       blogs.push(el.blogs);
     });
     $scope.countData.push(dates, news, blogs);
-    $scope.count = $scope.countData;
     $rootScope.loading = false;
+    $scope.count = $scope.countData;
   });
 
 	function showArticles(d) {
@@ -80,7 +79,8 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 
 $scope.countChartOpts = {
   size: {
-    height: 200
+    height: 200,
+    width: divWidth - 60
   },
   legend: {
     position: 'right'
@@ -135,7 +135,8 @@ $scope.countChartOpts = {
 
 $scope.timeChartOpts = {
   size: {
-    height: 350
+    height: 350,
+    width: divWidth - 60
   },
   legend: {
     position: 'right'
