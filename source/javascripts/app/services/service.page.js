@@ -1,7 +1,7 @@
 mediavizServices.factory('Page', function($rootScope) {
 	return {
 		setTitle: function(newTitle) {
-		  var title = 'IRNews Viewer';
+		  var title = 'NewsIR Viewer';
 			$rootScope.pageTitle = title + ' || ' + newTitle 
 		}
 	}

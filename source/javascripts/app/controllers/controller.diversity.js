@@ -4,7 +4,8 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 
   var divWidth = window.innerWidth;
 
-  console.log(divWidth);
+  var tickCount = divWidth/100;
+  var chartWidth = divWidth - 60;
 
   $scope.streamReady = false;
 	
@@ -80,7 +81,7 @@ mediavizControllers.controller('DiversityCtrl', function($scope, $rootScope, $lo
 $scope.countChartOpts = {
   size: {
     height: 200,
-    width: divWidth - 60
+    width: chartWidth
   },
   legend: {
     position: 'right'
@@ -101,7 +102,7 @@ $scope.countChartOpts = {
       tick: {
           format: '%Y-%m-%d',
           culling: {
-            max: divWidth/100
+            max: tickCount
           } 
       },
       extent: dateExtent
@@ -136,7 +137,7 @@ $scope.countChartOpts = {
 $scope.timeChartOpts = {
   size: {
     height: 350,
-    width: divWidth - 60
+    width: chartWidth
   },
   legend: {
     position: 'right'
@@ -158,7 +159,7 @@ $scope.timeChartOpts = {
       tick: {
         format: '%Y-%m-%d',
         culling: {
-            max: divWidth/100
+            max: tickCount
           }
       },
       extent: dateExtent

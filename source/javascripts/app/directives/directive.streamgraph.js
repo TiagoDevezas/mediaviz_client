@@ -9,7 +9,6 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 			$timeout(function() {
 				var width = document.getElementById('diversity').offsetWidth - 16;
 				setupChart(width - 40);
-				scope.streamReady = true;
 				// scope.$apply();
 			}, 1);
 
@@ -60,6 +59,9 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 			}
 
 			function createChart(data, svg, width, height, height2, margin, margin2) {
+
+				scope.streamReady = true;
+				scope.$apply();
 
 				$rootScope.loading = false;
 
@@ -162,7 +164,7 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 			      		return "#D95F02"; 
 			      	}
 			      	if(d.key == 'common') {
-			      		return "#887A34"; 
+			      		return "#e6f598"; 
 			      	}
 			      });
 
@@ -179,7 +181,7 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 			      		return "#D95F02"; 
 			      	}
 			      	if(d.key == 'common') {
-			      		return "#887A34"; 
+			      		return "#e6f598"; 
 			      	}
 			      });
 
@@ -292,11 +294,13 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 			            			.style("visibility", "hidden")
 			            })
 
-				brush.extent([moment("2015-09-01"), moment("2015-09-30")]);
-				svg.select(".brush").call(brush);
+				$timeout(function() {
+					brush.extent([moment("2015-09-01"), moment("2015-09-30")]);
+					svg.select(".brush").call(brush);
+					brushed();
+				}, 1);
 
 			}
-
 
 		}
 	}
