@@ -19,8 +19,8 @@ mediavizDirectives.directive('downloadBar', function($window) {
     	var d3 = $window.d3;
 
     	scope.downloadOptions = [
-    		{label: 'Guardar como PNG', format: 'PNG'},
-    		{label: 'Guardar como SVG', format: 'SVG'}
+    		{label: 'Save as PNG', format: 'PNG'},
+    		{label: 'Save as SVG', format: 'SVG'}
     	];
 
     	scope.itemClicked = function(format) {
