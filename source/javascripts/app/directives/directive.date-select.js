@@ -4,7 +4,7 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
     scope: '=',
     template: 
       '<md-input-container>' + 
-        '<label>Intervalo</label>' +
+        '<label>Interval</label>' +
         '<md-select ng-model="selectedPeriod">' +
           '<md-option ng-repeat="period in allPeriods" value="{{period.name}}" ng-click="setPeriod($event, period.name)">{{period.name}}</md-option>' +
         '</md-select>' +
@@ -35,7 +35,7 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
 
       scope.allPeriods;
 
-      // scope.customPeriodObj = {name: 'Personalizado', startDate: undefined, endDate: undefined}
+      // scope.customPeriodObj = {name: 'Custom', startDate: undefined, endDate: undefined}
 
       if(scope.SAPOMode) {
         scope.allPeriods = [
@@ -47,29 +47,29 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
           {name: '2 anos', startDate: twoYears, endDate: today},
           {name: '5 anos', startDate: fiveYears, endDate: today},
           {name: '10 anos', startDate: tenYears, endDate: today},
-          {name: 'Personalizado', startDate: undefined, endDate: undefined}
+          {name: 'Custom', startDate: undefined, endDate: undefined}
         ]
       } else {
         scope.allPeriods = [
-          {name: '1 dia', startDate: oneDay, endDate: today},
-          {name: '7 dias', startDate: sevenDays, endDate: today},
-          {name: '1 mês', startDate: oneMonth, endDate: today},
-          {name: '6 meses', startDate: sixMonths, endDate: today},
-          {name: '1 ano', startDate: oneYear, endDate: today},
-          {name: 'Personalizado', startDate: undefined, endDate: undefined}
+          {name: '1 day', startDate: oneDay, endDate: today},
+          {name: '7 days', startDate: sevenDays, endDate: today},
+          {name: '1 month', startDate: oneMonth, endDate: today},
+          {name: '6 months', startDate: sixMonths, endDate: today},
+          {name: '1 year', startDate: oneYear, endDate: today},
+          {name: 'Custom', startDate: undefined, endDate: undefined}
         ];
       }
 
 /*      scope.showDatePicker = function(optionName) {
         console.log(optionName)
-        if(optionName.indexOf('Personalizado') !== -1) {
+        if(optionName.indexOf('Custom') !== -1) {
           scope.$broadcast('OpenPicker');
         }
       }*/
 
       scope.setPeriod = function(evt, periodName) {
         var periodObj = $filter('filter')(scope.allPeriods, {name: periodName}, true)[0];
-        if(periodObj.name.indexOf('Personalizado') === -1) {
+        if(periodObj.name.indexOf('Custom') === -1) {
           $location.search('since', periodObj.startDate);
           $location.search('until', periodObj.endDate);
         } else {
@@ -80,17 +80,17 @@ mediavizDirectives.directive('dateSelect', function($location, $filter, $timeout
       scope.$watch('urlParams', function(newVal) {
         var periodObj = $filter('filter')(scope.allPeriods, {startDate: newVal.since, endDate: newVal.until}, true)[0];
         var customPeriodObj = scope.allPeriods.filter(function(el) {
-          if(el.name.indexOf('Personalizado') !== -1) {
+          if(el.name.indexOf('Custom') !== -1) {
             return el;
           }
         })[0];
-        if(periodObj && periodObj.name.indexOf('Personalizado') === -1) {
+        if(periodObj && periodObj.name.indexOf('Custom') === -1) {
           scope.selectedPeriod = periodObj.name;
-          customPeriodObj.name = 'Personalizado';
+          customPeriodObj.name = 'Custom';
         } else {
           scope.allPeriods.splice(scope.allPeriods.indexOf(customPeriodObj));
           var optionObj = {
-            name: 'Personalizado (' + newVal.since + ' / ' + newVal.until + ')',
+            name: 'Custom (' + newVal.since + ' / ' + newVal.until + ')',
             // startDate: newVal.since,
             // endDate: newVal.until
           };

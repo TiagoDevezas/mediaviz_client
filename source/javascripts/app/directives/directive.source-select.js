@@ -6,7 +6,7 @@ mediavizDirectives.directive('sourceSelect', function($q, $filter, SourceList) {
       selectedSource: '='
     },
     template: 
-        '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="item in querySearch(searchText)" md-item-text="item.name" placeholder="Escolher fonte">' +
+        '<md-autocomplete md-no-cache="true" md-min-length="0" md-selected-item="selectedSource" md-search-text="searchText" md-items="item in querySearch(searchText)" md-item-text="item.name" placeholder="Select source">' +
         '<span md-highlight-text="searchText" md-highlight-flags="">{{item.name}}</span>' +
         '</md-autocomplete>',
     link: function(scope, elem, attrs) {
