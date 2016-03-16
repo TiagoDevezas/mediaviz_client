@@ -1,6 +1,6 @@
 mediavizServices.factory('SourceList', ['$http',
 	function($http) {
-		var baseUrl = 'http://maltese.fe.up.pt/irnews/';
+		var baseUrl = 'http://irlab.fe.up.pt/p/newsir_api/';
 		var callback = '?callback=JSON_CALLBACK';
 		var factory = {};
 		factory.getDefaultList = function() {

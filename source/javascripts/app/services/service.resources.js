@@ -1,6 +1,6 @@
 mediavizServices.factory('Resources', function($resource, $q) {
     //var canceller = $q.defer();
-  var baseUrl = 'http://maltese.fe.up.pt/irnews/';
+  var baseUrl = 'http://irlab.fe.up.pt/p/newsir_api/';
   var opts = { 
     options: {
       method: 'GET',
