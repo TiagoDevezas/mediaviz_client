@@ -2,6 +2,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
   Page.setTitle('Keywords');
 
+  var dateExtent = ["2015-09-01", "2015-09-30"];
+
   $scope.urlParams = {
     source: null,
     since: $rootScope.startDate,
@@ -260,6 +262,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 );
 
               $scope.xsObj = xsObj;
+              $timeout(function() {
+                $scope.$broadcast('changeZoomRange', [moment(dateExtent[0]).format("YYYY-MM-DD"), moment(dateExtent[1]).format("YYYY-MM-DD")]);
+              }, 10);
             } else {
               $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
             }
@@ -312,6 +317,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
     }
 
     $scope.barChartOpts = {
+      name: 'barCounts',
       id: 'countChart',
       size: {
         height: calculateSize()
@@ -389,12 +395,13 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           padding: {left: 0, right: 0},
           type: 'timeseries',
           tick: {
+            format: '%Y-%m-%d',
             culling: {
-                  max: 5 // the number of tick texts will be adjusted to less than this value
-                },
-                format: '%Y-%m-%d'
-              },
+              max: 5 // the number of tick texts will be adjusted to less than this value
             },
+          },
+          extent: dateExtent
+        },
             y: {
               min: 0,
               padding: {bottom: 0},
@@ -419,6 +426,12 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           },
           padding: {
             left: 50
+          },
+          subchart: {
+            show: true,
+            size: {
+              height: 20
+            }
           }
         };
 

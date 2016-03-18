@@ -51,7 +51,9 @@ mediavizDirectives.directive('c3Chart', function($location, $timeout) {
       // Event watchers
 
       scope.$on('changeZoomRange', function(evt, range) {
-        chart.zoom(range);
+        if(chart && scope.options.name !== 'barCounts') {
+          chart.zoom(range);
+        }
       });
 
       scope.$on('resizeChart', function(evt, height) {

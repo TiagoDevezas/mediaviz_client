@@ -2,6 +2,8 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 
   Page.setTitle('Sources');
 
+  var dateExtent = ["2015-09-01", "2015-09-30"];
+
   if($location.path().indexOf('/SAPO') !== -1) {
     $scope.SAPOMode = true;
   }
@@ -289,6 +291,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
         }
         $scope.timeChartOpts.axis.x.type = '';
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().hour(d).format('HH'); }});
+        $timeout(function() {
+          $scope.$broadcast('changeZoomRange', [0, 23]);
+        }, 10);
       }
       if($scope.urlParams.cycle === 'day') {
         if($scope.SAPOMode) {
@@ -296,6 +301,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
         }
         $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: function(d) { return moment(d).format('YYYY-MM-DD')} });
+        $timeout(function() {
+          $scope.$broadcast('changeZoomRange', [moment(dateExtent[0]).format("YYYY-MM-DD"), moment(dateExtent[1]).format("YYYY-MM-DD")]);
+        }, 10);
       }
       if($scope.urlParams.cycle === 'week') {
         if($scope.SAPOMode) {
@@ -303,6 +311,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
         }
         $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment().isoWeekday(d).format('ddd');} });
+        $timeout(function() {
+          $scope.$broadcast('changeZoomRange', [1, 7]);
+        }, 10);
       }
       if($scope.urlParams.cycle === 'month') {
         if($scope.SAPOMode) {
@@ -310,6 +321,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
         }
         $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: '', format: function(d) { return moment(d, 'MM').format('MMM');}});
+        $timeout(function() {
+          $scope.$broadcast('changeZoomRange', [1, 12]);
+        }, 10);
       }
     }
 
