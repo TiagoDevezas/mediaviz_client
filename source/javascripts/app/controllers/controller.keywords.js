@@ -240,26 +240,29 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
           $scope.loadingQueue.push(keyword);
           var paramsObj = createParamsObj(keyword);
           Resources.get(paramsObj).$promise.then(function(data) {
-            $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
-            $scope.loadedKeywords.push(keywordName);
-            xsObj[countId] = timeId;
-            if($scope.urlParams.data === 'percent') {
-                $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');
+            if(data.length) {
+              $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
+              $scope.loadedKeywords.push(keywordName);
+              xsObj[countId] = timeId;
+              if($scope.urlParams.data === 'percent') {
+                  $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');
+              } else {
+                $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'count');
+              }
+
+              
+              $scope.countData = DataFormatter.sumValue(data, keyword, 'count', keyword);
+
+              $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
+
+              $scope.countsArray.push(
+                [keyword, $scope.countData[1][1]]
+                );
+
+              $scope.xsObj = xsObj;
             } else {
-              $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'count');
+              $scope.loadingQueue.splice($scope.loadingQueue.indexOf(keyword), 1);
             }
-
-            
-            $scope.countData = DataFormatter.sumValue(data, keyword, 'count', keyword);
-
-            $scope.articlesCount.push([keyword, $scope.countData[1][1]]);
-
-
-            $scope.countsArray.push(
-              [keyword, $scope.countData[1][1]]
-              );
-
-            $scope.xsObj = xsObj;
           });
         }
       })
@@ -389,8 +392,8 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
             culling: {
                   max: 5 // the number of tick texts will be adjusted to less than this value
                 },
-                format: ''
-              }
+                format: '%Y-%m-%d'
+              },
             },
             y: {
               min: 0,

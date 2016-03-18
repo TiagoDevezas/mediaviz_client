@@ -106,10 +106,12 @@ mediavizDirectives.directive('streamGraph', function($timeout, $rootScope) {
 						.tickFormat(format);
 
 				var yAxis = d3.svg.axis()
-				    .scale(y);
+				    .scale(y)
+				    .ticks(0);
 
 				var yAxisr = d3.svg.axis()
-				    .scale(y);
+				    .scale(y)
+				    .ticks(0);
 
 				var brush = d3.svg.brush()
 				    .x(x2)
