@@ -28,7 +28,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
   $scope.urlParams = {
     keyword: $location.search()['keyword'] || null,
     sources: $location.search()['sources'] || null,
-    since: "2015-01-01",
+    since: moment().subtract(6, 'months').format("YYYY-MM-DD"),
     until: moment().format("YYYY-MM-DD"),
     cycle: $location.search()['cycle'] || 'day',
     data: setDefaultData()

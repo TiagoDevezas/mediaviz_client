@@ -22,7 +22,7 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
   $scope.lang = 'pt';
 
   $scope.urlParams = {
-    since: "2015-01-01",
+    since: moment().subtract(6, 'months').format("YYYY-MM-DD"),
     until: moment().format("YYYY-MM-DD")
   }
 

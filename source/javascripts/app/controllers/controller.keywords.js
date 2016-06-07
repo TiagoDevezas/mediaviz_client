@@ -8,7 +8,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
   $scope.urlParams = {
     source: null,
-    since: "2015-01-01",
+    since: moment().subtract(6, 'months').format("YYYY-MM-DD"),
     until: moment().format("YYYY-MM-DD"),
     cycle: null,
     by: null,
