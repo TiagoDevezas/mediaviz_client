@@ -12,6 +12,7 @@ mediavizServices.factory('SourceList', ['$http',
 				sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
 				sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});
 				sources.unshift({'name': 'Todas nacionais', 'type': 'national', 'acronym': 'national', 'group': true });
+				sources.unshift({'name': 'Investigação', 'type': 'research', 'acronym': 'research', 'group': true });
 				return sources;
 			});
 		},
