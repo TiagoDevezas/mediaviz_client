@@ -25,8 +25,8 @@
 					Data
 				</md-button>
 				<md-button ng-click="order('total_shares')">
-					<md-icon ng-show="predicate === 'total_shares' && reverse === true">arrow_drop_down</md-icon>
-					<md-icon ng-show="predicate === 'total_shares' && reverse === false">arrow_drop_up</md-icon>
+					<md-icon ng-show="predicate === 'twitter_shares + facebook_shares' && reverse === true">arrow_drop_down</md-icon>
+					<md-icon ng-show="predicate === 'twitter_shares + facebook_shares' && reverse === false">arrow_drop_up</md-icon>
 					Partilhas total
 				</md-button>
 				<md-button ng-click="order('twitter_shares')">
@@ -48,8 +48,8 @@
 						<a href="{{item.url}}" style="text-decoration: none;">
 			        <h3>{{ item.title }}</h3>
 			        <h4 ng-bind-html="item.summary | words:15" class="item-text h4" style="margin: 0;"></h4>
-			        <p>{{item.source}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC' }}</p>
-			        <p>Partilhas: {{item.total_shares}} Twitter: {{item.twitter_shares}} Facebook: {{item.facebook_shares}}</p>
+			        <p>{{item.source_name}} - {{ item.pub_date | date:'yyyy-MM-dd HH:mm' : 'UTC' }}</p>
+			        <p>Partilhas: {{(item.twitter_shares + item.facebook_shares) || 0 }} Twitter: {{item.twitter_shares || 0}} Facebook: {{item.facebook_shares || 0 }}</p>
 		        </a>
 		      </div>
 	       	<md-divider></md-divider>

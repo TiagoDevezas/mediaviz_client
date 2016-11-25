@@ -17,7 +17,7 @@ mediavizDirectives.directive('cycleSelect', function($location, $filter) {
       [
         {name: 'Hora', value: 'hour'},
         {name: 'Dia', value: 'day'},
-        {name: 'Semana', value: 'week'},
+        {name: 'Semana', value: 'weekday'},
         {name: 'Mês', value: 'month'}
       ] : [
         {name: 'Dia', value: 'day'},

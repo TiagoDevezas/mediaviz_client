@@ -1,13 +1,11 @@
 mediavizServices.factory('SourceList', ['$http',
 	function($http) {
-		var baseUrl = 'http://irlab.fe.up.pt/p/mediaviz/panorama/api/';
-		var callback = '?callback=JSON_CALLBACK';
+		var baseUrl = 'http://localhost:4567/';
+		// var callback = '?callback=JSON_CALLBACK';
 		var factory = {};
 		factory.getDefaultList = function() {
-			return $http.jsonp(baseUrl + 'sources' + callback, {cache: true}).then(function(response) {
-				var sources = response.data.map(function(el) {
-					return { 'name': el.name, 'type': el.type, 'acronym': el.acronym };
-				});
+			return $http.get(baseUrl + 'sources', {cache: true}).then(function(response) {
+				var sources = response.data;
 				sources.unshift({'name': 'Todas arquivo', 'type': 'archive', 'acronym': 'archive', 'group': true });
 				sources.unshift({'name': 'Todos os blogues', 'type': 'blogs', 'acronym': 'blogs', 'group': true });
 				sources.unshift({'name': 'Todas internacionais', 'type': 'international', 'acronym': 'international', 'group': true});

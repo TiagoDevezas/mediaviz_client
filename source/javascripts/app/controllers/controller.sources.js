@@ -249,9 +249,9 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
 
     function createParamsObj(source) {
       if(source.group) {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: source.type, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};    
+        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source_type: source.type, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};    
       } else {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};
+        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source_acronym: source.acronym, q: $scope.urlParams.keyword, by: $scope.urlParams.cycle};
       }   
     }
 
@@ -339,7 +339,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
         $scope.timeChartOpts.axis.x.type = 'timeseries';
         $scope.$broadcast('changeXAxisFormat', {type: 'timeseries', format: function(d) { return moment(d).format('YYYY-MM-DD')} });
       }
-      if($scope.urlParams.cycle === 'week') {
+      if($scope.urlParams.cycle === 'weekday') {
         if($scope.SAPOMode) {
           $scope.chartData = $scope.weekData;
         }

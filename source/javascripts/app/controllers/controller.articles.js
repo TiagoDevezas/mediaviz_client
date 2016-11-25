@@ -154,25 +154,25 @@ mediavizControllers.controller('ArticlesCtrl', function($scope, $timeout, $filte
 
     function createParamsObj() {
       if($scope.urlParams.source.group) {
-        return {resource: 'items', since: $scope.urlParams.since, limit: itemsToLoad, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: $scope.urlParams.keyword};    
+        return {resource: 'items', since: $scope.urlParams.since, limit: itemsToLoad, until: $scope.urlParams.until, source_type: $scope.urlParams.source.type, q: $scope.urlParams.keyword};    
       } else {
-        return {resource: 'items', since: $scope.urlParams.since, limit: itemsToLoad, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword};
+        return {resource: 'items', since: $scope.urlParams.since, limit: itemsToLoad, until: $scope.urlParams.until, source_acronym: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword};
       }
     }
 
     function createParamsObjOffset() {
       if($scope.urlParams.source.group) {
-        return {resource: 'items', since: $scope.urlParams.since, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: $scope.urlParams.keyword, offset: itemsOffset};    
+        return {resource: 'items', since: $scope.urlParams.since, until: $scope.urlParams.until, source_type: $scope.urlParams.source.type, q: $scope.urlParams.keyword, offset: itemsOffset};    
       } else {
-        return {resource: 'items', since: $scope.urlParams.since, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword, offset: itemsOffset};
+        return {resource: 'items', since: $scope.urlParams.since, until: $scope.urlParams.until, source_acronym: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword, offset: itemsOffset};
       }
     }
 
     function createParamsObjTotals(startDate) {
       if($scope.urlParams.source.group) {
-        return {resource: 'totals', since: startDate, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: $scope.urlParams.keyword };    
+        return {resource: 'totals', since: startDate, until: $scope.urlParams.until, source_type: $scope.urlParams.source.type, q: $scope.urlParams.keyword };    
       } else {
-        return {resource: 'totals', since: startDate, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword };
+        return {resource: 'totals', since: startDate, until: $scope.urlParams.until, source_acronym: $scope.urlParams.source.acronym, q: $scope.urlParams.keyword };
       }
     }
 

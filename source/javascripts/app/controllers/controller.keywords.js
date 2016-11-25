@@ -235,9 +235,9 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
 
     function createParamsObj(keyword) {
       if($scope.urlParams.source.group) {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, type: $scope.urlParams.source.type, q: keyword};    
+        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source_type: $scope.urlParams.source.type, q: keyword};    
       } else {
-        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source: $scope.urlParams.source.acronym, q: keyword};
+        return {resource: 'totals', since: $scope.urlParams.since, until: $scope.urlParams.until, source_acronym: $scope.urlParams.source.acronym, q: keyword};
       }
     }
 
