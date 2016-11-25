@@ -1,6 +1,6 @@
 mediavizServices.factory('SourceList', ['$http',
 	function($http) {
-		var baseUrl = 'http://localhost:4567/';
+		var baseUrl = 'http://irlab.fe.up.pt/p/mediaviz/api/';
 		// var callback = '?callback=JSON_CALLBACK';
 		var factory = {};
 		factory.getDefaultList = function() {
