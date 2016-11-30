@@ -308,7 +308,7 @@ mediavizControllers.controller('SourcesCtrl', function($scope, $rootScope, $loca
               xsObj[countId] = timeId;
               if($scope.urlParams.data === 'percent') {
                 if(source.group) {
-                  $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_type');                
+                  $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_source');                
                 } else {
                   $scope.chartData = DataFormatter.inColumns(data, sourceName, 'time', 'percent_of_source');
                 }

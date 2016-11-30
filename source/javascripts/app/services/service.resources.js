@@ -1,7 +1,7 @@
 mediavizServices.factory('Resources', function($resource, $q) {
     //var canceller = $q.defer();
   var baseUrl = 'http://irlab.fe.up.pt/p/mediaviz/api/';
-  var jsonp = { 
+  var jsonp = {
     options: {
       // method: 'JSONP',
       isArray: true,

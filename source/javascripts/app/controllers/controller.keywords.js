@@ -294,7 +294,7 @@ mediavizControllers.controller('KeywordsCtrl', function($scope, $rootScope, $loc
                 xsObj[countId] = timeId;
                 if($scope.urlParams.data === 'percent') {
                   if($scope.urlParams.source.group) {
-                    $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_type_by_day');                
+                    $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_day');                
                   } else {
                     $scope.timeData = DataFormatter.inColumns(data, keyword, 'time', 'percent_of_day');
                   }
