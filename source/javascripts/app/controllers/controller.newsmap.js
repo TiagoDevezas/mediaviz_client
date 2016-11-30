@@ -176,9 +176,9 @@ mediavizControllers.controller('NewsMapCtrl', function($scope, $rootScope, $filt
 
   function createParamsObj(mapObj) {
     if(mapObj.source.group) {
-      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, type: mapObj.source.type, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};    
+      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, source_type: mapObj.source.type, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};    
     } else {
-      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, source: mapObj.source.name, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};
+      return {resource: 'places', since: $scope.urlParams.since, until: $scope.urlParams.until, source_name: mapObj.source.name, q: mapObj.keyword, map: $scope.selectedMap.type, lang: $scope.lang};
     }
   }
 
